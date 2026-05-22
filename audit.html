@@ -297,9 +297,9 @@
     fetch("backlog.json?t=" + Date.now())
       .then(r => r.json())
       .then(data => {
-        const items = data.items;
-        if (!items || items.length === 0) {
-          document.getElementById("log").innerHTML = '<div class="empty">No items in backlog.</div>';
+        const items = data.items.filter(i => i.status !== "pending");
+        if (!items.length) {
+          document.getElementById("log").innerHTML = '<div class="empty">No completed items yet.</div>';
           return;
         }
         document.getElementById("log").innerHTML = items.map(renderItem).join("");

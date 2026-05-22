@@ -36,7 +36,7 @@ Rules:
 - Bump the patch version (e.g. 0.1.0 -> 0.1.1)
 - Set the deployed timestamp to exactly the value provided — do not change it
 - Add a changelog entry as the LAST item in the changelog array with exactly these fields: {"version": "<new version>", "date": "<YYYY-MM-DD>", "change": "<description>"}
-- Keep the page structure intact: h1 title, version badge, meta lines
+- Keep the page structure intact: h1 title, version badge, meta lines, and the Audit button in the top right corner
 - Changes must be clearly visible on the page
 - Keep the page clean and minimal
 

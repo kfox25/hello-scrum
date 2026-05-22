@@ -181,6 +181,15 @@
     .test-pass { color: #00ff99; }
     .test-fail { color: #ff4444; }
     .test-msg { color: #888; }
+    .failure-reason {
+      font-size: 0.85rem;
+      color: #ff6666;
+      background: #1a0808;
+      border: 1px solid #ff444430;
+      border-radius: 4px;
+      padding: 0.5rem 0.75rem;
+    }
+    .hermes-label { color: #ff4444; font-weight: bold; }
     .empty { color: #333; text-align: center; padding: 3rem; }
     .loading { color: #444; text-align: center; padding: 3rem; }
     .error { color: #ff4444; text-align: center; padding: 3rem; }
@@ -202,13 +211,21 @@
   <div id="log"><div class="loading">Loading...</div></div>
 
   <script>
-    const STEPS = ["Pull", "Story", "Code", "Test", "Deploy"];
+    const STEPS = ["Pull", "Story", "Code", "Test", "Review", "Deploy"];
 
     function stepStatus(item, index) {
       if (item.status === "pending") return index === 0 ? "pending" : "";
       if (item.status === "failed") {
-        if (index <= 2) return "done";
-        return "failed";
+        const failedAtHermes = item.hermes_verdict === "reject";
+        const failedAtTest   = !failedAtHermes && item.test_results && item.test_results.some(t => t.status === "fail");
+        const failStep = failedAtHermes ? 4
+                       : failedAtTest   ? 3
+                       : item.diff      ? 3
+                       : item.story     ? 2
+                       : 1;
+        if (index < failStep)  return "done";
+        if (index === failStep) return "failed";
+        return "";
       }
       return "done";
     }
@@ -277,6 +294,18 @@
           <div class="detail-value" style="font-size:0.85rem;color:#aaa">${escHtml(item.summary || "")} — ${escHtml(item.deployed)}</div>
         </div>` : "";
 
+      const failureSection = item.status === "failed" ? (() => {
+        let reason = "Agent or deploy error — check server logs.";
+        if (item.hermes_verdict === "reject")
+          reason = `<span class="hermes-label">Hermes rejected:</span> ${escHtml(item.hermes_reason || "")}`;
+        else if (item.test_results && item.test_results.some(t => t.status === "fail"))
+          reason = "One or more tests failed — see test results below.";
+        return `<div class="section">
+          <div class="section-title">Failure Reason</div>
+          <div class="failure-reason">${reason}</div>
+        </div>`;
+      })() : "";
+
       return `
         <div class="item">
           <div class="item-header" onclick="this.closest('.item').classList.toggle('expanded')">
@@ -287,6 +316,7 @@
           </div>
           <div class="item-body">
             <div class="steps">${steps}</div>
+            ${failureSection}
             ${storySection}
             ${diffSection}
             ${testSection}

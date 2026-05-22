@@ -166,7 +166,7 @@ Acceptance criteria:
 {json.dumps(acceptance_criteria, indent=2)}
 
 Diff:
-{diff[:3000]}
+{diff[:12000]}
 
 Test results:
 {json.dumps(test_results, indent=2)}"""

@@ -332,11 +332,6 @@
       ]
     },
     {
-      "id": 13,
-      "idea": "Show which sprint each feature came from",
-      "status": "done",
-      "in_sprint": true,
-      "story": "As a user, I want to see which sprint each changelog feature came from, so that I can understand the delivery cadence and track progress across sprints.",
       "acceptance_criteria": [
         "Each changelog entry displays a sprint label (e.g. 'Sprint 1') alongside the version, date, and description",
         "Sprint labels are visually distinct and styled consistently with the existing design",
@@ -344,29 +339,34 @@
         "The sprint label is visible without cluttering the existing changelog layout",
         "The new v0.1.11 entry also includes a sprint label"
       ],
-      "summary": "Add sprint labels to changelog entries to show which sprint each feature was delivered in",
+      "deployed": "2026-05-22 18:44:17 CT",
       "diff": "diff --git a/index.html b/index.html\nindex e08ebfc..b4b4a7f 100644\n--- a/index.html\n+++ b/index.html\n@@ -254,6 +254,7 @@\n       gap: 0.75rem;\n       padding: 0.4rem 0;\n       border-top: 1px solid #1c1f2a;\n+      flex-wrap: wrap;\n     }\n     .changelog-entry:first-of-type {\n       border-top: none;\n@@ -273,6 +274,21 @@\n       color: #aaa;\n       font-size: 0.83rem;\n       line-height: 1.4;\n+      flex: 1;\n+      min-width: 0;\n+    }\n+    .sprint-badge {\n+      font-size: 0.68rem;\n+      font-weight: 600;\n+      letter-spacing: 0.07em;\n+      text-transform: uppercase;\n+      padding: 0.15rem 0.5rem;\n+      border-radius: 20px;\n+      background: #1a1530;\n+      color: #a78bfa;\n+      border: 1px solid #3b2d6a;\n+      white-space: nowrap;\n+      align-self: center;\n     }\n   </style>\n </head>\n@@ -285,7 +301,7 @@\n   </nav>\n   <h1>Hello Scrum</h1>\n   <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n-  <div class=\"version\">v0.1.10</div>\n+  <div class=\"version\">v0.1.11</div>\n   <div class=\"health-indicator\">\n     <div class=\"health-dot-wrap\">\n       <div class=\"health-dot-ping\"></div>\n@@ -295,10 +311,10 @@\n     <span class=\"health-sub\">&mdash; all systems operational</span>\n   </div>\n   <div class=\"features-counter\">\n-    <div class=\"count\">11</div>\n+    <div class=\"count\">12</div>\n     <div class=\"label\">Features Deployed</div>\n   </div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 18:38:26 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 18:44:17 CT</div>\n   <div class=\"status-row\">\n     <span class=\"status-label\">Status:</span>\n     <span class=\"status-badge\"><span class=\"status-icon\"></span>baseline</span>\n@@ -312,21 +328,78 @@\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.11</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 3</span>\n+      <span class=\"ct\">Added sprint labels to each changelog entry so it's clear which sprint delivered each feature</span>\n+    </div>\n     <div class=\"changelog-entry\">\n       <span class=\"cv\">v0.1.10</span>\n       <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 3</span>\n       <span class=\"ct\">Added a random Scrum tip displayed on each visit with a button to refresh for a new tip</span>\n     </div>\n     <div class=\"changelog-entry\">\n       <span class=\"cv\">v0.1.9</span>\n       <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 3</span>\n       <span class=\"ct\">Replaced plain status text with a styled colored badge that clearly communicates deployment state</span>\n     </div>\n     <div class=\"changelog-entry\">\n       <span class=\"cv\">v0.1.8</span>\n       <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 3</span>\n       <span class=\"ct\">Cleaned up the page for a professional look: modern font, reduced animations, removed clutter</span>\n     </div>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.7</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 2</span>\n+      <span class=\"ct\">Added animated system health indicator showing all systems operational</span>\n+    </div>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.6</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 2</span>\n+      <span class=\"ct\">Added interactive hover card that glows, scales, and animates on hover</span>\n+    </div>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.5</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 2</span>\n+      <span class=\"ct\">Added mascot, motto badge, and scrum fun fact to give the page more personality</span>\n+    </div>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.4</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 2</span>\n+      <span class=\"ct\">Added animations and glow effects to make the page feel alive</span>\n+    </div>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.3</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 1</span>\n+      <span class=\"ct\">Added changelog section showing the last 3 updates</span>\n+    </div>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.2</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 1</span>\n+      <span class=\"ct\">Added features deployed counter that increments with each release</span>\n+    </div>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.1</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 1</span>\n+      <span class=\"ct\">Added motivational tagline below the title</span>\n+    </div>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.0</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 1</span>\n+      <span class=\"ct\">Initial hello world</span>\n+    </div>\n   </div>\n   <script>\n     const tips = [\ndiff --git a/version.json b/version.json\nindex 80b2486..221c124 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.10\",\n-  \"deployed\": \"2026-05-22 18:38:26 CT\",\n+  \"version\": \"0.1.11\",\n+  \"deployed\": \"2026-05-22 18:44:17 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -57,6 +57,11 @@\n       \"version\": \"0.1.10\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Added a random Scrum tip displayed on each visit with a button to refresh for a new tip\"\n+    },\n+    {\n+      \"version\": \"0.1.11\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Added sprint labels to each changelog entry so it's clear which sprint delivered each feature\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_reason": "Implementation fully delivers the requested feature with sprint badges visually styled and applied consistently across all changelog entries (4 versions per sprint), including v0.1.11, with all tests passing and no layout clutter.",
+      "hermes_verdict": "approve",
+      "id": 13,
+      "idea": "Show which sprint each feature came from",
+      "in_sprint": true,
+      "status": "done",
+      "story": "As a user, I want to see which sprint each changelog feature came from, so that I can understand the delivery cadence and track progress across sprints.",
+      "summary": "Add sprint labels to changelog entries to show which sprint each feature was delivered in",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.11 matches between version.json and index.html"
+          "message": "version 0.1.11 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-22 18:44:17 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-22 18:44:17 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.11: Added sprint labels to each changelog entry so it's clear which sprint delivered each feature"
+          "message": "changelog has entry for v0.1.11: Added sprint labels to each changelog entry so it's clear which sprint delivered each feature",
+          "status": "pass"
         }
-      ],
-      "deployed": "2026-05-22 18:44:17 CT",
-      "hermes_verdict": "approve",
-      "hermes_reason": "Implementation fully delivers the requested feature with sprint badges visually styled and applied consistently across all changelog entries (4 versions per sprint), including v0.1.11, with all tests passing and no layout clutter."
+      ]
     },
     {
       "id": 14,
@@ -376,7 +376,39 @@
     {
       "id": 15,
       "idea": "Make the version number do something on click",
-      "status": "pending"
+      "status": "done",
+      "in_sprint": true,
+      "story": "As a user, I want to click the version badge to see a tooltip with the full version history summary, so I can quickly understand what the current version represents.",
+      "acceptance_criteria": [
+        "Clicking the version badge toggles a small popover/tooltip showing the latest changelog entry description",
+        "The version badge has a pointer cursor to indicate it is clickable",
+        "The popover appears below the badge with a smooth fade-in animation",
+        "Clicking the badge again (or clicking elsewhere) dismisses the popover",
+        "The popover shows the version number, date, and change description of the current release"
+      ],
+      "summary": "Make version badge clickable to show a popover with the latest release notes",
+      "diff": "diff --git a/index.html b/index.html\nindex b4b4a7f..400f8f8 100644\n--- a/index.html\n+++ b/index.html\n@@ -18,6 +18,10 @@\n       from { opacity: 0; transform: translateY(4px); }\n       to   { opacity: 1; transform: translateY(0); }\n     }\n+    @keyframes popover-in {\n+      from { opacity: 0; transform: translateY(6px); }\n+      to   { opacity: 1; transform: translateY(0); }\n+    }\n     *, *::before, *::after { box-sizing: border-box; }\n     body {\n       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\n@@ -68,6 +72,14 @@\n       border-color: #00e87a;\n       color: #00e87a;\n     }\n+    .version-wrap {\n+      position: relative;\n+      display: inline-flex;\n+      flex-direction: column;\n+      align-items: center;\n+      margin-bottom: 1.25rem;\n+      animation: fade-in-up 0.5s ease 0.15s both;\n+    }\n     .version {\n       font-size: 0.85rem;\n       color: #00e87a;\n@@ -76,8 +88,73 @@\n       padding: 0.3rem 0.9rem;\n       border-radius: 20px;\n       letter-spacing: 0.04em;\n-      margin-bottom: 1.25rem;\n-      animation: fade-in-up 0.5s ease 0.15s both;\n+      cursor: pointer;\n+      user-select: none;\n+      transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;\n+    }\n+    .version:hover {\n+      background: #0f2e1e;\n+      border-color: #00e87a88;\n+      box-shadow: 0 0 8px #00e87a33;\n+    }\n+    .version.active {\n+      background: #0f2e1e;\n+      border-color: #00e87a;\n+      box-shadow: 0 0 10px #00e87a44;\n+    }\n+    .version-popover {\n+      display: none;\n+      position: absolute;\n+      top: calc(100% + 8px);\n+      left: 50%;\n+      transform: translateX(-50%);\n+      background: #13191f;\n+      border: 1px solid #00e87a55;\n+      border-radius: 8px;\n+      padding: 0.75rem 1rem;\n+      min-width: 260px;\n+      max-width: 320px;\n+      z-index: 100;\n+      box-shadow: 0 4px 20px #00000066;\n+      animation: popover-in 0.25s ease both;\n+    }\n+    .version-popover.open {\n+      display: block;\n+    }\n+    .version-popover::before {\n+      content: '';\n+      position: absolute;\n+      top: -6px;\n+      left: 50%;\n+      transform: translateX(-50%) rotate(45deg);\n+      width: 10px;\n+      height: 10px;\n+      background: #13191f;\n+      border-left: 1px solid #00e87a55;\n+      border-top: 1px solid #00e87a55;\n+    }\n+    .vp-version {\n+      font-size: 0.78rem;\n+      font-weight: 700;\n+      color: #00e87a;\n+      margin-bottom: 0.2rem;\n+    }\n+    .vp-date {\n+      font-size: 0.72rem;\n+      color: #444;\n+      margin-bottom: 0.5rem;\n+    }\n+    .vp-change {\n+      font-size: 0.84rem;\n+      color: #ccc;\n+      line-height: 1.5;\n+    }\n+    .vp-hint {\n+      font-size: 0.7rem;\n+      color: #333;\n+      margin-top: 0.6rem;\n+      text-align: right;\n+      letter-spacing: 0.04em;\n     }\n     .health-indicator {\n       display: flex;\n@@ -301,7 +378,15 @@\n   </nav>\n   <h1>Hello Scrum</h1>\n   <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n-  <div class=\"version\">v0.1.11</div>\n+  <div class=\"version-wrap\">\n+    <div class=\"version\" id=\"version-badge\" onclick=\"toggleVersionPopover(event)\" title=\"Click to see what's new\">v0.1.12</div>\n+    <div class=\"version-popover\" id=\"version-popover\">\n+      <div class=\"vp-version\">v0.1.12</div>\n+      <div class=\"vp-date\">2026-05-22</div>\n+      <div class=\"vp-change\">Version badge is now clickable \u00e2\u20ac\u201d click it to see what changed in this release</div>\n+      <div class=\"vp-hint\">click badge to dismiss</div>\n+    </div>\n+  </div>\n   <div class=\"health-indicator\">\n     <div class=\"health-dot-wrap\">\n       <div class=\"health-dot-ping\"></div>\n@@ -311,10 +396,10 @@\n     <span class=\"health-sub\">&mdash; all systems operational</span>\n   </div>\n   <div class=\"features-counter\">\n-    <div class=\"count\">12</div>\n+    <div class=\"count\">13</div>\n     <div class=\"label\">Features Deployed</div>\n   </div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 18:44:17 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 18:47:07 CT</div>\n   <div class=\"status-row\">\n     <span class=\"status-label\">Status:</span>\n     <span class=\"status-badge\"><span class=\"status-icon\"></span>baseline</span>\n@@ -328,6 +413,12 @@\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.12</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 3</span>\n+      <span class=\"ct\">Version badge is now clickable \u00e2\u20ac\u201d click it to see what changed in this release</span>\n+    </div>\n     <div class=\"changelog-entry\">\n       <span class=\"cv\">v0.1.11</span>\n       <span class=\"cd\">2026-05-22</span>\n@@ -428,6 +519,27 @@\n       el.textContent = tips[idx];\n     }\n     showNewTip();\n+\n+    function toggleVersionPopover(event) {\n+      event.stopPropagation();\n+      const badge = document.getElementById('version-badge');\n+      const popover = document.getElementById('version-popover');\n+      const isOpen = popover.classList.contains('open');\n+      if (isOpen) {\n+        popover.classList.remove('open');\n+        badge.classList.remove('active');\n+      } else {\n+        popover.classList.add('open');\n+        badge.classList.add('active');\n+      }\n+    }\n+\n+    document.addEventListener('click', function() {\n+      const badge = document.getElementById('version-badge');\n+      const popover = document.getElementById('version-popover');\n+      popover.classList.remove('open');\n+      badge.classList.remove('active');\n+    });\n   </script>\n </body>\n </html>\n\\ No newline at end of file\ndiff --git a/version.json b/version.json\nindex 221c124..2348176 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.11\",\n-  \"deployed\": \"2026-05-22 18:44:17 CT\",\n+  \"version\": \"0.1.12\",\n+  \"deployed\": \"2026-05-22 18:47:07 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -62,6 +62,11 @@\n       \"version\": \"0.1.11\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Added sprint labels to each changelog entry so it's clear which sprint delivered each feature\"\n+    },\n+    {\n+      \"version\": \"0.1.12\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Version badge is now clickable \\u2014 click it to see what changed in this release\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.12 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-22 18:47:07 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.12: Version badge is now clickable \u2014 click it to see what changed in this release"
+        }
+      ],
+      "deployed": "2026-05-22 18:47:07 CT",
+      "hermes_verdict": "approve",
+      "hermes_reason": "Implementation fully satisfies all acceptance criteria: version badge is clickable with pointer cursor, popover toggles on click with smooth fade-in animation, displays version/date/description, dismisses on second click or external click, and all tests pass."
     },
     {
       "id": 16,

@@ -155,6 +155,18 @@
     }
     .hermes-approve { background: #0a1f12; color: #00ff9980; border: 1px solid #00ff9920; }
     .hermes-reject  { background: #1a0808; color: #ff444480; border: 1px solid #ff444420; }
+    .retry-btn {
+      font-family: monospace;
+      font-size: 0.85rem;
+      background: none;
+      border: 1px solid #333;
+      color: #555;
+      border-radius: 3px;
+      padding: 0.1rem 0.4rem;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .retry-btn:hover { color: #ffcc00; border-color: #ffcc0060; }
 
     .empty-hint {
       color: #2a2a2a;
@@ -320,6 +332,10 @@
         hermesTag = `<span class="hermes-tag ${cls}">H:${item.hermes_verdict === 'approve' ? '✓' : '✗'}</span>`;
       }
 
+      const retryBtn = item.status === 'failed'
+        ? `<button class="retry-btn" onclick="retryItem(${item.id}, event)" title="Reset to pending">↺</button>`
+        : '';
+
       return `<div class="card ${item.status}" data-id="${item.id}" ${draggable}
                    ondragstart="onDragStart(event)"
                    ondragend="onDragEnd(event)"
@@ -331,6 +347,7 @@
         <span class="card-idea">${escHtml(item.idea)}</span>
         ${hermesTag}
         <span class="badge badge-${item.status}">${item.status}</span>
+        ${retryBtn}
       </div>`;
     }
 
@@ -411,6 +428,24 @@
       items.splice(insertBefore ? tgtIdx : tgtIdx + 1, 0, dragItem);
 
       dragId = null;
+      renderBoard();
+      persistBacklog();
+    }
+
+    function retryItem(id, e) {
+      e.stopPropagation();
+      const item = backlogData.items.find(i => i.id === id);
+      if (!item) return;
+      item.status = 'pending';
+      item.in_sprint = true;
+      delete item.story;
+      delete item.acceptance_criteria;
+      delete item.summary;
+      delete item.diff;
+      delete item.test_results;
+      delete item.hermes_verdict;
+      delete item.hermes_reason;
+      delete item.deployed;
       renderBoard();
       persistBacklog();
     }

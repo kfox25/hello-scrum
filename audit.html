@@ -21,14 +21,30 @@
       border-bottom: 1px solid #222;
       padding-bottom: 1rem;
     }
-    header a {
-      color: #555;
-      text-decoration: none;
-      font-size: 0.9rem;
-    }
-    header a:hover { color: #00ff99; }
     h1 { color: #00ff99; font-size: 1.8rem; }
     .subtitle { color: #555; font-size: 0.85rem; margin-top: 0.25rem; }
+
+    .top-nav {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .top-nav a {
+      font-family: monospace;
+      font-size: 0.85rem;
+      background: #1a1a1a;
+      color: #00ff99;
+      border: 1px solid #00ff9940;
+      padding: 0.4rem 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+    .top-nav a:hover {
+      background: #0d3320;
+      border-color: #00ff99;
+    }
 
     .item {
       background: #1a1a1a;
@@ -67,6 +83,16 @@
     .badge-done     { background: #0d3320; color: #00ff99; border: 1px solid #00ff9940; }
     .badge-pending  { background: #1a1a00; color: #ffcc00; border: 1px solid #ffcc0040; }
     .badge-failed   { background: #2a0a0a; color: #ff4444; border: 1px solid #ff444440; }
+
+    .chevron {
+      font-size: 0.7rem;
+      color: #444;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .item-body { display: none; }
+    .item.expanded .item-body { display: block; }
+    .item.expanded .chevron { transform: rotate(90deg); }
 
     .steps {
       display: flex;
@@ -109,21 +135,6 @@
     }
     .step.done  .step-label { color: #00ff9990; }
     .step.failed .step-label { color: #ff444490; }
-
-    .item-detail {
-      padding: 1rem 1.25rem;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-    }
-    .detail-row {
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-    }
-    .detail-row.full { grid-column: 1 / -1; }
-    .detail-label { font-size: 0.7rem; color: #444; text-transform: uppercase; }
-    .detail-value { font-size: 0.85rem; color: #aaa; }
 
     .section {
       padding: 1rem 1.25rem;
@@ -173,69 +184,6 @@
     .empty { color: #333; text-align: center; padding: 3rem; }
     .loading { color: #444; text-align: center; padding: 3rem; }
     .error { color: #ff4444; text-align: center; padding: 3rem; }
-    .top-nav {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      display: flex;
-      gap: 0.5rem;
-    }
-    .top-nav a {
-      font-family: monospace;
-      font-size: 0.85rem;
-      background: #1a1a1a;
-      color: #00ff99;
-      border: 1px solid #00ff9940;
-      padding: 0.4rem 1rem;
-      border-radius: 4px;
-      text-decoration: none;
-    }
-    .top-nav a:hover {
-      background: #0d3320;
-      border-color: #00ff99;
-    }
-
-    .chevron {
-      font-size: 0.7rem;
-      color: #444;
-      transition: transform 0.2s;
-      flex-shrink: 0;
-    }
-    .item-body { display: none; }
-    .item.expanded .item-body { display: block; }
-    .item.expanded .chevron { transform: rotate(90deg); }
-
-    /* drag-and-drop */
-    .drag-handle {
-      color: #333;
-      font-size: 1rem;
-      cursor: grab;
-      padding-right: 0.25rem;
-      line-height: 1;
-      flex-shrink: 0;
-    }
-    .item[draggable="true"] .drag-handle { color: #555; }
-    .item[draggable="true"]:hover .drag-handle { color: #00ff9980; }
-    .item[draggable="true"].dragging { opacity: 0.4; }
-    .item[draggable="true"].drag-over { border-top: 2px solid #00ff99; }
-
-    #save-bar {
-      display: none;
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-    }
-    #save-order-btn {
-      font-family: monospace;
-      font-size: 0.85rem;
-      background: #0d3320;
-      color: #00ff99;
-      border: 1px solid #00ff9980;
-      padding: 0.5rem 1.25rem;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    #save-order-btn:hover { background: #114428; border-color: #00ff99; }
   </style>
 </head>
 <body>
@@ -252,15 +200,8 @@
 
   <div id="log"><div class="loading">Loading...</div></div>
 
-  <div id="save-bar">
-    <button id="save-order-btn" onclick="saveOrder()">↓ Download reordered backlog.json</button>
-  </div>
-
   <script>
     const STEPS = ["Pull", "Story", "Code", "Test", "Deploy"];
-    let backlogData = null;
-    let dragSrcEl = null;
-    let wasDragged = false;
 
     function stepStatus(item, index) {
       if (item.status === "pending") return index === 0 ? "pending" : "";
@@ -294,11 +235,6 @@
 
     function escHtml(str) {
       return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-    }
-
-    function handleHeaderClick(el) {
-      if (wasDragged) { wasDragged = false; return; }
-      el.closest('.item').classList.toggle('expanded');
     }
 
     function renderItem(item) {
@@ -340,14 +276,9 @@
           <div class="detail-value" style="font-size:0.85rem;color:#aaa">${escHtml(item.summary || "")} — ${escHtml(item.deployed)}</div>
         </div>` : "";
 
-      const isPending = item.status === "pending";
-      const draggable = isPending ? 'draggable="true"' : '';
-      const handle = isPending ? '<span class="drag-handle">&#8942;&#8942;</span>' : '';
-
       return `
-        <div class="item" data-id="${item.id}" ${draggable}>
-          <div class="item-header" onclick="handleHeaderClick(this)">
-            ${handle}
+        <div class="item">
+          <div class="item-header" onclick="this.closest('.item').classList.toggle('expanded')">
             <div class="item-id">#${item.id}</div>
             <div class="item-idea">${escHtml(item.idea)}</div>
             ${badge(item.status)}
@@ -363,76 +294,15 @@
         </div>`;
     }
 
-    function attachDragHandlers() {
-      const draggables = document.querySelectorAll('.item[draggable="true"]');
-      draggables.forEach(el => {
-        el.addEventListener('dragstart', e => {
-          dragSrcEl = el;
-          wasDragged = true;
-          el.classList.add('dragging');
-          e.dataTransfer.effectAllowed = 'move';
-        });
-        el.addEventListener('dragend', () => {
-          el.classList.remove('dragging');
-          document.querySelectorAll('.item.drag-over').forEach(x => x.classList.remove('drag-over'));
-        });
-        el.addEventListener('dragover', e => {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = 'move';
-          if (el !== dragSrcEl) el.classList.add('drag-over');
-        });
-        el.addEventListener('dragleave', () => {
-          el.classList.remove('drag-over');
-        });
-        el.addEventListener('drop', e => {
-          e.preventDefault();
-          el.classList.remove('drag-over');
-          if (!dragSrcEl || dragSrcEl === el) return;
-
-          const log = document.getElementById('log');
-          const allItems = [...log.querySelectorAll('.item')];
-          const srcIdx = allItems.indexOf(dragSrcEl);
-          const tgtIdx = allItems.indexOf(el);
-
-          if (srcIdx < tgtIdx) {
-            el.after(dragSrcEl);
-          } else {
-            el.before(dragSrcEl);
-          }
-
-          // Mirror reorder in backlogData
-          const items = backlogData.items;
-          const srcDataIdx = items.findIndex(i => i.id == dragSrcEl.dataset.id);
-          const [moved] = items.splice(srcDataIdx, 1);
-          const newTgtIdx = items.findIndex(i => i.id == el.dataset.id);
-          items.splice(srcIdx < tgtIdx ? newTgtIdx + 1 : newTgtIdx, 0, moved);
-
-          document.getElementById('save-bar').style.display = 'block';
-        });
-      });
-    }
-
-    function saveOrder() {
-      const json = JSON.stringify(backlogData, null, 2);
-      const blob = new Blob([json], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'backlog.json';
-      a.click();
-      URL.revokeObjectURL(a.href);
-    }
-
     fetch("backlog.json?t=" + Date.now())
       .then(r => r.json())
       .then(data => {
-        backlogData = data;
         const items = data.items;
         if (!items || items.length === 0) {
           document.getElementById("log").innerHTML = '<div class="empty">No items in backlog.</div>';
           return;
         }
         document.getElementById("log").innerHTML = items.map(renderItem).join("");
-        attachDragHandlers();
       })
       .catch(err => {
         document.getElementById("log").innerHTML = `<div class="error">Failed to load backlog.json<br>${err}</div>`;

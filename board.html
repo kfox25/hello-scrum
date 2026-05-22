@@ -114,6 +114,8 @@
     .card.pending:active { cursor: grabbing; }
     .card.pending:hover { border-color: #3a3a3a; }
     .card.dragging { opacity: 0.4; }
+    .card.insert-above { border-top: 2px solid #00ff99; }
+    .card.insert-below { border-bottom: 2px solid #00ff99; }
 
     .drag-handle {
       color: #333;
@@ -308,7 +310,10 @@
 
       return `<div class="card ${item.status}" data-id="${item.id}" ${draggable}
                    ondragstart="onDragStart(event)"
-                   ondragend="onDragEnd(event)">
+                   ondragend="onDragEnd(event)"
+                   ondragover="onCardDragOver(event)"
+                   ondragleave="onCardDragLeave(event)"
+                   ondrop="onCardDrop(event)">
         ${handle}
         <span class="card-id">#${item.id}</span>
         <span class="card-idea">${escHtml(item.idea)}</span>
@@ -350,6 +355,50 @@
       item.in_sprint = toSprint;
       dragId = null;
 
+      renderBoard();
+      persistBacklog();
+    }
+
+    function onCardDragOver(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.dataTransfer.dropEffect = 'move';
+      const card = e.currentTarget;
+      const mid = card.getBoundingClientRect().top + card.getBoundingClientRect().height / 2;
+      card.classList.toggle('insert-above', e.clientY < mid);
+      card.classList.toggle('insert-below', e.clientY >= mid);
+    }
+
+    function onCardDragLeave(e) {
+      e.currentTarget.classList.remove('insert-above', 'insert-below');
+    }
+
+    function onCardDrop(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const card = e.currentTarget;
+      const insertBefore = card.classList.contains('insert-above');
+      card.classList.remove('insert-above', 'insert-below');
+
+      if (dragId === null) return;
+      const targetId = parseInt(card.dataset.id);
+      if (dragId === targetId) return;
+
+      const items = backlogData.items;
+      const dragItem  = items.find(i => i.id === dragId);
+      const targetItem = items.find(i => i.id === targetId);
+      if (!dragItem || dragItem.status !== 'pending') return;
+
+      // move to same column as target
+      dragItem.in_sprint = targetItem.in_sprint || false;
+
+      // reorder in array
+      const srcIdx = items.indexOf(dragItem);
+      items.splice(srcIdx, 1);
+      const tgtIdx = items.indexOf(targetItem);
+      items.splice(insertBefore ? tgtIdx : tgtIdx + 1, 0, dragItem);
+
+      dragId = null;
       renderBoard();
       persistBacklog();
     }

@@ -129,7 +129,7 @@ Implement this idea. Return JSON only."""
 
     message = client.messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=4096,
+        max_tokens=8192,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": prompt}],
     )
@@ -250,6 +250,7 @@ def run_one(sprint_only=False):
     except Exception as e:
         print(f"Agent error: {e}")
         item["status"] = "failed"
+        item["error"] = f"Agent error: {e}"
         save_backlog(backlog)
         clear_active()
         return False
@@ -262,6 +263,7 @@ def run_one(sprint_only=False):
         print(f"Parse error: {e}")
         print(f"Raw response preview: {response[:300]}")
         item["status"] = "failed"
+        item["error"] = f"Parse error: {e} | Response preview: {response[:200]}"
         save_backlog(backlog)
         clear_active()
         return False

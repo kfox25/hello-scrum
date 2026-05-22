@@ -300,6 +300,8 @@
           reason = `<span class="hermes-label">Hermes rejected:</span> ${escHtml(item.hermes_reason || "")}`;
         else if (item.test_results && item.test_results.some(t => t.status === "fail"))
           reason = "One or more tests failed — see test results below.";
+        else if (item.error)
+          reason = escHtml(item.error);
         return `<div class="section">
           <div class="section-title">Failure Reason</div>
           <div class="failure-reason">${reason}</div>

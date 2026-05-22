@@ -14,6 +14,10 @@
       70% { transform: scale(2.2); opacity: 0; }
       100% { transform: scale(1); opacity: 0; }
     }
+    @keyframes tip-fade {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
     *, *::before, *::after { box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -181,6 +185,51 @@
       background: #4da6ff;
       flex-shrink: 0;
     }
+    .tip-box {
+      margin-top: 1rem;
+      background: #13191f;
+      border: 1px solid #1e2d3a;
+      border-left: 3px solid #00e87a;
+      border-radius: 8px;
+      padding: 0.85rem 1.25rem;
+      width: 100%;
+      max-width: 480px;
+      animation: fade-in-up 0.5s ease 0.35s both;
+    }
+    .tip-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .tip-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #00e87a;
+      font-weight: 600;
+    }
+    .tip-refresh {
+      background: none;
+      border: 1px solid #2a2d3a;
+      color: #555;
+      border-radius: 5px;
+      padding: 0.18rem 0.55rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .tip-refresh:hover {
+      color: #00e87a;
+      border-color: #00e87a;
+    }
+    .tip-text {
+      font-size: 0.88rem;
+      color: #ccc;
+      line-height: 1.55;
+      animation: tip-fade 0.35s ease both;
+    }
     .changelog {
       margin-top: 1.5rem;
       background: #13191f;
@@ -189,7 +238,7 @@
       padding: 1rem 1.5rem;
       width: 100%;
       max-width: 480px;
-      animation: fade-in-up 0.5s ease 0.35s both;
+      animation: fade-in-up 0.5s ease 0.4s both;
     }
     .changelog h2 {
       font-size: 0.75rem;
@@ -236,7 +285,7 @@
   </nav>
   <h1>Hello Scrum</h1>
   <div class="tagline">Iterate. Improve. Deliver.</div>
-  <div class="version">v0.1.9</div>
+  <div class="version">v0.1.10</div>
   <div class="health-indicator">
     <div class="health-dot-wrap">
       <div class="health-dot-ping"></div>
@@ -246,16 +295,28 @@
     <span class="health-sub">&mdash; all systems operational</span>
   </div>
   <div class="features-counter">
-    <div class="count">10</div>
+    <div class="count">11</div>
     <div class="label">Features Deployed</div>
   </div>
-  <div class="meta">Last deployed: 2026-05-22 18:32:56 CT</div>
+  <div class="meta">Last deployed: 2026-05-22 18:38:26 CT</div>
   <div class="status-row">
     <span class="status-label">Status:</span>
     <span class="status-badge"><span class="status-icon"></span>baseline</span>
   </div>
+  <div class="tip-box">
+    <div class="tip-header">
+      <span class="tip-label">&#128161; Scrum Tip of the Visit</span>
+      <button class="tip-refresh" onclick="showNewTip()" title="Get another tip">&#x21bb; New Tip</button>
+    </div>
+    <div class="tip-text" id="scrum-tip"></div>
+  </div>
   <div class="changelog">
     <h2>Recent Changes</h2>
+    <div class="changelog-entry">
+      <span class="cv">v0.1.10</span>
+      <span class="cd">2026-05-22</span>
+      <span class="ct">Added a random Scrum tip displayed on each visit with a button to refresh for a new tip</span>
+    </div>
     <div class="changelog-entry">
       <span class="cv">v0.1.9</span>
       <span class="cd">2026-05-22</span>
@@ -266,11 +327,34 @@
       <span class="cd">2026-05-22</span>
       <span class="ct">Cleaned up the page for a professional look: modern font, reduced animations, removed clutter</span>
     </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.7</span>
-      <span class="cd">2026-05-22</span>
-      <span class="ct">Added animated system health indicator showing all systems operational</span>
-    </div>
   </div>
+  <script>
+    const tips = [
+      "Keep your Daily Scrum to 15 minutes or less — it's a sync, not a status report.",
+      "The Sprint Goal is your north star. Every task should serve it.",
+      "Backlog refinement isn't a ceremony, but it's essential. Aim for 10% of your sprint capacity.",
+      "A good Definition of Done prevents 'done but not really done' from haunting your velocity.",
+      "The Product Owner owns the 'what'; the team owns the 'how'. Respect that boundary.",
+      "Velocity is a planning tool, not a performance metric. Don't weaponize it.",
+      "Retrospectives only work if the team feels safe to speak honestly. Protect that safety.",
+      "User stories should describe value to the user, not tasks for the developer.",
+      "Impediments raised in the Daily Scrum should be resolved by the Scrum Master the same day.",
+      "Small, frequent releases reduce risk and build trust with stakeholders.",
+      "A sprint backlog belongs to the team — no one should add to it mid-sprint without the team's consent.",
+      "Empiricism beats prediction: inspect your product and process constantly, then adapt."
+    ];
+    let lastIndex = -1;
+    function showNewTip() {
+      let idx;
+      do { idx = Math.floor(Math.random() * tips.length); } while (idx === lastIndex && tips.length > 1);
+      lastIndex = idx;
+      const el = document.getElementById('scrum-tip');
+      el.style.animation = 'none';
+      el.offsetHeight;
+      el.style.animation = '';
+      el.textContent = tips[idx];
+    }
+    showNewTip();
+  </script>
 </body>
 </html>

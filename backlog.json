@@ -174,19 +174,56 @@
       ]
     },
     {
-      "id": 9,
-      "idea": "Make the status badge actually mean something",
-      "in_sprint": true,
-      "status": "done",
-      "story": "As a user, I want the status badge to show a meaningful, human-readable deployment status so I can quickly understand the current state of the system at a glance.",
       "acceptance_criteria": [
         "The 'Status' meta line is replaced with a styled status badge that is visually distinct",
         "The badge displays the status value from version.json in a colored pill/tag style",
         "The status 'baseline' is shown with a meaningful color (e.g. blue) rather than plain text",
         "The badge is clearly visible and consistent with the page's design language"
       ],
-      "summary": "Add styled status badge to replace plain status text",
+      "deployed": "2026-05-22 18:32:56 CT",
       "diff": "diff --git a/index.html b/index.html\nindex c64e9c5..332ca37 100644\n--- a/index.html\n+++ b/index.html\n@@ -149,6 +149,38 @@\n       margin: 0.2rem 0;\n       animation: fade-in-up 0.5s ease 0.3s both;\n     }\n+    .status-row {\n+      display: flex;\n+      align-items: center;\n+      gap: 0.5rem;\n+      margin: 0.2rem 0;\n+      animation: fade-in-up 0.5s ease 0.3s both;\n+    }\n+    .status-row .status-label {\n+      font-size: 0.82rem;\n+      color: #555;\n+    }\n+    .status-badge {\n+      display: inline-flex;\n+      align-items: center;\n+      gap: 0.35rem;\n+      font-size: 0.75rem;\n+      font-weight: 600;\n+      letter-spacing: 0.06em;\n+      text-transform: uppercase;\n+      padding: 0.2rem 0.65rem;\n+      border-radius: 20px;\n+      background: #0d1f33;\n+      color: #4da6ff;\n+      border: 1px solid #1a4a7a;\n+    }\n+    .status-badge .status-icon {\n+      width: 7px;\n+      height: 7px;\n+      border-radius: 50%;\n+      background: #4da6ff;\n+      flex-shrink: 0;\n+    }\n     .changelog {\n       margin-top: 1.5rem;\n       background: #13191f;\n@@ -204,7 +236,7 @@\n   </nav>\n   <h1>Hello Scrum</h1>\n   <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n-  <div class=\"version\">v0.1.8</div>\n+  <div class=\"version\">v0.1.9</div>\n   <div class=\"health-indicator\">\n     <div class=\"health-dot-wrap\">\n       <div class=\"health-dot-ping\"></div>\n@@ -214,13 +246,21 @@\n     <span class=\"health-sub\">&mdash; all systems operational</span>\n   </div>\n   <div class=\"features-counter\">\n-    <div class=\"count\">9</div>\n+    <div class=\"count\">10</div>\n     <div class=\"label\">Features Deployed</div>\n   </div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 18:15:52 CT</div>\n-  <div class=\"meta\">Status: baseline</div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 18:32:56 CT</div>\n+  <div class=\"status-row\">\n+    <span class=\"status-label\">Status:</span>\n+    <span class=\"status-badge\"><span class=\"status-icon\"></span>baseline</span>\n+  </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.9</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"ct\">Replaced plain status text with a styled colored badge that clearly communicates deployment state</span>\n+    </div>\n     <div class=\"changelog-entry\">\n       <span class=\"cv\">v0.1.8</span>\n       <span class=\"cd\">2026-05-22</span>\n@@ -231,11 +271,6 @@\n       <span class=\"cd\">2026-05-22</span>\n       <span class=\"ct\">Added animated system health indicator showing all systems operational</span>\n     </div>\n-    <div class=\"changelog-entry\">\n-      <span class=\"cv\">v0.1.6</span>\n-      <span class=\"cd\">2026-05-22</span>\n-      <span class=\"ct\">Added interactive hover card that glows, scales, and animates on hover</span>\n-    </div>\n   </div>\n </body>\n </html>\n\\ No newline at end of file\ndiff --git a/version.json b/version.json\nindex 9e42e02..f19b57e 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.8\",\n-  \"deployed\": \"2026-05-22 18:15:52 CT\",\n+  \"version\": \"0.1.9\",\n+  \"deployed\": \"2026-05-22 18:32:56 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -47,6 +47,11 @@\n       \"version\": \"0.1.8\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Cleaned up the page for a professional look: modern font, reduced animations, removed clutter\"\n+    },\n+    {\n+      \"version\": \"0.1.9\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Replaced plain status text with a styled colored badge that clearly communicates deployment state\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_reason": "The implementation replaces the plain 'Status: baseline' text with a styled, colored pill-shaped badge featuring a blue color scheme (#4da6ff on dark background), a status icon, and proper visual hierarchy that meets all acceptance criteria and passes all tests.",
+      "hermes_verdict": "approve",
+      "id": 9,
+      "idea": "Make the status badge actually mean something",
+      "in_sprint": true,
+      "status": "done",
+      "story": "As a user, I want the status badge to show a meaningful, human-readable deployment status so I can quickly understand the current state of the system at a glance.",
+      "summary": "Add styled status badge to replace plain status text",
+      "test_results": [
+        {
+          "message": "index.html exists and contains title",
+          "status": "pass"
+        },
+        {
+          "message": "version 0.1.9 matches between version.json and index.html",
+          "status": "pass"
+        },
+        {
+          "message": "deployed timestamp '2026-05-22 18:32:56 CT' present in index.html",
+          "status": "pass"
+        },
+        {
+          "message": "changelog has entry for v0.1.9: Replaced plain status text with a styled colored badge that clearly communicates deployment state",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "idea": "Add a random scrum tip on each visit",
+      "in_sprint": true,
+      "status": "done",
+      "story": "As a user, I want to see a random Scrum tip each time I visit the page, so that I can learn something new and stay engaged with Scrum principles.",
+      "acceptance_criteria": [
+        "A 'Scrum Tip' section is visible on the page below the status row",
+        "The tip displayed is randomly selected from a pool of at least 8 tips each page load",
+        "The tip section has a distinct label (e.g., 'Scrum Tip of the Visit')",
+        "The tip text is clearly readable and styled consistently with the page design",
+        "A refresh icon or 'New Tip' button allows the user to get another tip without reloading"
+      ],
+      "summary": "Add random Scrum tip of the visit with new tip refresh button",
+      "diff": "diff --git a/index.html b/index.html\nindex 332ca37..e08ebfc 100644\n--- a/index.html\n+++ b/index.html\n@@ -14,6 +14,10 @@\n       70% { transform: scale(2.2); opacity: 0; }\n       100% { transform: scale(1); opacity: 0; }\n     }\n+    @keyframes tip-fade {\n+      from { opacity: 0; transform: translateY(4px); }\n+      to   { opacity: 1; transform: translateY(0); }\n+    }\n     *, *::before, *::after { box-sizing: border-box; }\n     body {\n       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\n@@ -181,6 +185,51 @@\n       background: #4da6ff;\n       flex-shrink: 0;\n     }\n+    .tip-box {\n+      margin-top: 1rem;\n+      background: #13191f;\n+      border: 1px solid #1e2d3a;\n+      border-left: 3px solid #00e87a;\n+      border-radius: 8px;\n+      padding: 0.85rem 1.25rem;\n+      width: 100%;\n+      max-width: 480px;\n+      animation: fade-in-up 0.5s ease 0.35s both;\n+    }\n+    .tip-header {\n+      display: flex;\n+      align-items: center;\n+      justify-content: space-between;\n+      margin-bottom: 0.5rem;\n+    }\n+    .tip-label {\n+      font-size: 0.72rem;\n+      text-transform: uppercase;\n+      letter-spacing: 0.12em;\n+      color: #00e87a;\n+      font-weight: 600;\n+    }\n+    .tip-refresh {\n+      background: none;\n+      border: 1px solid #2a2d3a;\n+      color: #555;\n+      border-radius: 5px;\n+      padding: 0.18rem 0.55rem;\n+      font-size: 0.75rem;\n+      cursor: pointer;\n+      font-family: inherit;\n+      transition: color 0.2s, border-color 0.2s;\n+    }\n+    .tip-refresh:hover {\n+      color: #00e87a;\n+      border-color: #00e87a;\n+    }\n+    .tip-text {\n+      font-size: 0.88rem;\n+      color: #ccc;\n+      line-height: 1.55;\n+      animation: tip-fade 0.35s ease both;\n+    }\n     .changelog {\n       margin-top: 1.5rem;\n       background: #13191f;\n@@ -189,7 +238,7 @@\n       padding: 1rem 1.5rem;\n       width: 100%;\n       max-width: 480px;\n-      animation: fade-in-up 0.5s ease 0.35s both;\n+      animation: fade-in-up 0.5s ease 0.4s both;\n     }\n     .changelog h2 {\n       font-size: 0.75rem;\n@@ -236,7 +285,7 @@\n   </nav>\n   <h1>Hello Scrum</h1>\n   <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n-  <div class=\"version\">v0.1.9</div>\n+  <div class=\"version\">v0.1.10</div>\n   <div class=\"health-indicator\">\n     <div class=\"health-dot-wrap\">\n       <div class=\"health-dot-ping\"></div>\n@@ -246,16 +295,28 @@\n     <span class=\"health-sub\">&mdash; all systems operational</span>\n   </div>\n   <div class=\"features-counter\">\n-    <div class=\"count\">10</div>\n+    <div class=\"count\">11</div>\n     <div class=\"label\">Features Deployed</div>\n   </div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 18:32:56 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 18:38:26 CT</div>\n   <div class=\"status-row\">\n     <span class=\"status-label\">Status:</span>\n     <span class=\"status-badge\"><span class=\"status-icon\"></span>baseline</span>\n   </div>\n+  <div class=\"tip-box\">\n+    <div class=\"tip-header\">\n+      <span class=\"tip-label\">&#128161; Scrum Tip of the Visit</span>\n+      <button class=\"tip-refresh\" onclick=\"showNewTip()\" title=\"Get another tip\">&#x21bb; New Tip</button>\n+    </div>\n+    <div class=\"tip-text\" id=\"scrum-tip\"></div>\n+  </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.10</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"ct\">Added a random Scrum tip displayed on each visit with a button to refresh for a new tip</span>\n+    </div>\n     <div class=\"changelog-entry\">\n       <span class=\"cv\">v0.1.9</span>\n       <span class=\"cd\">2026-05-22</span>\n@@ -266,11 +327,34 @@\n       <span class=\"cd\">2026-05-22</span>\n       <span class=\"ct\">Cleaned up the page for a professional look: modern font, reduced animations, removed clutter</span>\n     </div>\n-    <div class=\"changelog-entry\">\n-      <span class=\"cv\">v0.1.7</span>\n-      <span class=\"cd\">2026-05-22</span>\n-      <span class=\"ct\">Added animated system health indicator showing all systems operational</span>\n-    </div>\n   </div>\n+  <script>\n+    const tips = [\n+      \"Keep your Daily Scrum to 15 minutes or less \u00e2\u20ac\u201d it's a sync, not a status report.\",\n+      \"The Sprint Goal is your north star. Every task should serve it.\",\n+      \"Backlog refinement isn't a ceremony, but it's essential. Aim for 10% of your sprint capacity.\",\n+      \"A good Definition of Done prevents 'done but not really done' from haunting your velocity.\",\n+      \"The Product Owner owns the 'what'; the team owns the 'how'. Respect that boundary.\",\n+      \"Velocity is a planning tool, not a performance metric. Don't weaponize it.\",\n+      \"Retrospectives only work if the team feels safe to speak honestly. Protect that safety.\",\n+      \"User stories should describe value to the user, not tasks for the developer.\",\n+      \"Impediments raised in the Daily Scrum should be resolved by the Scrum Master the same day.\",\n+      \"Small, frequent releases reduce risk and build trust with stakeholders.\",\n+      \"A sprint backlog belongs to the team \u00e2\u20ac\u201d no one should add to it mid-sprint without the team's consent.\",\n+      \"Empiricism beats prediction: inspect your product and process constantly, then adapt.\"\n+    ];\n+    let lastIndex = -1;\n+    function showNewTip() {\n+      let idx;\n+      do { idx = Math.floor(Math.random() * tips.length); } while (idx === lastIndex && tips.length > 1);\n+      lastIndex = idx;\n+      const el = document.getElementById('scrum-tip');\n+      el.style.animation = 'none';\n+      el.offsetHeight;\n+      el.style.animation = '';\n+      el.textContent = tips[idx];\n+    }\n+    showNewTip();\n+  </script>\n </body>\n </html>\n\\ No newline at end of file\ndiff --git a/version.json b/version.json\nindex f19b57e..80b2486 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.9\",\n-  \"deployed\": \"2026-05-22 18:32:56 CT\",\n+  \"version\": \"0.1.10\",\n+  \"deployed\": \"2026-05-22 18:38:26 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -52,6 +52,11 @@\n       \"version\": \"0.1.9\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Replaced plain status text with a styled colored badge that clearly communicates deployment state\"\n+    },\n+    {\n+      \"version\": \"0.1.10\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Added a random Scrum tip displayed on each visit with a button to refresh for a new tip\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "test_results": [
         {
           "status": "pass",
@@ -194,26 +231,20 @@
         },
         {
           "status": "pass",
-          "message": "version 0.1.9 matches between version.json and index.html"
+          "message": "version 0.1.10 matches between version.json and index.html"
         },
         {
           "status": "pass",
-          "message": "deployed timestamp '2026-05-22 18:32:56 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-22 18:38:26 CT' present in index.html"
         },
         {
           "status": "pass",
-          "message": "changelog has entry for v0.1.9: Replaced plain status text with a styled colored badge that clearly communicates deployment state"
+          "message": "changelog has entry for v0.1.10: Added a random Scrum tip displayed on each visit with a button to refresh for a new tip"
         }
       ],
-      "deployed": "2026-05-22 18:32:56 CT",
+      "deployed": "2026-05-22 18:38:26 CT",
       "hermes_verdict": "approve",
-      "hermes_reason": "The implementation replaces the plain 'Status: baseline' text with a styled, colored pill-shaped badge featuring a blue color scheme (#4da6ff on dark background), a status icon, and proper visual hierarchy that meets all acceptance criteria and passes all tests."
-    },
-    {
-      "id": 11,
-      "idea": "Add a random scrum tip on each visit",
-      "in_sprint": true,
-      "status": "pending"
+      "hermes_reason": "Implementation delivers all acceptance criteria: Scrum Tip section is visible below status row with distinct label, 12 tips in pool (exceeds 8 minimum), 'New Tip' button allows refresh without reload, styling is consistent with page design, and tests pass."
     },
     {
       "id": 7,

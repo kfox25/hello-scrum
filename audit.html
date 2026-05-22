@@ -181,6 +181,22 @@
     .test-pass { color: #00ff99; }
     .test-fail { color: #ff4444; }
     .test-msg { color: #888; }
+    .hermes-box {
+      font-size: 0.85rem;
+      border-radius: 4px;
+      padding: 0.5rem 0.75rem;
+      line-height: 1.5;
+    }
+    .hermes-box-approve { background: #0a1f12; border: 1px solid #00ff9940; color: #00ff99; }
+    .hermes-box-reject  { background: #1a0808; border: 1px solid #ff444440; color: #ff6666; }
+    .hermes-verdict-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: block;
+      margin-bottom: 0.2rem;
+      font-weight: bold;
+    }
     .failure-reason {
       font-size: 0.85rem;
       color: #ff6666;
@@ -288,6 +304,17 @@
           </ul>
         </div>` : "";
 
+      const hermesSection = item.hermes_verdict ? (() => {
+        const approved = item.hermes_verdict === "approve";
+        return `<div class="section">
+          <div class="section-title">Hermes Review</div>
+          <div class="hermes-box ${approved ? "hermes-box-approve" : "hermes-box-reject"}">
+            <span class="hermes-verdict-label">${approved ? "✓ Approved" : "✗ Rejected"}</span>
+            ${escHtml(item.hermes_reason || "")}
+          </div>
+        </div>`;
+      })() : "";
+
       const deploySection = item.deployed ? `
         <div class="section">
           <div class="section-title">Deploy Info</div>
@@ -322,6 +349,7 @@
             ${storySection}
             ${diffSection}
             ${testSection}
+            ${hermesSection}
             ${deploySection}
           </div>
         </div>`;

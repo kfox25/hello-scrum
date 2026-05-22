@@ -28,6 +28,11 @@ def index():
     return send_file(os.path.join(BASE, "board.html"))
 
 
+@app.route("/index.html")
+def app_page():
+    return send_file(os.path.join(BASE, "index.html"))
+
+
 @app.route("/audit.html")
 def audit():
     return send_file(os.path.join(BASE, "audit.html"))

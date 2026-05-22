@@ -1,6 +1,6 @@
 {
-  "version": "0.1.1",
-  "deployed": "2026-05-22 14:57:05 CT",
+  "version": "0.1.2",
+  "deployed": "2026-05-22 15:01:57 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -12,6 +12,11 @@
       "version": "0.1.1",
       "date": "2026-05-22",
       "change": "Added motivational tagline below the title"
+    },
+    {
+      "version": "0.1.2",
+      "date": "2026-05-22",
+      "change": "Added features deployed counter that increments with each release"
     }
   ]
 }

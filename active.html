@@ -15,8 +15,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 2rem;
+      justify-content: flex-start;
+      padding: 5rem 2rem 2rem;
     }
 
     .top-nav {
@@ -57,6 +57,7 @@
     .idle {
       text-align: center;
       color: #2a2a2a;
+      margin-top: 20vh;
     }
     .idle-icon { font-size: 3rem; margin-bottom: 1rem; }
     .idle-title { font-size: 1.1rem; color: #333; margin-bottom: 0.4rem; }
@@ -348,7 +349,9 @@
           return;
         }
 
+        const wasHidden = panel.style.display === 'none' || panel.style.display === '';
         panel.style.display = 'block';
+        if (wasHidden) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
         if (lines.length !== lastLogCount) {
           const newLines = lines.slice(lastLogCount);

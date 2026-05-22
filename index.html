@@ -42,20 +42,5 @@
   <div class="version">v0.1.0</div>
   <div class="meta">Last deployed: 2026-05-22 14:15:49 CT</div>
   <div class="meta">Status: baseline</div>
-  <div class="meta" id="clock"></div>
-  <script>
-    function updateClock() {
-      const now = new Date();
-      const ct = now.toLocaleString("en-US", {
-        timeZone: "America/Chicago",
-        year: "numeric", month: "2-digit", day: "2-digit",
-        hour: "2-digit", minute: "2-digit", second: "2-digit",
-        hour12: true
-      });
-      document.getElementById("clock").textContent = ct + " CT";
-    }
-    updateClock();
-    setInterval(updateClock, 1000);
-  </script>
 </body>
 </html>

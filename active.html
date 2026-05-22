@@ -130,6 +130,11 @@
       border-color: #00ff99;
       animation: pulse-dot 1.2s ease-in-out infinite;
     }
+    .stage.failed .stage-dot {
+      background: #ff4444;
+      border-color: #ff4444;
+    }
+    .stage.failed .stage-label { color: #ff444490; }
     @keyframes pulse-dot {
       0%, 100% { box-shadow: 0 0 0 0 #00ff9960; }
       50%       { box-shadow: 0 0 0 6px #00ff9920; }
@@ -165,6 +170,30 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0; }
     }
+    .hermes-verdict {
+      margin: 0 1.5rem 1.25rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: 5px;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+    .hermes-verdict .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+    .hermes-approve {
+      background: #0a1f12;
+      border: 1px solid #00ff9940;
+      color: #00ff99;
+    }
+    .hermes-reject {
+      background: #1a0808;
+      border: 1px solid #ff444440;
+      color: #ff6666;
+    }
   </style>
 </head>
 <body>
@@ -181,12 +210,13 @@
     const STAGES = ["pull", "story", "code", "test", "review", "deploy"];
     const LABELS = { pull: "Pull", story: "Story", code: "Code", test: "Test", review: "Review", deploy: "Deploy" };
     const STATUS_TEXT = {
-      pull:   "Pulling item from backlog…",
-      story:  "Writing user story and implementing…",
-      code:   "Applying code changes…",
-      test:   "Running tests…",
-      review: "Hermes reviewing…",
-      deploy: "Pushing to GitHub…",
+      pull:     "Pulling item from backlog…",
+      story:    "Writing user story and implementing…",
+      code:     "Applying code changes…",
+      test:     "Running tests…",
+      review:   "Hermes reviewing…",
+      deploy:   "Pushing to GitHub…",
+      rejected: "Hermes rejected this story.",
     };
 
     let lastStage = undefined;
@@ -206,16 +236,29 @@
       }
       document.getElementById('clear-btn').style.display = 'block';
 
-      const stageIdx = STAGES.indexOf(data.stage);
+      const isRejected = data.stage === "rejected";
+      const stageIdx = isRejected ? STAGES.indexOf("review") : STAGES.indexOf(data.stage);
 
       const dots = STAGES.map((s, i) => {
-        const cls = i < stageIdx ? "done" : i === stageIdx ? "active" : "";
+        let cls = i < stageIdx ? "done" : i === stageIdx ? "active" : "";
+        if (isRejected && i === stageIdx) cls = "failed";
         return `<div class="stage ${cls}">
           <div class="stage-dot"></div>
           <div class="stage-label">${LABELS[s]}</div>
         </div>`;
       }).join("");
 
+      let hermesHtml = "";
+      if (data.hermes_verdict) {
+        const approved = data.hermes_verdict === "approve";
+        hermesHtml = `
+          <div class="hermes-verdict ${approved ? "hermes-approve" : "hermes-reject"}">
+            <span class="label">Hermes ${approved ? "✓ Approved" : "✗ Rejected"}</span>
+            ${escHtml(data.hermes_reason || "")}
+          </div>`;
+      }
+
+      const spinning = !isRejected;
       root.innerHTML = `
         <div class="work-card">
           <div class="work-header">
@@ -226,8 +269,9 @@
             </div>
           </div>
           <div class="pipeline">${dots}</div>
+          ${hermesHtml}
           <div class="work-status">
-            <span class="status-dot"></span>${STATUS_TEXT[data.stage] || data.stage}
+            ${spinning ? '<span class="status-dot"></span>' : ""}${STATUS_TEXT[data.stage] || data.stage}
           </div>
         </div>`;
     }

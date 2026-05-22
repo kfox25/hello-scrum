@@ -66,9 +66,11 @@ Reject if the implementation is unrelated to the idea, clearly wrong, or missing
 
 # ── Active status ─────────────────────────────────────────────────────────────
 
-def write_active(item, stage):
+def write_active(item, stage, **extra):
+    data = {"item_id": item["id"], "idea": item["idea"], "stage": stage}
+    data.update(extra)
     with open(ACTIVE_FILE, "w") as f:
-        json.dump({"item_id": item["id"], "idea": item["idea"], "stage": stage}, f)
+        json.dump(data, f)
 
 
 def clear_active():
@@ -322,11 +324,11 @@ def run_one(sprint_only=False):
         item["hermes_verdict"] = hermes_verdict
         item["hermes_reason"] = hermes_reason
         save_backlog(backlog)
-        clear_active()
+        write_active(item, "rejected", hermes_verdict="reject", hermes_reason=hermes_reason)
         return False
 
     print("Pushing to GitHub...")
-    write_active(item, "deploy")
+    write_active(item, "deploy", hermes_verdict="approve", hermes_reason=hermes_reason)
     item["status"] = "done"
     item["story"] = result["story"]
     item["acceptance_criteria"] = result.get("acceptance_criteria", [])

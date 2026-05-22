@@ -167,6 +167,19 @@
       flex-shrink: 0;
     }
     .retry-btn:hover { color: #ffcc00; border-color: #ffcc0060; }
+    .delete-btn {
+      font-family: monospace;
+      font-size: 0.8rem;
+      background: none;
+      border: 1px solid #33222240;
+      color: #442222;
+      border-radius: 3px;
+      padding: 0.1rem 0.35rem;
+      cursor: pointer;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .delete-btn:hover { color: #ff4444; border-color: #ff444460; }
 
     .empty-hint {
       color: #2a2a2a;
@@ -174,6 +187,37 @@
       text-align: center;
       padding: 2rem 1rem;
     }
+    .add-item {
+      display: flex;
+      gap: 0.4rem;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .add-item input {
+      flex: 1;
+      font-family: monospace;
+      font-size: 0.85rem;
+      background: #111;
+      color: #ccc;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      padding: 0.4rem 0.75rem;
+      outline: none;
+    }
+    .add-item input::placeholder { color: #333; }
+    .add-item input:focus { border-color: #00ff9940; }
+    .add-item button {
+      font-family: monospace;
+      font-size: 0.8rem;
+      background: #1a1a1a;
+      color: #00ff99;
+      border: 1px solid #00ff9930;
+      border-radius: 4px;
+      padding: 0.4rem 0.75rem;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .add-item button:hover { background: #0d3320; border-color: #00ff9960; }
 
     /* log panel */
     #log-panel {
@@ -238,6 +282,11 @@
           <span class="col-title">Backlog</span>
           <span class="col-count" id="backlog-count"></span>
         </div>
+      </div>
+      <div class="add-item">
+        <input id="new-idea" placeholder="Add an idea..." onkeydown="if(event.key==='Enter')addItem('end')" />
+        <button onclick="addItem('top')">↑</button>
+        <button onclick="addItem('end')">↓</button>
       </div>
       <div class="drop-zone" id="backlog-zone"
            ondragover="onDragOver(event)"
@@ -337,6 +386,10 @@
         ? `<button class="retry-btn" onclick="retryItem(${item.id}, event)" title="Reset to pending">↺</button>`
         : '';
 
+      const deleteBtn = isPending && !item.in_sprint
+        ? `<button class="delete-btn" onclick="deleteItem(${item.id}, event)" title="Delete">✕</button>`
+        : '';
+
       return `<div class="card ${item.status}" data-id="${item.id}" ${draggable}
                    ondragstart="onDragStart(event)"
                    ondragend="onDragEnd(event)"
@@ -349,6 +402,7 @@
         ${hermesTag}
         <span class="badge badge-${item.status}">${item.status}</span>
         ${retryBtn}
+        ${deleteBtn}
       </div>`;
     }
 
@@ -528,6 +582,29 @@
 
     function clearLog() {
       document.getElementById('log-output').innerHTML = '';
+    }
+
+    function deleteItem(id, e) {
+      e.stopPropagation();
+      backlogData.items = backlogData.items.filter(i => i.id !== id);
+      renderBoard();
+      persistBacklog();
+    }
+
+    function addItem(position) {
+      const input = document.getElementById('new-idea');
+      const idea = input.value.trim();
+      if (!idea) return;
+      const maxId = backlogData.items.reduce((m, i) => Math.max(m, i.id), 0);
+      const newItem = { id: maxId + 1, idea, status: 'pending' };
+      if (position === 'top') {
+        backlogData.items.unshift(newItem);
+      } else {
+        backlogData.items.push(newItem);
+      }
+      input.value = '';
+      renderBoard();
+      persistBacklog();
     }
 
     // ── Init ──────────────────────────────────────────────────────────────────

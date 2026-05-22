@@ -227,6 +227,15 @@ def run_one():
         save_backlog(backlog)
         return False
 
+    item["status"] = "done"
+    item["story"] = result["story"]
+    item["acceptance_criteria"] = result.get("acceptance_criteria", [])
+    item["summary"] = result["summary"]
+    item["diff"] = diff
+    item["test_results"] = test_results
+    item["deployed"] = timestamp
+    save_backlog(backlog)  # save BEFORE git push so backlog.json is included
+
     print("Pushing to GitHub...")
     try:
         git_push(result["summary"])
@@ -236,15 +245,6 @@ def run_one():
         item["status"] = "failed"
         save_backlog(backlog)
         return False
-
-    item["status"] = "done"
-    item["story"] = result["story"]
-    item["acceptance_criteria"] = result.get("acceptance_criteria", [])
-    item["summary"] = result["summary"]
-    item["diff"] = diff
-    item["test_results"] = test_results
-    item["deployed"] = timestamp
-    save_backlog(backlog)
 
     print(f"\nDeployed: {timestamp}")
     print(f"Live at : {REPO_URL}")

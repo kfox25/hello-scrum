@@ -176,6 +176,106 @@
       "deployed": "2026-05-22 16:46:54 CT",
       "hermes_verdict": "approve",
       "hermes_reason": "The implementation adds a bouncing robot mascot emoji, a motivational motto badge with scrum-themed messaging, CSS animations for personality, and a fun-fact section structure with distinct visual styling that directly fulfills all four acceptance criteria and passes all tests."
+    },
+    {
+      "id": 7,
+      "idea": "Show how long ago the last deploy happened",
+      "status": "pending"
+    },
+    {
+      "id": 8,
+      "idea": "Add something that reacts when you hover over it",
+      "status": "pending"
+    },
+    {
+      "id": 9,
+      "idea": "Make the status badge actually mean something",
+      "status": "pending"
+    },
+    {
+      "id": 10,
+      "idea": "Show a timeline of all releases",
+      "status": "pending"
+    },
+    {
+      "id": 11,
+      "idea": "Add a random scrum tip on each visit",
+      "status": "pending"
+    },
+    {
+      "id": 12,
+      "idea": "Make it look better on a phone",
+      "status": "pending"
+    },
+    {
+      "id": 13,
+      "idea": "Show which sprint each feature came from",
+      "status": "pending"
+    },
+    {
+      "id": 14,
+      "idea": "Add a subtle background that is not just black",
+      "status": "pending"
+    },
+    {
+      "id": 15,
+      "idea": "Make the version number do something on click",
+      "status": "pending"
+    },
+    {
+      "id": 16,
+      "idea": "Show a streak counter for consecutive successful deploys",
+      "status": "pending"
+    },
+    {
+      "id": 17,
+      "idea": "Add a way to see the velocity of the team",
+      "status": "pending"
+    },
+    {
+      "id": 18,
+      "idea": "Make something glow when a new deploy just happened",
+      "status": "pending"
+    },
+    {
+      "id": 19,
+      "idea": "Add a section that shows what was rejected by Hermes",
+      "status": "pending"
+    },
+    {
+      "id": 20,
+      "idea": "Show the total lines of code changed across all sprints",
+      "status": "pending"
+    },
+    {
+      "id": 21,
+      "idea": "Add a countdown to the next sprint",
+      "status": "pending"
+    },
+    {
+      "id": 22,
+      "idea": "Make the page title change to reflect current status",
+      "status": "pending"
+    },
+    {
+      "id": 23,
+      "idea": "Show an uptime percentage somewhere",
+      "status": "pending"
+    },
+    {
+      "id": 24,
+      "idea": "Add a contributors section",
+      "status": "pending"
+    },
+    {
+      "id": 25,
+      "idea": "Make the changelog entries expandable",
+      "status": "pending"
+    },
+    {
+      "id": 26,
+      "idea": "Add a search or filter to find past changes",
+      "status": "pending"
     }
   ]
 }

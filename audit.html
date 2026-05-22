@@ -173,6 +173,27 @@
     .empty { color: #333; text-align: center; padding: 3rem; }
     .loading { color: #444; text-align: center; padding: 3rem; }
     .error { color: #ff4444; text-align: center; padding: 3rem; }
+    .top-nav {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .top-nav a {
+      font-family: monospace;
+      font-size: 0.85rem;
+      background: #1a1a1a;
+      color: #00ff99;
+      border: 1px solid #00ff9940;
+      padding: 0.4rem 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+    .top-nav a:hover {
+      background: #0d3320;
+      border-color: #00ff99;
+    }
 
     .chevron {
       font-size: 0.7rem;
@@ -218,9 +239,11 @@
   </style>
 </head>
 <body>
+  <nav class="top-nav">
+    <a href="index.html">App</a>
+    <a href="/">Board</a>
+  </nav>
   <header>
-    <a href="index.html">← Back</a>
-    <a href="/">Sprint Board</a>
     <div>
       <h1>Audit Log</h1>
       <div class="subtitle">AI Scrum Agent — workflow history</div>

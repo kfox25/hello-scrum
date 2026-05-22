@@ -17,18 +17,31 @@
     header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       padding: 1rem 1.5rem;
       border-bottom: 1px solid #222;
     }
     header h1 { color: #00ff99; font-size: 1.4rem; }
-    .header-links { display: flex; gap: 1.5rem; }
-    .header-links a {
-      color: #555;
-      text-decoration: none;
-      font-size: 0.85rem;
+    .top-nav {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      gap: 0.5rem;
     }
-    .header-links a:hover { color: #00ff99; }
+    .top-nav a {
+      font-family: monospace;
+      font-size: 0.85rem;
+      background: #1a1a1a;
+      color: #00ff99;
+      border: 1px solid #00ff9940;
+      padding: 0.4rem 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+    .top-nav a:hover {
+      background: #0d3320;
+      border-color: #00ff99;
+    }
 
     .board {
       display: grid;
@@ -186,12 +199,12 @@
   </style>
 </head>
 <body>
+  <nav class="top-nav">
+    <a href="index.html">App</a>
+    <a href="audit.html">Audit</a>
+  </nav>
   <header>
     <h1>Sprint Board</h1>
-    <div class="header-links">
-      <a href="index.html">App</a>
-      <a href="audit.html">Audit Log</a>
-    </div>
   </header>
 
   <div class="board">

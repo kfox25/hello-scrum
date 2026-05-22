@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Active Work — Hello Scrum</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: monospace;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .top-nav {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .top-nav a {
+      font-family: monospace;
+      font-size: 0.85rem;
+      background: #1a1a1a;
+      color: #00ff99;
+      border: 1px solid #00ff9940;
+      padding: 0.4rem 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+    .top-nav a:hover { background: #0d3320; border-color: #00ff99; }
+
+    /* idle state */
+    .idle {
+      text-align: center;
+      color: #2a2a2a;
+    }
+    .idle-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .idle-title { font-size: 1.1rem; color: #333; margin-bottom: 0.4rem; }
+    .idle-sub { font-size: 0.8rem; color: #2a2a2a; }
+
+    /* active state */
+    .work-card {
+      width: 100%;
+      max-width: 620px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .work-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .work-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #444;
+      margin-bottom: 0.4rem;
+    }
+    .work-id { color: #555; font-size: 0.85rem; margin-right: 0.5rem; }
+    .work-idea { font-size: 1.1rem; color: #e0e0e0; }
+
+    /* pipeline */
+    .pipeline {
+      display: flex;
+      padding: 1.5rem 1.25rem 1.25rem;
+    }
+    .stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      position: relative;
+    }
+    .stage:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 11px;
+      left: 55%;
+      width: 90%;
+      height: 2px;
+      background: #222;
+      z-index: 0;
+    }
+    .stage.done::after  { background: #00ff9950; }
+    .stage.active::after { background: #00ff9950; }
+
+    .stage-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #111;
+      border: 2px solid #2a2a2a;
+      margin-bottom: 0.5rem;
+      z-index: 1;
+      position: relative;
+    }
+    .stage.done .stage-dot {
+      background: #00ff99;
+      border-color: #00ff99;
+    }
+    .stage.active .stage-dot {
+      background: #00ff99;
+      border-color: #00ff99;
+      animation: pulse-dot 1.2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 0 #00ff9960; }
+      50%       { box-shadow: 0 0 0 6px #00ff9920; }
+    }
+
+    .stage-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #333;
+      text-align: center;
+    }
+    .stage.done .stage-label   { color: #00ff9970; }
+    .stage.active .stage-label { color: #00ff99; }
+
+    .work-status {
+      padding: 0.75rem 1.5rem 1.25rem;
+      font-size: 0.8rem;
+      color: #555;
+      border-top: 1px solid #1e1e1e;
+    }
+    .status-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #00ff99;
+      margin-right: 0.5rem;
+      animation: blink 1s step-start infinite;
+      vertical-align: middle;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="index.html">App</a>
+    <a href="/">Board</a>
+    <a href="audit.html">Audit</a>
+  </nav>
+
+  <div id="root"></div>
+
+  <script>
+    const STAGES = ["pull", "story", "code", "test", "review", "deploy"];
+    const LABELS = { pull: "Pull", story: "Story", code: "Code", test: "Test", review: "Review", deploy: "Deploy" };
+    const STATUS_TEXT = {
+      pull:   "Pulling item from backlog…",
+      story:  "Writing user story and implementing…",
+      code:   "Applying code changes…",
+      test:   "Running tests…",
+      review: "Hermes reviewing…",
+      deploy: "Pushing to GitHub…",
+    };
+
+    let lastStage = null;
+
+    function render(data) {
+      const root = document.getElementById("root");
+
+      if (!data.item_id) {
+        root.innerHTML = `
+          <div class="idle">
+            <div class="idle-icon">○</div>
+            <div class="idle-title">No active work</div>
+            <div class="idle-sub">Start a sprint from the board</div>
+          </div>`;
+        return;
+      }
+
+      const stageIdx = STAGES.indexOf(data.stage);
+
+      const dots = STAGES.map((s, i) => {
+        const cls = i < stageIdx ? "done" : i === stageIdx ? "active" : "";
+        return `<div class="stage ${cls}">
+          <div class="stage-dot"></div>
+          <div class="stage-label">${LABELS[s]}</div>
+        </div>`;
+      }).join("");
+
+      root.innerHTML = `
+        <div class="work-card">
+          <div class="work-header">
+            <div class="work-label">Active Work</div>
+            <div>
+              <span class="work-id">#${data.item_id}</span>
+              <span class="work-idea">${escHtml(data.idea)}</span>
+            </div>
+          </div>
+          <div class="pipeline">${dots}</div>
+          <div class="work-status">
+            <span class="status-dot"></span>${STATUS_TEXT[data.stage] || data.stage}
+          </div>
+        </div>`;
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+
+    async function poll() {
+      try {
+        const res = await fetch("/active.json?t=" + Date.now());
+        const data = await res.json();
+        if (data.stage !== lastStage) {
+          lastStage = data.stage;
+          render(data);
+        }
+      } catch (e) {}
+    }
+
+    poll();
+    setInterval(poll, 1500);
+  </script>
+</body>
+</html>

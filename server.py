@@ -43,6 +43,19 @@ def backlog_json():
     return send_file(BACKLOG_FILE)
 
 
+@app.route("/active.json")
+def active_json():
+    active_file = os.path.join(BASE, "active.json")
+    if os.path.exists(active_file):
+        return send_file(active_file)
+    return jsonify({"item_id": None, "stage": None})
+
+
+@app.route("/active.html")
+def active_page():
+    return send_file(os.path.join(BASE, "active.html"))
+
+
 @app.route("/backlog", methods=["GET"])
 def get_backlog():
     with open(BACKLOG_FILE) as f:

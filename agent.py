@@ -18,6 +18,7 @@ from zoneinfo import ZoneInfo
 import anthropic
 
 BACKLOG_FILE = "backlog.json"
+ACTIVE_FILE = "active.json"
 INDEX_FILE = "index.html"
 VERSION_FILE = "version.json"
 TEST_SCRIPT = "test.py"
@@ -61,6 +62,18 @@ or
 
 Approve if the diff clearly implements the idea and tests pass.
 Reject if the implementation is unrelated to the idea, clearly wrong, or missing the point."""
+
+
+# ── Active status ─────────────────────────────────────────────────────────────
+
+def write_active(item, stage):
+    with open(ACTIVE_FILE, "w") as f:
+        json.dump({"item_id": item["id"], "idea": item["idea"], "stage": stage}, f)
+
+
+def clear_active():
+    with open(ACTIVE_FILE, "w") as f:
+        json.dump({"item_id": None, "stage": None}, f)
 
 
 # ── Backlog ───────────────────────────────────────────────────────────────────
@@ -223,11 +236,14 @@ def run_one(sprint_only=False):
     print(f"  ITEM [{item['id']}]: {item['idea']}")
     print(f"{'=' * 50}")
 
+    write_active(item, "pull")
+
     index_html, version_json = read_app_files()
     timestamp = get_ct_timestamp()
 
     print(f"Timestamp : {timestamp}")
     print("Calling agent...")
+    write_active(item, "story")
 
     try:
         response = call_agent(item["idea"], index_html, version_json, timestamp)
@@ -235,9 +251,11 @@ def run_one(sprint_only=False):
         print(f"Agent error: {e}")
         item["status"] = "failed"
         save_backlog(backlog)
+        clear_active()
         return False
 
     print("Applying changes...")
+    write_active(item, "code")
     try:
         result = apply_changes(response)
     except Exception as e:
@@ -245,6 +263,7 @@ def run_one(sprint_only=False):
         print(f"Raw response preview: {response[:300]}")
         item["status"] = "failed"
         save_backlog(backlog)
+        clear_active()
         return False
 
     print(f"Story   : {result['story']}")
@@ -253,6 +272,7 @@ def run_one(sprint_only=False):
     diff = capture_diff()
 
     print("Running tests...")
+    write_active(item, "test")
     passed, stdout, stderr = run_tests()
     print(stdout.strip())
     test_results = parse_test_results(stdout)
@@ -268,9 +288,11 @@ def run_one(sprint_only=False):
         item["diff"] = diff
         item["test_results"] = test_results
         save_backlog(backlog)
+        clear_active()
         return False
 
     print("Hermes reviewing...")
+    write_active(item, "review")
     try:
         verdict = call_hermes(
             item["idea"],
@@ -298,8 +320,11 @@ def run_one(sprint_only=False):
         item["hermes_verdict"] = hermes_verdict
         item["hermes_reason"] = hermes_reason
         save_backlog(backlog)
+        clear_active()
         return False
 
+    print("Pushing to GitHub...")
+    write_active(item, "deploy")
     item["status"] = "done"
     item["story"] = result["story"]
     item["acceptance_criteria"] = result.get("acceptance_criteria", [])
@@ -311,7 +336,6 @@ def run_one(sprint_only=False):
     item["hermes_reason"] = hermes_reason
     save_backlog(backlog)  # save BEFORE git push so backlog.json is included
 
-    print("Pushing to GitHub...")
     try:
         git_push(result["summary"])
     except Exception as e:
@@ -319,8 +343,10 @@ def run_one(sprint_only=False):
         rollback()
         item["status"] = "failed"
         save_backlog(backlog)
+        clear_active()
         return False
 
+    clear_active()
     print(f"\nDeployed: {timestamp}")
     print(f"Live at : {REPO_URL}")
     return True

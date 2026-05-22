@@ -36,7 +36,35 @@
     {
       "id": 2,
       "idea": "Show a features deployed counter that increments with each release",
-      "status": "pending"
+      "status": "done",
+      "story": "As a user, I want to see a features deployed counter on the page so that I can track how many releases have shipped over time.",
+      "acceptance_criteria": [
+        "A 'Features Deployed' counter is visible on the main page",
+        "The counter reflects the total number of changelog entries (releases) in version.json",
+        "The counter increments automatically with each new release",
+        "The counter is styled consistently with the existing page design"
+      ],
+      "summary": "Add features deployed counter showing total number of releases",
+      "diff": "diff --git a/index.html b/index.html\nindex b34ad07..7f5c35a 100644\n--- a/index.html\n+++ b/index.html\n@@ -58,14 +58,37 @@\n       border-radius: 6px;\n       border: 1px solid #333;\n     }\n+    .features-counter {\n+      margin-top: 1rem;\n+      background: #1a1a1a;\n+      border: 1px solid #00ff9940;\n+      border-radius: 6px;\n+      padding: 0.5rem 1.5rem;\n+      text-align: center;\n+    }\n+    .features-counter .count {\n+      font-size: 2rem;\n+      color: #00ff99;\n+      font-weight: bold;\n+    }\n+    .features-counter .label {\n+      font-size: 0.8rem;\n+      color: #888;\n+      text-transform: uppercase;\n+      letter-spacing: 0.1em;\n+    }\n   </style>\n </head>\n <body>\n   <a class=\"audit-btn\" href=\"audit.html\">Audit</a>\n   <h1>Hello Scrum</h1>\n   <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n-  <div class=\"version\">v0.1.1</div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 14:57:05 CT</div>\n+  <div class=\"version\">v0.1.2</div>\n+  <div class=\"features-counter\">\n+    <div class=\"count\">3</div>\n+    <div class=\"label\">Features Deployed</div>\n+  </div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 15:01:57 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n </body>\n </html>\n\\ No newline at end of file\ndiff --git a/version.json b/version.json\nindex 6d34a17..e1897d5 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.1\",\n-  \"deployed\": \"2026-05-22 14:57:05 CT\",\n+  \"version\": \"0.1.2\",\n+  \"deployed\": \"2026-05-22 15:01:57 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -12,6 +12,11 @@\n       \"version\": \"0.1.1\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Added motivational tagline below the title\"\n+    },\n+    {\n+      \"version\": \"0.1.2\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Added features deployed counter that increments with each release\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.2 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-22 15:01:57 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.2: Added features deployed counter that increments with each release"
+        }
+      ],
+      "deployed": "2026-05-22 15:01:57 CT"
     },
     {
       "id": 3,

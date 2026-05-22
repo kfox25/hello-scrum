@@ -34,6 +34,11 @@
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
+    @keyframes health-ping {
+      0% { transform: scale(1); opacity: 1; }
+      70% { transform: scale(2.2); opacity: 0; }
+      100% { transform: scale(1); opacity: 0; }
+    }
     body {
       font-family: monospace;
       background: #0f0f0f;
@@ -125,6 +130,55 @@
       border-radius: 6px;
       border: 1px solid #333;
       animation: fade-in-up 0.6s ease 0.25s both;
+    }
+    .health-indicator {
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      background: #0d2a1a;
+      border: 1px solid #00ff9940;
+      border-radius: 6px;
+      padding: 0.5rem 1.25rem;
+      animation: fade-in-up 0.6s ease 0.32s both, border-pulse 2.5s ease-in-out 1s infinite;
+    }
+    .health-dot-wrap {
+      position: relative;
+      width: 12px;
+      height: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .health-dot {
+      width: 12px;
+      height: 12px;
+      background: #00ff99;
+      border-radius: 50%;
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+    }
+    .health-dot-ping {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 12px;
+      height: 12px;
+      background: #00ff99;
+      border-radius: 50%;
+      animation: health-ping 1.8s ease-out infinite;
+    }
+    .health-label {
+      font-size: 0.88rem;
+      color: #00ff99;
+      font-weight: bold;
+      letter-spacing: 0.06em;
+    }
+    .health-sub {
+      font-size: 0.75rem;
+      color: #557a66;
+      margin-left: 0.25rem;
     }
     .features-counter {
       margin-top: 1rem;
@@ -274,12 +328,20 @@
   <h1>Hello Scrum</h1>
   <div class="motto">⚡ Sprint hard. Ship often. Celebrate small wins. ⚡</div>
   <div class="tagline">Iterate. Improve. Deliver.</div>
-  <div class="version">v0.1.6</div>
+  <div class="version">v0.1.7</div>
+  <div class="health-indicator">
+    <div class="health-dot-wrap">
+      <div class="health-dot-ping"></div>
+      <div class="health-dot"></div>
+    </div>
+    <span class="health-label">System Healthy</span>
+    <span class="health-sub">— all systems operational</span>
+  </div>
   <div class="features-counter">
-    <div class="count">7</div>
+    <div class="count">8</div>
     <div class="label">Features Deployed</div>
   </div>
-  <div class="meta">Last deployed: 2026-05-22 17:45:44 CT</div>
+  <div class="meta">Last deployed: 2026-05-22 17:55:29 CT</div>
   <div class="meta">Status: baseline</div>
   <div class="fun-fact">
     <span class="ff-label">🎲 Scrum Fact</span>
@@ -295,6 +357,11 @@
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div class="changelog-entry">
+      <span class="cv">v0.1.7</span>
+      <span class="cd">2026-05-22</span>
+      <span class="ct">Added animated system health indicator showing all systems operational</span>
+    </div>
+    <div class="changelog-entry">
       <span class="cv">v0.1.6</span>
       <span class="cd">2026-05-22</span>
       <span class="ct">Added interactive hover card that glows, scales, and animates on hover</span>
@@ -303,11 +370,6 @@
       <span class="cv">v0.1.5</span>
       <span class="cd">2026-05-22</span>
       <span class="ct">Added mascot, motto badge, and scrum fun fact to give the page more personality</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.4</span>
-      <span class="cd">2026-05-22</span>
-      <span class="ct">Added animations and glow effects to make the page feel alive</span>
     </div>
   </div>
 </body>

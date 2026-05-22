@@ -28,6 +28,16 @@ def index():
     return send_file(os.path.join(BASE, "board.html"))
 
 
+@app.route("/audit.html")
+def audit():
+    return send_file(os.path.join(BASE, "audit.html"))
+
+
+@app.route("/backlog.json")
+def backlog_json():
+    return send_file(BACKLOG_FILE)
+
+
 @app.route("/backlog", methods=["GET"])
 def get_backlog():
     with open(BACKLOG_FILE) as f:

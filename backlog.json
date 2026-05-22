@@ -1,76 +1,72 @@
 {
   "items": [
     {
-      "id": 1,
-      "idea": "Add a motivational tagline below the title",
-      "status": "done",
-      "story": "As a user, I want to see a motivational tagline below the title so that I feel inspired when visiting the app.",
       "acceptance_criteria": [
         "A motivational tagline is displayed below the h1 title",
         "The tagline is visually distinct from the title and meta lines",
         "The page structure (h1, version badge, meta lines) remains intact",
         "The tagline is styled to fit the minimal dark theme"
       ],
-      "summary": "Add motivational tagline 'Iterate. Improve. Deliver.' below the main title",
+      "deployed": "2026-05-22 14:57:05 CT",
       "diff": "diff --git a/index.html b/index.html\nindex 1a59b52..1c27f1e 100644\n--- a/index.html\n+++ b/index.html\n@@ -19,7 +19,13 @@\n     h1 {\n       font-size: 3rem;\n       color: #00ff99;\n-      margin-bottom: 0.5rem;\n+      margin-bottom: 0.25rem;\n+    }\n+    .tagline {\n+      font-size: 1.1rem;\n+      color: #aaa;\n+      font-style: italic;\n+      margin-bottom: 0.75rem;\n     }\n     .meta {\n       font-size: 1rem;\n@@ -39,8 +45,9 @@\n </head>\n <body>\n   <h1>Hello Scrum</h1>\n-  <div class=\"version\">v0.1.0</div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 14:15:49 CT</div>\n+  <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n+  <div class=\"version\">v0.1.1</div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 14:57:05 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n </body>\n-</html>\n+</html>\n\\ No newline at end of file\ndiff --git a/version.json b/version.json\nindex 827cedb..6d34a17 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,12 +1,17 @@\n {\n-  \"version\": \"0.1.0\",\n-  \"deployed\": \"2026-05-22 14:15:49 CT\",\n+  \"version\": \"0.1.1\",\n+  \"deployed\": \"2026-05-22 14:57:05 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n       \"version\": \"0.1.0\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Initial hello world\"\n+    },\n+    {\n+      \"version\": \"0.1.1\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Added motivational tagline below the title\"\n     }\n   ]\n-}\n+}\n\\ No newline at end of file\n",
+      "id": 1,
+      "idea": "Add a motivational tagline below the title",
+      "status": "done",
+      "story": "As a user, I want to see a motivational tagline below the title so that I feel inspired when visiting the app.",
+      "summary": "Add motivational tagline 'Iterate. Improve. Deliver.' below the main title",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.1 matches between version.json and index.html"
+          "message": "version 0.1.1 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-22 14:57:05 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-22 14:57:05 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.1: Added motivational tagline below the title"
+          "message": "changelog has entry for v0.1.1: Added motivational tagline below the title",
+          "status": "pass"
         }
-      ],
-      "deployed": "2026-05-22 14:57:05 CT"
+      ]
     },
     {
-      "id": 2,
-      "idea": "Show a features deployed counter that increments with each release",
-      "status": "done",
-      "story": "As a user, I want to see a features deployed counter on the page so that I can track how many releases have shipped over time.",
       "acceptance_criteria": [
         "A 'Features Deployed' counter is visible on the main page",
         "The counter reflects the total number of changelog entries (releases) in version.json",
         "The counter increments automatically with each new release",
         "The counter is styled consistently with the existing page design"
       ],
-      "summary": "Add features deployed counter showing total number of releases",
+      "deployed": "2026-05-22 15:01:57 CT",
       "diff": "diff --git a/index.html b/index.html\nindex b34ad07..7f5c35a 100644\n--- a/index.html\n+++ b/index.html\n@@ -58,14 +58,37 @@\n       border-radius: 6px;\n       border: 1px solid #333;\n     }\n+    .features-counter {\n+      margin-top: 1rem;\n+      background: #1a1a1a;\n+      border: 1px solid #00ff9940;\n+      border-radius: 6px;\n+      padding: 0.5rem 1.5rem;\n+      text-align: center;\n+    }\n+    .features-counter .count {\n+      font-size: 2rem;\n+      color: #00ff99;\n+      font-weight: bold;\n+    }\n+    .features-counter .label {\n+      font-size: 0.8rem;\n+      color: #888;\n+      text-transform: uppercase;\n+      letter-spacing: 0.1em;\n+    }\n   </style>\n </head>\n <body>\n   <a class=\"audit-btn\" href=\"audit.html\">Audit</a>\n   <h1>Hello Scrum</h1>\n   <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n-  <div class=\"version\">v0.1.1</div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 14:57:05 CT</div>\n+  <div class=\"version\">v0.1.2</div>\n+  <div class=\"features-counter\">\n+    <div class=\"count\">3</div>\n+    <div class=\"label\">Features Deployed</div>\n+  </div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 15:01:57 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n </body>\n </html>\n\\ No newline at end of file\ndiff --git a/version.json b/version.json\nindex 6d34a17..e1897d5 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.1\",\n-  \"deployed\": \"2026-05-22 14:57:05 CT\",\n+  \"version\": \"0.1.2\",\n+  \"deployed\": \"2026-05-22 15:01:57 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -12,6 +12,11 @@\n       \"version\": \"0.1.1\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Added motivational tagline below the title\"\n+    },\n+    {\n+      \"version\": \"0.1.2\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Added features deployed counter that increments with each release\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "id": 2,
+      "idea": "Show a features deployed counter that increments with each release",
+      "status": "done",
+      "story": "As a user, I want to see a features deployed counter on the page so that I can track how many releases have shipped over time.",
+      "summary": "Add features deployed counter showing total number of releases",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.2 matches between version.json and index.html"
+          "message": "version 0.1.2 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-22 15:01:57 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-22 15:01:57 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.2: Added features deployed counter that increments with each release"
+          "message": "changelog has entry for v0.1.2: Added features deployed counter that increments with each release",
+          "status": "pass"
         }
-      ],
-      "deployed": "2026-05-22 15:01:57 CT"
+      ]
     },
     {
-      "id": 3,
-      "idea": "Add a changelog section showing the last 3 updates",
-      "status": "done",
-      "story": "As a user, I want to see a changelog section showing the last 3 updates so that I can quickly understand what has recently changed in the app.",
       "acceptance_criteria": [
         "A changelog section is visible on the main page showing the 3 most recent updates",
         "Each entry displays the version number, date, and description of the change",
@@ -78,31 +74,48 @@
         "The features deployed counter increments to reflect the new feature",
         "Version is bumped to 0.1.3 and deploy timestamp is updated"
       ],
-      "summary": "Add changelog section displaying the 3 most recent releases",
+      "deployed": "2026-05-22 15:09:42 CT",
       "diff": "diff --git a/index.html b/index.html\nindex 7f5c35a..55575b8 100644\n--- a/index.html\n+++ b/index.html\n@@ -13,8 +13,10 @@\n       flex-direction: column;\n       align-items: center;\n       justify-content: center;\n-      height: 100vh;\n+      min-height: 100vh;\n       margin: 0;\n+      padding: 2rem 1rem;\n+      box-sizing: border-box;\n     }\n     h1 {\n       font-size: 3rem;\n@@ -77,18 +79,76 @@\n       text-transform: uppercase;\n       letter-spacing: 0.1em;\n     }\n+    .changelog {\n+      margin-top: 1.5rem;\n+      background: #1a1a1a;\n+      border: 1px solid #333;\n+      border-radius: 6px;\n+      padding: 1rem 1.5rem;\n+      width: 100%;\n+      max-width: 480px;\n+    }\n+    .changelog h2 {\n+      font-size: 0.85rem;\n+      text-transform: uppercase;\n+      letter-spacing: 0.1em;\n+      color: #888;\n+      margin: 0 0 0.75rem 0;\n+    }\n+    .changelog-entry {\n+      display: flex;\n+      align-items: baseline;\n+      gap: 0.75rem;\n+      padding: 0.35rem 0;\n+      border-top: 1px solid #222;\n+    }\n+    .changelog-entry:first-of-type {\n+      border-top: none;\n+    }\n+    .changelog-entry .cv {\n+      color: #00ff99;\n+      font-size: 0.8rem;\n+      white-space: nowrap;\n+    }\n+    .changelog-entry .cd {\n+      color: #555;\n+      font-size: 0.75rem;\n+      white-space: nowrap;\n+    }\n+    .changelog-entry .ct {\n+      color: #ccc;\n+      font-size: 0.85rem;\n+    }\n   </style>\n </head>\n <body>\n   <a class=\"audit-btn\" href=\"audit.html\">Audit</a>\n   <h1>Hello Scrum</h1>\n   <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n-  <div class=\"version\">v0.1.2</div>\n+  <div class=\"version\">v0.1.3</div>\n   <div class=\"features-counter\">\n-    <div class=\"count\">3</div>\n+    <div class=\"count\">4</div>\n     <div class=\"label\">Features Deployed</div>\n   </div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 15:01:57 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 15:09:42 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n+  <div class=\"changelog\">\n+    <h2>Recent Changes</h2>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.3</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"ct\">Added changelog section showing the last 3 updates</span>\n+    </div>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.2</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"ct\">Added features deployed counter that increments with each release</span>\n+    </div>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.1</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"ct\">Added motivational tagline below the title</span>\n+    </div>\n+  </div>\n </body>\n </html>\n\\ No newline at end of file\ndiff --git a/version.json b/version.json\nindex e1897d5..b882088 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.2\",\n-  \"deployed\": \"2026-05-22 15:01:57 CT\",\n+  \"version\": \"0.1.3\",\n+  \"deployed\": \"2026-05-22 15:09:42 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -17,6 +17,11 @@\n       \"version\": \"0.1.2\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Added features deployed counter that increments with each release\"\n+    },\n+    {\n+      \"version\": \"0.1.3\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Added changelog section showing the last 3 updates\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "id": 3,
+      "idea": "Add a changelog section showing the last 3 updates",
+      "status": "done",
+      "story": "As a user, I want to see a changelog section showing the last 3 updates so that I can quickly understand what has recently changed in the app.",
+      "summary": "Add changelog section displaying the 3 most recent releases",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.3 matches between version.json and index.html"
+          "message": "version 0.1.3 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-22 15:09:42 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-22 15:09:42 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.3: Added changelog section showing the last 3 updates"
+          "message": "changelog has entry for v0.1.3: Added changelog section showing the last 3 updates",
+          "status": "pass"
         }
-      ],
-      "deployed": "2026-05-22 15:09:42 CT"
+      ]
+    },
+    {
+      "id": 4,
+      "idea": "Make it feel more alive",
+      "status": "pending",
+      "in_sprint": false
+    },
+    {
+      "id": 5,
+      "idea": "Add something that shows the system is healthy",
+      "status": "pending"
+    },
+    {
+      "id": 6,
+      "idea": "Give the page more personality",
+      "status": "pending",
+      "in_sprint": false
     }
-  ,
-    { "id": 4, "idea": "Make it feel more alive", "status": "pending" },
-    { "id": 5, "idea": "Add something that shows the system is healthy", "status": "pending" },
-    { "id": 6, "idea": "Give the page more personality", "status": "pending" }
   ]
 }

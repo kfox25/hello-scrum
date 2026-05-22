@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "idea": "Add a motivational tagline below the title",
+      "status": "pending"
+    },
+    {
+      "id": 2,
+      "idea": "Show a features deployed counter that increments with each release",
+      "status": "pending"
+    },
+    {
+      "id": 3,
+      "idea": "Add a changelog section showing the last 3 updates",
+      "status": "pending"
+    }
+  ]
+}

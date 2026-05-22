@@ -78,18 +78,26 @@
       margin-left: 0.5rem;
     }
 
-    #start-btn {
+    .sprint-btn {
       font-family: monospace;
       font-size: 0.8rem;
-      background: #0d3320;
-      color: #00ff99;
-      border: 1px solid #00ff9960;
       padding: 0.3rem 0.9rem;
       border-radius: 4px;
       cursor: pointer;
     }
+    #start-btn {
+      background: #0d3320;
+      color: #00ff99;
+      border: 1px solid #00ff9960;
+    }
     #start-btn:hover:not(:disabled) { background: #114428; border-color: #00ff99; }
-    #start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    #complete-btn {
+      background: #1a1a1a;
+      color: #888;
+      border: 1px solid #33333360;
+    }
+    #complete-btn:hover:not(:disabled) { background: #222; color: #aaa; border-color: #555; }
+    .sprint-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
     .drop-zone {
       flex: 1;
@@ -232,7 +240,10 @@
           <span class="col-title">Sprint</span>
           <span class="col-count" id="sprint-count"></span>
         </div>
-        <button id="start-btn" onclick="startSprint()">▶ Start Sprint</button>
+        <div style="display:flex;gap:0.4rem">
+          <button id="start-btn"    class="sprint-btn" onclick="startSprint()">▶ Start Sprint</button>
+          <button id="complete-btn" class="sprint-btn" onclick="completeSprint()">✓ Complete</button>
+        </div>
       </div>
       <div class="drop-zone" id="sprint-zone"
            ondragover="onDragOver(event)"
@@ -292,9 +303,10 @@
         ? sprintItems.map(renderCard).join('')
         : '<div class="empty-hint">Drag items here to add to sprint</div>';
 
-      // update Start Sprint button
       const hasPending = sprintItems.some(i => i.status === 'pending');
-      document.getElementById('start-btn').disabled = !hasPending;
+      const hasDone    = sprintItems.some(i => i.status === 'done');
+      document.getElementById('start-btn').disabled    = !hasPending;
+      document.getElementById('complete-btn').disabled = !hasDone;
     }
 
     function renderCard(item) {
@@ -399,6 +411,14 @@
       items.splice(insertBefore ? tgtIdx : tgtIdx + 1, 0, dragItem);
 
       dragId = null;
+      renderBoard();
+      persistBacklog();
+    }
+
+    function completeSprint() {
+      backlogData.items.forEach(i => {
+        if (i.in_sprint && i.status === 'done') i.in_sprint = false;
+      });
       renderBoard();
       persistBacklog();
     }

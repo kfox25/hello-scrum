@@ -100,5 +100,9 @@
       ],
       "deployed": "2026-05-22 15:09:42 CT"
     }
+  ,
+    { "id": 4, "idea": "Make it feel more alive", "status": "pending" },
+    { "id": 5, "idea": "Add something that shows the system is healthy", "status": "pending" },
+    { "id": 6, "idea": "Give the page more personality", "status": "pending" }
   ]
 }

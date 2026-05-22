@@ -61,6 +61,11 @@ def active_page():
     return send_file(os.path.join(BASE, "active.html"))
 
 
+@app.route("/workflow.html")
+def workflow_page():
+    return send_file(os.path.join(BASE, "workflow.html"))
+
+
 @app.route("/active/clear", methods=["POST"])
 def clear_active():
     with open(ACTIVE_FILE, "w") as f:

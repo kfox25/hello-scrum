@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google" content="notranslate" />
+  <title>System Workflow — Hello Scrum</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: monospace;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .top-nav {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .top-nav a {
+      font-family: monospace;
+      font-size: 0.85rem;
+      background: #1a1a1a;
+      color: #00ff99;
+      border: 1px solid #00ff9940;
+      padding: 0.4rem 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+    .top-nav a:hover { background: #0d3320; border-color: #00ff99; }
+
+    header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #222;
+    }
+    h1 { color: #00ff99; font-size: 1.8rem; }
+    .subtitle { color: #555; font-size: 0.85rem; margin-top: 0.25rem; }
+
+    .pipeline {
+      max-width: 680px;
+      position: relative;
+    }
+    .pipeline::before {
+      content: '';
+      position: absolute;
+      left: 1.75rem;
+      top: 2rem;
+      bottom: 2rem;
+      width: 2px;
+      background: linear-gradient(to bottom, #00ff9940, #00ff9920, #00ff9940);
+    }
+
+    .step {
+      display: flex;
+      gap: 1.25rem;
+      margin-bottom: 0.5rem;
+      position: relative;
+    }
+    .step-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .step-num {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 50%;
+      background: #1a1a1a;
+      border: 2px solid #2a2a2a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: #555;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .step.ai .step-num {
+      border-color: #00ff9960;
+      color: #00ff99;
+      background: #0a1f12;
+    }
+    .step.human .step-num {
+      border-color: #ffcc0060;
+      color: #ffcc00;
+      background: #1a1a00;
+    }
+    .step.system .step-num {
+      border-color: #4488ff60;
+      color: #4488ff;
+      background: #0a0f1f;
+    }
+
+    .connector {
+      width: 2px;
+      flex: 1;
+      min-height: 1.5rem;
+      background: #1a1a1a;
+      margin: 0 auto;
+    }
+
+    .step-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      flex: 1;
+      margin-bottom: 1.5rem;
+    }
+    .step.ai .step-card     { border-color: #00ff9925; }
+    .step.human .step-card  { border-color: #ffcc0025; }
+    .step.system .step-card { border-color: #4488ff25; }
+
+    .step-name {
+      font-size: 1rem;
+      color: #e0e0e0;
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .agent-badge {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-sonnet { background: #0d2a1a; color: #00ff99; border: 1px solid #00ff9940; }
+    .badge-haiku  { background: #1a1000; color: #ffaa00; border: 1px solid #ffaa0040; }
+    .badge-human  { background: #1a1a00; color: #ffcc00; border: 1px solid #ffcc0040; }
+    .badge-system { background: #0a0f1f; color: #4488ff; border: 1px solid #4488ff40; }
+
+    .step-purpose {
+      font-size: 0.85rem;
+      color: #888;
+      line-height: 1.6;
+      margin-bottom: 0.6rem;
+    }
+
+    .step-io {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid #222;
+    }
+    .io-item {
+      font-size: 0.75rem;
+      color: #444;
+    }
+    .io-item span {
+      color: #666;
+    }
+    .io-label {
+      color: #333;
+      text-transform: uppercase;
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      margin-right: 0.3rem;
+    }
+
+    .legend {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: #555;
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid;
+    }
+    .dot-ai     { border-color: #00ff99; background: #0a1f12; }
+    .dot-human  { border-color: #ffcc00; background: #1a1a00; }
+    .dot-system { border-color: #4488ff; background: #0a0f1f; }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="index.html">App</a>
+    <a href="/">Board</a>
+    <a href="active.html">Active</a>
+    <a href="audit.html">Audit</a>
+  </nav>
+
+  <header>
+    <h1>System Workflow</h1>
+    <div class="subtitle">How raw ideas become deployed features</div>
+  </header>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot dot-human"></div> You</div>
+    <div class="legend-item"><div class="legend-dot dot-ai"></div> AI Agent</div>
+    <div class="legend-item"><div class="legend-dot dot-system"></div> System</div>
+  </div>
+
+  <div class="pipeline">
+
+    <div class="step human">
+      <div class="step-left">
+        <div class="step-num">1</div>
+        <div class="connector"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-name">
+          Backlog
+          <span class="agent-badge badge-human">You</span>
+        </div>
+        <div class="step-purpose">
+          Capture raw ideas in plain language. No structure needed — a vague description is enough.
+          Ideas sit here until you decide to act on them.
+        </div>
+        <div class="step-io">
+          <div class="io-item"><span class="io-label">Input</span> <span>A rough idea</span></div>
+          <div class="io-item"><span class="io-label">Output</span> <span>Pending item in backlog.json</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step human">
+      <div class="step-left">
+        <div class="step-num">2</div>
+        <div class="connector"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-name">
+          Sprint Planning
+          <span class="agent-badge badge-human">You</span>
+        </div>
+        <div class="step-purpose">
+          Drag items from the backlog into the sprint on the board. Reorder to set priority.
+          Only items in the sprint are picked up when you start a sprint.
+        </div>
+        <div class="step-io">
+          <div class="io-item"><span class="io-label">Input</span> <span>Pending backlog items</span></div>
+          <div class="io-item"><span class="io-label">Output</span> <span>Ordered sprint queue</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step ai">
+      <div class="step-left">
+        <div class="step-num">3</div>
+        <div class="connector"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-name">
+          Story + Implementation
+          <span class="agent-badge badge-sonnet">claude-sonnet-4-6</span>
+        </div>
+        <div class="step-purpose">
+          The worker agent reads the raw idea and does two things in one pass: writes a user story
+          with acceptance criteria, then implements the change in index.html and version.json.
+          Bumps the patch version and adds a changelog entry.
+        </div>
+        <div class="step-io">
+          <div class="io-item"><span class="io-label">Input</span> <span>Idea, current index.html, version.json</span></div>
+          <div class="io-item"><span class="io-label">Output</span> <span>Updated files, user story, AC, summary</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step system">
+      <div class="step-left">
+        <div class="step-num">4</div>
+        <div class="connector"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-name">
+          Automated Tests
+          <span class="agent-badge badge-system">test.py</span>
+        </div>
+        <div class="step-purpose">
+          Four checks run against the updated files: index.html exists and contains the title,
+          version numbers match between files, deploy timestamp is present, and a changelog
+          entry exists for the new version. Failure triggers an automatic rollback.
+        </div>
+        <div class="step-io">
+          <div class="io-item"><span class="io-label">Input</span> <span>index.html, version.json</span></div>
+          <div class="io-item"><span class="io-label">Output</span> <span>Pass / Fail + rollback on failure</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step ai">
+      <div class="step-left">
+        <div class="step-num">5</div>
+        <div class="connector"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-name">
+          Hermes Review
+          <span class="agent-badge badge-haiku">claude-haiku-4-5</span>
+        </div>
+        <div class="step-purpose">
+          Hermes is a lightweight QA reviewer. It reads the original idea, the user story,
+          acceptance criteria, code diff, and test results — then decides: does this implementation
+          actually deliver what was asked? Returns approve or reject with a one-sentence reason.
+          Rejection triggers rollback; the item is marked failed.
+        </div>
+        <div class="step-io">
+          <div class="io-item"><span class="io-label">Input</span> <span>Idea, story, AC, diff, test results</span></div>
+          <div class="io-item"><span class="io-label">Output</span> <span>Approve / Reject + reason</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step system">
+      <div class="step-left">
+        <div class="step-num">6</div>
+        <div class="connector"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-name">
+          Deploy
+          <span class="agent-badge badge-system">git + GitHub Pages</span>
+        </div>
+        <div class="step-purpose">
+          Changes are committed and pushed to GitHub. GitHub Pages auto-deploys within ~30 seconds.
+          The audit trail (story, diff, test results, Hermes verdict, timestamp) is saved to
+          backlog.json and included in the same commit.
+        </div>
+        <div class="step-io">
+          <div class="io-item"><span class="io-label">Input</span> <span>index.html, version.json, backlog.json</span></div>
+          <div class="io-item"><span class="io-label">Output</span> <span>Live at kfox25.github.io/hello-scrum</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

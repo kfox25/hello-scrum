@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sprint Board — Hello Scrum</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: monospace;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #222;
+    }
+    header h1 { color: #00ff99; font-size: 1.4rem; }
+    .header-links { display: flex; gap: 1.5rem; }
+    .header-links a {
+      color: #555;
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+    .header-links a:hover { color: #00ff99; }
+
+    .board {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      flex: 1;
+      border-bottom: 1px solid #222;
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #222;
+    }
+    .column:last-child { border-right: none; }
+
+    .col-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid #222;
+      background: #141414;
+    }
+    .col-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #555;
+    }
+    .col-count {
+      font-size: 0.7rem;
+      color: #333;
+      margin-left: 0.5rem;
+    }
+
+    #start-btn {
+      font-family: monospace;
+      font-size: 0.8rem;
+      background: #0d3320;
+      color: #00ff99;
+      border: 1px solid #00ff9960;
+      padding: 0.3rem 0.9rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #start-btn:hover:not(:disabled) { background: #114428; border-color: #00ff99; }
+    #start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .drop-zone {
+      flex: 1;
+      padding: 1rem;
+      min-height: 200px;
+      transition: background 0.15s;
+    }
+    .drop-zone.drag-over { background: #161f18; }
+
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      padding: 0.65rem 0.9rem;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      cursor: default;
+    }
+    .card.pending { cursor: grab; }
+    .card.pending:active { cursor: grabbing; }
+    .card.pending:hover { border-color: #3a3a3a; }
+    .card.dragging { opacity: 0.4; }
+
+    .drag-handle {
+      color: #333;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .card.pending .drag-handle { color: #444; }
+    .card.pending:hover .drag-handle { color: #00ff9980; }
+
+    .card-id { color: #444; font-size: 0.75rem; flex-shrink: 0; }
+    .card-idea { flex: 1; font-size: 0.9rem; color: #ccc; }
+
+    .badge {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .badge-done    { background: #0d3320; color: #00ff99; border: 1px solid #00ff9940; }
+    .badge-pending { background: #1a1a00; color: #ffcc00; border: 1px solid #ffcc0040; }
+    .badge-failed  { background: #2a0a0a; color: #ff4444; border: 1px solid #ff444440; }
+
+    .hermes-tag {
+      font-size: 0.65rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .hermes-approve { background: #0a1f12; color: #00ff9980; border: 1px solid #00ff9920; }
+    .hermes-reject  { background: #1a0808; color: #ff444480; border: 1px solid #ff444420; }
+
+    .empty-hint {
+      color: #2a2a2a;
+      font-size: 0.8rem;
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+
+    /* log panel */
+    #log-panel {
+      display: none;
+      flex-direction: column;
+      height: 220px;
+      border-top: 1px solid #222;
+    }
+    .log-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 1.25rem;
+      background: #141414;
+      border-bottom: 1px solid #222;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #444;
+    }
+    #clear-log {
+      background: none;
+      border: none;
+      color: #333;
+      font-family: monospace;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    #clear-log:hover { color: #555; }
+    #log-output {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.6rem 1.25rem;
+      font-size: 0.78rem;
+      line-height: 1.6;
+    }
+    .log-line { white-space: pre-wrap; color: #555; }
+    .log-pass  { color: #00ff9990; }
+    .log-fail  { color: #ff444490; }
+    .log-hermes-approve { color: #00ff99; }
+    .log-hermes-reject  { color: #ff4444; }
+    .log-deploy { color: #fff; }
+    .log-section { color: #00ff9960; }
+    .log-done { color: #00ff99; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Sprint Board</h1>
+    <div class="header-links">
+      <a href="https://kfox25.github.io/hello-scrum" target="_blank">↗ App</a>
+      <a href="audit.html">Audit Log</a>
+    </div>
+  </header>
+
+  <div class="board">
+    <div class="column">
+      <div class="col-header">
+        <div>
+          <span class="col-title">Backlog</span>
+          <span class="col-count" id="backlog-count"></span>
+        </div>
+      </div>
+      <div class="drop-zone" id="backlog-zone"
+           ondragover="onDragOver(event)"
+           ondragleave="onDragLeave(event)"
+           ondrop="onDrop(event, false)">
+        <div class="empty-hint">Backlog items appear here</div>
+      </div>
+    </div>
+
+    <div class="column">
+      <div class="col-header">
+        <div>
+          <span class="col-title">Sprint</span>
+          <span class="col-count" id="sprint-count"></span>
+        </div>
+        <button id="start-btn" onclick="startSprint()">▶ Start Sprint</button>
+      </div>
+      <div class="drop-zone" id="sprint-zone"
+           ondragover="onDragOver(event)"
+           ondragleave="onDragLeave(event)"
+           ondrop="onDrop(event, true)">
+        <div class="empty-hint">Drag items here to add to sprint</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="log-panel">
+    <div class="log-header">
+      <span>Agent Output</span>
+      <button id="clear-log" onclick="clearLog()">clear</button>
+    </div>
+    <div id="log-output"></div>
+  </div>
+
+  <script>
+    let backlogData = null;
+    let dragId = null;
+
+    function escHtml(s) {
+      return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+
+    async function loadBacklog() {
+      const res = await fetch('/backlog?t=' + Date.now());
+      backlogData = await res.json();
+      renderBoard();
+    }
+
+    async function persistBacklog() {
+      await fetch('/backlog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(backlogData),
+      });
+    }
+
+    function renderBoard() {
+      const items = backlogData.items;
+      const backlogItems = items.filter(i => i.status === 'pending' && !i.in_sprint);
+      const sprintItems  = items.filter(i => i.in_sprint);
+
+      document.getElementById('backlog-count').textContent = `(${backlogItems.length})`;
+      document.getElementById('sprint-count').textContent  = `(${sprintItems.length})`;
+
+      const backlogZone = document.getElementById('backlog-zone');
+      const sprintZone  = document.getElementById('sprint-zone');
+
+      backlogZone.innerHTML = backlogItems.length
+        ? backlogItems.map(renderCard).join('')
+        : '<div class="empty-hint">No pending items</div>';
+
+      sprintZone.innerHTML = sprintItems.length
+        ? sprintItems.map(renderCard).join('')
+        : '<div class="empty-hint">Drag items here to add to sprint</div>';
+
+      // update Start Sprint button
+      const hasPending = sprintItems.some(i => i.status === 'pending');
+      document.getElementById('start-btn').disabled = !hasPending;
+    }
+
+    function renderCard(item) {
+      const isPending = item.status === 'pending';
+      const draggable = isPending ? 'draggable="true"' : '';
+      const handle    = isPending ? '<span class="drag-handle">&#8942;&#8942;</span>' : '<span class="drag-handle"></span>';
+
+      let hermesTag = '';
+      if (item.hermes_verdict) {
+        const cls = item.hermes_verdict === 'approve' ? 'hermes-approve' : 'hermes-reject';
+        hermesTag = `<span class="hermes-tag ${cls}">H:${item.hermes_verdict === 'approve' ? '✓' : '✗'}</span>`;
+      }
+
+      return `<div class="card ${item.status}" data-id="${item.id}" ${draggable}
+                   ondragstart="onDragStart(event)"
+                   ondragend="onDragEnd(event)">
+        ${handle}
+        <span class="card-id">#${item.id}</span>
+        <span class="card-idea">${escHtml(item.idea)}</span>
+        ${hermesTag}
+        <span class="badge badge-${item.status}">${item.status}</span>
+      </div>`;
+    }
+
+    // ── Drag and drop ─────────────────────────────────────────────────────────
+
+    function onDragStart(e) {
+      dragId = parseInt(e.currentTarget.dataset.id);
+      e.currentTarget.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function onDragEnd(e) {
+      e.currentTarget.classList.remove('dragging');
+    }
+
+    function onDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      e.currentTarget.classList.add('drag-over');
+    }
+
+    function onDragLeave(e) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+
+    function onDrop(e, toSprint) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over');
+      if (dragId === null) return;
+
+      const item = backlogData.items.find(i => i.id === dragId);
+      if (!item || item.status !== 'pending') return;
+
+      item.in_sprint = toSprint;
+      dragId = null;
+
+      renderBoard();
+      persistBacklog();
+    }
+
+    // ── Sprint ────────────────────────────────────────────────────────────────
+
+    async function startSprint() {
+      const btn = document.getElementById('start-btn');
+      btn.disabled = true;
+      btn.textContent = '⟳ Running...';
+
+      const panel = document.getElementById('log-panel');
+      panel.style.display = 'flex';
+
+      const response = await fetch('/sprint/start', { method: 'POST' });
+
+      if (!response.ok) {
+        appendLog('Sprint start failed: ' + response.statusText, 'log-fail');
+        btn.disabled = false;
+        btn.textContent = '▶ Start Sprint';
+        return;
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop();
+
+        for (const part of parts) {
+          if (!part.startsWith('data: ')) continue;
+          const msg = JSON.parse(part.slice(6));
+          if (msg === '__done__') {
+            appendLog('', '');
+            appendLog('Sprint complete.', 'log-done');
+            await loadBacklog();
+            const stillPending = backlogData.items.some(i => i.in_sprint && i.status === 'pending');
+            btn.disabled = !stillPending;
+            btn.textContent = '▶ Start Sprint';
+          } else {
+            appendLog(msg);
+          }
+        }
+      }
+    }
+
+    function appendLog(text, cls) {
+      const out = document.getElementById('log-output');
+      const div = document.createElement('div');
+      div.className = 'log-line ' + (cls || colorClass(text));
+      div.textContent = text;
+      out.appendChild(div);
+      out.scrollTop = out.scrollHeight;
+    }
+
+    function colorClass(line) {
+      if (line.startsWith('PASS'))                          return 'log-pass';
+      if (line.startsWith('FAIL') || line.includes('FAILED')) return 'log-fail';
+      if (line.startsWith('Hermes: APPROVE'))               return 'log-hermes-approve';
+      if (line.startsWith('Hermes: REJECT'))                return 'log-hermes-reject';
+      if (line.startsWith('Deployed:') || line.startsWith('Live at')) return 'log-deploy';
+      if (line.startsWith('==='))                           return 'log-section';
+      return '';
+    }
+
+    function clearLog() {
+      document.getElementById('log-output').innerHTML = '';
+    }
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    loadBacklog();
+  </script>
+</body>
+</html>

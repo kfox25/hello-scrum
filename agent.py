@@ -5,6 +5,7 @@ Pulls the top backlog idea, implements it, tests it, and deploys it.
 Usage:
   python agent.py          # run one story
   python agent.py --loop   # run until backlog is empty
+  python agent.py --sprint # run all sprint items sequentially
 """
 
 import json
@@ -49,6 +50,18 @@ Respond with ONLY valid JSON — no markdown, no code blocks, no extra text:
   "summary": "Short commit message describing what changed"
 }"""
 
+HERMES_SYSTEM_PROMPT = """You are Hermes, a QA reviewer for the hello-scrum web app.
+
+Review the worker agent's implementation and decide if it genuinely delivers what was requested.
+
+Respond with ONLY valid JSON — no markdown, no extra text:
+{"verdict": "approve", "reason": "one sentence"}
+or
+{"verdict": "reject", "reason": "one sentence explaining what is wrong or missing"}
+
+Approve if the diff clearly implements the idea and tests pass.
+Reject if the implementation is unrelated to the idea, clearly wrong, or missing the point."""
+
 
 # ── Backlog ───────────────────────────────────────────────────────────────────
 
@@ -62,9 +75,11 @@ def save_backlog(data):
         json.dump(data, f, indent=2)
 
 
-def get_next_item(backlog):
+def get_next_item(backlog, sprint_only=False):
     for item in backlog["items"]:
         if item["status"] == "pending":
+            if sprint_only and not item.get("in_sprint"):
+                continue
             return item
     return None
 
@@ -84,7 +99,7 @@ def get_ct_timestamp():
     return ct.strftime("%Y-%m-%d %H:%M:%S CT")
 
 
-# ── Agent ─────────────────────────────────────────────────────────────────────
+# ── Worker agent ──────────────────────────────────────────────────────────────
 
 def call_agent(idea, index_html, version_json, timestamp):
     prompt = f"""Deploy timestamp to use (exact): {timestamp}
@@ -123,6 +138,34 @@ def apply_changes(response_text):
         json.dump(data["version_json"], f, indent=2)
 
     return data
+
+
+# ── Hermes reviewer ───────────────────────────────────────────────────────────
+
+def call_hermes(idea, story, acceptance_criteria, diff, test_results):
+    prompt = f"""Idea: {idea}
+
+Story: {story}
+
+Acceptance criteria:
+{json.dumps(acceptance_criteria, indent=2)}
+
+Diff:
+{diff[:3000]}
+
+Test results:
+{json.dumps(test_results, indent=2)}"""
+
+    message = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=256,
+        system=HERMES_SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    text = message.content[0].text.strip()
+    if text.startswith("```"):
+        text = "\n".join(text.split("\n")[1:-1])
+    return json.loads(text)
 
 
 # ── Tests + deploy ────────────────────────────────────────────────────────────
@@ -168,12 +211,12 @@ def rollback():
 
 # ── Main loop ─────────────────────────────────────────────────────────────────
 
-def run_one():
+def run_one(sprint_only=False):
     backlog = load_backlog()
-    item = get_next_item(backlog)
+    item = get_next_item(backlog, sprint_only=sprint_only)
 
     if not item:
-        print("Backlog empty — nothing to do.")
+        print("No items to process.")
         return False
 
     print(f"\n{'=' * 50}")
@@ -227,6 +270,36 @@ def run_one():
         save_backlog(backlog)
         return False
 
+    print("Hermes reviewing...")
+    try:
+        verdict = call_hermes(
+            item["idea"],
+            result["story"],
+            result.get("acceptance_criteria", []),
+            diff,
+            test_results,
+        )
+        hermes_verdict = verdict.get("verdict", "approve")
+        hermes_reason = verdict.get("reason", "")
+    except Exception as e:
+        print(f"Hermes error (defaulting to approve): {e}")
+        hermes_verdict = "approve"
+        hermes_reason = "Hermes review failed — defaulting to approve"
+
+    print(f"Hermes: {hermes_verdict.upper()} — {hermes_reason}")
+
+    if hermes_verdict == "reject":
+        rollback()
+        item["status"] = "failed"
+        item["story"] = result.get("story", "")
+        item["acceptance_criteria"] = result.get("acceptance_criteria", [])
+        item["diff"] = diff
+        item["test_results"] = test_results
+        item["hermes_verdict"] = hermes_verdict
+        item["hermes_reason"] = hermes_reason
+        save_backlog(backlog)
+        return False
+
     item["status"] = "done"
     item["story"] = result["story"]
     item["acceptance_criteria"] = result.get("acceptance_criteria", [])
@@ -234,6 +307,8 @@ def run_one():
     item["diff"] = diff
     item["test_results"] = test_results
     item["deployed"] = timestamp
+    item["hermes_verdict"] = hermes_verdict
+    item["hermes_reason"] = hermes_reason
     save_backlog(backlog)  # save BEFORE git push so backlog.json is included
 
     print("Pushing to GitHub...")
@@ -252,13 +327,14 @@ def run_one():
 
 
 def main():
+    sprint_mode = "--sprint" in sys.argv
     loop_mode = "--loop" in sys.argv
     print("\nAI Scrum Agent")
-    print(f"Mode: {'loop' if loop_mode else 'single story'}")
+    print(f"Mode: {'sprint' if sprint_mode else 'loop' if loop_mode else 'single story'}")
     print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-    if loop_mode:
-        while run_one():
+    if sprint_mode or loop_mode:
+        while run_one(sprint_only=sprint_mode):
             pass
     else:
         run_one()

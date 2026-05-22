@@ -1,0 +1,86 @@
+"""
+Sprint Board Server
+Serves board.html, handles backlog writes, and streams agent output.
+
+Usage:
+  pip install flask
+  python server.py
+  open http://localhost:5000
+"""
+
+import json
+import os
+import subprocess
+import threading
+
+from flask import Flask, Response, jsonify, request, send_file
+
+app = Flask(__name__)
+BASE = os.path.dirname(os.path.abspath(__file__))
+BACKLOG_FILE = os.path.join(BASE, "backlog.json")
+
+agent_running = False
+agent_lock = threading.Lock()
+
+
+@app.route("/")
+def index():
+    return send_file(os.path.join(BASE, "board.html"))
+
+
+@app.route("/backlog", methods=["GET"])
+def get_backlog():
+    with open(BACKLOG_FILE) as f:
+        return jsonify(json.load(f))
+
+
+@app.route("/backlog", methods=["POST"])
+def save_backlog():
+    data = request.get_json()
+    with open(BACKLOG_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+    return jsonify({"ok": True})
+
+
+@app.route("/sprint/status")
+def sprint_status():
+    return jsonify({"running": agent_running})
+
+
+@app.route("/sprint/start", methods=["POST"])
+def start_sprint():
+    global agent_running
+
+    with agent_lock:
+        if agent_running:
+            return jsonify({"error": "Agent already running"}), 409
+        agent_running = True
+
+    def generate():
+        global agent_running
+        try:
+            proc = subprocess.Popen(
+                ["python", "agent.py", "--sprint"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                cwd=BASE,
+                env=os.environ.copy(),
+            )
+            for line in proc.stdout:
+                yield f"data: {json.dumps(line.rstrip())}\n\n"
+            proc.wait()
+        finally:
+            agent_running = False
+            yield f"data: {json.dumps('__done__')}\n\n"
+
+    return Response(
+        generate(),
+        mimetype="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+if __name__ == "__main__":
+    print("Sprint Board running at http://localhost:5000")
+    app.run(debug=False, port=5000, threaded=True)

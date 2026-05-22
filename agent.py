@@ -18,11 +18,32 @@ from zoneinfo import ZoneInfo
 import anthropic
 
 BACKLOG_FILE = "backlog.json"
-ACTIVE_FILE = "active.json"
-INDEX_FILE = "index.html"
+ACTIVE_FILE  = "active.json"
+LOG_FILE     = "agent_log.json"
+INDEX_FILE   = "index.html"
 VERSION_FILE = "version.json"
-TEST_SCRIPT = "test.py"
-REPO_URL = "https://kfox25.github.io/hello-scrum"
+TEST_SCRIPT  = "test.py"
+REPO_URL     = "https://kfox25.github.io/hello-scrum"
+
+_log_lines = []
+
+def log(msg=""):
+    print(msg, flush=True)
+    _log_lines.append(str(msg))
+    try:
+        with open(LOG_FILE, "w") as f:
+            json.dump(_log_lines, f)
+    except Exception:
+        pass
+
+def clear_log():
+    global _log_lines
+    _log_lines = []
+    try:
+        with open(LOG_FILE, "w") as f:
+            json.dump([], f)
+    except Exception:
+        pass
 
 client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
@@ -234,57 +255,58 @@ def run_one(sprint_only=False):
         print("No items to process.")
         return False
 
-    print(f"\n{'=' * 50}")
-    print(f"  ITEM [{item['id']}]: {item['idea']}")
-    print(f"{'=' * 50}")
+    clear_log()
+    log(f"\n{'=' * 50}")
+    log(f"  ITEM [{item['id']}]: {item['idea']}")
+    log(f"{'=' * 50}")
 
     write_active(item, "pull")
 
     index_html, version_json = read_app_files()
     timestamp = get_ct_timestamp()
 
-    print(f"Timestamp : {timestamp}")
-    print("Calling agent...")
+    log(f"Timestamp : {timestamp}")
+    log("Calling agent...")
     write_active(item, "story")
 
     try:
         response = call_agent(item["idea"], index_html, version_json, timestamp)
     except Exception as e:
-        print(f"Agent error: {e}")
+        log(f"Agent error: {e}")
         item["status"] = "failed"
         item["error"] = f"Agent error: {e}"
         save_backlog(backlog)
         clear_active()
         return False
 
-    print("Applying changes...")
+    log("Applying changes...")
     write_active(item, "code")
     try:
         result = apply_changes(response)
     except Exception as e:
-        print(f"Parse error: {e}")
-        print(f"Raw response preview: {response[:300]}")
+        log(f"Parse error: {e}")
+        log(f"Raw response preview: {response[:300]}")
         item["status"] = "failed"
         item["error"] = f"Parse error: {e} | Response preview: {response[:200]}"
         save_backlog(backlog)
         clear_active()
         return False
 
-    print(f"Story   : {result['story']}")
-    print(f"Summary : {result['summary']}")
+    log(f"Story   : {result['story']}")
+    log(f"Summary : {result['summary']}")
 
     diff = capture_diff()
 
-    print("Running tests...")
+    log("Running tests...")
     write_active(item, "test")
     passed, stdout, stderr = run_tests()
-    print(stdout.strip())
+    log(stdout.strip())
     test_results = parse_test_results(stdout)
 
     if not passed:
-        print("TESTS FAILED — rolling back")
+        log("TESTS FAILED — rolling back")
         if stderr:
-            print(stderr.strip())
+            log(stderr.strip())
         rollback()
         item["status"] = "failed"
         item["story"] = result.get("story", "")
@@ -295,7 +317,7 @@ def run_one(sprint_only=False):
         clear_active()
         return False
 
-    print("Hermes reviewing...")
+    log("Hermes reviewing...")
     write_active(item, "review")
     try:
         verdict = call_hermes(
@@ -308,11 +330,11 @@ def run_one(sprint_only=False):
         hermes_verdict = verdict.get("verdict", "approve")
         hermes_reason = verdict.get("reason", "")
     except Exception as e:
-        print(f"Hermes error (defaulting to approve): {e}")
+        log(f"Hermes error (defaulting to approve): {e}")
         hermes_verdict = "approve"
         hermes_reason = "Hermes review failed — defaulting to approve"
 
-    print(f"Hermes: {hermes_verdict.upper()} — {hermes_reason}")
+    log(f"Hermes: {hermes_verdict.upper()} — {hermes_reason}")
 
     if hermes_verdict == "reject":
         rollback()
@@ -327,7 +349,7 @@ def run_one(sprint_only=False):
         write_active(item, "rejected", hermes_verdict="reject", hermes_reason=hermes_reason)
         return False
 
-    print("Pushing to GitHub...")
+    log("Pushing to GitHub...")
     write_active(item, "deploy", hermes_verdict="approve", hermes_reason=hermes_reason)
     item["status"] = "done"
     item["story"] = result["story"]
@@ -338,12 +360,12 @@ def run_one(sprint_only=False):
     item["deployed"] = timestamp
     item["hermes_verdict"] = hermes_verdict
     item["hermes_reason"] = hermes_reason
-    save_backlog(backlog)  # save BEFORE git push so backlog.json is included
+    save_backlog(backlog)
 
     try:
         git_push(result["summary"])
     except Exception as e:
-        print(f"Push failed: {e}")
+        log(f"Push failed: {e}")
         rollback()
         item["status"] = "failed"
         save_backlog(backlog)
@@ -351,8 +373,8 @@ def run_one(sprint_only=False):
         return False
 
     clear_active()
-    print(f"\nDeployed: {timestamp}")
-    print(f"Live at : {REPO_URL}")
+    log(f"\nDeployed: {timestamp}")
+    log(f"Live at : {REPO_URL}")
     return True
 
 

@@ -43,7 +43,10 @@
       gap: 1rem;
       padding: 1rem 1.25rem;
       border-bottom: 1px solid #2a2a2a;
+      cursor: pointer;
+      user-select: none;
     }
+    .item-header:hover { background: #1f1f1f; }
     .item-id {
       color: #444;
       font-size: 0.8rem;
@@ -170,8 +173,7 @@
     .empty { color: #333; text-align: center; padding: 3rem; }
     .loading { color: #444; text-align: center; padding: 3rem; }
     .error { color: #ff4444; text-align: center; padding: 3rem; }
-    .item-header { cursor: pointer; user-select: none; }
-    .item-header:hover { background: #1f1f1f; }
+
     .chevron {
       font-size: 0.7rem;
       color: #444;
@@ -181,6 +183,38 @@
     .item-body { display: none; }
     .item.expanded .item-body { display: block; }
     .item.expanded .chevron { transform: rotate(90deg); }
+
+    /* drag-and-drop */
+    .drag-handle {
+      color: #333;
+      font-size: 1rem;
+      cursor: grab;
+      padding-right: 0.25rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .item[draggable="true"] .drag-handle { color: #555; }
+    .item[draggable="true"]:hover .drag-handle { color: #00ff9980; }
+    .item[draggable="true"].dragging { opacity: 0.4; }
+    .item[draggable="true"].drag-over { border-top: 2px solid #00ff99; }
+
+    #save-bar {
+      display: none;
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+    }
+    #save-order-btn {
+      font-family: monospace;
+      font-size: 0.85rem;
+      background: #0d3320;
+      color: #00ff99;
+      border: 1px solid #00ff9980;
+      padding: 0.5rem 1.25rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #save-order-btn:hover { background: #114428; border-color: #00ff99; }
   </style>
 </head>
 <body>
@@ -194,8 +228,15 @@
 
   <div id="log"><div class="loading">Loading...</div></div>
 
+  <div id="save-bar">
+    <button id="save-order-btn" onclick="saveOrder()">↓ Download reordered backlog.json</button>
+  </div>
+
   <script>
     const STEPS = ["Pull", "Story", "Code", "Test", "Deploy"];
+    let backlogData = null;
+    let dragSrcEl = null;
+    let wasDragged = false;
 
     function stepStatus(item, index) {
       if (item.status === "pending") return index === 0 ? "pending" : "";
@@ -203,7 +244,6 @@
         if (index <= 2) return "done";
         return "failed";
       }
-      // done
       return "done";
     }
 
@@ -232,6 +272,11 @@
       return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
     }
 
+    function handleHeaderClick(el) {
+      if (wasDragged) { wasDragged = false; return; }
+      el.closest('.item').classList.toggle('expanded');
+    }
+
     function renderItem(item) {
       const steps = STEPS.map((label, i) => {
         const s = stepStatus(item, i);
@@ -240,8 +285,6 @@
           <div class="step-label">${label}</div>
         </div>`;
       }).join("");
-
-      const hasDetail = item.status === "done" || item.status === "failed";
 
       const storySection = item.story ? `
         <div class="section">
@@ -273,9 +316,14 @@
           <div class="detail-value" style="font-size:0.85rem;color:#aaa">${escHtml(item.summary || "")} — ${escHtml(item.deployed)}</div>
         </div>` : "";
 
+      const isPending = item.status === "pending";
+      const draggable = isPending ? 'draggable="true"' : '';
+      const handle = isPending ? '<span class="drag-handle">&#8942;&#8942;</span>' : '';
+
       return `
-        <div class="item">
-          <div class="item-header" onclick="this.closest('.item').classList.toggle('expanded')">
+        <div class="item" data-id="${item.id}" ${draggable}>
+          <div class="item-header" onclick="handleHeaderClick(this)">
+            ${handle}
             <div class="item-id">#${item.id}</div>
             <div class="item-idea">${escHtml(item.idea)}</div>
             ${badge(item.status)}
@@ -291,15 +339,76 @@
         </div>`;
     }
 
+    function attachDragHandlers() {
+      const draggables = document.querySelectorAll('.item[draggable="true"]');
+      draggables.forEach(el => {
+        el.addEventListener('dragstart', e => {
+          dragSrcEl = el;
+          wasDragged = true;
+          el.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+        });
+        el.addEventListener('dragend', () => {
+          el.classList.remove('dragging');
+          document.querySelectorAll('.item.drag-over').forEach(x => x.classList.remove('drag-over'));
+        });
+        el.addEventListener('dragover', e => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          if (el !== dragSrcEl) el.classList.add('drag-over');
+        });
+        el.addEventListener('dragleave', () => {
+          el.classList.remove('drag-over');
+        });
+        el.addEventListener('drop', e => {
+          e.preventDefault();
+          el.classList.remove('drag-over');
+          if (!dragSrcEl || dragSrcEl === el) return;
+
+          const log = document.getElementById('log');
+          const allItems = [...log.querySelectorAll('.item')];
+          const srcIdx = allItems.indexOf(dragSrcEl);
+          const tgtIdx = allItems.indexOf(el);
+
+          if (srcIdx < tgtIdx) {
+            el.after(dragSrcEl);
+          } else {
+            el.before(dragSrcEl);
+          }
+
+          // Mirror reorder in backlogData
+          const items = backlogData.items;
+          const srcDataIdx = items.findIndex(i => i.id == dragSrcEl.dataset.id);
+          const [moved] = items.splice(srcDataIdx, 1);
+          const newTgtIdx = items.findIndex(i => i.id == el.dataset.id);
+          items.splice(srcIdx < tgtIdx ? newTgtIdx + 1 : newTgtIdx, 0, moved);
+
+          document.getElementById('save-bar').style.display = 'block';
+        });
+      });
+    }
+
+    function saveOrder() {
+      const json = JSON.stringify(backlogData, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'backlog.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
     fetch("backlog.json?t=" + Date.now())
       .then(r => r.json())
       .then(data => {
+        backlogData = data;
         const items = data.items;
         if (!items || items.length === 0) {
           document.getElementById("log").innerHTML = '<div class="empty">No items in backlog.</div>';
           return;
         }
         document.getElementById("log").innerHTML = items.map(renderItem).join("");
+        attachDragHandlers();
       })
       .catch(err => {
         document.getElementById("log").innerHTML = `<div class="error">Failed to load backlog.json<br>${err}</div>`;

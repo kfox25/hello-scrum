@@ -273,10 +273,8 @@
           <div class="detail-value" style="font-size:0.85rem;color:#aaa">${escHtml(item.summary || "")} — ${escHtml(item.deployed)}</div>
         </div>` : "";
 
-      const expandedClass = item.status === "done" ? " expanded" : "";
-
       return `
-        <div class="item${expandedClass}">
+        <div class="item">
           <div class="item-header" onclick="this.closest('.item').classList.toggle('expanded')">
             <div class="item-id">#${item.id}</div>
             <div class="item-idea">${escHtml(item.idea)}</div>

@@ -35,7 +35,7 @@ Rules:
 - Only modify index.html and version.json
 - Bump the patch version (e.g. 0.1.0 -> 0.1.1)
 - Set the deployed timestamp to exactly the value provided — do not change it
-- Add a changelog entry describing what changed
+- Add a changelog entry as the LAST item in the changelog array with exactly these fields: {"version": "<new version>", "date": "<YYYY-MM-DD>", "change": "<description>"}
 - Keep the page structure intact: h1 title, version badge, meta lines
 - Changes must be clearly visible on the page
 - Keep the page clean and minimal
@@ -137,6 +137,25 @@ def run_tests():
     return result.returncode == 0, result.stdout, result.stderr
 
 
+def parse_test_results(stdout):
+    results = []
+    for line in stdout.splitlines():
+        line = line.strip()
+        if line.startswith("PASS"):
+            results.append({"status": "pass", "message": line[4:].strip()})
+        elif line.startswith("FAIL"):
+            results.append({"status": "fail", "message": line[4:].strip()})
+    return results
+
+
+def capture_diff():
+    result = subprocess.run(
+        ["git", "diff", INDEX_FILE, VERSION_FILE],
+        capture_output=True, text=True,
+    )
+    return result.stdout
+
+
 def git_push(summary):
     subprocess.run(["git", "add", INDEX_FILE, VERSION_FILE, BACKLOG_FILE], check=True)
     subprocess.run(["git", "commit", "-m", summary], check=True)
@@ -187,10 +206,13 @@ def run_one():
 
     print(f"Story   : {result['story']}")
     print(f"Summary : {result['summary']}")
-    print("Running tests...")
 
+    diff = capture_diff()
+
+    print("Running tests...")
     passed, stdout, stderr = run_tests()
     print(stdout.strip())
+    test_results = parse_test_results(stdout)
 
     if not passed:
         print("TESTS FAILED — rolling back")
@@ -198,6 +220,10 @@ def run_one():
             print(stderr.strip())
         rollback()
         item["status"] = "failed"
+        item["story"] = result.get("story", "")
+        item["acceptance_criteria"] = result.get("acceptance_criteria", [])
+        item["diff"] = diff
+        item["test_results"] = test_results
         save_backlog(backlog)
         return False
 
@@ -213,7 +239,10 @@ def run_one():
 
     item["status"] = "done"
     item["story"] = result["story"]
+    item["acceptance_criteria"] = result.get("acceptance_criteria", [])
     item["summary"] = result["summary"]
+    item["diff"] = diff
+    item["test_results"] = test_results
     item["deployed"] = timestamp
     save_backlog(backlog)
 

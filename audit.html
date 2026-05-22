@@ -122,6 +122,51 @@
     .detail-label { font-size: 0.7rem; color: #444; text-transform: uppercase; }
     .detail-value { font-size: 0.85rem; color: #aaa; }
 
+    .section {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid #2a2a2a;
+    }
+    .section-title {
+      font-size: 0.7rem;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+    }
+    .story-text { font-size: 0.9rem; color: #ccc; line-height: 1.5; }
+    .ac-list { list-style: none; padding: 0; }
+    .ac-list li {
+      font-size: 0.85rem;
+      color: #aaa;
+      padding: 0.2rem 0;
+    }
+    .ac-list li::before { content: "✓ "; color: #00ff9960; }
+    .diff-block {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 4px;
+      padding: 0.75rem;
+      font-size: 0.75rem;
+      overflow-x: auto;
+      white-space: pre;
+      line-height: 1.5;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .diff-add { color: #00ff99; }
+    .diff-remove { color: #ff4444; }
+    .diff-meta { color: #555; }
+    .test-list { list-style: none; padding: 0; }
+    .test-list li {
+      font-size: 0.82rem;
+      padding: 0.25rem 0;
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+    .test-pass { color: #00ff99; }
+    .test-fail { color: #ff4444; }
+    .test-msg { color: #888; }
     .empty { color: #333; text-align: center; padding: 3rem; }
     .loading { color: #444; text-align: center; padding: 3rem; }
     .error { color: #ff4444; text-align: center; padding: 3rem; }
@@ -155,6 +200,27 @@
       return `<span class="badge badge-${status}">${status}</span>`;
     }
 
+    function renderDiff(diff) {
+      if (!diff) return "";
+      const lines = diff.split("\n").map(line => {
+        if (line.startsWith("+") && !line.startsWith("+++"))
+          return `<span class="diff-add">${escHtml(line)}</span>`;
+        if (line.startsWith("-") && !line.startsWith("---"))
+          return `<span class="diff-remove">${escHtml(line)}</span>`;
+        if (line.startsWith("@@") || line.startsWith("diff") || line.startsWith("index"))
+          return `<span class="diff-meta">${escHtml(line)}</span>`;
+        return escHtml(line);
+      });
+      return `<div class="section">
+        <div class="section-title">Code Changes</div>
+        <div class="diff-block">${lines.join("\n")}</div>
+      </div>`;
+    }
+
+    function escHtml(str) {
+      return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+
     function renderItem(item) {
       const steps = STEPS.map((label, i) => {
         const s = stepStatus(item, i);
@@ -164,31 +230,50 @@
         </div>`;
       }).join("");
 
-      const detail = item.status === "done" ? `
-        <div class="item-detail">
-          <div class="detail-row full">
-            <div class="detail-label">User Story</div>
-            <div class="detail-value">${item.story || "—"}</div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-label">Summary</div>
-            <div class="detail-value">${item.summary || "—"}</div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-label">Deployed</div>
-            <div class="detail-value">${item.deployed || "—"}</div>
-          </div>
+      const hasDetail = item.status === "done" || item.status === "failed";
+
+      const storySection = item.story ? `
+        <div class="section">
+          <div class="section-title">User Story</div>
+          <div class="story-text">${escHtml(item.story)}</div>
+          ${item.acceptance_criteria && item.acceptance_criteria.length ? `
+            <ul class="ac-list" style="margin-top:0.5rem">
+              ${item.acceptance_criteria.map(c => `<li>${escHtml(c)}</li>`).join("")}
+            </ul>` : ""}
+        </div>` : "";
+
+      const diffSection = renderDiff(item.diff);
+
+      const testSection = item.test_results && item.test_results.length ? `
+        <div class="section">
+          <div class="section-title">Test Results</div>
+          <ul class="test-list">
+            ${item.test_results.map(t => `
+              <li>
+                <span class="${t.status === 'pass' ? 'test-pass' : 'test-fail'}">${t.status === 'pass' ? 'PASS' : 'FAIL'}</span>
+                <span class="test-msg">${escHtml(t.message)}</span>
+              </li>`).join("")}
+          </ul>
+        </div>` : "";
+
+      const deploySection = item.deployed ? `
+        <div class="section">
+          <div class="section-title">Deploy Info</div>
+          <div class="detail-value" style="font-size:0.85rem;color:#aaa">${escHtml(item.summary || "")} — ${escHtml(item.deployed)}</div>
         </div>` : "";
 
       return `
         <div class="item">
           <div class="item-header">
             <div class="item-id">#${item.id}</div>
-            <div class="item-idea">${item.idea}</div>
+            <div class="item-idea">${escHtml(item.idea)}</div>
             ${badge(item.status)}
           </div>
           <div class="steps">${steps}</div>
-          ${detail}
+          ${storySection}
+          ${diffSection}
+          ${testSection}
+          ${deploySection}
         </div>`;
     }
 

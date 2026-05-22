@@ -34,10 +34,14 @@
       color: #888;
       margin: 0.25rem 0;
     }
-    .audit-btn {
+    .top-nav {
       position: fixed;
       top: 1rem;
       right: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .audit-btn {
       font-family: monospace;
       font-size: 0.85rem;
       background: #1a1a1a;
@@ -122,7 +126,10 @@
   </style>
 </head>
 <body>
-  <a class="audit-btn" href="audit.html">Audit</a>
+  <nav class="top-nav">
+    <a class="audit-btn" href="/">Board</a>
+    <a class="audit-btn" href="audit.html">Audit</a>
+  </nav>
   <h1>Hello Scrum</h1>
   <div class="tagline">Iterate. Improve. Deliver.</div>
   <div class="version">v0.1.3</div>

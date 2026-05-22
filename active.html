@@ -194,6 +194,39 @@
       border: 1px solid #ff444440;
       color: #ff6666;
     }
+
+    .log-panel {
+      width: 100%;
+      max-width: 620px;
+      margin-top: 1rem;
+      background: #111;
+      border: 1px solid #1e1e1e;
+      border-radius: 10px;
+      overflow: hidden;
+      display: none;
+    }
+    .log-panel-header {
+      padding: 0.5rem 1.25rem;
+      border-bottom: 1px solid #1a1a1a;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #333;
+    }
+    .log-output {
+      padding: 0.6rem 1.25rem;
+      font-size: 0.75rem;
+      line-height: 1.7;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+    .log-line     { color: #444; white-space: pre-wrap; }
+    .log-pass     { color: #00ff9990; }
+    .log-fail     { color: #ff444490; }
+    .log-approve  { color: #00ff99; }
+    .log-reject   { color: #ff4444; }
+    .log-deploy   { color: #e0e0e0; }
+    .log-section  { color: #00ff9940; }
   </style>
 </head>
 <body>
@@ -205,6 +238,10 @@
   </nav>
 
   <div id="root"></div>
+  <div class="log-panel" id="log-panel">
+    <div class="log-panel-header">Agent Output</div>
+    <div class="log-output" id="log-output"></div>
+  </div>
   <button id="clear-btn" onclick="clearActive()">✕ clear stuck state</button>
 
   <script>
@@ -221,6 +258,7 @@
     };
 
     let lastStage = undefined;
+    let lastLogCount = 0;
 
     function render(data) {
       const root = document.getElementById("root");
@@ -286,6 +324,46 @@
       lastStage = undefined;
     }
 
+    function logColorClass(line) {
+      if (line.startsWith('PASS'))                             return 'log-pass';
+      if (line.startsWith('FAIL') || line.includes('FAILED')) return 'log-fail';
+      if (line.startsWith('Hermes: APPROVE'))                 return 'log-approve';
+      if (line.startsWith('Hermes: REJECT'))                  return 'log-reject';
+      if (line.startsWith('Deployed:') || line.startsWith('Live at')) return 'log-deploy';
+      if (line.startsWith('==='))                             return 'log-section';
+      return '';
+    }
+
+    async function pollLog() {
+      try {
+        const res = await fetch('/agent-log');
+        const data = await res.json();
+        const lines = data.lines || [];
+        const panel = document.getElementById('log-panel');
+        const out   = document.getElementById('log-output');
+
+        if (lines.length === 0) {
+          panel.style.display = 'none';
+          lastLogCount = 0;
+          return;
+        }
+
+        panel.style.display = 'block';
+
+        if (lines.length !== lastLogCount) {
+          const newLines = lines.slice(lastLogCount);
+          newLines.forEach(line => {
+            const div = document.createElement('div');
+            div.className = 'log-line ' + logColorClass(line);
+            div.textContent = line;
+            out.appendChild(div);
+          });
+          out.scrollTop = out.scrollHeight;
+          lastLogCount = lines.length;
+        }
+      } catch (e) {}
+    }
+
     async function poll() {
       try {
         const res = await fetch("/active.json?t=" + Date.now());
@@ -298,7 +376,9 @@
     }
 
     poll();
+    pollLog();
     setInterval(poll, 1500);
+    setInterval(pollLog, 1500);
   </script>
 </body>
 </html>

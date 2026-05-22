@@ -22,6 +22,7 @@ ACTIVE_FILE  = os.path.join(BASE, "active.json")
 
 agent_running = False
 agent_lock = threading.Lock()
+agent_log = []
 
 # clear stale active state on startup
 with open(ACTIVE_FILE, "w") as _f:
@@ -87,6 +88,11 @@ def save_backlog():
     return jsonify({"ok": True})
 
 
+@app.route("/agent-log")
+def get_agent_log():
+    return jsonify({"lines": agent_log})
+
+
 @app.route("/sprint/status")
 def sprint_status():
     return jsonify({"running": agent_running})
@@ -102,7 +108,8 @@ def start_sprint():
         agent_running = True
 
     def generate():
-        global agent_running
+        global agent_running, agent_log
+        agent_log = []
         try:
             proc = subprocess.Popen(
                 ["python", "agent.py", "--sprint"],
@@ -113,7 +120,9 @@ def start_sprint():
                 env=os.environ.copy(),
             )
             for line in proc.stdout:
-                yield f"data: {json.dumps(line.rstrip())}\n\n"
+                stripped = line.rstrip()
+                agent_log.append(stripped)
+                yield f"data: {json.dumps(stripped)}\n\n"
             proc.wait()
         finally:
             agent_running = False

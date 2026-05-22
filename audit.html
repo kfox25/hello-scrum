@@ -358,7 +358,14 @@
     fetch("backlog.json?t=" + Date.now())
       .then(r => r.json())
       .then(data => {
-        const items = data.items.filter(i => i.status !== "pending");
+        const items = data.items
+          .filter(i => i.status !== "pending")
+          .sort((a, b) => {
+            if (a.deployed && b.deployed) return a.deployed.localeCompare(b.deployed);
+            if (a.deployed) return -1;
+            if (b.deployed) return 1;
+            return a.id - b.id;
+          });
         if (!items.length) {
           document.getElementById("log").innerHTML = '<div class="empty">No completed items yet.</div>';
           return;

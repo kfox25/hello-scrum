@@ -69,7 +69,36 @@
     {
       "id": 3,
       "idea": "Add a changelog section showing the last 3 updates",
-      "status": "pending"
+      "status": "done",
+      "story": "As a user, I want to see a changelog section showing the last 3 updates so that I can quickly understand what has recently changed in the app.",
+      "acceptance_criteria": [
+        "A changelog section is visible on the main page showing the 3 most recent updates",
+        "Each entry displays the version number, date, and description of the change",
+        "The section is styled consistently with the rest of the dark monospace theme",
+        "The features deployed counter increments to reflect the new feature",
+        "Version is bumped to 0.1.3 and deploy timestamp is updated"
+      ],
+      "summary": "Add changelog section displaying the 3 most recent releases",
+      "diff": "diff --git a/index.html b/index.html\nindex 7f5c35a..55575b8 100644\n--- a/index.html\n+++ b/index.html\n@@ -13,8 +13,10 @@\n       flex-direction: column;\n       align-items: center;\n       justify-content: center;\n-      height: 100vh;\n+      min-height: 100vh;\n       margin: 0;\n+      padding: 2rem 1rem;\n+      box-sizing: border-box;\n     }\n     h1 {\n       font-size: 3rem;\n@@ -77,18 +79,76 @@\n       text-transform: uppercase;\n       letter-spacing: 0.1em;\n     }\n+    .changelog {\n+      margin-top: 1.5rem;\n+      background: #1a1a1a;\n+      border: 1px solid #333;\n+      border-radius: 6px;\n+      padding: 1rem 1.5rem;\n+      width: 100%;\n+      max-width: 480px;\n+    }\n+    .changelog h2 {\n+      font-size: 0.85rem;\n+      text-transform: uppercase;\n+      letter-spacing: 0.1em;\n+      color: #888;\n+      margin: 0 0 0.75rem 0;\n+    }\n+    .changelog-entry {\n+      display: flex;\n+      align-items: baseline;\n+      gap: 0.75rem;\n+      padding: 0.35rem 0;\n+      border-top: 1px solid #222;\n+    }\n+    .changelog-entry:first-of-type {\n+      border-top: none;\n+    }\n+    .changelog-entry .cv {\n+      color: #00ff99;\n+      font-size: 0.8rem;\n+      white-space: nowrap;\n+    }\n+    .changelog-entry .cd {\n+      color: #555;\n+      font-size: 0.75rem;\n+      white-space: nowrap;\n+    }\n+    .changelog-entry .ct {\n+      color: #ccc;\n+      font-size: 0.85rem;\n+    }\n   </style>\n </head>\n <body>\n   <a class=\"audit-btn\" href=\"audit.html\">Audit</a>\n   <h1>Hello Scrum</h1>\n   <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n-  <div class=\"version\">v0.1.2</div>\n+  <div class=\"version\">v0.1.3</div>\n   <div class=\"features-counter\">\n-    <div class=\"count\">3</div>\n+    <div class=\"count\">4</div>\n     <div class=\"label\">Features Deployed</div>\n   </div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 15:01:57 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 15:09:42 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n+  <div class=\"changelog\">\n+    <h2>Recent Changes</h2>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.3</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"ct\">Added changelog section showing the last 3 updates</span>\n+    </div>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.2</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"ct\">Added features deployed counter that increments with each release</span>\n+    </div>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.1</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"ct\">Added motivational tagline below the title</span>\n+    </div>\n+  </div>\n </body>\n </html>\n\\ No newline at end of file\ndiff --git a/version.json b/version.json\nindex e1897d5..b882088 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.2\",\n-  \"deployed\": \"2026-05-22 15:01:57 CT\",\n+  \"version\": \"0.1.3\",\n+  \"deployed\": \"2026-05-22 15:09:42 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -17,6 +17,11 @@\n       \"version\": \"0.1.2\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Added features deployed counter that increments with each release\"\n+    },\n+    {\n+      \"version\": \"0.1.3\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Added changelog section showing the last 3 updates\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.3 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-22 15:09:42 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.3: Added changelog section showing the last 3 updates"
+        }
+      ],
+      "deployed": "2026-05-22 15:09:42 CT"
     }
   ]
 }

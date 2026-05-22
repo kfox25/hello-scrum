@@ -13,8 +13,10 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
+      padding: 2rem 1rem;
+      box-sizing: border-box;
     }
     h1 {
       font-size: 3rem;
@@ -77,18 +79,76 @@
       text-transform: uppercase;
       letter-spacing: 0.1em;
     }
+    .changelog {
+      margin-top: 1.5rem;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 1rem 1.5rem;
+      width: 100%;
+      max-width: 480px;
+    }
+    .changelog h2 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #888;
+      margin: 0 0 0.75rem 0;
+    }
+    .changelog-entry {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      padding: 0.35rem 0;
+      border-top: 1px solid #222;
+    }
+    .changelog-entry:first-of-type {
+      border-top: none;
+    }
+    .changelog-entry .cv {
+      color: #00ff99;
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+    .changelog-entry .cd {
+      color: #555;
+      font-size: 0.75rem;
+      white-space: nowrap;
+    }
+    .changelog-entry .ct {
+      color: #ccc;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 <body>
   <a class="audit-btn" href="audit.html">Audit</a>
   <h1>Hello Scrum</h1>
   <div class="tagline">Iterate. Improve. Deliver.</div>
-  <div class="version">v0.1.2</div>
+  <div class="version">v0.1.3</div>
   <div class="features-counter">
-    <div class="count">3</div>
+    <div class="count">4</div>
     <div class="label">Features Deployed</div>
   </div>
-  <div class="meta">Last deployed: 2026-05-22 15:01:57 CT</div>
+  <div class="meta">Last deployed: 2026-05-22 15:09:42 CT</div>
   <div class="meta">Status: baseline</div>
+  <div class="changelog">
+    <h2>Recent Changes</h2>
+    <div class="changelog-entry">
+      <span class="cv">v0.1.3</span>
+      <span class="cd">2026-05-22</span>
+      <span class="ct">Added changelog section showing the last 3 updates</span>
+    </div>
+    <div class="changelog-entry">
+      <span class="cv">v0.1.2</span>
+      <span class="cd">2026-05-22</span>
+      <span class="ct">Added features deployed counter that increments with each release</span>
+    </div>
+    <div class="changelog-entry">
+      <span class="cv">v0.1.1</span>
+      <span class="cd">2026-05-22</span>
+      <span class="ct">Added motivational tagline below the title</span>
+    </div>
+  </div>
 </body>
 </html>

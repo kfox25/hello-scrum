@@ -170,6 +170,17 @@
     .empty { color: #333; text-align: center; padding: 3rem; }
     .loading { color: #444; text-align: center; padding: 3rem; }
     .error { color: #ff4444; text-align: center; padding: 3rem; }
+    .item-header { cursor: pointer; user-select: none; }
+    .item-header:hover { background: #1f1f1f; }
+    .chevron {
+      font-size: 0.7rem;
+      color: #444;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .item-body { display: none; }
+    .item.expanded .item-body { display: block; }
+    .item.expanded .chevron { transform: rotate(90deg); }
   </style>
 </head>
 <body>
@@ -262,18 +273,23 @@
           <div class="detail-value" style="font-size:0.85rem;color:#aaa">${escHtml(item.summary || "")} — ${escHtml(item.deployed)}</div>
         </div>` : "";
 
+      const expandedClass = item.status === "done" ? " expanded" : "";
+
       return `
-        <div class="item">
-          <div class="item-header">
+        <div class="item${expandedClass}">
+          <div class="item-header" onclick="this.closest('.item').classList.toggle('expanded')">
             <div class="item-id">#${item.id}</div>
             <div class="item-idea">${escHtml(item.idea)}</div>
             ${badge(item.status)}
+            <span class="chevron">&#9658;</span>
           </div>
-          <div class="steps">${steps}</div>
-          ${storySection}
-          ${diffSection}
-          ${testSection}
-          ${deploySection}
+          <div class="item-body">
+            <div class="steps">${steps}</div>
+            ${storySection}
+            ${diffSection}
+            ${testSection}
+            ${deploySection}
+          </div>
         </div>`;
     }
 

@@ -1,6 +1,6 @@
 {
-  "version": "0.1.5",
-  "deployed": "2026-05-22 16:46:54 CT",
+  "version": "0.1.6",
+  "deployed": "2026-05-22 17:45:44 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -32,6 +32,11 @@
       "version": "0.1.5",
       "date": "2026-05-22",
       "change": "Added mascot, motto badge, and scrum fun fact to give the page more personality"
+    },
+    {
+      "version": "0.1.6",
+      "date": "2026-05-22",
+      "change": "Added interactive hover card that glows, scales, and animates on hover"
     }
   ]
 }

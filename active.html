@@ -37,6 +37,21 @@
       text-decoration: none;
     }
     .top-nav a:hover { background: #0d3320; border-color: #00ff99; }
+    #clear-btn {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      font-family: monospace;
+      font-size: 0.75rem;
+      background: none;
+      color: #333;
+      border: 1px solid #222;
+      padding: 0.3rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      display: none;
+    }
+    #clear-btn:hover { color: #888; border-color: #444; }
 
     /* idle state */
     .idle {
@@ -160,6 +175,7 @@
   </nav>
 
   <div id="root"></div>
+  <button id="clear-btn" onclick="clearActive()">✕ clear stuck state</button>
 
   <script>
     const STAGES = ["pull", "story", "code", "test", "review", "deploy"];
@@ -185,8 +201,10 @@
             <div class="idle-title">No active work</div>
             <div class="idle-sub">Start a sprint from the board</div>
           </div>`;
+        document.getElementById('clear-btn').style.display = 'none';
         return;
       }
+      document.getElementById('clear-btn').style.display = 'block';
 
       const stageIdx = STAGES.indexOf(data.stage);
 
@@ -216,6 +234,11 @@
 
     function escHtml(s) {
       return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+
+    async function clearActive() {
+      await fetch('/active/clear', { method: 'POST' });
+      lastStage = undefined;
     }
 
     async function poll() {

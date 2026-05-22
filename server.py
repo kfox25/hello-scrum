@@ -18,9 +18,14 @@ from flask import Flask, Response, jsonify, request, send_file
 app = Flask(__name__)
 BASE = os.path.dirname(os.path.abspath(__file__))
 BACKLOG_FILE = os.path.join(BASE, "backlog.json")
+ACTIVE_FILE  = os.path.join(BASE, "active.json")
 
 agent_running = False
 agent_lock = threading.Lock()
+
+# clear stale active state on startup
+with open(ACTIVE_FILE, "w") as _f:
+    json.dump({"item_id": None, "stage": None}, _f)
 
 
 @app.route("/")
@@ -54,6 +59,13 @@ def active_json():
 @app.route("/active.html")
 def active_page():
     return send_file(os.path.join(BASE, "active.html"))
+
+
+@app.route("/active/clear", methods=["POST"])
+def clear_active():
+    with open(ACTIVE_FILE, "w") as f:
+        json.dump({"item_id": None, "stage": None}, f)
+    return jsonify({"ok": True})
 
 
 @app.route("/backlog", methods=["GET"])

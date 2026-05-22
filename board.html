@@ -303,10 +303,10 @@
         ? sprintItems.map(renderCard).join('')
         : '<div class="empty-hint">Drag items here to add to sprint</div>';
 
-      const hasPending = sprintItems.some(i => i.status === 'pending');
-      const hasDone    = sprintItems.some(i => i.status === 'done');
+      const hasPending    = sprintItems.some(i => i.status === 'pending');
+      const hasFinished   = sprintItems.some(i => i.status === 'done' || i.status === 'failed');
       document.getElementById('start-btn').disabled    = !hasPending;
-      document.getElementById('complete-btn').disabled = !hasDone;
+      document.getElementById('complete-btn').disabled = !hasFinished;
     }
 
     function renderCard(item) {
@@ -417,7 +417,7 @@
 
     function completeSprint() {
       backlogData.items.forEach(i => {
-        if (i.in_sprint && i.status === 'done') i.in_sprint = false;
+        if (i.in_sprint && (i.status === 'done' || i.status === 'failed')) i.in_sprint = false;
       });
       renderBoard();
       persistBacklog();

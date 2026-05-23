@@ -370,7 +370,13 @@ def run_one(sprint_only=False):
         clear_active()
         return False
 
-    log(f"Story   : {result['story']}")
+    log("=== USER STORY ===")
+    log(result['story'])
+    log("")
+    log("Acceptance Criteria:")
+    for i, ac in enumerate(result.get("acceptance_criteria", []), 1):
+        log(f"  {i}. {ac}")
+    log("")
     log(f"Summary : {result['summary']}")
 
     diff = capture_diff()

@@ -324,6 +324,11 @@
         const end = item.stage_times['done'] || item.stage_times['failed'];
         return end ? '⏱ ' + fmtSecs(end - item.started) + ' total' : '';
       })();
+      const tokenLine = (() => {
+        if (!item.tokens_in && !item.tokens_out) return '';
+        function ft(n) { return n >= 1000 ? (n/1000).toFixed(1)+'k' : String(n||0); }
+        return `↑${ft(item.tokens_in)} ↓${ft(item.tokens_out)} tok`;
+      })();
 
       const storySection = item.story ? `
         <div class="section">
@@ -390,7 +395,7 @@
           </div>
           <div class="item-body">
             <div class="steps">${steps}</div>
-            ${totalTime ? `<div class="steps-total">${totalTime}</div>` : ''}
+            ${(totalTime || tokenLine) ? `<div class="steps-total">${totalTime}${totalTime && tokenLine ? '  ·  ' : ''}${tokenLine}</div>` : ''}
             ${failureSection}
             ${storySection}
             ${diffSection}

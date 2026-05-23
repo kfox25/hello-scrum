@@ -91,13 +91,60 @@
       "ac_check_verdict": "approve",
       "ac_check_reason": "All acceptance criteria are satisfied: a horizontal separator line now appears above the footer using the new `.footer-sep` class with dark terminal aesthetic styling (#2a2a2a), the original footer border-top has been removed to prevent duplication, and the changelog entry properly documents the change.",
       "hermes_verdict": "approve",
-      "hermes_reason": "Code review: The change correctly implements a separator line using semantic HTML (`<hr>` element) with appropriate CSS styling, maintains consistent design patterns, and has no syntax errors or broken styles. | AC: All acceptance criteria are satisfied: a horizontal separator line now appears above the footer using the new `.footer-sep` class with dark terminal aesthetic styling (#2a2a2a), the original footer border-top has been removed to prevent duplication, and the changelog entry properly documents the change."
+      "hermes_reason": "Code review: The change correctly implements a separator line using semantic HTML (`<hr>` element) with appropriate CSS styling, maintains consistent design patterns, and has no syntax errors or broken styles. | AC: All acceptance criteria are satisfied: a horizontal separator line now appears above the footer using the new `.footer-sep` class with dark terminal aesthetic styling (#2a2a2a), the original footer border-top has been removed to prevent duplication, and the changelog entry properly documents the change.",
+      "started": 1779568543.809219,
+      "stage_times": {
+        "pull": 1779568543.809219,
+        "story": 1779568543.809219,
+        "code": 1779568563.778179,
+        "test": 1779568563.894973,
+        "code_review": 1779568564.052132,
+        "ac_check": 1779568565.344033,
+        "deploy": 1779568567.235257,
+        "done": 1779568570.186815
+      },
+      "tokens_in": 6396,
+      "tokens_out": 2111
     },
     {
       "id": "1779568458518",
       "idea": "Add the GitHub repo URL to the footer",
-      "status": "pending",
-      "in_sprint": true
+      "status": "done",
+      "in_sprint": true,
+      "story": "As a visitor, I want to see the GitHub repo URL in the footer so that I can easily find and access the project's source code.",
+      "acceptance_criteria": [
+        "The footer contains a visible link to the GitHub repository URL",
+        "The link opens in a new tab",
+        "The link styling matches the existing terminal/neon aesthetic of the page",
+        "The link is positioned within the existing footer element"
+      ],
+      "summary": "Add GitHub repo URL link to footer",
+      "diff": "diff --git a/index.html b/index.html\nindex 1c11361..4b49a25 100644\n--- a/index.html\n+++ b/index.html\n@@ -100,6 +100,14 @@\n       letter-spacing: 0.08em;\n     }\n     .site-footer span { color: #00ff9955; }\n+    .footer-repo-link {\n+      color: #00ff9966;\n+      text-decoration: none;\n+      letter-spacing: 0.06em;\n+      font-size: 0.72rem;\n+      transition: color 0.2s;\n+    }\n+    .footer-repo-link:hover { color: #00ff99; }\n     .footer-sep {\n       width: 100%;\n       max-width: 480px;\n@@ -123,8 +131,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.25</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 15:35:43 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.26</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 15:45:17 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -154,7 +162,8 @@\n   </script>\n   <hr class=\"footer-sep\" />\n   <footer class=\"site-footer\">\n-    <span>&copy;</span> 2026 Hello Scrum &mdash; ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it\n+    <span>&copy;</span> 2026 Hello Scrum &mdash; ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it<br/>\n+    <a href=\"https://github.com/hello-scrum/hello-scrum\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"footer-repo-link\">github.com/hello-scrum/hello-scrum</a>\n   </footer>\n </body>\n </html>\ndiff --git a/version.json b/version.json\nindex d7a4c27..7453317 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.25\",\n-  \"deployed\": \"2026-05-23 15:35:43 CT\",\n+  \"version\": \"0.1.26\",\n+  \"deployed\": \"2026-05-23 15:45:17 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -132,6 +132,11 @@\n       \"version\": \"0.1.25\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added separator line above footer to visually distinguish footer from main page content\"\n+    },\n+    {\n+      \"version\": \"0.1.26\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added GitHub repo URL link to footer in muted neon green style\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.26 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-23 15:45:17 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.26: Added GitHub repo URL link to footer in muted neon green style"
+        }
+      ],
+      "deployed": "2026-05-23 15:45:17 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The change adds a GitHub link with appropriate styling, correct security attributes (noopener noreferrer), valid HTML structure, and properly updates version/deployment metadata without introducing syntax errors or breaking existing functionality.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "AC check failed \u2014 defaulting to approve",
+      "hermes_verdict": "approve",
+      "hermes_reason": "Code review: The change adds a GitHub link with appropriate styling, correct security attributes (noopener noreferrer), valid HTML structure, and properly updates version/deployment metadata without introducing syntax errors or breaking existing functionality. | AC: AC check failed \u2014 defaulting to approve"
     },
     {
       "id": "1779568458519",

@@ -1,6 +1,6 @@
 {
-  "version": "0.1.25",
-  "deployed": "2026-05-23 15:35:43 CT",
+  "version": "0.1.26",
+  "deployed": "2026-05-23 15:45:17 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -132,6 +132,11 @@
       "version": "0.1.25",
       "date": "2026-05-23",
       "change": "Added separator line above footer to visually distinguish footer from main page content"
+    },
+    {
+      "version": "0.1.26",
+      "date": "2026-05-23",
+      "change": "Added GitHub repo URL link to footer in muted neon green style"
     }
   ]
 }

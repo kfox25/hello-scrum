@@ -166,13 +166,26 @@ Current version.json:
 
 Implement this idea. Return JSON only."""
 
-    message = client.messages.create(
+    full_text = ""
+    line_buffer = ""
+
+    with client.messages.stream(
         model="claude-sonnet-4-6",
         max_tokens=8192,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": prompt}],
-    )
-    return message.content[0].text
+    ) as stream:
+        for chunk in stream.text_stream:
+            full_text += chunk
+            line_buffer += chunk
+            while "\n" in line_buffer:
+                line, line_buffer = line_buffer.split("\n", 1)
+                log(line)
+
+    if line_buffer.strip():
+        log(line_buffer)
+
+    return full_text
 
 
 def auto_update_html(content, version_json_data, timestamp):

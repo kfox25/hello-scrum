@@ -406,10 +406,10 @@
         const items = data.items
           .filter(i => i.status !== "pending")
           .sort((a, b) => {
-            if (a.deployed && b.deployed) return a.deployed.localeCompare(b.deployed);
-            if (a.deployed) return -1;
-            if (b.deployed) return 1;
-            return a.id - b.id;
+            if (a.deployed && b.deployed) return b.deployed.localeCompare(a.deployed);
+            if (a.deployed) return 1;
+            if (b.deployed) return -1;
+            return b.id - a.id;
           });
         if (!items.length) {
           document.getElementById("log").innerHTML = '<div class="empty">No completed items yet.</div>';

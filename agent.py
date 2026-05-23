@@ -28,8 +28,18 @@ REPO_URL     = "https://kfox25.github.io/hello-scrum"
 _log_lines = []
 
 def log(msg=""):
-    print(msg, flush=True)
+    print(msg)
     _log_lines.append(str(msg))
+    try:
+        with open(LOG_FILE, "w") as f:
+            json.dump(_log_lines, f)
+    except Exception:
+        pass
+
+def log_lines(lines):
+    for line in lines:
+        print(line)
+    _log_lines.extend(lines)
     try:
         with open(LOG_FILE, "w") as f:
             json.dump(_log_lines, f)
@@ -297,8 +307,7 @@ def run_one(sprint_only=False):
 
     diff = capture_diff()
     if diff:
-        for line in diff.splitlines():
-            log(line)
+        log_lines([l for l in diff.splitlines() if l])
 
     log("Running tests...")
     write_active(item, "test")

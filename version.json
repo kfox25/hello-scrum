@@ -1,6 +1,6 @@
 {
-  "version": "0.1.20",
-  "deployed": "2026-05-22 21:52:43 CT",
+  "version": "0.1.21",
+  "deployed": "2026-05-22 21:58:58 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -107,6 +107,11 @@
       "version": "0.1.20",
       "date": "2026-05-22",
       "change": "Added a rotating animated subtitle under the title that cycles through Scrum-themed phrases with a blinking cursor"
+    },
+    {
+      "version": "0.1.21",
+      "date": "2026-05-22",
+      "change": "Reduced visual noise: slowed title shimmer, health ping, subtitle cycle, cursor blink, and streak pulse so the page feels calm and readable"
     }
   ]
 }

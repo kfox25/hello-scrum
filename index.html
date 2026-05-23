@@ -14,9 +14,14 @@
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
+    @keyframes title-shimmer-slow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
     @keyframes health-ping {
-      0% { transform: scale(1); opacity: 1; }
-      70% { transform: scale(2.2); opacity: 0; }
+      0% { transform: scale(1); opacity: 0.6; }
+      70% { transform: scale(1.8); opacity: 0; }
       100% { transform: scale(1); opacity: 0; }
     }
     @keyframes tip-fade {
@@ -31,15 +36,19 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0; }
     }
+    @keyframes cursor-blink-slow {
+      0%, 45% { opacity: 1; }
+      55%, 100% { opacity: 0; }
+    }
     @keyframes subtitle-fade {
-      0% { opacity: 0; transform: translateY(4px); }
-      15% { opacity: 1; transform: translateY(0); }
-      80% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-4px); }
+      0% { opacity: 0; transform: translateY(3px); }
+      10% { opacity: 1; transform: translateY(0); }
+      85% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-3px); }
     }
     @keyframes streak-pulse {
-      0% { box-shadow: 0 0 0 0 #ff6b2b44; }
-      70% { box-shadow: 0 0 0 8px #ff6b2b00; }
+      0% { box-shadow: 0 0 0 0 #ff6b2b22; }
+      70% { box-shadow: 0 0 0 6px #ff6b2b00; }
       100% { box-shadow: 0 0 0 0 #ff6b2b00; }
     }
     *, *::before, *::after { box-sizing: border-box; }
@@ -65,7 +74,7 @@
       background-clip: text;
       margin: 0 0 0.25rem 0;
       letter-spacing: -1px;
-      animation: fade-in-up 0.5s ease both, title-shimmer 6s ease infinite;
+      animation: fade-in-up 0.5s ease both, title-shimmer-slow 20s ease infinite;
       filter: drop-shadow(0 0 18px #a78bfa55);
     }
     .title-subtitle {
@@ -81,7 +90,7 @@
       animation: fade-in-up 0.5s ease 0.08s both;
     }
     .title-subtitle .subtitle-text {
-      animation: subtitle-fade 4s ease infinite;
+      animation: subtitle-fade 8s ease infinite;
     }
     .title-subtitle .cursor {
       display: inline-block;
@@ -90,7 +99,7 @@
       background: #60a5fa;
       margin-left: 2px;
       vertical-align: middle;
-      animation: cursor-blink 0.8s step-end infinite;
+      animation: cursor-blink-slow 2s step-end infinite;
       border-radius: 1px;
     }
     .tagline {
@@ -242,7 +251,7 @@
       height: 10px;
       background: #00e87a;
       border-radius: 50%;
-      animation: health-ping 2s ease-out infinite;
+      animation: health-ping 4s ease-out infinite;
     }
     .health-label {
       font-size: 0.85rem;
@@ -281,7 +290,7 @@
       padding: 0.65rem 2rem;
       text-align: center;
       margin-bottom: 0.75rem;
-      animation: fade-in-up 0.5s ease 0.28s both, streak-pulse 2.5s ease-out 0.8s infinite;
+      animation: fade-in-up 0.5s ease 0.28s both, streak-pulse 6s ease-out 1s infinite;
     }
     .streak-counter .streak-value {
       font-size: 1.8rem;
@@ -451,11 +460,11 @@
   <div class="title-subtitle"><span class="subtitle-text" id="title-subtitle"></span><span class="cursor"></span></div>
   <div class="tagline">Iterate. Improve. Deliver.</div>
   <div class="version-wrap">
-    <div class="version" id="version-badge" onclick="toggleVersionPopover(event)" title="Click to see what's new">v0.1.20</div>
+    <div class="version" id="version-badge" onclick="toggleVersionPopover(event)" title="Click to see what's new">v0.1.21</div>
     <div class="version-popover" id="version-popover">
-      <div class="vp-version">v0.1.20</div>
+      <div class="vp-version">v0.1.21</div>
       <div class="vp-date">2026-05-22</div>
-      <div class="vp-change">Added a rotating animated subtitle under the title that cycles through Scrum-themed phrases with a blinking cursor</div>
+      <div class="vp-change">Reduced visual noise: slowed title shimmer, health ping, subtitle cycle, cursor blink, and streak pulse so the page feels calm and readable</div>
       <div class="vp-hint">click badge to dismiss</div>
     </div>
   </div>
@@ -468,14 +477,14 @@
     <span class="health-sub">&mdash; all systems operational</span>
   </div>
   <div class="features-counter">
-    <div class="count">21</div>
+    <div class="count">22</div>
     <div class="label">Features Deployed</div>
   </div>
   <div class="streak-counter">
-    <div class="streak-value">&#128293; 21</div>
+    <div class="streak-value">&#128293; 22</div>
     <div class="streak-label">Consecutive Successful Deploys</div>
   </div>
-  <div class="meta">Last deployed: 2026-05-22 21:52:43 CT</div>
+  <div class="meta">Last deployed: 2026-05-22 21:58:58 CT</div>
   <div class="status-row">
     <span class="status-label">Status:</span>
     <span class="status-badge"><span class="status-icon"></span>baseline</span>
@@ -489,6 +498,12 @@
   </div>
   <div class="changelog">
     <h2>Recent Changes</h2>
+    <div class="changelog-entry">
+      <span class="cv">v0.1.21</span>
+      <span class="cd">2026-05-22</span>
+      <span class="sprint-badge">Sprint 3</span>
+      <span class="ct">Reduced visual noise: slowed title shimmer, health ping, subtitle cycle, cursor blink, and streak pulse so the page feels calm and readable</span>
+    </div>
     <div class="changelog-entry">
       <span class="cv">v0.1.20</span>
       <span class="cd">2026-05-22</span>
@@ -662,7 +677,7 @@
       subtitleIndex++;
     }
     cycleSubtitle();
-    setInterval(cycleSubtitle, 4000);
+    setInterval(cycleSubtitle, 8000);
 
     function toggleVersionPopover(event) {
       event.stopPropagation();

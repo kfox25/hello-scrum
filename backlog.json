@@ -1,130 +1,187 @@
 {
   "items": [
     {
-      "id": 42,
-      "idea": "title should be more colorful",
+      "id": 44,
+      "idea": "title is too cool",
       "status": "done",
       "in_sprint": true,
-      "story": "As a user, I want the title to be more colorful so that the page feels vibrant and visually engaging.",
+      "story": "As a user, I want the title to have an animated gradient sweep so it feels dynamic and eye-catching",
+      "acceptance_criteria": [
+        "The title has a continuously animating gradient that sweeps across the text",
+        "The animation is smooth and loops infinitely",
+        "The glow effect pulses subtly in sync with the gradient"
+      ],
+      "summary": "Animated sweeping neon gradient on title with pulsing glow",
+      "diff": "diff --git a/index.html b/index.html\nindex ea10398..ae9f19b 100644\n--- a/index.html\n+++ b/index.html\n@@ -17,17 +17,23 @@\n       margin: 0;\n       padding: 2rem 1rem;\n     }\n+    @keyframes gradientSweep {\n+      0%   { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(0,255,153,0.5)) drop-shadow(0 0 24px rgba(0,229,255,0.25)); }\n+      50%  { background-position: 100% 50%; filter: drop-shadow(0 0 22px rgba(162,89,255,0.7)) drop-shadow(0 0 40px rgba(0,229,255,0.45)); }\n+      100% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(0,255,153,0.5)) drop-shadow(0 0 24px rgba(0,229,255,0.25)); }\n+    }\n     h1 {\n-      font-size: 3rem;\n+      font-size: 3.4rem;\n       margin-bottom: 0.5rem;\n-      letter-spacing: 0.12em;\n-      font-weight: 700;\n-      background: linear-gradient(90deg, #00ff99 0%, #00e5ff 50%, #a259ff 100%);\n+      letter-spacing: 0.15em;\n+      font-weight: 800;\n+      background: linear-gradient(90deg, #00ff99, #00e5ff, #a259ff, #ff6ac1, #00e5ff, #00ff99);\n+      background-size: 300% 300%;\n       -webkit-background-clip: text;\n       -webkit-text-fill-color: transparent;\n       background-clip: text;\n-      filter: drop-shadow(0 0 12px rgba(0, 255, 153, 0.55)) drop-shadow(0 0 28px rgba(0, 229, 255, 0.3));\n       text-transform: uppercase;\n+      animation: gradientSweep 4s ease-in-out infinite;\n     }\n     .title-wrap {\n       display: flex;\n@@ -84,8 +90,8 @@\n     <h1>Hello Scrum</h1>\n \n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.11</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 00:33:46 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.12</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 01:08:01 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex 95e01b2..73319c0 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.11\",\n-  \"deployed\": \"2026-05-23 00:33:46 CT\",\n+  \"version\": \"0.1.12\",\n+  \"deployed\": \"2026-05-23 01:08:01 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -62,6 +62,11 @@\n       \"version\": \"0.1.11\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Sexier title: larger uppercase lettering with green-to-cyan-to-purple gradient and layered neon glow\"\n+    },\n+    {\n+      \"version\": \"0.1.12\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Animated title: sweeping neon gradient loop with pulsing glow in green, cyan, purple, and pink\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.12 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-23 01:08:01 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.12: Animated title: sweeping neon gradient loop with pulsing glow in green, cyan, purple, and pink"
+        }
+      ],
+      "deployed": "2026-05-23 01:08:01 CT",
+      "hermes_verdict": "approve",
+      "hermes_reason": "The implementation adds a continuously looping gradient animation (gradientSweep keyframes at 4s) that sweeps the background-position across the title, includes a pulsing glow effect that changes intensity in sync with the animation, and all acceptance criteria are met with passing tests."
+    },
+    {
+      "id": 45,
+      "idea": "i would like title to be bolder",
+      "status": "pending",
+      "in_sprint": true
+    },
+    {
+      "id": 46,
+      "idea": "title could be spicier",
+      "status": "pending",
+      "in_sprint": true
+    },
+    {
       "acceptance_criteria": [
         "The title 'Hello Scrum' displays with a multi-color gradient (not just two similar warm tones)",
         "The gradient spans at least three distinct hues for a clearly colorful effect",
         "The title retains legibility and clean styling"
       ],
-      "summary": "Make title more colorful with a vibrant five-hue gradient",
+      "deployed": "2026-05-23 00:33:09 CT",
       "diff": "diff --git a/index.html b/index.html\nindex 4b0708f..5145ca9 100644\n--- a/index.html\n+++ b/index.html\n@@ -22,12 +22,12 @@\n       margin-bottom: 0.5rem;\n       letter-spacing: 0.08em;\n       font-weight: 700;\n-      background: linear-gradient(135deg, #ffb347 0%, #ff6b6b 100%);\n+      background: linear-gradient(135deg, #ff6ec7 0%, #ffb347 25%, #ffe033 50%, #6bffb8 75%, #6ec6ff 100%);\n       -webkit-background-clip: text;\n       -webkit-text-fill-color: transparent;\n       background-clip: text;\n       text-shadow: none;\n-      filter: drop-shadow(0 0 10px rgba(255, 160, 80, 0.45));\n+      filter: drop-shadow(0 0 12px rgba(110, 198, 255, 0.5));\n     }\n     .title-wrap {\n       display: flex;\n@@ -52,15 +52,40 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n+    .top-nav {\n+      position: fixed;\n+      top: 1rem;\n+      right: 1rem;\n+      display: flex;\n+      gap: 0.5rem;\n+    }\n+    .top-nav a {\n+      font-family: monospace;\n+      font-size: 0.85rem;\n+      background: #1a1a1a;\n+      color: #00ff99;\n+      border: 1px solid #00ff9940;\n+      padding: 0.4rem 1rem;\n+      border-radius: 4px;\n+      text-decoration: none;\n+    }\n+    .top-nav a:hover { background: #0d3320; border-color: #00ff99; }\n   </style>\n </head>\n <body>\n+  <nav class=\"top-nav\">\n+    <a href=\"/\">Board</a>\n+    <a href=\"active.html\">Active</a>\n+    <a href=\"audit.html\">Audit</a>\n+    <a href=\"workflow.html\">Workflow</a>\n+    <a href=\"retro.html\">Retro</a>\n+  </nav>\n   <div class=\"title-wrap\">\n     <h1>Hello Scrum</h1>\n \n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.8</div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 23:44:22 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.9</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 00:33:09 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex db7015b..c9abdcf 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.8\",\n-  \"deployed\": \"2026-05-22 23:44:22 CT\",\n+  \"version\": \"0.1.9\",\n+  \"deployed\": \"2026-05-23 00:33:09 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -47,6 +47,11 @@\n       \"version\": \"0.1.8\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Made title warmer: replaced cool teal gradient with amber-to-coral warm tones and soft orange glow\"\n+    },\n+    {\n+      \"version\": \"0.1.9\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Made title more colorful: five-stop gradient spanning pink, amber, yellow, mint, and sky blue\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_reason": "The gradient was changed from two warm tones (#ffb347, #ff6b6b) to five distinct hues (pink, amber, yellow, mint, sky blue) spanning the full spectrum, meeting all acceptance criteria while maintaining legibility.",
+      "hermes_verdict": "approve",
+      "id": 42,
+      "idea": "title should be more colorful",
+      "in_sprint": false,
+      "stage_times": {
+        "code": 1779514402.598892,
+        "deploy": 1779514405.029876,
+        "done": 1779514409.394633,
+        "pull": 1779514389.369589,
+        "review": 1779514403.005981,
+        "story": 1779514389.404724,
+        "test": 1779514402.733186
+      },
+      "started": 1779514389.369589,
+      "status": "done",
+      "story": "As a user, I want the title to be more colorful so that the page feels vibrant and visually engaging.",
+      "summary": "Make title more colorful with a vibrant five-hue gradient",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.9 matches between version.json and index.html"
+          "message": "version 0.1.9 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 00:33:09 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-23 00:33:09 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.9: Made title more colorful: five-stop gradient spanning pink, amber, yellow, mint, and sky blue"
+          "message": "changelog has entry for v0.1.9: Made title more colorful: five-stop gradient spanning pink, amber, yellow, mint, and sky blue",
+          "status": "pass"
         }
-      ],
-      "deployed": "2026-05-23 00:33:09 CT",
-      "hermes_verdict": "approve",
-      "hermes_reason": "The gradient was changed from two warm tones (#ffb347, #ff6b6b) to five distinct hues (pink, amber, yellow, mint, sky blue) spanning the full spectrum, meeting all acceptance criteria while maintaining legibility.",
-      "started": 1779514389.369589,
-      "stage_times": {
-        "pull": 1779514389.369589,
-        "story": 1779514389.404724,
-        "code": 1779514402.598892,
-        "test": 1779514402.733186,
-        "review": 1779514403.005981,
-        "deploy": 1779514405.029876,
-        "done": 1779514409.394633
-      }
+      ]
     },
     {
-      "id": 41,
-      "idea": "title doesnt match the rest of the page",
-      "status": "done",
-      "in_sprint": true,
-      "story": "As a user, I want the title styling to match the overall page aesthetic so the page feels cohesive and consistent",
       "acceptance_criteria": [
         "The h1 title uses the same monospace font as the rest of the page",
         "The title color palette is consistent with the green-on-dark terminal theme used elsewhere",
         "The title does not use a multi-color rainbow gradient that clashes with the minimal dark UI"
       ],
-      "summary": "Align title color with terminal green theme to match rest of page",
+      "deployed": "2026-05-23 00:33:29 CT",
       "diff": "diff --git a/index.html b/index.html\nindex 5145ca9..d54383c 100644\n--- a/index.html\n+++ b/index.html\n@@ -22,12 +22,8 @@\n       margin-bottom: 0.5rem;\n       letter-spacing: 0.08em;\n       font-weight: 700;\n-      background: linear-gradient(135deg, #ff6ec7 0%, #ffb347 25%, #ffe033 50%, #6bffb8 75%, #6ec6ff 100%);\n-      -webkit-background-clip: text;\n-      -webkit-text-fill-color: transparent;\n-      background-clip: text;\n-      text-shadow: none;\n-      filter: drop-shadow(0 0 12px rgba(110, 198, 255, 0.5));\n+      color: #00ff99;\n+      text-shadow: 0 0 10px rgba(0, 255, 153, 0.4);\n     }\n     .title-wrap {\n       display: flex;\n@@ -84,8 +80,8 @@\n     <h1>Hello Scrum</h1>\n \n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.9</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 00:33:09 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.10</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 00:33:29 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex c9abdcf..6706c8f 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.9\",\n-  \"deployed\": \"2026-05-23 00:33:09 CT\",\n+  \"version\": \"0.1.10\",\n+  \"deployed\": \"2026-05-23 00:33:29 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -52,6 +52,11 @@\n       \"version\": \"0.1.9\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Made title more colorful: five-stop gradient spanning pink, amber, yellow, mint, and sky blue\"\n+    },\n+    {\n+      \"version\": \"0.1.10\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Aligned title style with page theme: solid #00ff99 green with subtle glow to match terminal aesthetic\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_reason": "The diff successfully removes the clashing rainbow gradient and replaces it with #00ff99 green text with subtle glow effect, matching all three acceptance criteria: monospace font already present, green-on-dark terminal theme applied, and rainbow gradient eliminated.",
+      "hermes_verdict": "approve",
+      "id": 41,
+      "idea": "title doesnt match the rest of the page",
+      "in_sprint": false,
+      "stage_times": {
+        "code": 1779514421.63907,
+        "deploy": 1779514423.597113,
+        "done": 1779514426.927715,
+        "pull": 1779514409.43777,
+        "review": 1779514421.987301,
+        "story": 1779514409.450294,
+        "test": 1779514421.777914
+      },
+      "started": 1779514409.43777,
+      "status": "done",
+      "story": "As a user, I want the title styling to match the overall page aesthetic so the page feels cohesive and consistent",
+      "summary": "Align title color with terminal green theme to match rest of page",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.10 matches between version.json and index.html"
+          "message": "version 0.1.10 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 00:33:29 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-23 00:33:29 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.10: Aligned title style with page theme: solid #00ff99 green with subtle glow to match terminal aesthetic"
+          "message": "changelog has entry for v0.1.10: Aligned title style with page theme: solid #00ff99 green with subtle glow to match terminal aesthetic",
+          "status": "pass"
         }
-      ],
-      "deployed": "2026-05-23 00:33:29 CT",
-      "hermes_verdict": "approve",
-      "hermes_reason": "The diff successfully removes the clashing rainbow gradient and replaces it with #00ff99 green text with subtle glow effect, matching all three acceptance criteria: monospace font already present, green-on-dark terminal theme applied, and rainbow gradient eliminated.",
-      "started": 1779514409.43777,
-      "stage_times": {
-        "pull": 1779514409.43777,
-        "story": 1779514409.450294,
-        "code": 1779514421.63907,
-        "test": 1779514421.777914,
-        "review": 1779514421.987301,
-        "deploy": 1779514423.597113,
-        "done": 1779514426.927715
-      }
+      ]
     },
     {
-      "id": 43,
-      "idea": "title could be sexier",
-      "status": "done",
-      "in_sprint": true,
-      "story": "As a user, I want the page title to look sexier so that the app feels more polished and visually striking at first glance",
       "acceptance_criteria": [
         "The h1 title has a more visually impressive appearance than a plain solid color",
         "The title uses a gradient, glow, or typographic treatment that feels premium",
         "The title remains readable and consistent with the dark terminal aesthetic",
         "No excessive animation that would distract from usability"
       ],
-      "summary": "Upgrade title to uppercase gradient (green\u2192cyan\u2192purple) with neon drop-shadow glow",
+      "deployed": "2026-05-23 00:33:46 CT",
       "diff": "diff --git a/index.html b/index.html\nindex d54383c..a9fdb72 100644\n--- a/index.html\n+++ b/index.html\n@@ -18,12 +18,16 @@\n       padding: 2rem 1rem;\n     }\n     h1 {\n-      font-size: 2.6rem;\n+      font-size: 3rem;\n       margin-bottom: 0.5rem;\n-      letter-spacing: 0.08em;\n+      letter-spacing: 0.12em;\n       font-weight: 700;\n-      color: #00ff99;\n-      text-shadow: 0 0 10px rgba(0, 255, 153, 0.4);\n+      background: linear-gradient(90deg, #00ff99 0%, #00e5ff 50%, #a259ff 100%);\n+      -webkit-background-clip: text;\n+      -webkit-text-fill-color: transparent;\n+      background-clip: text;\n+      filter: drop-shadow(0 0 12px rgba(0, 255, 153, 0.55)) drop-shadow(0 0 28px rgba(0, 229, 255, 0.3));\n+      text-transform: uppercase;\n     }\n     .title-wrap {\n       display: flex;\n@@ -80,8 +84,8 @@\n     <h1>Hello Scrum</h1>\n \n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.10</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 00:33:29 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.11</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 00:33:46 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex 6706c8f..95e01b2 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.10\",\n-  \"deployed\": \"2026-05-23 00:33:29 CT\",\n+  \"version\": \"0.1.11\",\n+  \"deployed\": \"2026-05-23 00:33:46 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -57,6 +57,11 @@\n       \"version\": \"0.1.10\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Aligned title style with page theme: solid #00ff99 green with subtle glow to match terminal aesthetic\"\n+    },\n+    {\n+      \"version\": \"0.1.11\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Sexier title: larger uppercase lettering with green-to-cyan-to-purple gradient and layered neon glow\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_reason": "The implementation adds a vibrant gradient (green-to-cyan-to-purple), layered drop-shadow glow effect, increased font size and letter-spacing, and uppercase styling that clearly satisfies all acceptance criteria\u2014the title is visually striking yet readable within the dark terminal aesthetic, uses premium typographic treatment without excessive animation, and all tests pass.",
+      "hermes_verdict": "approve",
+      "id": 43,
+      "idea": "title could be sexier",
+      "in_sprint": false,
+      "stage_times": {
+        "code": 1779514440.669611,
+        "deploy": 1779514443.152527,
+        "done": 1779514446.33034,
+        "pull": 1779514426.980626,
+        "review": 1779514440.972141,
+        "story": 1779514426.994694,
+        "test": 1779514440.794512
+      },
+      "started": 1779514426.980626,
+      "status": "done",
+      "story": "As a user, I want the page title to look sexier so that the app feels more polished and visually striking at first glance",
+      "summary": "Upgrade title to uppercase gradient (green\u2192cyan\u2192purple) with neon drop-shadow glow",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.11 matches between version.json and index.html"
+          "message": "version 0.1.11 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 00:33:46 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-23 00:33:46 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.11: Sexier title: larger uppercase lettering with green-to-cyan-to-purple gradient and layered neon glow"
+          "message": "changelog has entry for v0.1.11: Sexier title: larger uppercase lettering with green-to-cyan-to-purple gradient and layered neon glow",
+          "status": "pass"
         }
-      ],
-      "deployed": "2026-05-23 00:33:46 CT",
-      "hermes_verdict": "approve",
-      "hermes_reason": "The implementation adds a vibrant gradient (green-to-cyan-to-purple), layered drop-shadow glow effect, increased font size and letter-spacing, and uppercase styling that clearly satisfies all acceptance criteria\u2014the title is visually striking yet readable within the dark terminal aesthetic, uses premium typographic treatment without excessive animation, and all tests pass."
+      ]
     },
     {
       "acceptance_criteria": [

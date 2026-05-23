@@ -17,17 +17,23 @@
       margin: 0;
       padding: 2rem 1rem;
     }
+    @keyframes gradientSweep {
+      0%   { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(0,255,153,0.5)) drop-shadow(0 0 24px rgba(0,229,255,0.25)); }
+      50%  { background-position: 100% 50%; filter: drop-shadow(0 0 22px rgba(162,89,255,0.7)) drop-shadow(0 0 40px rgba(0,229,255,0.45)); }
+      100% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(0,255,153,0.5)) drop-shadow(0 0 24px rgba(0,229,255,0.25)); }
+    }
     h1 {
-      font-size: 3rem;
+      font-size: 3.4rem;
       margin-bottom: 0.5rem;
-      letter-spacing: 0.12em;
-      font-weight: 700;
-      background: linear-gradient(90deg, #00ff99 0%, #00e5ff 50%, #a259ff 100%);
+      letter-spacing: 0.15em;
+      font-weight: 800;
+      background: linear-gradient(90deg, #00ff99, #00e5ff, #a259ff, #ff6ac1, #00e5ff, #00ff99);
+      background-size: 300% 300%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      filter: drop-shadow(0 0 12px rgba(0, 255, 153, 0.55)) drop-shadow(0 0 28px rgba(0, 229, 255, 0.3));
       text-transform: uppercase;
+      animation: gradientSweep 4s ease-in-out infinite;
     }
     .title-wrap {
       display: flex;
@@ -84,8 +90,8 @@
     <h1>Hello Scrum</h1>
 
   </div>
-  <div class="version" id="version-badge">v0.1.11</div>
-  <div class="meta">Last deployed: 2026-05-23 00:33:46 CT</div>
+  <div class="version" id="version-badge">v0.1.12</div>
+  <div class="meta">Last deployed: 2026-05-23 01:08:01 CT</div>
   <div class="meta">Status: baseline</div>
   <div class="changelog">
     <h2>Recent Changes</h2>

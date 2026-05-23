@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello Scrum</title>
+  <title>Hello Dude</title>
   <style>
     @keyframes fade-in-up {
       from { opacity: 0; transform: translateY(10px); }
@@ -21,6 +21,11 @@
     @keyframes popover-in {
       from { opacity: 0; transform: translateY(6px); }
       to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes streak-pulse {
+      0% { box-shadow: 0 0 0 0 #ff6b2b44; }
+      70% { box-shadow: 0 0 0 8px #ff6b2b00; }
+      100% { box-shadow: 0 0 0 0 #ff6b2b00; }
     }
     *, *::before, *::after { box-sizing: border-box; }
     body {
@@ -224,6 +229,27 @@
       text-transform: uppercase;
       letter-spacing: 0.1em;
     }
+    .streak-counter {
+      background: #1a1108;
+      border: 1px solid #ff6b2b44;
+      border-radius: 8px;
+      padding: 0.65rem 2rem;
+      text-align: center;
+      margin-bottom: 0.75rem;
+      animation: fade-in-up 0.5s ease 0.28s both, streak-pulse 2.5s ease-out 0.8s infinite;
+    }
+    .streak-counter .streak-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: #ff6b2b;
+    }
+    .streak-counter .streak-label {
+      font-size: 0.75rem;
+      color: #7a4a2a;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
     .meta {
       font-size: 0.82rem;
       color: #555;
@@ -376,14 +402,14 @@
     <a class="audit-btn" href="audit.html">Audit</a>
     <a class="audit-btn" href="workflow.html">Workflow</a>
   </nav>
-  <h1>Hello Scrum</h1>
+  <h1>Hello Dude</h1>
   <div class="tagline">Iterate. Improve. Deliver.</div>
   <div class="version-wrap">
-    <div class="version" id="version-badge" onclick="toggleVersionPopover(event)" title="Click to see what's new">v0.1.12</div>
+    <div class="version" id="version-badge" onclick="toggleVersionPopover(event)" title="Click to see what's new">v0.1.14</div>
     <div class="version-popover" id="version-popover">
-      <div class="vp-version">v0.1.12</div>
+      <div class="vp-version">v0.1.14</div>
       <div class="vp-date">2026-05-22</div>
-      <div class="vp-change">Version badge is now clickable — click it to see what changed in this release</div>
+      <div class="vp-change">Changed page title from Hello Scrum to Hello Dude</div>
       <div class="vp-hint">click badge to dismiss</div>
     </div>
   </div>
@@ -396,10 +422,14 @@
     <span class="health-sub">&mdash; all systems operational</span>
   </div>
   <div class="features-counter">
-    <div class="count">13</div>
+    <div class="count">15</div>
     <div class="label">Features Deployed</div>
   </div>
-  <div class="meta">Last deployed: 2026-05-22 18:47:07 CT</div>
+  <div class="streak-counter">
+    <div class="streak-value">&#128293; 15</div>
+    <div class="streak-label">Consecutive Successful Deploys</div>
+  </div>
+  <div class="meta">Last deployed: 2026-05-22 19:01:28 CT</div>
   <div class="status-row">
     <span class="status-label">Status:</span>
     <span class="status-badge"><span class="status-icon"></span>baseline</span>
@@ -414,10 +444,22 @@
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div class="changelog-entry">
+      <span class="cv">v0.1.14</span>
+      <span class="cd">2026-05-22</span>
+      <span class="sprint-badge">Sprint 3</span>
+      <span class="ct">Changed page title from Hello Scrum to Hello Dude</span>
+    </div>
+    <div class="changelog-entry">
+      <span class="cv">v0.1.13</span>
+      <span class="cd">2026-05-22</span>
+      <span class="sprint-badge">Sprint 3</span>
+      <span class="ct">Added a streak counter showing consecutive successful deploys</span>
+    </div>
+    <div class="changelog-entry">
       <span class="cv">v0.1.12</span>
       <span class="cd">2026-05-22</span>
       <span class="sprint-badge">Sprint 3</span>
-      <span class="ct">Version badge is now clickable — click it to see what changed in this release</span>
+      <span class="ct">Version badge is now clickable &mdash; click it to see what changed in this release</span>
     </div>
     <div class="changelog-entry">
       <span class="cv">v0.1.11</span>

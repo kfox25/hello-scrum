@@ -1,6 +1,6 @@
 {
-  "version": "0.1.12",
-  "deployed": "2026-05-22 18:47:07 CT",
+  "version": "0.1.14",
+  "deployed": "2026-05-22 19:01:28 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -67,6 +67,16 @@
       "version": "0.1.12",
       "date": "2026-05-22",
       "change": "Version badge is now clickable \u2014 click it to see what changed in this release"
+    },
+    {
+      "version": "0.1.13",
+      "date": "2026-05-22",
+      "change": "Added a streak counter showing consecutive successful deploys"
+    },
+    {
+      "version": "0.1.14",
+      "date": "2026-05-22",
+      "change": "Changed page title from Hello Scrum to Hello Dude"
     }
   ]
 }

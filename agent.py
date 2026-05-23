@@ -10,6 +10,7 @@ Usage:
 
 import json
 import os
+import re
 import subprocess
 import sys
 from datetime import datetime
@@ -173,6 +174,18 @@ Implement this idea. Return JSON only."""
     return message.content[0].text
 
 
+def apply_patch(content, find, replace):
+    if find in content:
+        return content.replace(find, replace, 1)
+    # Fallback: allow any leading whitespace per line
+    lines = find.splitlines()
+    pattern = r"[ \t]*" + r"[\r\n]+[ \t]*".join(re.escape(l.lstrip()) for l in lines)
+    m = re.search(pattern, content)
+    if m:
+        return content[:m.start()] + replace + content[m.end():]
+    raise ValueError(f"Patch target not found in index.html: {repr(find[:80])}")
+
+
 def apply_changes(response_text):
     text = response_text.strip()
     if text.startswith("```"):
@@ -185,10 +198,7 @@ def apply_changes(response_text):
         content = f.read()
 
     for patch in data["patches"]:
-        find, replace = patch["find"], patch["replace"]
-        if find not in content:
-            raise ValueError(f"Patch target not found in index.html: {repr(find[:80])}")
-        content = content.replace(find, replace, 1)
+        content = apply_patch(content, patch["find"], patch["replace"])
 
     with open(INDEX_FILE, "w", encoding="utf-8") as f:
         f.write(content)

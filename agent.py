@@ -64,24 +64,25 @@ SYSTEM_PROMPT = """You are an AI developer working on the hello-scrum web app.
 Your job:
 1. Read the raw backlog idea
 2. Write a user story with acceptance criteria
-3. Implement the change using patches to index.html and version.json
+3. Implement ONLY the story-specific visual change using patches to index.html
+4. Return an updated version_json — the boilerplate (version badge, popover, meta, counters, changelog HTML) is auto-updated by the deploy pipeline, NOT by you
 
 Rules:
 - Only modify index.html and version.json
-- Bump the patch version (e.g. 0.1.0 -> 0.1.1)
-- Set the deployed timestamp to exactly the value provided — do not change it
-- Add a changelog entry as the LAST item in the changelog array with exactly these fields: {"version": "<new version>", "date": "<YYYY-MM-DD>", "change": "<description>"}
-- Keep the page structure intact: h1 title, version badge, meta lines, and nav buttons
-- Changes must be clearly visible on the page
+- Bump the patch version (e.g. 0.1.0 -> 0.1.1) in version_json
+- Add the new entry as the LAST item in version_json.changelog: {"version": "...", "date": "...", "change": "..."}
+- DO NOT patch: the version badge, version popover, meta/last-deployed line, features counter, streak counter, or changelog HTML entries — the pipeline handles those
+- patches must contain ONLY the story-specific change (new elements, CSS additions, etc.)
+- Each patch "find" must be a verbatim unique substring copied directly from the provided file
+- If adding CSS, insert it before an existing unique selector (e.g. before ".tagline {")
 - Keep the page clean and minimal
-- Each patch "find" must be a verbatim unique substring of the current file (include enough surrounding context to be unique)
 
 Respond with ONLY valid JSON — no markdown, no code blocks, no extra text:
 {
   "story": "As a user, I want...",
   "acceptance_criteria": ["criterion 1", "criterion 2"],
   "patches": [
-    {"find": "exact unique text to find in index.html", "replace": "replacement text"}
+    {"find": "exact unique text copied from index.html", "replace": "replacement text"}
   ],
   "version_json": { <full updated version.json object> },
   "summary": "Short commit message describing what changed"
@@ -174,6 +175,48 @@ Implement this idea. Return JSON only."""
     return message.content[0].text
 
 
+def auto_update_html(content, version_json_data, timestamp):
+    """Update version badge, popover, meta, counters, and changelog entry."""
+    changelog = version_json_data.get("changelog", [])
+    if not changelog:
+        return content
+    latest    = changelog[-1]
+    raw_ver   = latest.get("version", version_json_data.get("version", "0.1.0"))
+    new_ver   = raw_ver if raw_ver.startswith("v") else "v" + raw_ver
+    date_str  = timestamp[:10]
+    change_text = latest.get("change", "")
+
+    # Infer sprint label from the most recent entry already in the HTML
+    m = re.search(r'class="sprint-badge">([^<]+)', content)
+    sprint_str = m.group(1) if m else ""
+
+    # Version badge
+    content = re.sub(r'(id="version-badge"[^>]*>)v[\d.]+', rf'\g<1>{new_ver}', content)
+    # Popover version
+    content = re.sub(r'(<div class="vp-version">)v[\d.]+', rf'\g<1>{new_ver}', content)
+    # Popover date
+    content = re.sub(r'(<div class="vp-date">)[\d-]+', rf'\g<1>{date_str}', content)
+    # Popover change text
+    content = re.sub(r'(<div class="vp-change">)[^<]*', lambda m2: m2.group(1) + change_text, content)
+    # Last deployed meta
+    content = re.sub(r'(Last deployed: )[\d\- :]+ CT', rf'\g<1>{timestamp}', content)
+    # Features counter and streak (use total deployed count)
+    count = len([e for e in changelog if e.get("version", "0") != "0.1.0"]) + 1
+    content = re.sub(r'(<div class="count">)\d+', rf'\g<1>{count}', content)
+    content = re.sub(r'(&#128293; )\d+', rf'\g<1>{count}', content)
+    # Prepend changelog entry
+    sprint_html = f'<span class="sprint-badge">{sprint_str}</span>\n      ' if sprint_str else ''
+    new_entry = (
+        f'\n    <div class="changelog-entry">\n'
+        f'      <span class="cv">{new_ver}</span>\n'
+        f'      <span class="cd">{date_str}</span>\n'
+        f'      {sprint_html}<span class="ct">{change_text}</span>\n'
+        f'    </div>'
+    )
+    content = re.sub(r'(<h2>Recent Changes</h2>)', rf'\g<1>{new_entry}', content)
+    return content
+
+
 def apply_patch(content, find, replace):
     if find in content:
         return content.replace(find, replace, 1)
@@ -186,7 +229,7 @@ def apply_patch(content, find, replace):
     raise ValueError(f"Patch target not found in index.html: {repr(find[:80])}")
 
 
-def apply_changes(response_text):
+def apply_changes(response_text, timestamp):
     text = response_text.strip()
     if text.startswith("```"):
         lines = text.split("\n")
@@ -197,8 +240,10 @@ def apply_changes(response_text):
     with open(INDEX_FILE, encoding="utf-8") as f:
         content = f.read()
 
-    for patch in data["patches"]:
+    for patch in data.get("patches", []):
         content = apply_patch(content, patch["find"], patch["replace"])
+
+    content = auto_update_html(content, data["version_json"], timestamp)
 
     with open(INDEX_FILE, "w", encoding="utf-8") as f:
         f.write(content)
@@ -315,7 +360,7 @@ def run_one(sprint_only=False):
     log("Applying changes...")
     write_active(item, "code")
     try:
-        result = apply_changes(response)
+        result = apply_changes(response, timestamp)
     except Exception as e:
         log(f"Parse error: {e}")
         log(f"Raw response preview: {response[:300]}")

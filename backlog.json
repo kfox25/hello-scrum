@@ -1,6 +1,46 @@
 {
   "items": [
     {
+      "id": "1779566106202",
+      "idea": "Restore green title styling on homepage",
+      "in_sprint": true,
+      "status": "done",
+      "story": "As a user, I want the homepage title to display in green styling so that it matches the terminal aesthetic and page-wide green accent theme.",
+      "acceptance_criteria": [
+        "The h1 title color is restored to #00ff99 (green) instead of red",
+        "The glow animation uses green tones matching the page accent colors",
+        "The -webkit-text-fill-color is set to #00ff99",
+        "The animation keyframes use green/teal drop-shadow values"
+      ],
+      "summary": "Restore green title styling on homepage: #00ff99 color and green glow animation",
+      "diff": "diff --git a/index.html b/index.html\nindex 0f10630..7d1a32d 100644\n--- a/index.html\n+++ b/index.html\n@@ -23,8 +23,8 @@\n       100% { background-position: 0% 50%; }\n     }\n     @keyframes glow-pulse {\n-      0%, 100% { filter: drop-shadow(0 0 6px #ff0000aa) drop-shadow(0 0 18px #ff000055); }\n-      50%       { filter: drop-shadow(0 0 14px #ff0000ff) drop-shadow(0 0 36px #cc0000aa); }\n+      0%, 100% { filter: drop-shadow(0 0 6px #00ff99aa) drop-shadow(0 0 18px #00ff9955); }\n+      50%       { filter: drop-shadow(0 0 14px #00ff99ff) drop-shadow(0 0 36px #00cc7aaa); }\n     }\n     h1 {\n       font-family: monospace;\n@@ -33,8 +33,8 @@\n       letter-spacing: 0.12em;\n       font-weight: 900;\n       text-transform: uppercase;\n-      color: #ff0000;\n-      -webkit-text-fill-color: #ff0000;\n+      color: #00ff99;\n+      -webkit-text-fill-color: #00ff99;\n       animation: glow-pulse 3s ease-in-out infinite;\n     }\n     .tagline {\n@@ -104,8 +104,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.22</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 12:33:35 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.23</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 14:55:19 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex 48e87ce..c471087 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.22\",\n-  \"deployed\": \"2026-05-23 12:33:35 CT\",\n+  \"version\": \"0.1.23\",\n+  \"deployed\": \"2026-05-23 14:55:19 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -117,6 +117,11 @@\n       \"version\": \"0.1.22\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Changed homepage title text color to red with matching red neon glow animation\"\n+    },\n+    {\n+      \"version\": \"0.1.23\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Restored green title styling: #00ff99 color and green neon glow animation to match terminal aesthetic\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.23 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-23 14:55:19 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.23: Restored green title styling: #00ff99 color and green neon glow animation to match terminal aesthetic"
+        }
+      ],
+      "deployed": "2026-05-23 14:55:19 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The diff makes consistent color changes from red to green across CSS animations and properties, updates version/deployment metadata appropriately, and introduces no syntax errors or broken styling.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All four acceptance criteria are met: h1 color changed to #00ff99, glow animation uses green tones (#00ff99 and #00cc7a), -webkit-text-fill-color set to #00ff99, and animation keyframes use green/teal drop-shadow values.",
+      "hermes_verdict": "approve",
+      "hermes_reason": "Code review: The diff makes consistent color changes from red to green across CSS animations and properties, updates version/deployment metadata appropriately, and introduces no syntax errors or broken styling. | AC: All four acceptance criteria are met: h1 color changed to #00ff99, glow animation uses green tones (#00ff99 and #00cc7a), -webkit-text-fill-color set to #00ff99, and animation keyframes use green/teal drop-shadow values."
+    },
+    {
       "acceptance_criteria": [
         "The 'Hello Scrum' h1 title is displayed in red",
         "The existing neon gradient animation is replaced with a solid red color",

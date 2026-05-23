@@ -1,6 +1,6 @@
 {
-  "version": "0.1.22",
-  "deployed": "2026-05-23 12:33:35 CT",
+  "version": "0.1.23",
+  "deployed": "2026-05-23 14:55:19 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -117,6 +117,11 @@
       "version": "0.1.22",
       "date": "2026-05-23",
       "change": "Changed homepage title text color to red with matching red neon glow animation"
+    },
+    {
+      "version": "0.1.23",
+      "date": "2026-05-23",
+      "change": "Restored green title styling: #00ff99 color and green neon glow animation to match terminal aesthetic"
     }
   ]
 }

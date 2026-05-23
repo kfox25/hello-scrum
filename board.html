@@ -601,7 +601,15 @@
       const newItem = { id: maxId + 1, idea, status: 'pending' };
       if (position === 'sprint') {
         newItem.in_sprint = true;
-        backlogData.items.unshift(newItem);
+        let lastSprintIdx = -1;
+        for (let i = 0; i < backlogData.items.length; i++) {
+          if (backlogData.items[i].in_sprint) lastSprintIdx = i;
+        }
+        if (lastSprintIdx === -1) {
+          backlogData.items.unshift(newItem);
+        } else {
+          backlogData.items.splice(lastSprintIdx + 1, 0, newItem);
+        }
       } else if (position === 'top') {
         backlogData.items.unshift(newItem);
       } else {

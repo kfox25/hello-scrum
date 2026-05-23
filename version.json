@@ -1,6 +1,6 @@
 {
-  "version": "0.1.27",
-  "deployed": "2026-05-23 15:45:48 CT",
+  "version": "0.1.28",
+  "deployed": "2026-05-23 17:39:13 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -142,6 +142,11 @@
       "version": "0.1.27",
       "date": "2026-05-23",
       "change": "Added 'Powered by Claude' label to footer in muted neon green terminal style"
+    },
+    {
+      "version": "0.1.28",
+      "date": "2026-05-23",
+      "change": "Added stats section displaying versions, days active, and features shipped with neon terminal card styling"
     }
   ]
 }

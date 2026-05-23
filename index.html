@@ -123,7 +123,41 @@
       border-top: 1px solid #2a2a2a;
       margin: 2.5rem auto 0;
     }
-  </style>
+  
+.stats-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin: 1.5rem auto;
+    max-width: 720px;
+    padding: 0 1rem;
+  }
+  .stat-card {
+    background: #0d1f14;
+    border: 1px solid #00ff9944;
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    min-width: 140px;
+    flex: 1 1 140px;
+    text-align: center;
+  }
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #00ff99;
+    text-shadow: 0 0 8px #00ff9966;
+    display: block;
+  }
+  .stat-label {
+    font-size: 0.72rem;
+    color: #556;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 0.25rem;
+    display: block;
+  }
+</style>
 </head>
 <body>
   <nav class="top-nav">
@@ -139,9 +173,23 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.27</div>
-  <div class="meta">Last deployed: 2026-05-23 15:45:48 CT</div>
+  <div class="version" id="version-badge">v0.1.28</div>
+  <div class="meta">Last deployed: 2026-05-23 17:39:13 CT</div>
   <div class="meta">Status: baseline</div>
+  <div class="stats-section" id="stats-section">
+    <div class="stat-card">
+      <span class="stat-value" id="stat-versions">—</span>
+      <span class="stat-label">Versions</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value" id="stat-days">—</span>
+      <span class="stat-label">Days Active</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value" id="stat-features">—</span>
+      <span class="stat-label">Features Shipped</span>
+    </div>
+  </div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -167,6 +215,26 @@
         .catch(() => {});
     }
     loadChangelog();
+    function loadStats() {
+      fetch('/version.json')
+        .then(r => r.json())
+        .then(data => {
+          const log = data.changelog || [];
+          document.getElementById('stat-versions').textContent = log.length;
+          const dates = log.map(e => e.date).filter(Boolean).sort();
+          if (dates.length >= 2) {
+            const first = new Date(dates[0]);
+            const last = new Date(dates[dates.length - 1]);
+            const diff = Math.round((last - first) / 86400000) + 1;
+            document.getElementById('stat-days').textContent = diff;
+          } else {
+            document.getElementById('stat-days').textContent = dates.length ? '1' : '—';
+          }
+          document.getElementById('stat-features').textContent = log.length;
+        })
+        .catch(() => {});
+    }
+    loadStats();
   </script>
   <hr class="footer-sep" />
   <footer class="site-footer">

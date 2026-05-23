@@ -28,7 +28,7 @@ REPO_URL     = "https://kfox25.github.io/hello-scrum"
 _log_lines = []
 
 def log(msg=""):
-    print(msg)
+    print(msg, flush=True)
     _log_lines.append(str(msg))
     try:
         with open(LOG_FILE, "w") as f:
@@ -39,6 +39,7 @@ def log(msg=""):
 def log_lines(lines):
     for line in lines:
         print(line)
+    sys.stdout.flush()
     _log_lines.extend(lines)
     try:
         with open(LOG_FILE, "w") as f:

@@ -206,7 +206,11 @@ def get_ct_timestamp():
 
 # ── Worker agent ──────────────────────────────────────────────────────────────
 
-def call_agent(idea, index_html, version_json, timestamp):
+def call_agent(idea, index_html, version_json, timestamp, retro_context=None):
+    retro_section = ""
+    if retro_context:
+        retro_section = f"\n\nLearnings from earlier in this sprint (apply to this implementation):\n{retro_context}"
+
     prompt = f"""Deploy timestamp to use (exact): {timestamp}
 
 Raw backlog idea: {idea}
@@ -215,7 +219,7 @@ Current index.html:
 {index_html}
 
 Current version.json:
-{version_json}
+{version_json}{retro_section}
 
 Implement this idea. Return JSON only."""
 
@@ -234,11 +238,12 @@ Implement this idea. Return JSON only."""
             while "\n" in line_buffer:
                 line, line_buffer = line_buffer.split("\n", 1)
                 log(line)
+        final_msg = stream.get_final_message()
 
     if line_buffer.strip():
         log(line_buffer)
 
-    return full_text
+    return full_text, final_msg.usage.input_tokens, final_msg.usage.output_tokens
 
 
 def auto_update_html(content, version_json_data, timestamp):
@@ -331,7 +336,7 @@ Test results:
     text = message.content[0].text.strip()
     if text.startswith("```"):
         text = "\n".join(text.split("\n")[1:-1])
-    return json.loads(text)
+    return json.loads(text), message.usage.input_tokens, message.usage.output_tokens
 
 
 # ── Tests + deploy ────────────────────────────────────────────────────────────
@@ -376,6 +381,21 @@ def rollback():
 
 
 # ── Retrospective ─────────────────────────────────────────────────────────────
+
+def load_latest_retro_context():
+    try:
+        with open(RETRO_FILE) as f:
+            store = json.load(f)
+        retros = store.get("retros", [])
+        if not retros:
+            return None
+        findings = retros[0].get("findings", [])
+        if not findings:
+            return None
+        return "\n".join(f"[{f['type']}] {f['text']}" for f in findings)
+    except Exception:
+        return None
+
 
 def run_retro(processed_items):
     """Analyze sprint results with Haiku and append findings to retrospective.json."""
@@ -437,7 +457,7 @@ Analyze this sprint and return findings JSON."""
 
 # ── Main loop ─────────────────────────────────────────────────────────────────
 
-def run_one(sprint_only=False, processed=None):
+def run_one(sprint_only=False, processed=None, retro_context=None):
     backlog = load_backlog()
     item = get_next_item(backlog, sprint_only=sprint_only)
 
@@ -447,6 +467,9 @@ def run_one(sprint_only=False, processed=None):
 
     if processed is not None:
         processed.append(item)
+
+    tokens_in = 0
+    tokens_out = 0
 
     clear_log()
     log(f"\n{'=' * 50}")
@@ -463,7 +486,9 @@ def run_one(sprint_only=False, processed=None):
     write_active(item, "story")
 
     try:
-        response = call_agent(item["idea"], index_html, version_json, timestamp)
+        response, t_in, t_out = call_agent(item["idea"], index_html, version_json, timestamp, retro_context=retro_context)
+        tokens_in += t_in
+        tokens_out += t_out
     except Exception as e:
         log(f"Agent error: {e}")
         item["status"] = "failed"
@@ -474,7 +499,7 @@ def run_one(sprint_only=False, processed=None):
         return False
 
     log("Applying changes...")
-    write_active(item, "code")
+    write_active(item, "code", tokens_in=tokens_in, tokens_out=tokens_out)
     try:
         result = apply_changes(response, timestamp)
     except Exception as e:
@@ -482,8 +507,9 @@ def run_one(sprint_only=False, processed=None):
         log(f"Raw response preview: {response[:300]}")
         item["status"] = "failed"
         item["error"] = f"Parse error: {e} | Response preview: {response[:200]}"
-        ad = write_active(item, "failed", failed_at="code", error=str(e)[:160])
+        ad = write_active(item, "failed", failed_at="code", error=str(e)[:160], tokens_in=tokens_in, tokens_out=tokens_out)
         item["started"] = ad.get("started"); item["stage_times"] = ad.get("stage_times", {})
+        item["tokens_in"] = tokens_in; item["tokens_out"] = tokens_out
         save_backlog(backlog)
         return False
 
@@ -501,7 +527,7 @@ def run_one(sprint_only=False, processed=None):
         log_lines([l for l in diff.splitlines() if l])
 
     log("Running tests...")
-    write_active(item, "test")
+    write_active(item, "test", tokens_in=tokens_in, tokens_out=tokens_out)
     passed, stdout, stderr = run_tests()
     log(stdout.strip())
     test_results = parse_test_results(stdout)
@@ -516,21 +542,24 @@ def run_one(sprint_only=False, processed=None):
         item["acceptance_criteria"] = result.get("acceptance_criteria", [])
         item["diff"] = diff
         item["test_results"] = test_results
-        ad = write_active(item, "failed", failed_at="test", error="Tests failed — see activity stream")
+        ad = write_active(item, "failed", failed_at="test", error="Tests failed — see activity stream", tokens_in=tokens_in, tokens_out=tokens_out)
         item["started"] = ad.get("started"); item["stage_times"] = ad.get("stage_times", {})
+        item["tokens_in"] = tokens_in; item["tokens_out"] = tokens_out
         save_backlog(backlog)
         return False
 
     log("Hermes reviewing...")
-    write_active(item, "review")
+    write_active(item, "review", tokens_in=tokens_in, tokens_out=tokens_out)
     try:
-        verdict = call_hermes(
+        verdict, t_in, t_out = call_hermes(
             item["idea"],
             result["story"],
             result.get("acceptance_criteria", []),
             diff,
             test_results,
         )
+        tokens_in += t_in
+        tokens_out += t_out
         hermes_verdict = verdict.get("verdict", "approve")
         hermes_reason = verdict.get("reason", "")
     except Exception as e:
@@ -539,6 +568,7 @@ def run_one(sprint_only=False, processed=None):
         hermes_reason = "Hermes review failed — defaulting to approve"
 
     log(f"Hermes: {hermes_verdict.upper()} — {hermes_reason}")
+    log(f"Tokens : ↑{tokens_in:,} in  ↓{tokens_out:,} out")
 
     if hermes_verdict == "reject":
         rollback()
@@ -549,13 +579,14 @@ def run_one(sprint_only=False, processed=None):
         item["test_results"] = test_results
         item["hermes_verdict"] = hermes_verdict
         item["hermes_reason"] = hermes_reason
-        ad = write_active(item, "rejected", hermes_verdict="reject", hermes_reason=hermes_reason)
+        ad = write_active(item, "rejected", hermes_verdict="reject", hermes_reason=hermes_reason, tokens_in=tokens_in, tokens_out=tokens_out)
         item["started"] = ad.get("started"); item["stage_times"] = ad.get("stage_times", {})
+        item["tokens_in"] = tokens_in; item["tokens_out"] = tokens_out
         save_backlog(backlog)
         return False
 
     log("Pushing to GitHub...")
-    write_active(item, "deploy", hermes_verdict="approve", hermes_reason=hermes_reason)
+    write_active(item, "deploy", hermes_verdict="approve", hermes_reason=hermes_reason, tokens_in=tokens_in, tokens_out=tokens_out)
     item["status"] = "done"
     item["story"] = result["story"]
     item["acceptance_criteria"] = result.get("acceptance_criteria", [])
@@ -573,14 +604,17 @@ def run_one(sprint_only=False, processed=None):
         log(f"Push failed: {e}")
         rollback()
         item["status"] = "failed"
-        ad = write_active(item, "failed", failed_at="deploy", error=f"Push failed: {str(e)[:120]}")
+        ad = write_active(item, "failed", failed_at="deploy", error=f"Push failed: {str(e)[:120]}", tokens_in=tokens_in, tokens_out=tokens_out)
         item["started"] = ad.get("started"); item["stage_times"] = ad.get("stage_times", {})
+        item["tokens_in"] = tokens_in; item["tokens_out"] = tokens_out
         save_backlog(backlog)
         return False
 
-    ad = write_active(item, "done", hermes_verdict=hermes_verdict, hermes_reason=hermes_reason)
+    ad = write_active(item, "done", hermes_verdict=hermes_verdict, hermes_reason=hermes_reason, tokens_in=tokens_in, tokens_out=tokens_out)
     item["started"]     = ad.get("started")
     item["stage_times"] = ad.get("stage_times", {})
+    item["tokens_in"]   = tokens_in
+    item["tokens_out"]  = tokens_out
     save_backlog(backlog)
     log(f"\nDeployed: {timestamp}")
     log(f"Live at : {REPO_URL}")
@@ -596,14 +630,19 @@ def main():
 
     if sprint_mode or loop_mode:
         processed = []
-        while run_one(sprint_only=sprint_mode, processed=processed):
-            pass
-        if sprint_mode and processed:
-            log("\nRunning sprint retrospective...")
-            try:
-                run_retro(processed)
-            except Exception as e:
-                log(f"Retro error: {e}")
+        retro_context = None
+        while True:
+            prev_len = len(processed)
+            success = run_one(sprint_only=sprint_mode, processed=processed, retro_context=retro_context)
+            if len(processed) > prev_len:
+                log("\nRunning retrospective...")
+                try:
+                    run_retro(processed)
+                    retro_context = load_latest_retro_context()
+                except Exception as e:
+                    log(f"Retro error: {e}")
+            if not success:
+                break
     else:
         run_one()
 

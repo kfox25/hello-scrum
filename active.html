@@ -182,6 +182,8 @@
     .timer-icon  { color: #2a2a2a; font-size: 0.7rem; }
     .timer-total { color: #00ff9960; font-variant-numeric: tabular-nums; }
     .timer-label { color: #2a2a2a; font-size: 0.65rem; }
+    .timer-sep   { color: #222; margin: 0 0.2rem; }
+    .token-count { color: #4488ff55; font-size: 0.7rem; font-variant-numeric: tabular-nums; }
 
     .work-status {
       padding: 0.75rem 1.5rem 1.25rem;
@@ -357,6 +359,10 @@
       }
 
       const spinning = !isRejected && !isFailed && !isDone;
+      const totalTok = (data.tokens_in || 0) + (data.tokens_out || 0);
+      const tokenHtml = totalTok > 0
+        ? `<span class="timer-sep">·</span><span class="token-count">↑${fmtTokens(data.tokens_in)} ↓${fmtTokens(data.tokens_out)} tok</span>`
+        : '';
       root.innerHTML = `
         <div class="work-card">
           <div class="work-header">
@@ -371,6 +377,7 @@
             <span class="timer-icon">⏱</span>
             <span class="timer-total" id="timer-total">—</span>
             <span class="timer-label">total</span>
+            ${tokenHtml}
           </div>
           ${hermesHtml}
           <div class="work-status">
@@ -469,6 +476,11 @@
       const m = Math.floor(s / 60), r = s % 60;
       if (m < 60) return m + 'm ' + (r < 10 ? '0' : '') + r + 's';
       return Math.floor(m / 60) + 'h ' + (m % 60) + 'm';
+    }
+
+    function fmtTokens(n) {
+      if (!n) return '0';
+      return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
     }
 
     function updateTimers() {

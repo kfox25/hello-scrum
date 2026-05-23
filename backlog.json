@@ -1,40 +1,52 @@
 {
   "items": [
     {
-      "id": "1779557587158",
-      "idea": "Change homepage title text color to red",
-      "in_sprint": true,
-      "status": "done",
-      "story": "As a user, I want the homepage title text color to be red so that it stands out visually on the page.",
       "acceptance_criteria": [
         "The 'Hello Scrum' h1 title is displayed in red",
         "The existing neon gradient animation is replaced with a solid red color",
         "The glow animation reflects a red tone",
         "No other elements are affected by this change"
       ],
-      "summary": "Change homepage title text color to red with red glow animation",
+      "deployed": "2026-05-23 12:33:35 CT",
       "diff": "diff --git a/index.html b/index.html\nindex 77c723c..0f10630 100644\n--- a/index.html\n+++ b/index.html\n@@ -23,8 +23,8 @@\n       100% { background-position: 0% 50%; }\n     }\n     @keyframes glow-pulse {\n-      0%, 100% { filter: drop-shadow(0 0 6px #00ff99aa) drop-shadow(0 0 18px #00ccff55); }\n-      50%       { filter: drop-shadow(0 0 14px #00ff99ff) drop-shadow(0 0 36px #cc00ffaa); }\n+      0%, 100% { filter: drop-shadow(0 0 6px #ff0000aa) drop-shadow(0 0 18px #ff000055); }\n+      50%       { filter: drop-shadow(0 0 14px #ff0000ff) drop-shadow(0 0 36px #cc0000aa); }\n     }\n     h1 {\n       font-family: monospace;\n@@ -33,12 +33,9 @@\n       letter-spacing: 0.12em;\n       font-weight: 900;\n       text-transform: uppercase;\n-      background: linear-gradient(120deg, #00ff99, #00ccff, #cc00ff, #ff0099, #00ff99);\n-      background-size: 300% 300%;\n-      -webkit-background-clip: text;\n-      -webkit-text-fill-color: transparent;\n-      background-clip: text;\n-      animation: neon-sweep 4s ease infinite, glow-pulse 3s ease-in-out infinite;\n+      color: #ff0000;\n+      -webkit-text-fill-color: #ff0000;\n+      animation: glow-pulse 3s ease-in-out infinite;\n     }\n     .tagline {\n       font-family: monospace;\n@@ -107,8 +104,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.21</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 12:09:31 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.22</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 12:33:35 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex 464c9a9..48e87ce 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.21\",\n-  \"deployed\": \"2026-05-23 12:09:31 CT\",\n+  \"version\": \"0.1.22\",\n+  \"deployed\": \"2026-05-23 12:33:35 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -112,6 +112,11 @@\n       \"version\": \"0.1.21\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Updated typography and color scheme to match brand standards: Inter font stack, warmer dark background, more visible tagline accent, consistent nav border-radius\"\n+    },\n+    {\n+      \"version\": \"0.1.22\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Changed homepage title text color to red with matching red neon glow animation\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_reason": "The diff successfully changes the h1 title to solid red (#ff0000), replaces the neon gradient animation with red glow effects, updates the glow-pulse keyframes to red tones, leaves other elements unchanged, and all tests pass.",
+      "hermes_verdict": "approve",
+      "id": "1779557587158",
+      "idea": "Change homepage title text color to red",
+      "in_sprint": false,
+      "stage_times": {
+        "code": 1779557637.884345,
+        "deploy": 1779557639.951574,
+        "done": 1779557643.284469,
+        "pull": 1779557615.832076,
+        "review": 1779557638.268134,
+        "story": 1779557615.84919,
+        "test": 1779557638.04295
+      },
+      "started": 1779557615.832076,
+      "status": "done",
+      "story": "As a user, I want the homepage title text color to be red so that it stands out visually on the page.",
+      "summary": "Change homepage title text color to red with red glow animation",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.22 matches between version.json and index.html"
+          "message": "version 0.1.22 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 12:33:35 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-23 12:33:35 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.22: Changed homepage title text color to red with matching red neon glow animation"
+          "message": "changelog has entry for v0.1.22: Changed homepage title text color to red with matching red neon glow animation",
+          "status": "pass"
         }
       ],
-      "deployed": "2026-05-23 12:33:35 CT",
-      "hermes_verdict": "approve",
-      "hermes_reason": "The diff successfully changes the h1 title to solid red (#ff0000), replaces the neon gradient animation with red glow effects, updates the glow-pulse keyframes to red tones, leaves other elements unchanged, and all tests pass."
+      "tokens_in": 5073,
+      "tokens_out": 2175
     },
     {
       "acceptance_criteria": [

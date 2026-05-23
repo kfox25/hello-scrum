@@ -42,6 +42,8 @@
       background: #0d3320;
       border-color: #00ff99;
     }
+    .top-nav a[href="messenger.html"] { background: #1a1a2e; color: #6fa8ff; border-color: #6fa8ff40; }
+    .top-nav a[href="messenger.html"]:hover { background: #0d1a3a; border-color: #6fa8ff; }
 
     .board {
       display: grid;
@@ -266,8 +268,10 @@
 </head>
 <body>
   <nav class="top-nav">
+    <a href="messenger.html">Messenger</a>
     <a href="index.html">App</a>
-    <a href="active.html">Active</a>
+    <a href="/">Backlog</a>
+    <a href="active.html">Live Work</a>
     <a href="audit.html">Audit</a>
     <a href="retro.html">Retro</a>
     <a href="workflow.html">Workflow</a>
@@ -330,7 +334,7 @@
     let dragId = null;
 
     function escHtml(s) {
-      return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      return (s == null ? '' : String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
     }
 
     async function loadBacklog() {
@@ -384,11 +388,11 @@
       }
 
       const retryBtn = item.status === 'failed'
-        ? `<button class="retry-btn" onclick="retryItem(${item.id}, event)" title="Reset to pending">↺</button>`
+        ? `<button class="retry-btn" onclick="retryItem('${item.id}', event)" title="Reset to pending">↺</button>`
         : '';
 
       const deleteBtn = isPending && !item.in_sprint
-        ? `<button class="delete-btn" onclick="deleteItem(${item.id}, event)" title="Delete">✕</button>`
+        ? `<button class="delete-btn" onclick="deleteItem('${item.id}', event)" title="Delete">✕</button>`
         : '';
 
       return `<div class="card ${item.status}" data-id="${item.id}" ${draggable}
@@ -410,7 +414,7 @@
     // ── Drag and drop ─────────────────────────────────────────────────────────
 
     function onDragStart(e) {
-      dragId = parseInt(e.currentTarget.dataset.id);
+      dragId = String(e.currentTarget.dataset.id);
       e.currentTarget.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
     }
@@ -434,7 +438,7 @@
       e.currentTarget.classList.remove('drag-over');
       if (dragId === null) return;
 
-      const item = backlogData.items.find(i => i.id === dragId);
+      const item = backlogData.items.find(i => String(i.id) === dragId);
       if (!item || item.status !== 'pending') return;
 
       item.in_sprint = toSprint;
@@ -466,12 +470,12 @@
       card.classList.remove('insert-above', 'insert-below');
 
       if (dragId === null) return;
-      const targetId = parseInt(card.dataset.id);
+      const targetId = String(card.dataset.id);
       if (dragId === targetId) return;
 
       const items = backlogData.items;
-      const dragItem  = items.find(i => i.id === dragId);
-      const targetItem = items.find(i => i.id === targetId);
+      const dragItem  = items.find(i => String(i.id) === dragId);
+      const targetItem = items.find(i => String(i.id) === targetId);
       if (!dragItem || dragItem.status !== 'pending') return;
 
       // move to same column as target
@@ -490,7 +494,7 @@
 
     function retryItem(id, e) {
       e.stopPropagation();
-      const item = backlogData.items.find(i => i.id === id);
+      const item = backlogData.items.find(i => String(i.id) === String(id));
       if (!item) return;
       item.status = 'pending';
       item.in_sprint = true;
@@ -588,7 +592,7 @@
 
     function deleteItem(id, e) {
       e.stopPropagation();
-      backlogData.items = backlogData.items.filter(i => i.id !== id);
+      backlogData.items = backlogData.items.filter(i => String(i.id) !== String(id));
       renderBoard();
       persistBacklog();
     }

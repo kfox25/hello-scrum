@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teams Messenger — Hello Scrum</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: monospace;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .top-nav {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .top-nav a {
+      font-family: monospace;
+      font-size: 0.85rem;
+      background: #1a1a1a;
+      color: #00ff99;
+      border: 1px solid #00ff9940;
+      padding: 0.4rem 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+    .top-nav a:hover { background: #0d3320; border-color: #00ff99; }
+    .top-nav a[href="messenger.html"] { background: #1a1a2e; color: #6fa8ff; border-color: #6fa8ff40; }
+    .top-nav a[href="messenger.html"]:hover { background: #0d1a3a; border-color: #6fa8ff; }
+    header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #222;
+      margin-top: 3.5rem;
+    }
+    header h1 { color: #6fa8ff; font-size: 1.4rem; }
+    header .subtitle { color: #555; font-size: 0.8rem; margin-top: 0.2rem; }
+
+    .layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      height: calc(100vh - 5.5rem);
+    }
+
+    /* Channels sidebar */
+    .sidebar {
+      width: 200px;
+      border-right: 1px solid #222;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .sidebar-header {
+      padding: 0.75rem 1rem;
+      font-size: 0.7rem;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .channel-list { flex: 1; overflow-y: auto; }
+    .channel {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      color: #777;
+      cursor: pointer;
+      border-left: 2px solid transparent;
+    }
+    .channel:hover { background: #141414; color: #aaa; }
+    .channel.active { color: #6fa8ff; border-left-color: #6fa8ff; background: #0d1a3a22; }
+    .channel-prefix { color: #444; margin-right: 0.35rem; }
+
+    /* Main chat area */
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .chat-header {
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid #1a1a1a;
+      font-size: 0.85rem;
+      color: #888;
+    }
+    .chat-header span { color: #6fa8ff; }
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .message {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #1a3a2a;
+      border: 1px solid #00ff9930;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      color: #00ff99;
+      flex-shrink: 0;
+    }
+    .avatar.bot { background: #1a1a3a; border-color: #6fa8ff30; color: #6fa8ff; }
+    .msg-body { flex: 1; }
+    .msg-meta {
+      display: flex;
+      gap: 0.6rem;
+      align-items: baseline;
+      margin-bottom: 0.2rem;
+    }
+    .msg-author { font-size: 0.8rem; color: #00ff99; }
+    .msg-author.bot { color: #6fa8ff; }
+    .msg-time { font-size: 0.7rem; color: #444; }
+    .msg-text { font-size: 0.85rem; color: #ccc; line-height: 1.5; }
+    .msg-text code {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      color: #00ff99;
+      font-size: 0.8rem;
+    }
+
+    .system-msg {
+      font-size: 0.75rem;
+      color: #444;
+      text-align: center;
+      padding: 0.25rem 0;
+    }
+
+    /* Compose area */
+    .compose {
+      border-top: 1px solid #222;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      gap: 0.6rem;
+      align-items: flex-end;
+    }
+    .compose-input {
+      flex: 1;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      padding: 0.6rem 0.9rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #e0e0e0;
+      resize: none;
+      outline: none;
+      min-height: 2.4rem;
+      max-height: 120px;
+    }
+    .compose-input:focus { border-color: #6fa8ff50; }
+    .compose-input::placeholder { color: #444; }
+    .send-btn {
+      background: #1a1a3a;
+      border: 1px solid #6fa8ff40;
+      color: #6fa8ff;
+      font-family: monospace;
+      font-size: 0.85rem;
+      padding: 0.55rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .send-btn:hover { background: #0d1a3a; border-color: #6fa8ff; }
+    .send-btn:disabled { opacity: 0.4; cursor: default; }
+
+    .empty-state {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      font-size: 0.9rem;
+    }
+    .story-choices { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.5rem; }
+    .story-choice {
+      background: #0f1f0f;
+      border: 1px solid #00ff9930;
+      border-radius: 5px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.83rem;
+      color: #aaa;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .story-choice:hover { background: #0d3320; border-color: #00ff99; color: #e0e0e0; }
+    .story-choice.selected { background: #0d3320; border-color: #00ff99; color: #00ff99; cursor: default; }
+    .story-choice.dimmed  { opacity: 0.3; cursor: default; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="messenger.html">Messenger</a>
+    <a href="index.html">App</a>
+    <a href="/">Backlog</a>
+    <a href="active.html">Live Work</a>
+    <a href="audit.html">Audit</a>
+    <a href="retro.html">Retro</a>
+    <a href="workflow.html">Workflow</a>
+  </nav>
+
+  <header>
+    <h1>Teams Messenger</h1>
+    <div class="subtitle">Send messages to the scrum agent</div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">Channels</div>
+      <div class="channel-list">
+        <div class="channel active" data-channel="general">
+          <span class="channel-prefix">#</span>general
+        </div>
+        <div class="channel" data-channel="backlog">
+          <span class="channel-prefix">#</span>backlog
+        </div>
+        <div class="channel" data-channel="sprint">
+          <span class="channel-prefix">#</span>sprint
+        </div>
+        <div class="channel" data-channel="deployments">
+          <span class="channel-prefix">#</span>deployments
+        </div>
+      </div>
+    </aside>
+
+    <div class="chat-area">
+      <div class="chat-header">
+        <span id="channel-name">#general</span> &mdash; team channel
+      </div>
+      <div class="messages" id="messages">
+        <div class="system-msg">— channel created —</div>
+        <div class="message">
+          <div class="avatar bot">AI</div>
+          <div class="msg-body">
+            <div class="msg-meta">
+              <span class="msg-author bot">hello-scrum</span>
+              <span class="msg-time">today</span>
+            </div>
+            <div class="msg-text">Ready. Type a message or a command like <code>/add &lt;story&gt;</code> to queue a backlog item.</div>
+          </div>
+        </div>
+      </div>
+      <div class="compose">
+        <textarea class="compose-input" id="compose" placeholder="Message #general" rows="1"></textarea>
+        <button class="send-btn" id="send-btn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const messagesEl = document.getElementById('messages');
+    const composeEl  = document.getElementById('compose');
+    const sendBtn    = document.getElementById('send-btn');
+    const channelNameEl = document.getElementById('channel-name');
+
+    let activeChannel = 'general';
+
+    function storageKey(ch) { return 'hs-msgs-' + ch; }
+
+    function saveMessages(ch) {
+      try {
+        const msgs = [...messagesEl.querySelectorAll('.message:not(#thinking-msg)')].map(el => ({
+          author:  el.querySelector('.msg-author').textContent,
+          text:    el.querySelector('.msg-text').innerHTML,
+          isBot:   el.querySelector('.avatar').classList.contains('bot'),
+          time:    el.querySelector('.msg-time').textContent,
+        }));
+        localStorage.setItem(storageKey(ch), JSON.stringify(msgs));
+      } catch {}
+    }
+
+    function loadMessages(ch) {
+      messagesEl.innerHTML = '';
+      try {
+        const stored = JSON.parse(localStorage.getItem(storageKey(ch)) || '[]');
+        stored.forEach(m => renderMessage(m.author, m.text, m.isBot, m.time));
+      } catch {}
+      if (!messagesEl.children.length) {
+        renderMessage('hello-scrum', 'Ready. Type a message or a command like <code>/add &lt;story&gt;</code> to queue a backlog item.', true, now());
+      }
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function renderMessage(author, text, isBot, time) {
+      const initials = author.slice(0, 2).toUpperCase();
+      const div = document.createElement('div');
+      div.className = 'message';
+      div.innerHTML = `
+        <div class="avatar${isBot ? ' bot' : ''}">${initials}</div>
+        <div class="msg-body">
+          <div class="msg-meta">
+            <span class="msg-author${isBot ? ' bot' : ''}">${author}</span>
+            <span class="msg-time">${time}</span>
+          </div>
+          <div class="msg-text">${text}</div>
+        </div>`;
+      messagesEl.appendChild(div);
+    }
+
+    document.querySelectorAll('.channel').forEach(el => {
+      el.addEventListener('click', () => {
+        saveMessages(activeChannel);
+        document.querySelectorAll('.channel').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        activeChannel = el.dataset.channel;
+        channelNameEl.textContent = '#' + activeChannel;
+        composeEl.placeholder = 'Message #' + activeChannel;
+        loadMessages(activeChannel);
+      });
+    });
+
+    function now() {
+      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function appendMessage(author, text, isBot) {
+      renderMessage(author, text, isBot, now());
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      saveMessages(activeChannel);
+    }
+
+    function appendThinking() {
+      const div = document.createElement('div');
+      div.className = 'message';
+      div.id = 'thinking-msg';
+      div.innerHTML = `
+        <div class="avatar bot">AI</div>
+        <div class="msg-body">
+          <div class="msg-meta">
+            <span class="msg-author bot">hello-scrum</span>
+            <span class="msg-time">${now()}</span>
+          </div>
+          <div class="msg-text" style="color:#444">evaluating...</div>
+        </div>`;
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    async function send() {
+      const text = composeEl.value.trim();
+      if (!text) return;
+      sendBtn.disabled = true;
+      composeEl.value = '';
+      composeEl.style.height = '';
+      appendMessage('you', text, false);
+      appendThinking();
+      try {
+        const res = await fetch('/messenger/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text }),
+        });
+        const data = await res.json();
+        document.getElementById('thinking-msg')?.remove();
+        if (data.stories && data.stories.length) {
+          const choicesHtml = data.stories.map((s, i) =>
+            `<div class="story-choice" data-story="${s.replace(/"/g, '&quot;')}">${i + 1}. ${s}</div>`
+          ).join('');
+          appendMessage('hello-scrum', `${data.reply || 'Here are 3 story options:'}<div class="story-choices">${choicesHtml}</div>`, true);
+        } else {
+          appendMessage('hello-scrum', data.reply || '', true);
+        }
+      } catch (err) {
+        document.getElementById('thinking-msg')?.remove();
+        appendMessage('hello-scrum', `Error: ${err.message}`, true);
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+
+    messagesEl.addEventListener('click', async (e) => {
+      const choice = e.target.closest('.story-choice');
+      if (!choice || choice.classList.contains('selected') || choice.classList.contains('dimmed')) return;
+      const container = choice.closest('.story-choices');
+      if (!container) return;
+
+      const story = choice.dataset.story;
+      container.querySelectorAll('.story-choice').forEach(c => {
+        c.classList.add(c === choice ? 'selected' : 'dimmed');
+      });
+      saveMessages(activeChannel);
+
+      try {
+        const res = await fetch('/messenger/choose', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ story }),
+        });
+        const data = await res.json();
+        appendMessage('hello-scrum', data.reply || 'Added to backlog.', true);
+      } catch (err) {
+        appendMessage('hello-scrum', `Error adding story: ${err.message}`, true);
+      }
+    });
+
+    loadMessages(activeChannel);
+
+    sendBtn.addEventListener('click', send);
+    composeEl.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    });
+    composeEl.addEventListener('input', () => {
+      composeEl.style.height = 'auto';
+      composeEl.style.height = Math.min(composeEl.scrollHeight, 120) + 'px';
+    });
+  </script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 {
-  "version": "0.1.22",
-  "deployed": "2026-05-22 22:39:44 CT",
+  "version": "0.1.3",
+  "deployed": "2026-05-22 23:15:12 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -11,112 +11,17 @@
     {
       "version": "0.1.1",
       "date": "2026-05-22",
-      "change": "Added motivational tagline below the title"
+      "change": "Added glowing flicker animation to title for more visual spark"
     },
     {
       "version": "0.1.2",
       "date": "2026-05-22",
-      "change": "Added features deployed counter that increments with each release"
+      "change": "Enhanced title with animated neon rainbow gradient sweep for extra spark"
     },
     {
       "version": "0.1.3",
       "date": "2026-05-22",
-      "change": "Added changelog section showing the last 3 updates"
-    },
-    {
-      "version": "0.1.4",
-      "date": "2026-05-22",
-      "change": "Added animations and glow effects to make the page feel alive"
-    },
-    {
-      "version": "0.1.5",
-      "date": "2026-05-22",
-      "change": "Added mascot, motto badge, and scrum fun fact to give the page more personality"
-    },
-    {
-      "version": "0.1.6",
-      "date": "2026-05-22",
-      "change": "Added interactive hover card that glows, scales, and animates on hover"
-    },
-    {
-      "version": "0.1.7",
-      "date": "2026-05-22",
-      "change": "Added animated system health indicator showing all systems operational"
-    },
-    {
-      "version": "0.1.8",
-      "date": "2026-05-22",
-      "change": "Cleaned up the page for a professional look: modern font, reduced animations, removed clutter"
-    },
-    {
-      "version": "0.1.9",
-      "date": "2026-05-22",
-      "change": "Replaced plain status text with a styled colored badge that clearly communicates deployment state"
-    },
-    {
-      "version": "0.1.10",
-      "date": "2026-05-22",
-      "change": "Added a random Scrum tip displayed on each visit with a button to refresh for a new tip"
-    },
-    {
-      "version": "0.1.11",
-      "date": "2026-05-22",
-      "change": "Added sprint labels to each changelog entry so it's clear which sprint delivered each feature"
-    },
-    {
-      "version": "0.1.12",
-      "date": "2026-05-22",
-      "change": "Version badge is now clickable \u2014 click it to see what changed in this release"
-    },
-    {
-      "version": "0.1.13",
-      "date": "2026-05-22",
-      "change": "Added a streak counter showing consecutive successful deploys"
-    },
-    {
-      "version": "0.1.14",
-      "date": "2026-05-22",
-      "change": "Changed page title from Hello Scrum to Hello Dude"
-    },
-    {
-      "version": "0.1.15",
-      "date": "2026-05-22",
-      "change": "Updated title to professional name: Hello Scrum"
-    },
-    {
-      "version": "0.1.16",
-      "date": "2026-05-22",
-      "change": "Renamed title to \"Scrum Board\" for a professional, descriptive identity"
-    },
-    {
-      "version": "0.1.17",
-      "date": "2026-05-22",
-      "change": "Rebranded page title to \"AgileDesk\" for a professional product identity"
-    },
-    {
-      "version": "0.1.18",
-      "date": "2026-05-22",
-      "change": "Changed title color to violet (#a78bfa) for a fresh, distinctive branded look"
-    },
-    {
-      "version": "0.1.19",
-      "date": "2026-05-22",
-      "change": "Title now has an animated gradient shimmer and glow for a bold, eye-catching look"
-    },
-    {
-      "version": "0.1.20",
-      "date": "2026-05-22",
-      "change": "Added a rotating animated subtitle under the title that cycles through Scrum-themed phrases with a blinking cursor"
-    },
-    {
-      "version": "0.1.21",
-      "date": "2026-05-22",
-      "change": "Reduced visual noise: slowed title shimmer, health ping, subtitle cycle, cursor blink, and streak pulse so the page feels calm and readable"
-    },
-    {
-      "version": "0.1.22",
-      "date": "2026-05-22",
-      "change": "Reduced color palette to two accents (green and orange): unified title, subtitle, status badge, and sprint badge colors"
+      "change": "Added pulse-scale bounce and animated neon glow bar beneath title for extra spark"
     }
   ]
 }

@@ -3,58 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AgileDesk | Scrum Board</title>
+  <title>Hello Scrum</title>
   <style>
-    @keyframes fade-in-up {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes title-shimmer {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    @keyframes title-shimmer-slow {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    @keyframes health-ping {
-      0% { transform: scale(1); opacity: 0.6; }
-      70% { transform: scale(1.8); opacity: 0; }
-      100% { transform: scale(1); opacity: 0; }
-    }
-    @keyframes tip-fade {
-      from { opacity: 0; transform: translateY(4px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes popover-in {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes cursor-blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-    @keyframes cursor-blink-slow {
-      0%, 45% { opacity: 1; }
-      55%, 100% { opacity: 0; }
-    }
-    @keyframes subtitle-fade {
-      0% { opacity: 0; transform: translateY(3px); }
-      10% { opacity: 1; transform: translateY(0); }
-      85% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-3px); }
-    }
-    @keyframes streak-pulse {
-      0% { box-shadow: 0 0 0 0 #ff6b2b22; }
-      70% { box-shadow: 0 0 0 6px #ff6b2b00; }
-      100% { box-shadow: 0 0 0 0 #ff6b2b00; }
-    }
-    *, *::before, *::after { box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background: #0f1117;
+      font-family: monospace;
+      background: #0f0f0f;
       color: #e0e0e0;
       display: flex;
       flex-direction: column;
@@ -64,637 +17,105 @@
       margin: 0;
       padding: 2rem 1rem;
     }
+    @keyframes flicker {
+      0%, 100% { text-shadow: 0 0 8px #00ff99, 0 0 20px #00ff99, 0 0 40px #00ff9966; opacity: 1; }
+      45% { text-shadow: 0 0 6px #00ff99, 0 0 14px #00ff99aa; opacity: 0.95; }
+      50% { text-shadow: 0 0 12px #00ff99, 0 0 30px #00ff99, 0 0 60px #00ff9944; opacity: 1; }
+      85% { text-shadow: 0 0 4px #00ff9988, 0 0 10px #00ff9966; opacity: 0.92; }
+    }
+    @keyframes pulse-scale {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.045); }
+    }
+    @keyframes glow-bar {
+      0%, 100% { opacity: 0.7; width: 40%; }
+      50% { opacity: 1; width: 80%; }
+    }
+    @keyframes neon-sweep {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
     h1 {
-      font-size: 2.6rem;
-      font-weight: 800;
-      color: #00e87a;
-      margin: 0 0 0.25rem 0;
-      letter-spacing: -1px;
-      animation: fade-in-up 0.5s ease both;
-      filter: drop-shadow(0 0 14px #00e87a44);
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.05em;
+      animation: flicker 4s ease-in-out infinite, neon-sweep 5s ease infinite, pulse-scale 3s ease-in-out infinite;
+      background: linear-gradient(90deg, #00ff99, #00cfff, #a78bfa, #ff6edf, #00ff99);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+      filter: drop-shadow(0 0 8px #00ff99aa) drop-shadow(0 0 18px #00cfffaa);
+      animation: flicker 4s ease-in-out infinite, neon-sweep 5s ease infinite, pulse-scale 3s ease-in-out infinite;
     }
-    .title-subtitle {
-      font-size: 0.95rem;
-      color: #888;
-      margin: 0 0 0.1rem 0;
-      letter-spacing: 0.08em;
-      font-weight: 500;
-      min-height: 1.4em;
+    .title-wrap {
       display: flex;
-      align-items: center;
-      gap: 2px;
-      animation: fade-in-up 0.5s ease 0.08s both;
-    }
-    .title-subtitle .subtitle-text {
-      animation: subtitle-fade 8s ease infinite;
-    }
-    .title-subtitle .cursor {
-      display: inline-block;
-      width: 2px;
-      height: 1em;
-      background: #00e87a;
-      margin-left: 2px;
-      vertical-align: middle;
-      animation: cursor-blink-slow 2s step-end infinite;
-      border-radius: 1px;
-    }
-    .tagline {
-      font-size: 1rem;
-      color: #888;
-      margin-bottom: 1.25rem;
-      animation: fade-in-up 0.5s ease 0.1s both;
-    }
-    .top-nav {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      display: flex;
-      gap: 0.5rem;
-    }
-    .audit-btn {
-      font-family: inherit;
-      font-size: 0.82rem;
-      background: #1a1d26;
-      color: #aaa;
-      border: 1px solid #2a2d3a;
-      padding: 0.35rem 0.9rem;
-      border-radius: 6px;
-      text-decoration: none;
-      transition: color 0.2s, border-color 0.2s, background 0.2s;
-    }
-    .audit-btn:hover {
-      background: #1e2130;
-      border-color: #00e87a;
-      color: #00e87a;
-    }
-    .version-wrap {
-      position: relative;
-      display: inline-flex;
       flex-direction: column;
       align-items: center;
-      margin-bottom: 1.25rem;
-      animation: fade-in-up 0.5s ease 0.15s both;
+      margin-bottom: 0.25rem;
     }
+    .title-glow-bar {
+      height: 3px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #00ff99, #00cfff, #a78bfa, #ff6edf);
+      animation: glow-bar 3s ease-in-out infinite;
+      filter: blur(1px) drop-shadow(0 0 6px #00ff99);
+      margin-top: -0.3rem;
+    }
+    .meta { font-size: 0.9rem; color: #888; margin: 0.2rem 0; }
     .version {
       font-size: 0.85rem;
-      color: #00e87a;
-      background: #0b2318;
-      border: 1px solid #00e87a33;
+      color: #00ff99;
+      background: #0b1f14;
+      border: 1px solid #00ff9933;
       padding: 0.3rem 0.9rem;
       border-radius: 20px;
-      letter-spacing: 0.04em;
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
-    }
-    .version:hover {
-      background: #0f2e1e;
-      border-color: #00e87a88;
-      box-shadow: 0 0 8px #00e87a33;
-    }
-    .version.active {
-      background: #0f2e1e;
-      border-color: #00e87a;
-      box-shadow: 0 0 10px #00e87a44;
-    }
-    .version-popover {
-      display: none;
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: #13191f;
-      border: 1px solid #00e87a55;
-      border-radius: 8px;
-      padding: 0.75rem 1rem;
-      min-width: 260px;
-      max-width: 320px;
-      z-index: 100;
-      box-shadow: 0 4px 20px #00000066;
-      animation: popover-in 0.25s ease both;
-    }
-    .version-popover.open {
-      display: block;
-    }
-    .version-popover::before {
-      content: '';
-      position: absolute;
-      top: -6px;
-      left: 50%;
-      transform: translateX(-50%) rotate(45deg);
-      width: 10px;
-      height: 10px;
-      background: #13191f;
-      border-left: 1px solid #00e87a55;
-      border-top: 1px solid #00e87a55;
-    }
-    .vp-version {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: #00e87a;
-      margin-bottom: 0.2rem;
-    }
-    .vp-date {
-      font-size: 0.72rem;
-      color: #444;
       margin-bottom: 0.5rem;
     }
-    .vp-change {
-      font-size: 0.84rem;
-      color: #ccc;
-      line-height: 1.5;
-    }
-    .vp-hint {
-      font-size: 0.7rem;
-      color: #333;
-      margin-top: 0.6rem;
-      text-align: right;
-      letter-spacing: 0.04em;
-    }
-    .health-indicator {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      background: #13191f;
-      border: 1px solid #1e2d24;
-      border-radius: 8px;
-      padding: 0.55rem 1.25rem;
-      margin-bottom: 0.75rem;
-      animation: fade-in-up 0.5s ease 0.2s both;
-    }
-    .health-dot-wrap {
-      position: relative;
-      width: 10px;
-      height: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .health-dot {
-      width: 10px;
-      height: 10px;
-      background: #00e87a;
-      border-radius: 50%;
-      position: relative;
-      z-index: 1;
-      flex-shrink: 0;
-    }
-    .health-dot-ping {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 10px;
-      height: 10px;
-      background: #00e87a;
-      border-radius: 50%;
-      animation: health-ping 4s ease-out infinite;
-    }
-    .health-label {
-      font-size: 0.85rem;
-      color: #00e87a;
-      font-weight: 600;
-    }
-    .health-sub {
-      font-size: 0.78rem;
-      color: #4a6b58;
-    }
-    .features-counter {
-      background: #13191f;
-      border: 1px solid #1e2d24;
-      border-radius: 8px;
-      padding: 0.65rem 2rem;
-      text-align: center;
-      margin-bottom: 0.75rem;
-      animation: fade-in-up 0.5s ease 0.25s both;
-    }
-    .features-counter .count {
-      font-size: 1.8rem;
-      color: #00e87a;
-      font-weight: 700;
-      line-height: 1.2;
-    }
-    .features-counter .label {
-      font-size: 0.75rem;
-      color: #555;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-    .streak-counter {
-      background: #1a1108;
-      border: 1px solid #ff6b2b44;
-      border-radius: 8px;
-      padding: 0.65rem 2rem;
-      text-align: center;
-      margin-bottom: 0.75rem;
-      animation: fade-in-up 0.5s ease 0.28s both, streak-pulse 6s ease-out 1s infinite;
-    }
-    .streak-counter .streak-value {
-      font-size: 1.8rem;
-      font-weight: 700;
-      line-height: 1.2;
-      color: #ff6b2b;
-    }
-    .streak-counter .streak-label {
-      font-size: 0.75rem;
-      color: #7a4a2a;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-    .meta {
-      font-size: 0.82rem;
-      color: #555;
-      margin: 0.2rem 0;
-      animation: fade-in-up 0.5s ease 0.3s both;
-    }
-    .status-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin: 0.2rem 0;
-      animation: fade-in-up 0.5s ease 0.3s both;
-    }
-    .status-row .status-label {
-      font-size: 0.82rem;
-      color: #555;
-    }
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 0.2rem 0.65rem;
-      border-radius: 20px;
-      background: #0b2318;
-      color: #00e87a;
-      border: 1px solid #00e87a33;
-    }
-    .status-badge .status-icon {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #00e87a;
-      flex-shrink: 0;
-    }
-    .tip-box {
-      margin-top: 1rem;
-      background: #13191f;
-      border: 1px solid #1e2d3a;
-      border-left: 3px solid #00e87a;
-      border-radius: 8px;
-      padding: 0.85rem 1.25rem;
-      width: 100%;
-      max-width: 480px;
-      animation: fade-in-up 0.5s ease 0.35s both;
-    }
-    .tip-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.5rem;
-    }
-    .tip-label {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: #00e87a;
-      font-weight: 600;
-    }
-    .tip-refresh {
-      background: none;
-      border: 1px solid #2a2d3a;
-      color: #555;
-      border-radius: 5px;
-      padding: 0.18rem 0.55rem;
-      font-size: 0.75rem;
-      cursor: pointer;
-      font-family: inherit;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .tip-refresh:hover {
-      color: #00e87a;
-      border-color: #00e87a;
-    }
-    .tip-text {
-      font-size: 0.88rem;
-      color: #ccc;
-      line-height: 1.55;
-      animation: tip-fade 0.35s ease both;
-    }
-    .changelog {
-      margin-top: 1.5rem;
-      background: #13191f;
-      border: 1px solid #1e2530;
-      border-radius: 8px;
-      padding: 1rem 1.5rem;
-      width: 100%;
-      max-width: 480px;
-      animation: fade-in-up 0.5s ease 0.4s both;
-    }
-    .changelog h2 {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: #555;
-      margin: 0 0 0.75rem 0;
-      font-weight: 600;
-    }
-    .changelog-entry {
-      display: flex;
-      align-items: baseline;
-      gap: 0.75rem;
-      padding: 0.4rem 0;
-      border-top: 1px solid #1c1f2a;
-      flex-wrap: wrap;
-    }
-    .changelog-entry:first-of-type {
-      border-top: none;
-    }
-    .changelog-entry .cv {
-      color: #00e87a;
-      font-size: 0.78rem;
-      white-space: nowrap;
-      font-weight: 600;
-    }
-    .changelog-entry .cd {
-      color: #444;
-      font-size: 0.73rem;
-      white-space: nowrap;
-    }
-    .changelog-entry .ct {
-      color: #aaa;
-      font-size: 0.83rem;
-      line-height: 1.4;
-      flex: 1;
-      min-width: 0;
-    }
-    .sprint-badge {
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      padding: 0.15rem 0.5rem;
-      border-radius: 20px;
-      background: #161a1d;
-      color: #555;
-      border: 1px solid #2a2d3a;
-      white-space: nowrap;
-      align-self: center;
-    }
+    .changelog { margin-top: 1.5rem; width: 100%; max-width: 480px; }
+    .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 0.5rem 0; }
+    .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }
+    .changelog-entry:first-of-type { border-top: none; }
+    .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }
+    .changelog-entry .cd { color: #444; font-size: 0.73rem; }
+    .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }
   </style>
 </head>
 <body>
-  <nav class="top-nav">
-    <a class="audit-btn" href="/">Board</a>
-    <a class="audit-btn" href="active.html">Active</a>
-    <a class="audit-btn" href="audit.html">Audit</a>
-    <a class="audit-btn" href="workflow.html">Workflow</a>
-  </nav>
-  <h1>AgileDesk</h1>
-  <div class="title-subtitle"><span class="subtitle-text" id="title-subtitle"></span><span class="cursor"></span></div>
-  <div class="tagline">Iterate. Improve. Deliver.</div>
-  <div class="version-wrap">
-    <div class="version" id="version-badge" onclick="toggleVersionPopover(event)" title="Click to see what's new">v0.1.22</div>
-    <div class="version-popover" id="version-popover">
-      <div class="vp-version">v0.1.22</div>
-      <div class="vp-date">2026-05-22</div>
-      <div class="vp-change">Reduced color palette to two accents (green and orange): unified title, subtitle, status badge, and sprint badge colors</div>
-      <div class="vp-hint">click badge to dismiss</div>
-    </div>
+  <div class="title-wrap">
+    <h1>Hello Scrum</h1>
+    <div class="title-glow-bar"></div>
   </div>
-  <div class="health-indicator">
-    <div class="health-dot-wrap">
-      <div class="health-dot-ping"></div>
-      <div class="health-dot"></div>
-    </div>
-    <span class="health-label">System Healthy</span>
-    <span class="health-sub">&mdash; all systems operational</span>
-  </div>
-  <div class="features-counter">
-    <div class="count">23</div>
-    <div class="label">Features Deployed</div>
-  </div>
-  <div class="streak-counter">
-    <div class="streak-value">&#128293; 23</div>
-    <div class="streak-label">Consecutive Successful Deploys</div>
-  </div>
-  <div class="meta">Last deployed: 2026-05-22 22:39:44 CT</div>
-  <div class="status-row">
-    <span class="status-label">Status:</span>
-    <span class="status-badge"><span class="status-icon"></span>baseline</span>
-  </div>
-  <div class="tip-box">
-    <div class="tip-header">
-      <span class="tip-label">&#128161; Scrum Tip of the Visit</span>
-      <button class="tip-refresh" onclick="showNewTip()" title="Get another tip">&#x21bb; New Tip</button>
-    </div>
-    <div class="tip-text" id="scrum-tip"></div>
-  </div>
+  <div class="version" id="version-badge">v0.1.3</div>
+  <div class="meta">Last deployed: 2026-05-22 23:15:12 CT</div>
+  <div class="meta">Status: baseline</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.21</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 3</span>
-      <span class="ct">Reduced visual noise: slowed title shimmer, health ping, subtitle cycle, cursor blink, and streak pulse so the page feels calm and readable</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.20</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 3</span>
-      <span class="ct">Added a rotating animated subtitle under the title that cycles through Scrum-themed phrases with a blinking cursor</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.19</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 3</span>
-      <span class="ct">Title now has an animated gradient shimmer and glow for a bold, eye-catching look</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.18</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 3</span>
-      <span class="ct">Changed title color to violet (#a78bfa) for a fresh, distinctive branded look</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.17</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 3</span>
-      <span class="ct">Rebranded page title to &ldquo;AgileDesk&rdquo; for a professional product identity</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.16</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 3</span>
-      <span class="ct">Renamed title to &ldquo;Scrum Board&rdquo; for a professional, descriptive identity</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.15</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 3</span>
-      <span class="ct">Updated title to professional name: Hello Scrum</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.14</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 3</span>
-      <span class="ct">Changed page title from Hello Scrum to Hello Dude</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.13</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 3</span>
-      <span class="ct">Added a streak counter showing consecutive successful deploys</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.12</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 3</span>
-      <span class="ct">Version badge is now clickable &mdash; click it to see what changed in this release</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.11</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 3</span>
-      <span class="ct">Added sprint labels to each changelog entry so it's clear which sprint delivered each feature</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.10</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 3</span>
-      <span class="ct">Added a random Scrum tip displayed on each visit with a button to refresh for a new tip</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.9</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 3</span>
-      <span class="ct">Replaced plain status text with a styled colored badge that clearly communicates deployment state</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.8</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 3</span>
-      <span class="ct">Cleaned up the page for a professional look: modern font, reduced animations, removed clutter</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.7</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 2</span>
-      <span class="ct">Added animated system health indicator showing all systems operational</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.6</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 2</span>
-      <span class="ct">Added interactive hover card that glows, scales, and animates on hover</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.5</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 2</span>
-      <span class="ct">Added mascot, motto badge, and scrum fun fact to give the page more personality</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.4</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 2</span>
-      <span class="ct">Added animations and glow effects to make the page feel alive</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.3</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 1</span>
-      <span class="ct">Added changelog section showing the last 3 updates</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.2</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 1</span>
-      <span class="ct">Added features deployed counter that increments with each release</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.1</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 1</span>
-      <span class="ct">Added motivational tagline below the title</span>
-    </div>
-    <div class="changelog-entry">
-      <span class="cv">v0.1.0</span>
-      <span class="cd">2026-05-22</span>
-      <span class="sprint-badge">Sprint 1</span>
-      <span class="ct">Initial hello world</span>
-    </div>
+    <div id="changelog-entries"></div>
   </div>
   <script>
-    const tips = [
-      "Keep your Daily Scrum to 15 minutes or less — it's a sync, not a status report.",
-      "The Sprint Goal is your north star. Every task should serve it.",
-      "Backlog refinement isn't a ceremony, but it's essential. Aim for 10% of your sprint capacity.",
-      "A good Definition of Done prevents 'done but not really done' from haunting your velocity.",
-      "The Product Owner owns the 'what'; the team owns the 'how'. Respect that boundary.",
-      "Velocity is a planning tool, not a performance metric. Don't weaponize it.",
-      "Retrospectives only work if the team feels safe to speak honestly. Protect that safety.",
-      "User stories should describe value to the user, not tasks for the developer.",
-      "Impediments raised in the Daily Scrum should be resolved by the Scrum Master the same day.",
-      "Small, frequent releases reduce risk and build trust with stakeholders.",
-      "A sprint backlog belongs to the team — no one should add to it mid-sprint without the team's consent.",
-      "Empiricism beats prediction: inspect your product and process constantly, then adapt."
-    ];
-    let lastIndex = -1;
-    function showNewTip() {
-      let idx;
-      do { idx = Math.floor(Math.random() * tips.length); } while (idx === lastIndex && tips.length > 1);
-      lastIndex = idx;
-      const el = document.getElementById('scrum-tip');
-      el.style.animation = 'none';
-      el.offsetHeight;
-      el.style.animation = '';
-      el.textContent = tips[idx];
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
-    showNewTip();
-
-    const subtitles = [
-      "Your Scrum Command Center",
-      "Sprint with Purpose",
-      "Ship. Reflect. Repeat.",
-      "Built for Agile Teams",
-      "Inspect & Adapt, Every Sprint",
-      "Velocity Starts Here"
-    ];
-    let subtitleIndex = 0;
-    function cycleSubtitle() {
-      const el = document.getElementById('title-subtitle');
-      el.style.animation = 'none';
-      el.offsetHeight;
-      el.style.animation = '';
-      el.textContent = subtitles[subtitleIndex % subtitles.length];
-      subtitleIndex++;
+    function loadChangelog() {
+      fetch('/version.json')
+        .then(r => r.json())
+        .then(data => {
+          const entries = (data.changelog || []).slice().reverse();
+          document.getElementById('changelog-entries').innerHTML = entries.map(e => {
+            const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;
+            return `<div class="changelog-entry">
+      <span class="cv">${escHtml(ver)}</span>
+      <span class="cd">${escHtml(e.date || '')}</span>
+      <span class="ct">${escHtml(e.change || '')}</span>
+    </div>`;
+          }).join('');
+        })
+        .catch(() => {});
     }
-    cycleSubtitle();
-    setInterval(cycleSubtitle, 8000);
-
-    function toggleVersionPopover(event) {
-      event.stopPropagation();
-      const badge = document.getElementById('version-badge');
-      const popover = document.getElementById('version-popover');
-      const isOpen = popover.classList.contains('open');
-      if (isOpen) {
-        popover.classList.remove('open');
-        badge.classList.remove('active');
-      } else {
-        popover.classList.add('open');
-        badge.classList.add('active');
-      }
-    }
-
-    document.addEventListener('click', function() {
-      const badge = document.getElementById('version-badge');
-      const popover = document.getElementById('version-popover');
-      popover.classList.remove('open');
-      badge.classList.remove('active');
-    });
+    loadChangelog();
   </script>
 </body>
 </html>

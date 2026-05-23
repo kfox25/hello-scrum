@@ -130,6 +130,7 @@ def write_active(item, stage, **extra):
     data.update(extra)
     with open(ACTIVE_FILE, "w") as f:
         json.dump(data, f)
+    return data
 
 
 def clear_active():
@@ -383,8 +384,9 @@ def run_one(sprint_only=False):
         log(f"Agent error: {e}")
         item["status"] = "failed"
         item["error"] = f"Agent error: {e}"
+        ad = write_active(item, "failed", failed_at="story", error=str(e)[:160])
+        item["started"] = ad.get("started"); item["stage_times"] = ad.get("stage_times", {})
         save_backlog(backlog)
-        write_active(item, "failed", failed_at="story", error=str(e)[:160])
         return False
 
     log("Applying changes...")
@@ -396,8 +398,9 @@ def run_one(sprint_only=False):
         log(f"Raw response preview: {response[:300]}")
         item["status"] = "failed"
         item["error"] = f"Parse error: {e} | Response preview: {response[:200]}"
+        ad = write_active(item, "failed", failed_at="code", error=str(e)[:160])
+        item["started"] = ad.get("started"); item["stage_times"] = ad.get("stage_times", {})
         save_backlog(backlog)
-        write_active(item, "failed", failed_at="code", error=str(e)[:160])
         return False
 
     log("=== USER STORY ===")
@@ -429,8 +432,9 @@ def run_one(sprint_only=False):
         item["acceptance_criteria"] = result.get("acceptance_criteria", [])
         item["diff"] = diff
         item["test_results"] = test_results
+        ad = write_active(item, "failed", failed_at="test", error="Tests failed — see activity stream")
+        item["started"] = ad.get("started"); item["stage_times"] = ad.get("stage_times", {})
         save_backlog(backlog)
-        write_active(item, "failed", failed_at="test", error="Tests failed — see activity stream")
         return False
 
     log("Hermes reviewing...")
@@ -461,8 +465,9 @@ def run_one(sprint_only=False):
         item["test_results"] = test_results
         item["hermes_verdict"] = hermes_verdict
         item["hermes_reason"] = hermes_reason
+        ad = write_active(item, "rejected", hermes_verdict="reject", hermes_reason=hermes_reason)
+        item["started"] = ad.get("started"); item["stage_times"] = ad.get("stage_times", {})
         save_backlog(backlog)
-        write_active(item, "rejected", hermes_verdict="reject", hermes_reason=hermes_reason)
         return False
 
     log("Pushing to GitHub...")
@@ -484,11 +489,15 @@ def run_one(sprint_only=False):
         log(f"Push failed: {e}")
         rollback()
         item["status"] = "failed"
+        ad = write_active(item, "failed", failed_at="deploy", error=f"Push failed: {str(e)[:120]}")
+        item["started"] = ad.get("started"); item["stage_times"] = ad.get("stage_times", {})
         save_backlog(backlog)
-        write_active(item, "failed", failed_at="deploy", error=f"Push failed: {str(e)[:120]}")
         return False
 
-    write_active(item, "done", hermes_verdict=hermes_verdict, hermes_reason=hermes_reason)
+    ad = write_active(item, "done", hermes_verdict=hermes_verdict, hermes_reason=hermes_reason)
+    item["started"]     = ad.get("started")
+    item["stage_times"] = ad.get("stage_times", {})
+    save_backlog(backlog)
     log(f"\nDeployed: {timestamp}")
     log(f"Live at : {REPO_URL}")
     return True

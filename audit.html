@@ -135,6 +135,22 @@
     }
     .step.done  .step-label { color: #00ff9990; }
     .step.failed .step-label { color: #ff444490; }
+    .step-time {
+      font-size: 0.55rem;
+      color: #2a2a2a;
+      text-align: center;
+      min-height: 0.7em;
+      margin-top: 0.1rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .step.done .step-time   { color: #00ff9940; }
+    .step.failed .step-time { color: #ff444450; }
+    .steps-total {
+      padding: 0 1.25rem 0.6rem;
+      font-size: 0.7rem;
+      color: #2a2a2a;
+      font-variant-numeric: tabular-nums;
+    }
 
     .section {
       padding: 1rem 1.25rem;
@@ -228,7 +244,27 @@
   <div id="log"><div class="loading">Loading...</div></div>
 
   <script>
-    const STEPS = ["Pull", "Story", "Code", "Test", "Review", "Deploy"];
+    const STEPS     = ["Pull", "Story", "Code", "Test", "Review", "Deploy"];
+    const STEP_KEYS = ["pull", "story", "code", "test", "review", "deploy"];
+
+    function fmtSecs(s) {
+      s = Math.floor(s);
+      if (s < 0) s = 0;
+      if (s < 60) return s + 's';
+      const m = Math.floor(s / 60), r = s % 60;
+      if (m < 60) return m + 'm ' + (r < 10 ? '0' : '') + r + 's';
+      return Math.floor(m / 60) + 'h ' + (m % 60) + 'm';
+    }
+
+    function stepTime(item, i) {
+      if (!item.stage_times) return '';
+      const st = item.stage_times;
+      const key = STEP_KEYS[i];
+      if (!st[key]) return '';
+      const nextKey = STEP_KEYS[i + 1];
+      const end = (nextKey && st[nextKey]) || st['done'] || st['failed'] || null;
+      return end ? fmtSecs(end - st[key]) : '';
+    }
 
     function stepStatus(item, index) {
       if (item.status === "pending") return index === 0 ? "pending" : "";
@@ -275,11 +311,18 @@
     function renderItem(item) {
       const steps = STEPS.map((label, i) => {
         const s = stepStatus(item, i);
+        const t = stepTime(item, i);
         return `<div class="step ${s}">
           <div class="step-dot"></div>
           <div class="step-label">${label}</div>
+          <div class="step-time">${t}</div>
         </div>`;
       }).join("");
+      const totalTime = (() => {
+        if (!item.started || !item.stage_times) return '';
+        const end = item.stage_times['done'] || item.stage_times['failed'];
+        return end ? '⏱ ' + fmtSecs(end - item.started) + ' total' : '';
+      })();
 
       const storySection = item.story ? `
         <div class="section">
@@ -346,6 +389,7 @@
           </div>
           <div class="item-body">
             <div class="steps">${steps}</div>
+            ${totalTime ? `<div class="steps-total">${totalTime}</div>` : ''}
             ${failureSection}
             ${storySection}
             ${diffSection}

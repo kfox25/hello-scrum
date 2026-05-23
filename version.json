@@ -1,6 +1,6 @@
 {
-  "version": "0.1.19",
-  "deployed": "2026-05-23 01:37:19 CT",
+  "version": "0.1.20",
+  "deployed": "2026-05-23 01:46:24 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -102,6 +102,11 @@
       "version": "0.1.19",
       "date": "2026-05-23",
       "change": "Title color updated to #00ff99 to match terminal aesthetic and page-wide green accent style"
+    },
+    {
+      "version": "0.1.20",
+      "date": "2026-05-23",
+      "change": "Spicier title: 3.6rem uppercase 900-weight with animated green-cyan-purple-pink neon gradient sweep, pulsing glow, and punchier tagline"
     }
   ]
 }

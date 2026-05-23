@@ -3,15 +3,27 @@
     {
       "id": 51,
       "idea": "title should be spicier",
-      "status": "failed",
       "in_sprint": true,
-      "story": "As a user, I want the title to feel spicier and more exciting so that the page has more visual personality and energy.",
+      "stage_times": {
+        "code": 1779518235.574645,
+        "failed": 1779518235.99732,
+        "pull": 1779518215.160689,
+        "story": 1779518215.179678,
+        "test": 1779518235.703273
+      },
+      "started": 1779518215.160689,
+      "status": "done",
+      "tokens_in": 3076,
+      "tokens_out": 1783,
+      "story": "As a user, I want the title to feel more exciting and bold so that the page makes a stronger first impression.",
       "acceptance_criteria": [
-        "The title text is transformed to feel bold and edgy (e.g. using a provocative or stylized label)",
-        "The tagline is updated to match the spicier tone",
-        "The title uses a visually striking style (gradient, glow, or similar) that feels energetic without being overwhelming"
+        "The h1 title uses an animated neon gradient spanning green, cyan, and purple",
+        "The title is uppercase and larger than the current 2.8rem",
+        "A subtle pulsing glow animation accompanies the gradient",
+        "The tagline is updated to something with more attitude"
       ],
-      "diff": "diff --git a/index.html b/index.html\nindex 893ed9c..1ec418c 100644\n--- a/index.html\n+++ b/index.html\n@@ -19,12 +19,16 @@\n     }\n     h1 {\n       font-family: monospace;\n-      font-size: 2.8rem;\n+      font-size: 3.4rem;\n       margin-bottom: 0.15rem;\n-      letter-spacing: 0.06em;\n-      font-weight: 600;\n-      text-transform: none;\n-      color: #7abfa8;\n+      letter-spacing: 0.12em;\n+      font-weight: 900;\n+      text-transform: uppercase;\n+      background: linear-gradient(90deg, #ff4f4f, #ff9900, #ffee00, #00ff99);\n+      -webkit-background-clip: text;\n+      -webkit-text-fill-color: transparent;\n+      background-clip: text;\n+      filter: drop-shadow(0 0 8px #ff990088);\n     }\n     .tagline {\n       font-family: monospace;\n@@ -86,11 +90,11 @@\n     <a href=\"workflow.html\">Workflow</a>\n   </nav>\n   <div class=\"title-wrap\">\n-    <h1>Hello Scrum</h1>\n-    <div class=\"tagline\">agile \u00c2\u00b7 iterative \u00c2\u00b7 relentless</div>\n+    <h1>\u00f0\u0178\u201d\u00a5 Ship It or Die \u00f0\u0178\u201d\u00a5</h1>\n+    <div class=\"tagline\">ruthless \u00c2\u00b7 iterative \u00c2\u00b7 unstoppable</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.18</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 01:34:00 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.19</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 01:36:55 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex 619e79a..d8ee185 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.18\",\n-  \"deployed\": \"2026-05-23 01:34:00 CT\",\n+  \"version\": \"0.1.19\",\n+  \"deployed\": \"2026-05-23 01:36:55 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -97,6 +97,11 @@\n       \"version\": \"0.1.18\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Calmer title: removed all animations, reduced to 2.8rem muted teal, lighter weight, subtle letter-spacing, static tagline\"\n+    },\n+    {\n+      \"version\": \"0.1.19\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Spicier title: renamed to '\\ud83d\\udd25 Ship It or Die \\ud83d\\udd25', uppercase 3.4rem bold with red-orange-yellow-green gradient, orange glow, and edgy tagline\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "summary": "Spicier title: bold uppercase animated neon gradient with pulsing glow and attitude tagline",
+      "diff": "diff --git a/index.html b/index.html\nindex 415cdb4..0894ac0 100644\n--- a/index.html\n+++ b/index.html\n@@ -17,14 +17,28 @@\n       margin: 0;\n       padding: 2rem 1rem;\n     }\n+    @keyframes neon-sweep {\n+      0%   { background-position: 0% 50%; }\n+      50%  { background-position: 100% 50%; }\n+      100% { background-position: 0% 50%; }\n+    }\n+    @keyframes glow-pulse {\n+      0%, 100% { filter: drop-shadow(0 0 6px #00ff99aa) drop-shadow(0 0 18px #00ccff55); }\n+      50%       { filter: drop-shadow(0 0 14px #00ff99ff) drop-shadow(0 0 36px #cc00ffaa); }\n+    }\n     h1 {\n       font-family: monospace;\n-      font-size: 2.8rem;\n+      font-size: 3.6rem;\n       margin-bottom: 0.15rem;\n-      letter-spacing: 0.06em;\n-      font-weight: 600;\n-      text-transform: none;\n-      color: #00ff99;\n+      letter-spacing: 0.12em;\n+      font-weight: 900;\n+      text-transform: uppercase;\n+      background: linear-gradient(120deg, #00ff99, #00ccff, #cc00ff, #ff0099, #00ff99);\n+      background-size: 300% 300%;\n+      -webkit-background-clip: text;\n+      -webkit-text-fill-color: transparent;\n+      background-clip: text;\n+      animation: neon-sweep 4s ease infinite, glow-pulse 3s ease-in-out infinite;\n     }\n     .tagline {\n       font-family: monospace;\n@@ -87,10 +101,10 @@\n   </nav>\n   <div class=\"title-wrap\">\n     <h1>Hello Scrum</h1>\n-    <div class=\"tagline\">agile \u00c2\u00b7 iterative \u00c2\u00b7 relentless</div>\n+    <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.19</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 01:37:19 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.20</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 01:46:24 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex ccddce2..d7e3fcb 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.19\",\n-  \"deployed\": \"2026-05-23 01:37:19 CT\",\n+  \"version\": \"0.1.20\",\n+  \"deployed\": \"2026-05-23 01:46:24 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -102,6 +102,11 @@\n       \"version\": \"0.1.19\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Title color updated to #00ff99 to match terminal aesthetic and page-wide green accent style\"\n+    },\n+    {\n+      \"version\": \"0.1.20\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Spicier title: 3.6rem uppercase 900-weight with animated green-cyan-purple-pink neon gradient sweep, pulsing glow, and punchier tagline\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "test_results": [
         {
           "status": "pass",
@@ -19,35 +31,22 @@
         },
         {
           "status": "pass",
-          "message": "version 0.1.19 matches between version.json and index.html"
+          "message": "version 0.1.20 matches between version.json and index.html"
         },
         {
           "status": "pass",
-          "message": "deployed timestamp '2026-05-23 01:36:55 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-23 01:46:24 CT' present in index.html"
         },
         {
-          "status": "fail",
-          "message": "test_changelog_has_entry: 'charmap' codec can't encode character '\\U0001f525' in position 66: character maps to <undefined>"
+          "status": "pass",
+          "message": "changelog has entry for v0.1.20: Spicier title: 3.6rem uppercase 900-weight with animated green-cyan-purple-pink neon gradient sweep, pulsing glow, and punchier tagline"
         }
       ],
-      "started": 1779518215.160689,
-      "stage_times": {
-        "pull": 1779518215.160689,
-        "story": 1779518215.179678,
-        "code": 1779518235.574645,
-        "test": 1779518235.703273,
-        "failed": 1779518235.99732
-      },
-      "tokens_in": 3076,
-      "tokens_out": 1783
+      "deployed": "2026-05-23 01:46:24 CT",
+      "hermes_verdict": "approve",
+      "hermes_reason": "All acceptance criteria met: h1 uses animated neon gradient (green\u2192cyan\u2192purple\u2192pink), is uppercase and 3.6rem (larger than 2.8rem), includes pulsing glow animation, and tagline updated to 'ship fast \u00b7 break things \u00b7 own it' with more attitude."
     },
     {
-      "id": 52,
-      "idea": "title should match style of rest of page",
-      "status": "done",
-      "in_sprint": true,
-      "retro_context": "[failure_pattern] Unicode encoding issue in changelog: the emoji character '\\U0001f525' (fire) cannot be encoded by the 'charmap' codec. The agent attempted to add a spicy emoji to the title but failed at the changelog validation step due to character encoding mismatch.\n[improvement] Ensure changelog generation uses UTF-8 encoding explicitly rather than relying on system default charmap. Add encoding validation before writing special characters to changelog files.\n[observation] 3 of 4 tests passed (deployment, versioning, and file presence checks all succeeded), indicating the core changes were implemented correctly\u2014only the changelog encoding validation failed.\n[improvement] Add pre-flight validation for special characters in user story text before processing, or sanitize emoji to their UTF-8 safe equivalents in changelog entries.",
-      "story": "As a user, I want the title to match the style of the rest of the page so that the design feels cohesive and consistent with the terminal aesthetic",
       "acceptance_criteria": [
         "Title uses monospace font consistent with the rest of the page",
         "Title color uses the page's primary green (#00ff99) to match nav links and version badge",
@@ -55,35 +54,53 @@
         "Title size and weight feel balanced with the surrounding elements",
         "No decorative effects that conflict with the minimal terminal aesthetic"
       ],
-      "summary": "Match title color to page terminal aesthetic using primary green #00ff99",
+      "deployed": "2026-05-23 01:37:19 CT",
       "diff": "diff --git a/index.html b/index.html\nindex 893ed9c..415cdb4 100644\n--- a/index.html\n+++ b/index.html\n@@ -24,7 +24,7 @@\n       letter-spacing: 0.06em;\n       font-weight: 600;\n       text-transform: none;\n-      color: #7abfa8;\n+      color: #00ff99;\n     }\n     .tagline {\n       font-family: monospace;\n@@ -89,8 +89,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">agile \u00c2\u00b7 iterative \u00c2\u00b7 relentless</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.18</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 01:34:00 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.19</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 01:37:19 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex 619e79a..ccddce2 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.18\",\n-  \"deployed\": \"2026-05-23 01:34:00 CT\",\n+  \"version\": \"0.1.19\",\n+  \"deployed\": \"2026-05-23 01:37:19 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -97,6 +97,11 @@\n       \"version\": \"0.1.18\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Calmer title: removed all animations, reduced to 2.8rem muted teal, lighter weight, subtle letter-spacing, static tagline\"\n+    },\n+    {\n+      \"version\": \"0.1.19\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Title color updated to #00ff99 to match terminal aesthetic and page-wide green accent style\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_reason": "The diff changes the title color from #7abfa8 to #00ff99 (primary green), making it consistent with nav links and the terminal aesthetic while maintaining monospace font, no animations, and minimal design\u2014satisfying all acceptance criteria.",
+      "hermes_verdict": "approve",
+      "id": 52,
+      "idea": "title should match style of rest of page",
+      "in_sprint": true,
+      "retro_context": "[failure_pattern] Unicode encoding issue in changelog: the emoji character '\\U0001f525' (fire) cannot be encoded by the 'charmap' codec. The agent attempted to add a spicy emoji to the title but failed at the changelog validation step due to character encoding mismatch.\n[improvement] Ensure changelog generation uses UTF-8 encoding explicitly rather than relying on system default charmap. Add encoding validation before writing special characters to changelog files.\n[observation] 3 of 4 tests passed (deployment, versioning, and file presence checks all succeeded), indicating the core changes were implemented correctly\u2014only the changelog encoding validation failed.\n[improvement] Add pre-flight validation for special characters in user story text before processing, or sanitize emoji to their UTF-8 safe equivalents in changelog entries.",
+      "stage_times": {
+        "code": 1779518256.237723,
+        "deploy": 1779518257.741308,
+        "done": 1779518261.087997,
+        "pull": 1779518239.725922,
+        "review": 1779518256.522721,
+        "story": 1779518239.734917,
+        "test": 1779518256.34474
+      },
+      "started": 1779518239.725922,
+      "status": "done",
+      "story": "As a user, I want the title to match the style of the rest of the page so that the design feels cohesive and consistent with the terminal aesthetic",
+      "summary": "Match title color to page terminal aesthetic using primary green #00ff99",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.19 matches between version.json and index.html"
+          "message": "version 0.1.19 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 01:37:19 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-23 01:37:19 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.19: Title color updated to #00ff99 to match terminal aesthetic and page-wide green accent style"
+          "message": "changelog has entry for v0.1.19: Title color updated to #00ff99 to match terminal aesthetic and page-wide green accent style",
+          "status": "pass"
         }
       ],
-      "deployed": "2026-05-23 01:37:19 CT",
-      "hermes_verdict": "approve",
-      "hermes_reason": "The diff changes the title color from #7abfa8 to #00ff99 (primary green), making it consistent with nav links and the terminal aesthetic while maintaining monospace font, no animations, and minimal design\u2014satisfying all acceptance criteria."
+      "tokens_in": 4347,
+      "tokens_out": 1661
     },
     {
       "id": 53,
       "idea": "title should be sexier",
-      "status": "pending",
-      "in_sprint": true
+      "in_sprint": true,
+      "status": "pending"
     },
     {
       "acceptance_criteria": [

@@ -1,6 +1,6 @@
 {
-  "version": "0.1.18",
-  "deployed": "2026-05-23 01:34:00 CT",
+  "version": "0.1.19",
+  "deployed": "2026-05-23 01:37:19 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -97,6 +97,11 @@
       "version": "0.1.18",
       "date": "2026-05-23",
       "change": "Calmer title: removed all animations, reduced to 2.8rem muted teal, lighter weight, subtle letter-spacing, static tagline"
+    },
+    {
+      "version": "0.1.19",
+      "date": "2026-05-23",
+      "change": "Title color updated to #00ff99 to match terminal aesthetic and page-wide green accent style"
     }
   ]
 }

@@ -1,18 +1,17 @@
 {
   "items": [
     {
-      "id": 49,
-      "idea": "title should be sexier",
+      "id": 51,
+      "idea": "title should be spicier",
+      "status": "failed",
       "in_sprint": true,
-      "status": "done",
-      "story": "As a user, I want the title to look sexier so that the app feels more exciting and visually impressive at first glance",
+      "story": "As a user, I want the title to feel spicier and more exciting so that the page has more visual personality and energy.",
       "acceptance_criteria": [
-        "Title uses a larger, more dramatic font size",
-        "Title has a tagline or subtitle beneath it to add context and depth",
-        "Title styling feels premium and eye-catching with enhanced visual treatment"
+        "The title text is transformed to feel bold and edgy (e.g. using a provocative or stylized label)",
+        "The tagline is updated to match the spicier tone",
+        "The title uses a visually striking style (gradient, glow, or similar) that feels energetic without being overwhelming"
       ],
-      "summary": "Sexier title: larger font, wider spacing, faster neon gradient, animated tagline added",
-      "diff": "diff --git a/index.html b/index.html\nindex 570dd59..3b09398 100644\n--- a/index.html\n+++ b/index.html\n@@ -17,6 +17,11 @@\n       margin: 0;\n       padding: 2rem 1rem;\n     }\n+    @keyframes glowPulse {\n+      0%   { filter: drop-shadow(0 0 8px rgba(0,255,153,0.6)) drop-shadow(0 0 20px rgba(0,229,255,0.3)); }\n+      50%  { filter: drop-shadow(0 0 20px rgba(162,89,255,0.8)) drop-shadow(0 0 40px rgba(255,79,216,0.4)); }\n+      100% { filter: drop-shadow(0 0 8px rgba(0,255,153,0.6)) drop-shadow(0 0 20px rgba(0,229,255,0.3)); }\n+    }\n     @keyframes gradientSweep {\n       0%   { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(0,255,153,0.5)) drop-shadow(0 0 24px rgba(0,229,255,0.25)); }\n       50%  { background-position: 100% 50%; filter: drop-shadow(0 0 22px rgba(162,89,255,0.7)) drop-shadow(0 0 40px rgba(0,229,255,0.45)); }\n@@ -24,13 +29,30 @@\n     }\n     h1 {\n       font-family: monospace;\n-      font-size: 2.8rem;\n-      margin-bottom: 0.5rem;\n-      letter-spacing: 0.04em;\n-      font-weight: 700;\n-      color: #00ff99;\n-      text-shadow: 0 0 8px rgba(0,255,153,0.4);\n-      text-transform: none;\n+      font-size: 4.8rem;\n+      margin-bottom: 0.15rem;\n+      letter-spacing: 0.18em;\n+      font-weight: 900;\n+      text-transform: uppercase;\n+      background: linear-gradient(90deg, #00ff99, #00e5ff, #a259ff, #ff4fd8, #00e5ff, #00ff99);\n+      background-size: 400% 100%;\n+      -webkit-background-clip: text;\n+      -webkit-text-fill-color: transparent;\n+      background-clip: text;\n+      animation: gradientSweep 3s ease infinite, glowPulse 3s ease infinite;\n+    }\n+    .tagline {\n+      font-family: monospace;\n+      font-size: 0.85rem;\n+      letter-spacing: 0.35em;\n+      text-transform: uppercase;\n+      color: #444;\n+      margin-bottom: 0.4rem;\n+      animation: taglineFade 3s ease infinite;\n+    }\n+    @keyframes taglineFade {\n+      0%, 100% { color: #445; }\n+      50% { color: #00e5ff88; }\n     }\n     .title-wrap {\n       display: flex;\n@@ -85,10 +107,10 @@\n   </nav>\n   <div class=\"title-wrap\">\n     <h1>Hello Scrum</h1>\n-\n+    <div class=\"tagline\">agile \u00c2\u00b7 iterative \u00c2\u00b7 relentless</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.15</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 01:17:42 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.17</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 01:33:31 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex 4b459b9..a6fe7dd 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.15\",\n-  \"deployed\": \"2026-05-23 01:17:42 CT\",\n+  \"version\": \"0.1.17\",\n+  \"deployed\": \"2026-05-23 01:33:31 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -82,6 +82,16 @@\n       \"version\": \"0.1.15\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Matched title to terminal aesthetic: monospace font, solid #00ff99 color, subtle glow, no animation or uppercase transform\"\n+    },\n+    {\n+      \"version\": \"0.1.16\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Sexier title: uppercase 3.6rem bold with animated green-cyan-purple-pink neon gradient sweep and pulsing glow\"\n+    },\n+    {\n+      \"version\": \"0.1.17\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Sexier title: enlarged to 4.8rem, wider letter-spacing, faster gradient, plus animated tagline beneath\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "diff": "diff --git a/index.html b/index.html\nindex 893ed9c..1ec418c 100644\n--- a/index.html\n+++ b/index.html\n@@ -19,12 +19,16 @@\n     }\n     h1 {\n       font-family: monospace;\n-      font-size: 2.8rem;\n+      font-size: 3.4rem;\n       margin-bottom: 0.15rem;\n-      letter-spacing: 0.06em;\n-      font-weight: 600;\n-      text-transform: none;\n-      color: #7abfa8;\n+      letter-spacing: 0.12em;\n+      font-weight: 900;\n+      text-transform: uppercase;\n+      background: linear-gradient(90deg, #ff4f4f, #ff9900, #ffee00, #00ff99);\n+      -webkit-background-clip: text;\n+      -webkit-text-fill-color: transparent;\n+      background-clip: text;\n+      filter: drop-shadow(0 0 8px #ff990088);\n     }\n     .tagline {\n       font-family: monospace;\n@@ -86,11 +90,11 @@\n     <a href=\"workflow.html\">Workflow</a>\n   </nav>\n   <div class=\"title-wrap\">\n-    <h1>Hello Scrum</h1>\n-    <div class=\"tagline\">agile \u00c2\u00b7 iterative \u00c2\u00b7 relentless</div>\n+    <h1>\u00f0\u0178\u201d\u00a5 Ship It or Die \u00f0\u0178\u201d\u00a5</h1>\n+    <div class=\"tagline\">ruthless \u00c2\u00b7 iterative \u00c2\u00b7 unstoppable</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.18</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 01:34:00 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.19</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 01:36:55 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex 619e79a..d8ee185 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.18\",\n-  \"deployed\": \"2026-05-23 01:34:00 CT\",\n+  \"version\": \"0.1.19\",\n+  \"deployed\": \"2026-05-23 01:36:55 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -97,6 +97,11 @@\n       \"version\": \"0.1.18\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Calmer title: removed all animations, reduced to 2.8rem muted teal, lighter weight, subtle letter-spacing, static tagline\"\n+    },\n+    {\n+      \"version\": \"0.1.19\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Spicier title: renamed to '\\ud83d\\udd25 Ship It or Die \\ud83d\\udd25', uppercase 3.4rem bold with red-orange-yellow-green gradient, orange glow, and edgy tagline\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "test_results": [
         {
           "status": "pass",
@@ -20,40 +19,120 @@
         },
         {
           "status": "pass",
-          "message": "version 0.1.17 matches between version.json and index.html"
+          "message": "version 0.1.19 matches between version.json and index.html"
         },
         {
           "status": "pass",
-          "message": "deployed timestamp '2026-05-23 01:33:31 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-23 01:36:55 CT' present in index.html"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.17: Sexier title: enlarged to 4.8rem, wider letter-spacing, faster gradient, plus animated tagline beneath"
+          "status": "fail",
+          "message": "test_changelog_has_entry: 'charmap' codec can't encode character '\\U0001f525' in position 66: character maps to <undefined>"
         }
       ],
-      "deployed": "2026-05-23 01:33:31 CT",
-      "hermes_verdict": "approve",
-      "hermes_reason": "The implementation successfully delivers all three acceptance criteria: enlarged dramatic font (4.8rem with 900 weight), added animated tagline subtitle, and premium visual treatment with neon gradient animation and glowing effects that make the title visually impressive and exciting.",
-      "started": 1779518011.176489,
+      "started": 1779518215.160689,
       "stage_times": {
-        "pull": 1779518011.176489,
-        "story": 1779518011.185487,
-        "code": 1779518032.669675,
-        "test": 1779518032.804671,
-        "review": 1779518033.040134,
-        "deploy": 1779518034.576629,
-        "done": 1779518037.719487
+        "pull": 1779518215.160689,
+        "story": 1779518215.179678,
+        "code": 1779518235.574645,
+        "test": 1779518235.703273,
+        "failed": 1779518235.99732
       },
+      "tokens_in": 3076,
+      "tokens_out": 1783
+    },
+    {
+      "id": 52,
+      "idea": "title should match style of rest of page",
+      "status": "done",
+      "in_sprint": true,
+      "retro_context": "[failure_pattern] Unicode encoding issue in changelog: the emoji character '\\U0001f525' (fire) cannot be encoded by the 'charmap' codec. The agent attempted to add a spicy emoji to the title but failed at the changelog validation step due to character encoding mismatch.\n[improvement] Ensure changelog generation uses UTF-8 encoding explicitly rather than relying on system default charmap. Add encoding validation before writing special characters to changelog files.\n[observation] 3 of 4 tests passed (deployment, versioning, and file presence checks all succeeded), indicating the core changes were implemented correctly\u2014only the changelog encoding validation failed.\n[improvement] Add pre-flight validation for special characters in user story text before processing, or sanitize emoji to their UTF-8 safe equivalents in changelog entries.",
+      "story": "As a user, I want the title to match the style of the rest of the page so that the design feels cohesive and consistent with the terminal aesthetic",
+      "acceptance_criteria": [
+        "Title uses monospace font consistent with the rest of the page",
+        "Title color uses the page's primary green (#00ff99) to match nav links and version badge",
+        "Title has no animations or gradient effects",
+        "Title size and weight feel balanced with the surrounding elements",
+        "No decorative effects that conflict with the minimal terminal aesthetic"
+      ],
+      "summary": "Match title color to page terminal aesthetic using primary green #00ff99",
+      "diff": "diff --git a/index.html b/index.html\nindex 893ed9c..415cdb4 100644\n--- a/index.html\n+++ b/index.html\n@@ -24,7 +24,7 @@\n       letter-spacing: 0.06em;\n       font-weight: 600;\n       text-transform: none;\n-      color: #7abfa8;\n+      color: #00ff99;\n     }\n     .tagline {\n       font-family: monospace;\n@@ -89,8 +89,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">agile \u00c2\u00b7 iterative \u00c2\u00b7 relentless</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.18</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 01:34:00 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.19</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 01:37:19 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex 619e79a..ccddce2 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.18\",\n-  \"deployed\": \"2026-05-23 01:34:00 CT\",\n+  \"version\": \"0.1.19\",\n+  \"deployed\": \"2026-05-23 01:37:19 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -97,6 +97,11 @@\n       \"version\": \"0.1.18\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Calmer title: removed all animations, reduced to 2.8rem muted teal, lighter weight, subtle letter-spacing, static tagline\"\n+    },\n+    {\n+      \"version\": \"0.1.19\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Title color updated to #00ff99 to match terminal aesthetic and page-wide green accent style\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.19 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-23 01:37:19 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.19: Title color updated to #00ff99 to match terminal aesthetic and page-wide green accent style"
+        }
+      ],
+      "deployed": "2026-05-23 01:37:19 CT",
+      "hermes_verdict": "approve",
+      "hermes_reason": "The diff changes the title color from #7abfa8 to #00ff99 (primary green), making it consistent with nav links and the terminal aesthetic while maintaining monospace font, no animations, and minimal design\u2014satisfying all acceptance criteria."
+    },
+    {
+      "id": 53,
+      "idea": "title should be sexier",
+      "status": "pending",
+      "in_sprint": true
+    },
+    {
+      "acceptance_criteria": [
+        "Title uses a larger, more dramatic font size",
+        "Title has a tagline or subtitle beneath it to add context and depth",
+        "Title styling feels premium and eye-catching with enhanced visual treatment"
+      ],
+      "deployed": "2026-05-23 01:33:31 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex 570dd59..3b09398 100644\n--- a/index.html\n+++ b/index.html\n@@ -17,6 +17,11 @@\n       margin: 0;\n       padding: 2rem 1rem;\n     }\n+    @keyframes glowPulse {\n+      0%   { filter: drop-shadow(0 0 8px rgba(0,255,153,0.6)) drop-shadow(0 0 20px rgba(0,229,255,0.3)); }\n+      50%  { filter: drop-shadow(0 0 20px rgba(162,89,255,0.8)) drop-shadow(0 0 40px rgba(255,79,216,0.4)); }\n+      100% { filter: drop-shadow(0 0 8px rgba(0,255,153,0.6)) drop-shadow(0 0 20px rgba(0,229,255,0.3)); }\n+    }\n     @keyframes gradientSweep {\n       0%   { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(0,255,153,0.5)) drop-shadow(0 0 24px rgba(0,229,255,0.25)); }\n       50%  { background-position: 100% 50%; filter: drop-shadow(0 0 22px rgba(162,89,255,0.7)) drop-shadow(0 0 40px rgba(0,229,255,0.45)); }\n@@ -24,13 +29,30 @@\n     }\n     h1 {\n       font-family: monospace;\n-      font-size: 2.8rem;\n-      margin-bottom: 0.5rem;\n-      letter-spacing: 0.04em;\n-      font-weight: 700;\n-      color: #00ff99;\n-      text-shadow: 0 0 8px rgba(0,255,153,0.4);\n-      text-transform: none;\n+      font-size: 4.8rem;\n+      margin-bottom: 0.15rem;\n+      letter-spacing: 0.18em;\n+      font-weight: 900;\n+      text-transform: uppercase;\n+      background: linear-gradient(90deg, #00ff99, #00e5ff, #a259ff, #ff4fd8, #00e5ff, #00ff99);\n+      background-size: 400% 100%;\n+      -webkit-background-clip: text;\n+      -webkit-text-fill-color: transparent;\n+      background-clip: text;\n+      animation: gradientSweep 3s ease infinite, glowPulse 3s ease infinite;\n+    }\n+    .tagline {\n+      font-family: monospace;\n+      font-size: 0.85rem;\n+      letter-spacing: 0.35em;\n+      text-transform: uppercase;\n+      color: #444;\n+      margin-bottom: 0.4rem;\n+      animation: taglineFade 3s ease infinite;\n+    }\n+    @keyframes taglineFade {\n+      0%, 100% { color: #445; }\n+      50% { color: #00e5ff88; }\n     }\n     .title-wrap {\n       display: flex;\n@@ -85,10 +107,10 @@\n   </nav>\n   <div class=\"title-wrap\">\n     <h1>Hello Scrum</h1>\n-\n+    <div class=\"tagline\">agile \u00c2\u00b7 iterative \u00c2\u00b7 relentless</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.15</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 01:17:42 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.17</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 01:33:31 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex 4b459b9..a6fe7dd 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.15\",\n-  \"deployed\": \"2026-05-23 01:17:42 CT\",\n+  \"version\": \"0.1.17\",\n+  \"deployed\": \"2026-05-23 01:33:31 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -82,6 +82,16 @@\n       \"version\": \"0.1.15\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Matched title to terminal aesthetic: monospace font, solid #00ff99 color, subtle glow, no animation or uppercase transform\"\n+    },\n+    {\n+      \"version\": \"0.1.16\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Sexier title: uppercase 3.6rem bold with animated green-cyan-purple-pink neon gradient sweep and pulsing glow\"\n+    },\n+    {\n+      \"version\": \"0.1.17\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Sexier title: enlarged to 4.8rem, wider letter-spacing, faster gradient, plus animated tagline beneath\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_reason": "The implementation successfully delivers all three acceptance criteria: enlarged dramatic font (4.8rem with 900 weight), added animated tagline subtitle, and premium visual treatment with neon gradient animation and glowing effects that make the title visually impressive and exciting.",
+      "hermes_verdict": "approve",
+      "id": 49,
+      "idea": "title should be sexier",
+      "in_sprint": false,
+      "stage_times": {
+        "code": 1779518032.669675,
+        "deploy": 1779518034.576629,
+        "done": 1779518037.719487,
+        "pull": 1779518011.176489,
+        "review": 1779518033.040134,
+        "story": 1779518011.185487,
+        "test": 1779518032.804671
+      },
+      "started": 1779518011.176489,
+      "status": "done",
+      "story": "As a user, I want the title to look sexier so that the app feels more exciting and visually impressive at first glance",
+      "summary": "Sexier title: larger font, wider spacing, faster neon gradient, animated tagline added",
+      "test_results": [
+        {
+          "message": "index.html exists and contains title",
+          "status": "pass"
+        },
+        {
+          "message": "version 0.1.17 matches between version.json and index.html",
+          "status": "pass"
+        },
+        {
+          "message": "deployed timestamp '2026-05-23 01:33:31 CT' present in index.html",
+          "status": "pass"
+        },
+        {
+          "message": "changelog has entry for v0.1.17: Sexier title: enlarged to 4.8rem, wider letter-spacing, faster gradient, plus animated tagline beneath",
+          "status": "pass"
+        }
+      ],
       "tokens_in": 5181,
       "tokens_out": 1918
     },
     {
-      "id": 50,
-      "idea": "title should be more calm",
-      "status": "done",
-      "in_sprint": true,
-      "retro_context": "[success_pattern] Clear acceptance criteria and visual design specifications led to first-time approval\u2014the item passed all tests and Hermes review without revisions, indicating well-defined requirements.\n[success_pattern] Comprehensive test coverage across deployment artifacts (version sync, timestamp, changelog entries) caught potential inconsistencies before production and reduced verification overhead.\n[observation] Sprint processed only 1 item; while it succeeded, the low throughput suggests either this was a short sprint, a planning/capacity issue, or items were consolidated into larger units.",
-      "story": "As a user, I want the title to feel calm and understated so that the page has a relaxed, professional atmosphere instead of an intense animated display.",
       "acceptance_criteria": [
         "The h1 title has no animation (no gradientSweep, no glowPulse)",
         "The h1 title uses a soft, muted color rather than a bright neon gradient",
@@ -62,29 +141,47 @@
         "The title font-size is reduced to a calmer size (e.g. 2.8rem)",
         "Letter-spacing is subtle, not wide"
       ],
-      "summary": "Calmer title: static muted teal, smaller size, no animations or gradients",
+      "deployed": "2026-05-23 01:34:00 CT",
       "diff": "diff --git a/index.html b/index.html\nindex 3b09398..893ed9c 100644\n--- a/index.html\n+++ b/index.html\n@@ -17,42 +17,22 @@\n       margin: 0;\n       padding: 2rem 1rem;\n     }\n-    @keyframes glowPulse {\n-      0%   { filter: drop-shadow(0 0 8px rgba(0,255,153,0.6)) drop-shadow(0 0 20px rgba(0,229,255,0.3)); }\n-      50%  { filter: drop-shadow(0 0 20px rgba(162,89,255,0.8)) drop-shadow(0 0 40px rgba(255,79,216,0.4)); }\n-      100% { filter: drop-shadow(0 0 8px rgba(0,255,153,0.6)) drop-shadow(0 0 20px rgba(0,229,255,0.3)); }\n-    }\n-    @keyframes gradientSweep {\n-      0%   { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(0,255,153,0.5)) drop-shadow(0 0 24px rgba(0,229,255,0.25)); }\n-      50%  { background-position: 100% 50%; filter: drop-shadow(0 0 22px rgba(162,89,255,0.7)) drop-shadow(0 0 40px rgba(0,229,255,0.45)); }\n-      100% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(0,255,153,0.5)) drop-shadow(0 0 24px rgba(0,229,255,0.25)); }\n-    }\n     h1 {\n       font-family: monospace;\n-      font-size: 4.8rem;\n+      font-size: 2.8rem;\n       margin-bottom: 0.15rem;\n-      letter-spacing: 0.18em;\n-      font-weight: 900;\n-      text-transform: uppercase;\n-      background: linear-gradient(90deg, #00ff99, #00e5ff, #a259ff, #ff4fd8, #00e5ff, #00ff99);\n-      background-size: 400% 100%;\n-      -webkit-background-clip: text;\n-      -webkit-text-fill-color: transparent;\n-      background-clip: text;\n-      animation: gradientSweep 3s ease infinite, glowPulse 3s ease infinite;\n+      letter-spacing: 0.06em;\n+      font-weight: 600;\n+      text-transform: none;\n+      color: #7abfa8;\n     }\n     .tagline {\n       font-family: monospace;\n       font-size: 0.85rem;\n-      letter-spacing: 0.35em;\n+      letter-spacing: 0.2em;\n       text-transform: uppercase;\n-      color: #444;\n+      color: #4a4a4a;\n       margin-bottom: 0.4rem;\n-      animation: taglineFade 3s ease infinite;\n-    }\n-    @keyframes taglineFade {\n-      0%, 100% { color: #445; }\n-      50% { color: #00e5ff88; }\n     }\n     .title-wrap {\n       display: flex;\n@@ -109,8 +89,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">agile \u00c2\u00b7 iterative \u00c2\u00b7 relentless</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.17</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 01:33:31 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.18</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 01:34:00 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex a6fe7dd..619e79a 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.17\",\n-  \"deployed\": \"2026-05-23 01:33:31 CT\",\n+  \"version\": \"0.1.18\",\n+  \"deployed\": \"2026-05-23 01:34:00 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -92,6 +92,11 @@\n       \"version\": \"0.1.17\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Sexier title: enlarged to 4.8rem, wider letter-spacing, faster gradient, plus animated tagline beneath\"\n+    },\n+    {\n+      \"version\": \"0.1.18\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Calmer title: removed all animations, reduced to 2.8rem muted teal, lighter weight, subtle letter-spacing, static tagline\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_reason": "The diff completely removes both glowPulse and gradientSweep animations from h1, removes taglineFade animation, reduces font-size to 2.8rem, changes to muted teal color (#7abfa8), reduces letter-spacing to 0.06em, and sets tagline to static muted color\u2014all acceptance criteria met and tests pass.",
+      "hermes_verdict": "approve",
+      "id": 50,
+      "idea": "title should be more calm",
+      "in_sprint": false,
+      "retro_context": "[success_pattern] Clear acceptance criteria and visual design specifications led to first-time approval\u2014the item passed all tests and Hermes review without revisions, indicating well-defined requirements.\n[success_pattern] Comprehensive test coverage across deployment artifacts (version sync, timestamp, changelog entries) caught potential inconsistencies before production and reduced verification overhead.\n[observation] Sprint processed only 1 item; while it succeeded, the low throughput suggests either this was a short sprint, a planning/capacity issue, or items were consolidated into larger units.",
+      "stage_times": {
+        "code": 1779518066.976707,
+        "deploy": 1779518069.183029,
+        "done": 1779518071.989715,
+        "pull": 1779518040.874289,
+        "review": 1779518067.233671,
+        "story": 1779518040.880226,
+        "test": 1779518067.080663
+      },
+      "started": 1779518040.874289,
+      "status": "done",
+      "story": "As a user, I want the title to feel calm and understated so that the page has a relaxed, professional atmosphere instead of an intense animated display.",
+      "summary": "Calmer title: static muted teal, smaller size, no animations or gradients",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.18 matches between version.json and index.html"
+          "message": "version 0.1.18 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 01:34:00 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-23 01:34:00 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.18: Calmer title: removed all animations, reduced to 2.8rem muted teal, lighter weight, subtle letter-spacing, static tagline"
+          "message": "changelog has entry for v0.1.18: Calmer title: removed all animations, reduced to 2.8rem muted teal, lighter weight, subtle letter-spacing, static tagline",
+          "status": "pass"
         }
       ],
-      "deployed": "2026-05-23 01:34:00 CT",
-      "hermes_verdict": "approve",
-      "hermes_reason": "The diff completely removes both glowPulse and gradientSweep animations from h1, removes taglineFade animation, reduces font-size to 2.8rem, changes to muted teal color (#7abfa8), reduces letter-spacing to 0.06em, and sets tagline to static muted color\u2014all acceptance criteria met and tests pass."
+      "tokens_in": 5553,
+      "tokens_out": 2387
     },
     {
       "acceptance_criteria": [

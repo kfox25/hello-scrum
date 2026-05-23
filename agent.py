@@ -642,14 +642,15 @@ def main():
         while True:
             prev_len = len(processed)
             success = run_one(sprint_only=sprint_mode, processed=processed, retro_context=retro_context)
-            if len(processed) > prev_len:
+            item_was_processed = len(processed) > prev_len
+            if item_was_processed:
                 log("\nRunning retrospective...")
                 try:
                     run_retro(processed)
                     retro_context = load_latest_retro_context()
                 except Exception as e:
                     log(f"Retro error: {e}")
-            if not success:
+            if not item_was_processed:
                 break
     else:
         run_one()

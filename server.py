@@ -24,9 +24,18 @@ agent_running = False
 agent_lock = threading.Lock()
 AGENT_LOG_FILE = os.path.join(BASE, "agent_log.json")
 
-# clear stale active state on startup
-with open(ACTIVE_FILE, "w") as _f:
-    json.dump({"item_id": None, "stage": None}, _f)
+# On startup, clear only mid-sprint states so a restarted server doesn't show
+# a stale pulsing dot — but preserve done/failed/rejected so the panel persists.
+_KEEP_STAGES = {"done", "failed", "rejected"}
+try:
+    with open(ACTIVE_FILE) as _f:
+        _s = json.load(_f).get("stage")
+    if _s not in _KEEP_STAGES:
+        with open(ACTIVE_FILE, "w") as _f:
+            json.dump({"item_id": None, "stage": None}, _f)
+except Exception:
+    with open(ACTIVE_FILE, "w") as _f:
+        json.dump({"item_id": None, "stage": None}, _f)
 
 
 @app.route("/")

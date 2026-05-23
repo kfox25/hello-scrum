@@ -1,6 +1,6 @@
 {
-  "version": "0.1.26",
-  "deployed": "2026-05-23 15:45:17 CT",
+  "version": "0.1.27",
+  "deployed": "2026-05-23 15:45:48 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -137,6 +137,11 @@
       "version": "0.1.26",
       "date": "2026-05-23",
       "change": "Added GitHub repo URL link to footer in muted neon green style"
+    },
+    {
+      "version": "0.1.27",
+      "date": "2026-05-23",
+      "change": "Added 'Powered by Claude' label to footer in muted neon green terminal style"
     }
   ]
 }

@@ -1,6 +1,42 @@
 {
   "items": [
     {
+      "id": 30,
+      "idea": "change the title color",
+      "status": "done",
+      "in_sprint": true,
+      "story": "As a user, I want the main title to display in a distinct color so that it stands out visually and gives the page a fresh, branded look.",
+      "acceptance_criteria": [
+        "The h1 title 'AgileDesk' is rendered in a new color different from the current green (#00e87a)",
+        "The color change is visible on page load without any interaction",
+        "The rest of the page styling remains intact",
+        "The version is bumped to 0.1.18 and the changelog reflects the change"
+      ],
+      "summary": "Change h1 title color from green to violet (#a78bfa)",
+      "diff": "diff --git a/index.html b/index.html\nindex ea55e53..d7bf3d4 100644\n--- a/index.html\n+++ b/index.html\n@@ -43,7 +43,7 @@\n     h1 {\n       font-size: 2.4rem;\n       font-weight: 700;\n-      color: #00e87a;\n+      color: #a78bfa;\n       margin: 0 0 0.25rem 0;\n       letter-spacing: -0.5px;\n       animation: fade-in-up 0.5s ease both;\n@@ -405,11 +405,11 @@\n   <h1>AgileDesk</h1>\n   <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n   <div class=\"version-wrap\">\n-    <div class=\"version\" id=\"version-badge\" onclick=\"toggleVersionPopover(event)\" title=\"Click to see what's new\">v0.1.17</div>\n+    <div class=\"version\" id=\"version-badge\" onclick=\"toggleVersionPopover(event)\" title=\"Click to see what's new\">v0.1.18</div>\n     <div class=\"version-popover\" id=\"version-popover\">\n-      <div class=\"vp-version\">v0.1.17</div>\n+      <div class=\"vp-version\">v0.1.18</div>\n       <div class=\"vp-date\">2026-05-22</div>\n-      <div class=\"vp-change\">Rebranded page title to &ldquo;AgileDesk&rdquo; for a professional product identity</div>\n+      <div class=\"vp-change\">Changed title color to violet (#a78bfa) for a fresh, distinctive branded look</div>\n       <div class=\"vp-hint\">click badge to dismiss</div>\n     </div>\n   </div>\n@@ -422,14 +422,14 @@\n     <span class=\"health-sub\">&mdash; all systems operational</span>\n   </div>\n   <div class=\"features-counter\">\n-    <div class=\"count\">18</div>\n+    <div class=\"count\">19</div>\n     <div class=\"label\">Features Deployed</div>\n   </div>\n   <div class=\"streak-counter\">\n-    <div class=\"streak-value\">&#128293; 18</div>\n+    <div class=\"streak-value\">&#128293; 19</div>\n     <div class=\"streak-label\">Consecutive Successful Deploys</div>\n   </div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 19:37:03 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 21:26:08 CT</div>\n   <div class=\"status-row\">\n     <span class=\"status-label\">Status:</span>\n     <span class=\"status-badge\"><span class=\"status-icon\"></span>baseline</span>\n@@ -443,6 +443,12 @@\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.18</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 3</span>\n+      <span class=\"ct\">Changed title color to violet (#a78bfa) for a fresh, distinctive branded look</span>\n+    </div>\n     <div class=\"changelog-entry\">\n       <span class=\"cv\">v0.1.17</span>\n       <span class=\"cd\">2026-05-22</span>\ndiff --git a/version.json b/version.json\nindex 132a670..7e7c32f 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.17\",\n-  \"deployed\": \"2026-05-22 19:37:03 CT\",\n+  \"version\": \"0.1.18\",\n+  \"deployed\": \"2026-05-22 21:26:08 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -92,6 +92,11 @@\n       \"version\": \"0.1.17\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Rebranded page title to \\\"AgileDesk\\\" for a professional product identity\"\n+    },\n+    {\n+      \"version\": \"0.1.18\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Changed title color to violet (#a78bfa) for a fresh, distinctive branded look\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.18 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-22 21:26:08 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.18: Changed title color to violet (#a78bfa) for a fresh, distinctive branded look"
+        }
+      ],
+      "deployed": "2026-05-22 21:26:08 CT",
+      "hermes_verdict": "approve",
+      "hermes_reason": "The h1 title color has been changed from green (#00e87a) to violet (#a78bfa), is visible on page load, all other styling remains intact, version is bumped to 0.1.18, and the changelog reflects the change with all tests passing."
+    },
+    {
       "acceptance_criteria": [
         "The h1 heading on the page reads 'Hello Dude'",
         "The browser tab title reads 'Hello Dude'",
@@ -14,7 +50,7 @@
       "hermes_verdict": "approve",
       "id": 28,
       "idea": "change title from hello scrum to hello dude",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "story": "As a user, I want the page title to say 'Hello Dude' instead of 'Hello Scrum' so that the branding reflects the new name.",
       "summary": "Rename title from Hello Scrum to Hello Dude",
@@ -543,12 +579,6 @@
       ]
     },
     {
-      "error": "Parse error: Unterminated string starting at: line 94 column 19 (char 23149) | Response preview: {\n  \"story\": \"As a user, I want the page title to be 'Agile Sprint Board' so that it clearly communicates the professional purpose of the application.\",\n  \"acceptance_criteria\": [\n    \"The h1 heading ",
-      "id": 29,
-      "idea": "change title to something professional",
-      "in_sprint": true,
-      "status": "done",
-      "story": "As a user, I want the page title to reflect a professional product name so that the app feels polished and credible when shared or bookmarked.",
       "acceptance_criteria": [
         "The browser tab title reads 'AgileDesk | Scrum Board'",
         "The h1 heading on the page reads 'AgileDesk'",
@@ -557,29 +587,35 @@
         "A changelog entry is added for v0.1.17 describing the title change",
         "The version badge and popover reflect v0.1.17"
       ],
-      "summary": "Rebrand h1 and browser title to AgileDesk for a professional product identity",
+      "deployed": "2026-05-22 19:37:03 CT",
       "diff": "diff --git a/index.html b/index.html\nindex 2cd44a2..ea55e53 100644\n--- a/index.html\n+++ b/index.html\n@@ -3,7 +3,7 @@\n <head>\n   <meta charset=\"UTF-8\" />\n   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n-  <title>Hello Dude</title>\n+  <title>AgileDesk | Scrum Board</title>\n   <style>\n     @keyframes fade-in-up {\n       from { opacity: 0; transform: translateY(10px); }\n@@ -402,14 +402,14 @@\n     <a class=\"audit-btn\" href=\"audit.html\">Audit</a>\n     <a class=\"audit-btn\" href=\"workflow.html\">Workflow</a>\n   </nav>\n-  <h1>Hello Dude</h1>\n+  <h1>AgileDesk</h1>\n   <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n   <div class=\"version-wrap\">\n-    <div class=\"version\" id=\"version-badge\" onclick=\"toggleVersionPopover(event)\" title=\"Click to see what's new\">v0.1.14</div>\n+    <div class=\"version\" id=\"version-badge\" onclick=\"toggleVersionPopover(event)\" title=\"Click to see what's new\">v0.1.17</div>\n     <div class=\"version-popover\" id=\"version-popover\">\n-      <div class=\"vp-version\">v0.1.14</div>\n+      <div class=\"vp-version\">v0.1.17</div>\n       <div class=\"vp-date\">2026-05-22</div>\n-      <div class=\"vp-change\">Changed page title from Hello Scrum to Hello Dude</div>\n+      <div class=\"vp-change\">Rebranded page title to &ldquo;AgileDesk&rdquo; for a professional product identity</div>\n       <div class=\"vp-hint\">click badge to dismiss</div>\n     </div>\n   </div>\n@@ -422,14 +422,14 @@\n     <span class=\"health-sub\">&mdash; all systems operational</span>\n   </div>\n   <div class=\"features-counter\">\n-    <div class=\"count\">15</div>\n+    <div class=\"count\">18</div>\n     <div class=\"label\">Features Deployed</div>\n   </div>\n   <div class=\"streak-counter\">\n-    <div class=\"streak-value\">&#128293; 15</div>\n+    <div class=\"streak-value\">&#128293; 18</div>\n     <div class=\"streak-label\">Consecutive Successful Deploys</div>\n   </div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 19:01:28 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 19:37:03 CT</div>\n   <div class=\"status-row\">\n     <span class=\"status-label\">Status:</span>\n     <span class=\"status-badge\"><span class=\"status-icon\"></span>baseline</span>\n@@ -443,6 +443,24 @@\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.17</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 3</span>\n+      <span class=\"ct\">Rebranded page title to &ldquo;AgileDesk&rdquo; for a professional product identity</span>\n+    </div>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.16</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 3</span>\n+      <span class=\"ct\">Renamed title to &ldquo;Scrum Board&rdquo; for a professional, descriptive identity</span>\n+    </div>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.15</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 3</span>\n+      <span class=\"ct\">Updated title to professional name: Hello Scrum</span>\n+    </div>\n     <div class=\"changelog-entry\">\n       <span class=\"cv\">v0.1.14</span>\n       <span class=\"cd\">2026-05-22</span>\ndiff --git a/version.json b/version.json\nindex c4632c0..132a670 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.14\",\n-  \"deployed\": \"2026-05-22 19:01:28 CT\",\n+  \"version\": \"0.1.17\",\n+  \"deployed\": \"2026-05-22 19:37:03 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -77,6 +77,21 @@\n       \"version\": \"0.1.14\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Changed page title from Hello Scrum to Hello Dude\"\n+    },\n+    {\n+      \"version\": \"0.1.15\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Updated title to professional name: Hello Scrum\"\n+    },\n+    {\n+      \"version\": \"0.1.16\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Renamed title to \\\"Scrum Board\\\" for a professional, descriptive identity\"\n+    },\n+    {\n+      \"version\": \"0.1.17\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Rebranded page title to \\\"AgileDesk\\\" for a professional product identity\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "error": "Parse error: Unterminated string starting at: line 94 column 19 (char 23149) | Response preview: {\n  \"story\": \"As a user, I want the page title to be 'Agile Sprint Board' so that it clearly communicates the professional purpose of the application.\",\n  \"acceptance_criteria\": [\n    \"The h1 heading ",
+      "hermes_reason": "All acceptance criteria are met: browser title is 'AgileDesk | Scrum Board', h1 reads 'AgileDesk', version bumped to 0.1.17, deployed timestamp updated to 2026-05-22 19:37:03 CT, changelog entry added for v0.1.17, and version badge/popover reflect v0.1.17; all tests pass.",
+      "hermes_verdict": "approve",
+      "id": 29,
+      "idea": "change title to something professional",
+      "in_sprint": false,
+      "status": "done",
+      "story": "As a user, I want the page title to reflect a professional product name so that the app feels polished and credible when shared or bookmarked.",
+      "summary": "Rebrand h1 and browser title to AgileDesk for a professional product identity",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.17 matches between version.json and index.html"
+          "message": "version 0.1.17 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-22 19:37:03 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-22 19:37:03 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.17: Rebranded page title to \"AgileDesk\" for a professional product identity"
+          "message": "changelog has entry for v0.1.17: Rebranded page title to \"AgileDesk\" for a professional product identity",
+          "status": "pass"
         }
-      ],
-      "deployed": "2026-05-22 19:37:03 CT",
-      "hermes_verdict": "approve",
-      "hermes_reason": "All acceptance criteria are met: browser title is 'AgileDesk | Scrum Board', h1 reads 'AgileDesk', version bumped to 0.1.17, deployed timestamp updated to 2026-05-22 19:37:03 CT, changelog entry added for v0.1.17, and version badge/popover reflect v0.1.17; all tests pass."
+      ]
     }
   ]
 }

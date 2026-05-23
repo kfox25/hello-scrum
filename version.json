@@ -1,6 +1,6 @@
 {
-  "version": "0.1.24",
-  "deployed": "2026-05-23 15:35:12 CT",
+  "version": "0.1.25",
+  "deployed": "2026-05-23 15:35:43 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -127,6 +127,11 @@
       "version": "0.1.24",
       "date": "2026-05-23",
       "change": "Added footer with copyright notice and tagline in terminal aesthetic styling"
+    },
+    {
+      "version": "0.1.25",
+      "date": "2026-05-23",
+      "change": "Added separator line above footer to visually distinguish footer from main page content"
     }
   ]
 }

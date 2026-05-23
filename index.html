@@ -92,14 +92,21 @@
       width: 100%;
       text-align: center;
       padding: 1.5rem 1rem 1rem;
-      margin-top: 2.5rem;
-      border-top: 1px solid #1c1c1c;
+      margin-top: 0;
+      border-top: none;
       font-family: monospace;
       font-size: 0.75rem;
       color: #444;
       letter-spacing: 0.08em;
     }
     .site-footer span { color: #00ff9955; }
+    .footer-sep {
+      width: 100%;
+      max-width: 480px;
+      border: none;
+      border-top: 1px solid #2a2a2a;
+      margin: 2.5rem auto 0;
+    }
   </style>
 </head>
 <body>
@@ -116,8 +123,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.24</div>
-  <div class="meta">Last deployed: 2026-05-23 15:35:12 CT</div>
+  <div class="version" id="version-badge">v0.1.25</div>
+  <div class="meta">Last deployed: 2026-05-23 15:35:43 CT</div>
   <div class="meta">Status: baseline</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
@@ -145,6 +152,7 @@
     }
     loadChangelog();
   </script>
+  <hr class="footer-sep" />
   <footer class="site-footer">
     <span>&copy;</span> 2026 Hello Scrum &mdash; ship fast · break things · own it
   </footer>

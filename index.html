@@ -18,12 +18,16 @@
       padding: 2rem 1rem;
     }
     h1 {
-      font-size: 2.6rem;
+      font-size: 3rem;
       margin-bottom: 0.5rem;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       font-weight: 700;
-      color: #00ff99;
-      text-shadow: 0 0 10px rgba(0, 255, 153, 0.4);
+      background: linear-gradient(90deg, #00ff99 0%, #00e5ff 50%, #a259ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 12px rgba(0, 255, 153, 0.55)) drop-shadow(0 0 28px rgba(0, 229, 255, 0.3));
+      text-transform: uppercase;
     }
     .title-wrap {
       display: flex;
@@ -80,8 +84,8 @@
     <h1>Hello Scrum</h1>
 
   </div>
-  <div class="version" id="version-badge">v0.1.10</div>
-  <div class="meta">Last deployed: 2026-05-23 00:33:29 CT</div>
+  <div class="version" id="version-badge">v0.1.11</div>
+  <div class="meta">Last deployed: 2026-05-23 00:33:46 CT</div>
   <div class="meta">Status: baseline</div>
   <div class="changelog">
     <h2>Recent Changes</h2>

@@ -78,13 +78,53 @@
       ],
       "deployed": "2026-05-23 00:33:29 CT",
       "hermes_verdict": "approve",
-      "hermes_reason": "The diff successfully removes the clashing rainbow gradient and replaces it with #00ff99 green text with subtle glow effect, matching all three acceptance criteria: monospace font already present, green-on-dark terminal theme applied, and rainbow gradient eliminated."
+      "hermes_reason": "The diff successfully removes the clashing rainbow gradient and replaces it with #00ff99 green text with subtle glow effect, matching all three acceptance criteria: monospace font already present, green-on-dark terminal theme applied, and rainbow gradient eliminated.",
+      "started": 1779514409.43777,
+      "stage_times": {
+        "pull": 1779514409.43777,
+        "story": 1779514409.450294,
+        "code": 1779514421.63907,
+        "test": 1779514421.777914,
+        "review": 1779514421.987301,
+        "deploy": 1779514423.597113,
+        "done": 1779514426.927715
+      }
     },
     {
       "id": 43,
       "idea": "title could be sexier",
-      "status": "pending",
-      "in_sprint": true
+      "status": "done",
+      "in_sprint": true,
+      "story": "As a user, I want the page title to look sexier so that the app feels more polished and visually striking at first glance",
+      "acceptance_criteria": [
+        "The h1 title has a more visually impressive appearance than a plain solid color",
+        "The title uses a gradient, glow, or typographic treatment that feels premium",
+        "The title remains readable and consistent with the dark terminal aesthetic",
+        "No excessive animation that would distract from usability"
+      ],
+      "summary": "Upgrade title to uppercase gradient (green\u2192cyan\u2192purple) with neon drop-shadow glow",
+      "diff": "diff --git a/index.html b/index.html\nindex d54383c..a9fdb72 100644\n--- a/index.html\n+++ b/index.html\n@@ -18,12 +18,16 @@\n       padding: 2rem 1rem;\n     }\n     h1 {\n-      font-size: 2.6rem;\n+      font-size: 3rem;\n       margin-bottom: 0.5rem;\n-      letter-spacing: 0.08em;\n+      letter-spacing: 0.12em;\n       font-weight: 700;\n-      color: #00ff99;\n-      text-shadow: 0 0 10px rgba(0, 255, 153, 0.4);\n+      background: linear-gradient(90deg, #00ff99 0%, #00e5ff 50%, #a259ff 100%);\n+      -webkit-background-clip: text;\n+      -webkit-text-fill-color: transparent;\n+      background-clip: text;\n+      filter: drop-shadow(0 0 12px rgba(0, 255, 153, 0.55)) drop-shadow(0 0 28px rgba(0, 229, 255, 0.3));\n+      text-transform: uppercase;\n     }\n     .title-wrap {\n       display: flex;\n@@ -80,8 +84,8 @@\n     <h1>Hello Scrum</h1>\n \n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.10</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 00:33:29 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.11</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 00:33:46 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex 6706c8f..95e01b2 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.10\",\n-  \"deployed\": \"2026-05-23 00:33:29 CT\",\n+  \"version\": \"0.1.11\",\n+  \"deployed\": \"2026-05-23 00:33:46 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -57,6 +57,11 @@\n       \"version\": \"0.1.10\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Aligned title style with page theme: solid #00ff99 green with subtle glow to match terminal aesthetic\"\n+    },\n+    {\n+      \"version\": \"0.1.11\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Sexier title: larger uppercase lettering with green-to-cyan-to-purple gradient and layered neon glow\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.11 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-23 00:33:46 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.11: Sexier title: larger uppercase lettering with green-to-cyan-to-purple gradient and layered neon glow"
+        }
+      ],
+      "deployed": "2026-05-23 00:33:46 CT",
+      "hermes_verdict": "approve",
+      "hermes_reason": "The implementation adds a vibrant gradient (green-to-cyan-to-purple), layered drop-shadow glow effect, increased font size and letter-spacing, and uppercase styling that clearly satisfies all acceptance criteria\u2014the title is visually striking yet readable within the dark terminal aesthetic, uses premium typographic treatment without excessive animation, and all tests pass."
     },
     {
       "acceptance_criteria": [

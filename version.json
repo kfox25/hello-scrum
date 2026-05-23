@@ -1,6 +1,6 @@
 {
-  "version": "0.1.12",
-  "deployed": "2026-05-23 01:08:01 CT",
+  "version": "0.1.13",
+  "deployed": "2026-05-23 01:08:27 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -67,6 +67,11 @@
       "version": "0.1.12",
       "date": "2026-05-23",
       "change": "Animated title: sweeping neon gradient loop with pulsing glow in green, cyan, purple, and pink"
+    },
+    {
+      "version": "0.1.13",
+      "date": "2026-05-23",
+      "change": "Bolder title: increased font-weight to 900 for stronger visual presence"
     }
   ]
 }

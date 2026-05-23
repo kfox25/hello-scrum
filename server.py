@@ -114,6 +114,11 @@ def start_sprint():
     def generate():
         global agent_running
         try:
+            with open(AGENT_LOG_FILE, "w") as f:
+                json.dump([], f)
+        except Exception:
+            pass
+        try:
             proc = subprocess.Popen(
                 ["python", "agent.py", "--sprint"],
                 stdout=subprocess.PIPE,

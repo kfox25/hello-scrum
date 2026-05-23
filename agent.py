@@ -63,22 +63,25 @@ SYSTEM_PROMPT = """You are an AI developer working on the hello-scrum web app.
 Your job:
 1. Read the raw backlog idea
 2. Write a user story with acceptance criteria
-3. Implement the change in index.html and version.json
+3. Implement the change using patches to index.html and version.json
 
 Rules:
 - Only modify index.html and version.json
 - Bump the patch version (e.g. 0.1.0 -> 0.1.1)
 - Set the deployed timestamp to exactly the value provided — do not change it
 - Add a changelog entry as the LAST item in the changelog array with exactly these fields: {"version": "<new version>", "date": "<YYYY-MM-DD>", "change": "<description>"}
-- Keep the page structure intact: h1 title, version badge, meta lines, and the Audit button in the top right corner
+- Keep the page structure intact: h1 title, version badge, meta lines, and nav buttons
 - Changes must be clearly visible on the page
 - Keep the page clean and minimal
+- Each patch "find" must be a verbatim unique substring of the current file (include enough surrounding context to be unique)
 
 Respond with ONLY valid JSON — no markdown, no code blocks, no extra text:
 {
   "story": "As a user, I want...",
   "acceptance_criteria": ["criterion 1", "criterion 2"],
-  "index_html": "<full updated index.html content>",
+  "patches": [
+    {"find": "exact unique text to find in index.html", "replace": "replacement text"}
+  ],
   "version_json": { <full updated version.json object> },
   "summary": "Short commit message describing what changed"
 }"""
@@ -178,8 +181,17 @@ def apply_changes(response_text):
 
     data = json.loads(text)
 
+    with open(INDEX_FILE, encoding="utf-8") as f:
+        content = f.read()
+
+    for patch in data["patches"]:
+        find, replace = patch["find"], patch["replace"]
+        if find not in content:
+            raise ValueError(f"Patch target not found in index.html: {repr(find[:80])}")
+        content = content.replace(find, replace, 1)
+
     with open(INDEX_FILE, "w", encoding="utf-8") as f:
-        f.write(data["index_html"])
+        f.write(content)
 
     with open(VERSION_FILE, "w", encoding="utf-8") as f:
         json.dump(data["version_json"], f, indent=2)

@@ -296,6 +296,9 @@ def run_one(sprint_only=False):
     log(f"Summary : {result['summary']}")
 
     diff = capture_diff()
+    if diff:
+        for line in diff.splitlines():
+            log(line)
 
     log("Running tests...")
     write_active(item, "test")

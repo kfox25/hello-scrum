@@ -218,7 +218,7 @@
       padding: 0.6rem 1.25rem;
       font-size: 0.75rem;
       line-height: 1.7;
-      max-height: 260px;
+      height: calc(5 * 0.75rem * 1.7 + 1.2rem);
       overflow-y: auto;
     }
     .log-line     { color: #444; white-space: pre-wrap; }
@@ -332,6 +332,9 @@
       if (line.startsWith('Hermes: REJECT'))                  return 'log-reject';
       if (line.startsWith('Deployed:') || line.startsWith('Live at')) return 'log-deploy';
       if (line.startsWith('==='))                             return 'log-section';
+      if (line.startsWith('+') && !line.startsWith('+++'))   return 'log-pass';
+      if (line.startsWith('-') && !line.startsWith('---'))   return 'log-fail';
+      if (line.startsWith('@@'))                             return 'log-section';
       return '';
     }
 

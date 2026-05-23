@@ -1,6 +1,6 @@
 {
-  "version": "0.1.17",
-  "deployed": "2026-05-23 01:33:31 CT",
+  "version": "0.1.18",
+  "deployed": "2026-05-23 01:34:00 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -92,6 +92,11 @@
       "version": "0.1.17",
       "date": "2026-05-23",
       "change": "Sexier title: enlarged to 4.8rem, wider letter-spacing, faster gradient, plus animated tagline beneath"
+    },
+    {
+      "version": "0.1.18",
+      "date": "2026-05-23",
+      "change": "Calmer title: removed all animations, reduced to 2.8rem muted teal, lighter weight, subtle letter-spacing, static tagline"
     }
   ]
 }

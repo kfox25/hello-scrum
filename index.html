@@ -17,52 +17,19 @@
       margin: 0;
       padding: 2rem 1rem;
     }
-    @keyframes flicker {
-      0%, 100% { text-shadow: 0 0 8px #00ff99, 0 0 20px #00ff99, 0 0 40px #00ff9966; opacity: 1; }
-      45% { text-shadow: 0 0 6px #00ff99, 0 0 14px #00ff99aa; opacity: 0.95; }
-      50% { text-shadow: 0 0 12px #00ff99, 0 0 30px #00ff99, 0 0 60px #00ff9944; opacity: 1; }
-      85% { text-shadow: 0 0 4px #00ff9988, 0 0 10px #00ff9966; opacity: 0.92; }
-    }
-    @keyframes pulse-scale {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.045); }
-    }
-    @keyframes glow-bar {
-      0%, 100% { opacity: 0.7; width: 40%; }
-      50% { opacity: 1; width: 80%; }
-    }
-    @keyframes neon-sweep {
-      0%   { background-position: 0% 50%; }
-      50%  { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
     h1 {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       margin-bottom: 0.5rem;
-      letter-spacing: 0.08em;
-      font-weight: 600;
-      background: linear-gradient(90deg, #00ff99, #00cfff, #a78bfa, #00ff99);
-      background-size: 300% 300%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      letter-spacing: 0.06em;
+      font-weight: 500;
+      color: #00cc77;
       text-shadow: none;
-      filter: drop-shadow(0 0 4px #00ff9966);
-      animation: neon-sweep 10s ease infinite;
     }
     .title-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
       margin-bottom: 0.25rem;
-    }
-    .title-glow-bar {
-      height: 3px;
-      border-radius: 2px;
-      background: linear-gradient(90deg, #00ff99, #00cfff, #a78bfa, #ff6edf);
-      animation: glow-bar 3s ease-in-out infinite;
-      filter: blur(1px) drop-shadow(0 0 6px #00ff99);
-      margin-top: -0.3rem;
     }
     .meta { font-size: 0.9rem; color: #888; margin: 0.2rem 0; }
     .version {
@@ -86,10 +53,10 @@
 <body>
   <div class="title-wrap">
     <h1>Hello Scrum</h1>
-    <div class="title-glow-bar"></div>
+
   </div>
-  <div class="version" id="version-badge">v0.1.4</div>
-  <div class="meta">Last deployed: 2026-05-22 23:19:33 CT</div>
+  <div class="version" id="version-badge">v0.1.5</div>
+  <div class="meta">Last deployed: 2026-05-22 23:26:22 CT</div>
   <div class="meta">Status: baseline</div>
   <div class="changelog">
     <h2>Recent Changes</h2>

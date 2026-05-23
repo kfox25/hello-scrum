@@ -6,9 +6,9 @@
   <title>Hello Scrum</title>
   <style>
     body {
-      font-family: monospace;
-      background: #0f0f0f;
-      color: #e0e0e0;
+      font-family: 'Inter', system-ui, monospace;
+      background: #0d0d0f;
+      color: #e8e8e8;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -45,7 +45,7 @@
       font-size: 0.85rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: #4a4a4a;
+      color: #3a7a5a;
       margin-bottom: 0.4rem;
     }
     .title-wrap {
@@ -85,16 +85,20 @@
       color: #00ff99;
       border: 1px solid #00ff9940;
       padding: 0.4rem 1rem;
-      border-radius: 4px;
+      border-radius: 6px;
       text-decoration: none;
     }
     .top-nav a:hover { background: #0d3320; border-color: #00ff99; }
+    .top-nav a[href="messenger.html"] { background: #1a1a2e; color: #6fa8ff; border-color: #6fa8ff40; }
+    .top-nav a[href="messenger.html"]:hover { background: #0d1a3a; border-color: #6fa8ff; }
   </style>
 </head>
 <body>
   <nav class="top-nav">
-    <a href="/">Board</a>
-    <a href="active.html">Active</a>
+    <a href="messenger.html">Messenger</a>
+    <a href="index.html">App</a>
+    <a href="/">Backlog</a>
+    <a href="active.html">Live Work</a>
     <a href="audit.html">Audit</a>
     <a href="retro.html">Retro</a>
     <a href="workflow.html">Workflow</a>
@@ -103,8 +107,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.20</div>
-  <div class="meta">Last deployed: 2026-05-23 01:46:24 CT</div>
+  <div class="version" id="version-badge">v0.1.21</div>
+  <div class="meta">Last deployed: 2026-05-23 12:09:31 CT</div>
   <div class="meta">Status: baseline</div>
   <div class="changelog">
     <h2>Recent Changes</h2>

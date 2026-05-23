@@ -1,6 +1,6 @@
 {
-  "version": "0.1.23",
-  "deployed": "2026-05-23 14:55:19 CT",
+  "version": "0.1.24",
+  "deployed": "2026-05-23 15:35:12 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -122,6 +122,11 @@
       "version": "0.1.23",
       "date": "2026-05-23",
       "change": "Restored green title styling: #00ff99 color and green neon glow animation to match terminal aesthetic"
+    },
+    {
+      "version": "0.1.24",
+      "date": "2026-05-23",
+      "change": "Added footer with copyright notice and tagline in terminal aesthetic styling"
     }
   ]
 }

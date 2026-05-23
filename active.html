@@ -277,8 +277,9 @@
       rejected: "Hermes rejected this story.",
     };
 
-    let lastStage = undefined;
+    let lastStageKey = undefined;
     let lastLogCount = 0;
+    let lastActiveData = null;
 
     function render(data) {
       const root = document.getElementById("root");
@@ -290,10 +291,8 @@
             <div class="idle-title">No active work</div>
             <div class="idle-sub">Start a sprint from the board</div>
           </div>`;
-        document.getElementById('clear-btn').style.display = 'none';
         return;
       }
-      document.getElementById('clear-btn').style.display = 'block';
 
       const isRejected = data.stage === "rejected";
       const stageIdx = isRejected ? STAGES.indexOf("review") : STAGES.indexOf(data.stage);
@@ -341,7 +340,10 @@
 
     async function clearActive() {
       await fetch('/active/clear', { method: 'POST' });
-      lastStage = undefined;
+      lastStageKey = undefined;
+      lastActiveData = null;
+      render({ item_id: null });
+      document.getElementById('clear-btn').style.display = 'none';
     }
 
     function logColorClass(line) {
@@ -392,9 +394,21 @@
       try {
         const res = await fetch("/active.json?t=" + Date.now());
         const data = await res.json();
-        if (data.stage !== lastStage) {
-          lastStage = data.stage;
-          render(data);
+
+        if (data.item_id) lastActiveData = data;
+
+        const display  = data.item_id ? data : lastActiveData;
+        const stageKey = display ? `${display.item_id}:${display.stage}` : null;
+
+        if (stageKey !== lastStageKey) {
+          lastStageKey = stageKey;
+          if (display) {
+            render(display);
+            // only show clear button for a live (not cached) active item
+            document.getElementById('clear-btn').style.display = data.item_id ? 'block' : 'none';
+          } else {
+            render({ item_id: null });
+          }
         }
       } catch (e) {}
     }

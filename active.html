@@ -158,6 +158,31 @@
     .stage.done .stage-label   { color: #00ff9970; }
     .stage.active .stage-label { color: #00ff99; }
 
+    .stage-time {
+      font-size: 0.55rem;
+      color: #2a2a2a;
+      text-align: center;
+      min-height: 0.8em;
+      margin-top: 0.15rem;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0;
+    }
+    .stage.done .stage-time   { color: #00ff9940; }
+    .stage.active .stage-time { color: #00ff9980; }
+    .stage.failed .stage-time { color: #ff444450; }
+
+    .timer-bar {
+      padding: 0.35rem 1.5rem 0.5rem;
+      font-size: 0.72rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      border-top: 1px solid #1a1a1a;
+    }
+    .timer-icon  { color: #2a2a2a; font-size: 0.7rem; }
+    .timer-total { color: #00ff9960; font-variant-numeric: tabular-nums; }
+    .timer-label { color: #2a2a2a; font-size: 0.65rem; }
+
     .work-status {
       padding: 0.75rem 1.5rem 1.25rem;
       font-size: 0.8rem;
@@ -274,7 +299,9 @@
       test:     "Running tests…",
       review:   "Hermes reviewing…",
       deploy:   "Pushing to GitHub…",
+      done:     "Deployed successfully.",
       rejected: "Hermes rejected this story.",
+      failed:   "An error occurred — see activity stream for details.",
     };
 
     let lastStageKey = undefined;
@@ -295,19 +322,31 @@
       }
 
       const isRejected = data.stage === "rejected";
-      const stageIdx = isRejected ? STAGES.indexOf("review") : STAGES.indexOf(data.stage);
+      const isFailed   = data.stage === "failed";
+      const isDone     = data.stage === "done";
+      const stageIdx   = isRejected ? STAGES.indexOf("review")
+                       : isFailed   ? STAGES.indexOf(data.failed_at || "code")
+                       : isDone     ? STAGES.length
+                       : STAGES.indexOf(data.stage);
 
       const dots = STAGES.map((s, i) => {
         let cls = i < stageIdx ? "done" : i === stageIdx ? "active" : "";
-        if (isRejected && i === stageIdx) cls = "failed";
+        if ((isRejected || isFailed) && i === stageIdx) cls = "failed";
         return `<div class="stage ${cls}">
           <div class="stage-dot"></div>
           <div class="stage-label">${LABELS[s]}</div>
+          <div class="stage-time" id="stime-${s}"></div>
         </div>`;
       }).join("");
 
       let hermesHtml = "";
-      if (data.hermes_verdict) {
+      if (isFailed && data.error) {
+        hermesHtml = `
+          <div class="hermes-verdict hermes-reject">
+            <span class="label">✗ Failed</span>
+            ${escHtml(data.error)}
+          </div>`;
+      } else if (data.hermes_verdict) {
         const approved = data.hermes_verdict === "approve";
         hermesHtml = `
           <div class="hermes-verdict ${approved ? "hermes-approve" : "hermes-reject"}">
@@ -316,7 +355,7 @@
           </div>`;
       }
 
-      const spinning = !isRejected;
+      const spinning = !isRejected && !isFailed && !isDone;
       root.innerHTML = `
         <div class="work-card">
           <div class="work-header">
@@ -327,11 +366,18 @@
             </div>
           </div>
           <div class="pipeline">${dots}</div>
+          <div class="timer-bar">
+            <span class="timer-icon">⏱</span>
+            <span class="timer-total" id="timer-total">—</span>
+            <span class="timer-label">total</span>
+          </div>
           ${hermesHtml}
           <div class="work-status">
             ${spinning ? '<span class="status-dot"></span>' : ""}${STATUS_TEXT[data.stage] || data.stage}
           </div>
         </div>`;
+      currentTimerData = data;
+      updateTimers();
     }
 
     function escHtml(s) {
@@ -413,10 +459,43 @@
       } catch (e) {}
     }
 
+    let currentTimerData = null;
+
+    function fmtSecs(s) {
+      s = Math.floor(s);
+      if (s < 0) s = 0;
+      if (s < 60) return s + 's';
+      const m = Math.floor(s / 60), r = s % 60;
+      if (m < 60) return m + 'm ' + (r < 10 ? '0' : '') + r + 's';
+      return Math.floor(m / 60) + 'h ' + (m % 60) + 'm';
+    }
+
+    function updateTimers() {
+      if (!currentTimerData || !currentTimerData.stage_times) return;
+      const now = Date.now() / 1000;
+      const st = currentTimerData.stage_times;
+      const started = currentTimerData.started;
+      const cap = st["done"] || now;
+      const totalEl = document.getElementById('timer-total');
+      if (totalEl && started) totalEl.textContent = fmtSecs(cap - started);
+      STAGES.forEach((s, i) => {
+        const el = document.getElementById('stime-' + s);
+        if (!el) return;
+        if (!st[s]) { el.textContent = ''; return; }
+        let endTime = null;
+        for (let j = i + 1; j < STAGES.length; j++) {
+          if (st[STAGES[j]]) { endTime = st[STAGES[j]]; break; }
+        }
+        if (!endTime) endTime = st["done"] || null;
+        el.textContent = fmtSecs((endTime || now) - st[s]);
+      });
+    }
+
     poll();
     pollLog();
     setInterval(poll, 1500);
     setInterval(pollLog, 1500);
+    setInterval(updateTimers, 1000);
   </script>
 </body>
 </html>

@@ -18,6 +18,9 @@ from zoneinfo import ZoneInfo
 
 import anthropic
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 BACKLOG_FILE = "backlog.json"
 ACTIVE_FILE  = "active.json"
 LOG_FILE     = "agent_log.json"
@@ -74,7 +77,7 @@ Rules:
 - DO NOT patch: the version badge, version popover, meta/last-deployed line, features counter, streak counter, or changelog HTML entries — the pipeline handles those
 - patches must contain ONLY the story-specific change (new elements, CSS additions, etc.)
 - Each patch "find" must be a verbatim unique substring copied directly from the provided file
-- If adding CSS, insert it before an existing unique selector (e.g. before ".tagline {")
+- If adding CSS, insert it before an existing unique selector (e.g. before ".meta {")
 - Keep the page clean and minimal
 
 Respond with ONLY valid JSON — no markdown, no code blocks, no extra text:
@@ -104,7 +107,26 @@ Reject if the implementation is unrelated to the idea, clearly wrong, or missing
 # ── Active status ─────────────────────────────────────────────────────────────
 
 def write_active(item, stage, **extra):
-    data = {"item_id": item["id"], "idea": item["idea"], "stage": stage}
+    now = datetime.now().timestamp()
+    try:
+        with open(ACTIVE_FILE) as f:
+            existing = json.load(f)
+    except Exception:
+        existing = {}
+    if existing.get("item_id") == item["id"]:
+        stage_times = existing.get("stage_times", {})
+        started     = existing.get("started", now)
+    else:
+        stage_times = {}
+        started     = now
+    stage_times[stage] = now
+    data = {
+        "item_id": item["id"],
+        "idea": item["idea"],
+        "stage": stage,
+        "started": started,
+        "stage_times": stage_times,
+    }
     data.update(extra)
     with open(ACTIVE_FILE, "w") as f:
         json.dump(data, f)
@@ -139,11 +161,20 @@ def get_next_item(backlog, sprint_only=False):
 # ── App files ─────────────────────────────────────────────────────────────────
 
 def read_app_files():
-    with open(INDEX_FILE) as f:
+    with open(INDEX_FILE, encoding="utf-8") as f:
         index_html = f.read()
-    with open(VERSION_FILE) as f:
+    with open(VERSION_FILE, encoding="utf-8") as f:
         version_json = f.read()
     return index_html, version_json
+
+
+def strip_styles_for_prompt(html):
+    """Replace style block with a placeholder to reduce prompt tokens."""
+    return re.sub(
+        r'(<style>)[\s\S]*?(</style>)',
+        r'\1\n  /* existing styles — add new CSS before </style> */\n\2',
+        html, count=1
+    )
 
 
 def get_ct_timestamp():
@@ -189,19 +220,15 @@ Implement this idea. Return JSON only."""
 
 
 def auto_update_html(content, version_json_data, timestamp):
-    """Update version badge, popover, meta, counters, and changelog entry."""
+    """Update version badge, popover, meta, and counters."""
     changelog = version_json_data.get("changelog", [])
     if not changelog:
         return content
-    latest    = changelog[-1]
-    raw_ver   = latest.get("version", version_json_data.get("version", "0.1.0"))
-    new_ver   = raw_ver if raw_ver.startswith("v") else "v" + raw_ver
-    date_str  = timestamp[:10]
+    latest      = changelog[-1]
+    raw_ver     = latest.get("version", version_json_data.get("version", "0.1.0"))
+    new_ver     = raw_ver if raw_ver.startswith("v") else "v" + raw_ver
+    date_str    = timestamp[:10]
     change_text = latest.get("change", "")
-
-    # Infer sprint label from the most recent entry already in the HTML
-    m = re.search(r'class="sprint-badge">([^<]+)', content)
-    sprint_str = m.group(1) if m else ""
 
     # Version badge
     content = re.sub(r'(id="version-badge"[^>]*>)v[\d.]+', rf'\g<1>{new_ver}', content)
@@ -217,16 +244,6 @@ def auto_update_html(content, version_json_data, timestamp):
     count = len([e for e in changelog if e.get("version", "0") != "0.1.0"]) + 1
     content = re.sub(r'(<div class="count">)\d+', rf'\g<1>{count}', content)
     content = re.sub(r'(&#128293; )\d+', rf'\g<1>{count}', content)
-    # Prepend changelog entry
-    sprint_html = f'<span class="sprint-badge">{sprint_str}</span>\n      ' if sprint_str else ''
-    new_entry = (
-        f'\n    <div class="changelog-entry">\n'
-        f'      <span class="cv">{new_ver}</span>\n'
-        f'      <span class="cd">{date_str}</span>\n'
-        f'      {sprint_html}<span class="ct">{change_text}</span>\n'
-        f'    </div>'
-    )
-    content = re.sub(r'(<h2>Recent Changes</h2>)', rf'\g<1>{new_entry}', content)
     return content
 
 
@@ -367,7 +384,7 @@ def run_one(sprint_only=False):
         item["status"] = "failed"
         item["error"] = f"Agent error: {e}"
         save_backlog(backlog)
-        clear_active()
+        write_active(item, "failed", failed_at="story", error=str(e)[:160])
         return False
 
     log("Applying changes...")
@@ -380,7 +397,7 @@ def run_one(sprint_only=False):
         item["status"] = "failed"
         item["error"] = f"Parse error: {e} | Response preview: {response[:200]}"
         save_backlog(backlog)
-        clear_active()
+        write_active(item, "failed", failed_at="code", error=str(e)[:160])
         return False
 
     log("=== USER STORY ===")
@@ -413,7 +430,7 @@ def run_one(sprint_only=False):
         item["diff"] = diff
         item["test_results"] = test_results
         save_backlog(backlog)
-        clear_active()
+        write_active(item, "failed", failed_at="test", error="Tests failed — see activity stream")
         return False
 
     log("Hermes reviewing...")
@@ -468,10 +485,10 @@ def run_one(sprint_only=False):
         rollback()
         item["status"] = "failed"
         save_backlog(backlog)
-        clear_active()
+        write_active(item, "failed", failed_at="deploy", error=f"Push failed: {str(e)[:120]}")
         return False
 
-    clear_active()
+    write_active(item, "done", hermes_verdict=hermes_verdict, hermes_reason=hermes_reason)
     log(f"\nDeployed: {timestamp}")
     log(f"Live at : {REPO_URL}")
     return True

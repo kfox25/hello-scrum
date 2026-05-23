@@ -49,6 +49,11 @@ def backlog_json():
     return send_file(BACKLOG_FILE)
 
 
+@app.route("/version.json")
+def version_json_route():
+    return send_file(os.path.join(BASE, "version.json"))
+
+
 @app.route("/active.json")
 def active_json():
     active_file = os.path.join(BASE, "active.json")
@@ -124,6 +129,7 @@ def start_sprint():
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
+                encoding="utf-8",
                 cwd=BASE,
                 env=os.environ.copy(),
             )

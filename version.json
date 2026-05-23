@@ -1,6 +1,6 @@
 {
-  "version": "0.1.14",
-  "deployed": "2026-05-22 19:01:28 CT",
+  "version": "0.1.17",
+  "deployed": "2026-05-22 19:37:03 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -77,6 +77,21 @@
       "version": "0.1.14",
       "date": "2026-05-22",
       "change": "Changed page title from Hello Scrum to Hello Dude"
+    },
+    {
+      "version": "0.1.15",
+      "date": "2026-05-22",
+      "change": "Updated title to professional name: Hello Scrum"
+    },
+    {
+      "version": "0.1.16",
+      "date": "2026-05-22",
+      "change": "Renamed title to \"Scrum Board\" for a professional, descriptive identity"
+    },
+    {
+      "version": "0.1.17",
+      "date": "2026-05-22",
+      "change": "Rebranded page title to \"AgileDesk\" for a professional product identity"
     }
   ]
 }

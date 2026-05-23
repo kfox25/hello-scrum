@@ -1,18 +1,18 @@
 {
   "items": [
     {
-      "id": 48,
-      "idea": "title can be bolder",
-      "status": "done",
+      "id": 49,
+      "idea": "title should be sexier",
       "in_sprint": true,
-      "story": "As a user, I want the title to appear even bolder so it has a stronger, more commanding visual presence on the page.",
+      "status": "done",
+      "story": "As a user, I want the title to look sexier so that the app feels more exciting and visually impressive at first glance",
       "acceptance_criteria": [
-        "The title font-size is increased to make it more visually prominent",
-        "The title uses a heavier stroke or text-stroke to reinforce boldness",
-        "The letter-spacing is tightened slightly to feel more impactful and solid"
+        "Title uses a larger, more dramatic font size",
+        "Title has a tagline or subtitle beneath it to add context and depth",
+        "Title styling feels premium and eye-catching with enhanced visual treatment"
       ],
-      "summary": "Increase title boldness: larger font-size, tighter letter-spacing, subtle text-stroke",
-      "diff": "diff --git a/index.html b/index.html\nindex cb90aa1..500eac2 100644\n--- a/index.html\n+++ b/index.html\n@@ -23,10 +23,11 @@\n       100% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(0,255,153,0.5)) drop-shadow(0 0 24px rgba(0,229,255,0.25)); }\n     }\n     h1 {\n-      font-size: 3.4rem;\n+      font-size: 4rem;\n       margin-bottom: 0.5rem;\n-      letter-spacing: 0.15em;\n+      letter-spacing: 0.08em;\n       font-weight: 900;\n+      -webkit-text-stroke: 1px rgba(0,255,153,0.18);\n       background: linear-gradient(90deg, #00ff99, #00e5ff, #a259ff, #ff6ac1, #00e5ff, #00ff99);\n       background-size: 300% 300%;\n       -webkit-background-clip: text;\n@@ -90,8 +91,8 @@\n     <h1>Hello Scrum</h1>\n \n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.13</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 01:08:27 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.14</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 01:17:23 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex f9ad6c4..97c90ef 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.13\",\n-  \"deployed\": \"2026-05-23 01:08:27 CT\",\n+  \"version\": \"0.1.14\",\n+  \"deployed\": \"2026-05-23 01:17:23 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -72,6 +72,11 @@\n       \"version\": \"0.1.13\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Bolder title: increased font-weight to 900 for stronger visual presence\"\n+    },\n+    {\n+      \"version\": \"0.1.14\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Bolder title: increased font-size to 4rem, tightened letter-spacing, and added subtle text-stroke for extra visual weight\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "summary": "Sexier title: larger font, wider spacing, faster neon gradient, animated tagline added",
+      "diff": "diff --git a/index.html b/index.html\nindex 570dd59..3b09398 100644\n--- a/index.html\n+++ b/index.html\n@@ -17,6 +17,11 @@\n       margin: 0;\n       padding: 2rem 1rem;\n     }\n+    @keyframes glowPulse {\n+      0%   { filter: drop-shadow(0 0 8px rgba(0,255,153,0.6)) drop-shadow(0 0 20px rgba(0,229,255,0.3)); }\n+      50%  { filter: drop-shadow(0 0 20px rgba(162,89,255,0.8)) drop-shadow(0 0 40px rgba(255,79,216,0.4)); }\n+      100% { filter: drop-shadow(0 0 8px rgba(0,255,153,0.6)) drop-shadow(0 0 20px rgba(0,229,255,0.3)); }\n+    }\n     @keyframes gradientSweep {\n       0%   { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(0,255,153,0.5)) drop-shadow(0 0 24px rgba(0,229,255,0.25)); }\n       50%  { background-position: 100% 50%; filter: drop-shadow(0 0 22px rgba(162,89,255,0.7)) drop-shadow(0 0 40px rgba(0,229,255,0.45)); }\n@@ -24,13 +29,30 @@\n     }\n     h1 {\n       font-family: monospace;\n-      font-size: 2.8rem;\n-      margin-bottom: 0.5rem;\n-      letter-spacing: 0.04em;\n-      font-weight: 700;\n-      color: #00ff99;\n-      text-shadow: 0 0 8px rgba(0,255,153,0.4);\n-      text-transform: none;\n+      font-size: 4.8rem;\n+      margin-bottom: 0.15rem;\n+      letter-spacing: 0.18em;\n+      font-weight: 900;\n+      text-transform: uppercase;\n+      background: linear-gradient(90deg, #00ff99, #00e5ff, #a259ff, #ff4fd8, #00e5ff, #00ff99);\n+      background-size: 400% 100%;\n+      -webkit-background-clip: text;\n+      -webkit-text-fill-color: transparent;\n+      background-clip: text;\n+      animation: gradientSweep 3s ease infinite, glowPulse 3s ease infinite;\n+    }\n+    .tagline {\n+      font-family: monospace;\n+      font-size: 0.85rem;\n+      letter-spacing: 0.35em;\n+      text-transform: uppercase;\n+      color: #444;\n+      margin-bottom: 0.4rem;\n+      animation: taglineFade 3s ease infinite;\n+    }\n+    @keyframes taglineFade {\n+      0%, 100% { color: #445; }\n+      50% { color: #00e5ff88; }\n     }\n     .title-wrap {\n       display: flex;\n@@ -85,10 +107,10 @@\n   </nav>\n   <div class=\"title-wrap\">\n     <h1>Hello Scrum</h1>\n-\n+    <div class=\"tagline\">agile \u00c2\u00b7 iterative \u00c2\u00b7 relentless</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.15</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 01:17:42 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.17</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 01:33:31 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex 4b459b9..a6fe7dd 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.15\",\n-  \"deployed\": \"2026-05-23 01:17:42 CT\",\n+  \"version\": \"0.1.17\",\n+  \"deployed\": \"2026-05-23 01:33:31 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -82,6 +82,16 @@\n       \"version\": \"0.1.15\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Matched title to terminal aesthetic: monospace font, solid #00ff99 color, subtle glow, no animation or uppercase transform\"\n+    },\n+    {\n+      \"version\": \"0.1.16\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Sexier title: uppercase 3.6rem bold with animated green-cyan-purple-pink neon gradient sweep and pulsing glow\"\n+    },\n+    {\n+      \"version\": \"0.1.17\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Sexier title: enlarged to 4.8rem, wider letter-spacing, faster gradient, plus animated tagline beneath\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "test_results": [
         {
           "status": "pass",
@@ -20,74 +20,121 @@
         },
         {
           "status": "pass",
-          "message": "version 0.1.14 matches between version.json and index.html"
+          "message": "version 0.1.17 matches between version.json and index.html"
         },
         {
           "status": "pass",
-          "message": "deployed timestamp '2026-05-23 01:17:23 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-23 01:33:31 CT' present in index.html"
         },
         {
           "status": "pass",
-          "message": "changelog has entry for v0.1.14: Bolder title: increased font-size to 4rem, tightened letter-spacing, and added subtle text-stroke for extra visual weight"
+          "message": "changelog has entry for v0.1.17: Sexier title: enlarged to 4.8rem, wider letter-spacing, faster gradient, plus animated tagline beneath"
         }
       ],
-      "deployed": "2026-05-23 01:17:23 CT",
+      "deployed": "2026-05-23 01:33:31 CT",
       "hermes_verdict": "approve",
+      "hermes_reason": "The implementation successfully delivers all three acceptance criteria: enlarged dramatic font (4.8rem with 900 weight), added animated tagline subtitle, and premium visual treatment with neon gradient animation and glowing effects that make the title visually impressive and exciting."
+    },
+    {
+      "id": 50,
+      "idea": "title should be more calm",
+      "status": "pending",
+      "in_sprint": true
+    },
+    {
+      "acceptance_criteria": [
+        "The title font-size is increased to make it more visually prominent",
+        "The title uses a heavier stroke or text-stroke to reinforce boldness",
+        "The letter-spacing is tightened slightly to feel more impactful and solid"
+      ],
+      "deployed": "2026-05-23 01:17:23 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex cb90aa1..500eac2 100644\n--- a/index.html\n+++ b/index.html\n@@ -23,10 +23,11 @@\n       100% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(0,255,153,0.5)) drop-shadow(0 0 24px rgba(0,229,255,0.25)); }\n     }\n     h1 {\n-      font-size: 3.4rem;\n+      font-size: 4rem;\n       margin-bottom: 0.5rem;\n-      letter-spacing: 0.15em;\n+      letter-spacing: 0.08em;\n       font-weight: 900;\n+      -webkit-text-stroke: 1px rgba(0,255,153,0.18);\n       background: linear-gradient(90deg, #00ff99, #00e5ff, #a259ff, #ff6ac1, #00e5ff, #00ff99);\n       background-size: 300% 300%;\n       -webkit-background-clip: text;\n@@ -90,8 +91,8 @@\n     <h1>Hello Scrum</h1>\n \n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.13</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 01:08:27 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.14</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 01:17:23 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex f9ad6c4..97c90ef 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.13\",\n-  \"deployed\": \"2026-05-23 01:08:27 CT\",\n+  \"version\": \"0.1.14\",\n+  \"deployed\": \"2026-05-23 01:17:23 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -72,6 +72,11 @@\n       \"version\": \"0.1.13\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Bolder title: increased font-weight to 900 for stronger visual presence\"\n+    },\n+    {\n+      \"version\": \"0.1.14\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Bolder title: increased font-size to 4rem, tightened letter-spacing, and added subtle text-stroke for extra visual weight\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "hermes_reason": "The diff implements all three acceptance criteria: font-size increased from 3.4rem to 4rem, letter-spacing tightened from 0.15em to 0.08em, and a subtle text-stroke added with -webkit-text-stroke, with all tests passing.",
-      "started": 1779517043.262455,
+      "hermes_verdict": "approve",
+      "id": 48,
+      "idea": "title can be bolder",
+      "in_sprint": false,
       "stage_times": {
-        "pull": 1779517043.262455,
-        "story": 1779517043.279255,
         "code": 1779517054.624673,
-        "test": 1779517054.764373,
-        "review": 1779517055.016686,
         "deploy": 1779517056.462452,
-        "done": 1779517059.735129
+        "done": 1779517059.735129,
+        "pull": 1779517043.262455,
+        "review": 1779517055.016686,
+        "story": 1779517043.279255,
+        "test": 1779517054.764373
       },
+      "started": 1779517043.262455,
+      "status": "done",
+      "story": "As a user, I want the title to appear even bolder so it has a stronger, more commanding visual presence on the page.",
+      "summary": "Increase title boldness: larger font-size, tighter letter-spacing, subtle text-stroke",
+      "test_results": [
+        {
+          "message": "index.html exists and contains title",
+          "status": "pass"
+        },
+        {
+          "message": "version 0.1.14 matches between version.json and index.html",
+          "status": "pass"
+        },
+        {
+          "message": "deployed timestamp '2026-05-23 01:17:23 CT' present in index.html",
+          "status": "pass"
+        },
+        {
+          "message": "changelog has entry for v0.1.14: Bolder title: increased font-size to 4rem, tightened letter-spacing, and added subtle text-stroke for extra visual weight",
+          "status": "pass"
+        }
+      ],
       "tokens_in": 4130,
       "tokens_out": 956
     },
     {
-      "id": 47,
-      "idea": "title doesnt match the page style",
-      "status": "done",
-      "in_sprint": true,
-      "story": "As a user, I want the page title to match the page's monospace terminal aesthetic so it feels cohesive and intentional rather than visually inconsistent",
       "acceptance_criteria": [
         "Title uses monospace font family consistent with the rest of the page",
         "Title loses the decorative uppercase transform and gradient animation in favor of a style that fits the dark terminal theme",
         "Title retains good visual weight and presence without clashing with the minimal terminal aesthetic",
         "The overall page feels unified and coherent"
       ],
-      "summary": "Match title style to terminal aesthetic: monospace font, solid green color, no gradient or animation",
+      "deployed": "2026-05-23 01:17:42 CT",
       "diff": "diff --git a/index.html b/index.html\nindex 500eac2..570dd59 100644\n--- a/index.html\n+++ b/index.html\n@@ -23,18 +23,14 @@\n       100% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(0,255,153,0.5)) drop-shadow(0 0 24px rgba(0,229,255,0.25)); }\n     }\n     h1 {\n-      font-size: 4rem;\n+      font-family: monospace;\n+      font-size: 2.8rem;\n       margin-bottom: 0.5rem;\n-      letter-spacing: 0.08em;\n-      font-weight: 900;\n-      -webkit-text-stroke: 1px rgba(0,255,153,0.18);\n-      background: linear-gradient(90deg, #00ff99, #00e5ff, #a259ff, #ff6ac1, #00e5ff, #00ff99);\n-      background-size: 300% 300%;\n-      -webkit-background-clip: text;\n-      -webkit-text-fill-color: transparent;\n-      background-clip: text;\n-      text-transform: uppercase;\n-      animation: gradientSweep 4s ease-in-out infinite;\n+      letter-spacing: 0.04em;\n+      font-weight: 700;\n+      color: #00ff99;\n+      text-shadow: 0 0 8px rgba(0,255,153,0.4);\n+      text-transform: none;\n     }\n     .title-wrap {\n       display: flex;\n@@ -91,8 +87,8 @@\n     <h1>Hello Scrum</h1>\n \n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.14</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 01:17:23 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.15</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 01:17:42 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex 97c90ef..4b459b9 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.14\",\n-  \"deployed\": \"2026-05-23 01:17:23 CT\",\n+  \"version\": \"0.1.15\",\n+  \"deployed\": \"2026-05-23 01:17:42 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -77,6 +77,11 @@\n       \"version\": \"0.1.14\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Bolder title: increased font-size to 4rem, tightened letter-spacing, and added subtle text-stroke for extra visual weight\"\n+    },\n+    {\n+      \"version\": \"0.1.15\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Matched title to terminal aesthetic: monospace font, solid #00ff99 color, subtle glow, no animation or uppercase transform\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_reason": "The diff directly implements all acceptance criteria: title now uses monospace font family, removes uppercase transform and gradient animation, replaces it with a solid #00ff99 color and subtle text-shadow glow that matches the terminal aesthetic, maintains visual weight with appropriate font-size and font-weight, and creates a cohesive dark terminal theme throughout the page.",
+      "hermes_verdict": "approve",
+      "id": 47,
+      "idea": "title doesnt match the page style",
+      "in_sprint": false,
+      "stage_times": {
+        "code": 1779517077.542947,
+        "deploy": 1779517079.925173,
+        "done": 1779517083.01206,
+        "pull": 1779517062.571134,
+        "review": 1779517077.87787,
+        "story": 1779517062.575134,
+        "test": 1779517077.676881
+      },
+      "started": 1779517062.571134,
+      "status": "done",
+      "story": "As a user, I want the page title to match the page's monospace terminal aesthetic so it feels cohesive and intentional rather than visually inconsistent",
+      "summary": "Match title style to terminal aesthetic: monospace font, solid green color, no gradient or animation",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.15 matches between version.json and index.html"
+          "message": "version 0.1.15 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 01:17:42 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-23 01:17:42 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.15: Matched title to terminal aesthetic: monospace font, solid #00ff99 color, subtle glow, no animation or uppercase transform"
+          "message": "changelog has entry for v0.1.15: Matched title to terminal aesthetic: monospace font, solid #00ff99 color, subtle glow, no animation or uppercase transform",
+          "status": "pass"
         }
       ],
-      "deployed": "2026-05-23 01:17:42 CT",
-      "hermes_verdict": "approve",
-      "hermes_reason": "The diff directly implements all acceptance criteria: title now uses monospace font family, removes uppercase transform and gradient animation, replaces it with a solid #00ff99 color and subtle text-shadow glow that matches the terminal aesthetic, maintains visual weight with appropriate font-size and font-weight, and creates a cohesive dark terminal theme throughout the page."
-    },
-    {
-      "id": 49,
-      "idea": "title should be sexier",
-      "status": "pending",
-      "in_sprint": true
+      "tokens_in": 4512,
+      "tokens_out": 1223
     },
     {
       "acceptance_criteria": [

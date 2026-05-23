@@ -17,6 +17,11 @@
       margin: 0;
       padding: 2rem 1rem;
     }
+    @keyframes glowPulse {
+      0%   { filter: drop-shadow(0 0 8px rgba(0,255,153,0.6)) drop-shadow(0 0 20px rgba(0,229,255,0.3)); }
+      50%  { filter: drop-shadow(0 0 20px rgba(162,89,255,0.8)) drop-shadow(0 0 40px rgba(255,79,216,0.4)); }
+      100% { filter: drop-shadow(0 0 8px rgba(0,255,153,0.6)) drop-shadow(0 0 20px rgba(0,229,255,0.3)); }
+    }
     @keyframes gradientSweep {
       0%   { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(0,255,153,0.5)) drop-shadow(0 0 24px rgba(0,229,255,0.25)); }
       50%  { background-position: 100% 50%; filter: drop-shadow(0 0 22px rgba(162,89,255,0.7)) drop-shadow(0 0 40px rgba(0,229,255,0.45)); }
@@ -24,13 +29,30 @@
     }
     h1 {
       font-family: monospace;
-      font-size: 2.8rem;
-      margin-bottom: 0.5rem;
-      letter-spacing: 0.04em;
-      font-weight: 700;
-      color: #00ff99;
-      text-shadow: 0 0 8px rgba(0,255,153,0.4);
-      text-transform: none;
+      font-size: 4.8rem;
+      margin-bottom: 0.15rem;
+      letter-spacing: 0.18em;
+      font-weight: 900;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #00ff99, #00e5ff, #a259ff, #ff4fd8, #00e5ff, #00ff99);
+      background-size: 400% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientSweep 3s ease infinite, glowPulse 3s ease infinite;
+    }
+    .tagline {
+      font-family: monospace;
+      font-size: 0.85rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #444;
+      margin-bottom: 0.4rem;
+      animation: taglineFade 3s ease infinite;
+    }
+    @keyframes taglineFade {
+      0%, 100% { color: #445; }
+      50% { color: #00e5ff88; }
     }
     .title-wrap {
       display: flex;
@@ -85,10 +107,10 @@
   </nav>
   <div class="title-wrap">
     <h1>Hello Scrum</h1>
-
+    <div class="tagline">agile · iterative · relentless</div>
   </div>
-  <div class="version" id="version-badge">v0.1.15</div>
-  <div class="meta">Last deployed: 2026-05-23 01:17:42 CT</div>
+  <div class="version" id="version-badge">v0.1.17</div>
+  <div class="meta">Last deployed: 2026-05-23 01:33:31 CT</div>
   <div class="meta">Status: baseline</div>
   <div class="changelog">
     <h2>Recent Changes</h2>

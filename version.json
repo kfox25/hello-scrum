@@ -1,6 +1,6 @@
 {
-  "version": "0.1.15",
-  "deployed": "2026-05-23 01:17:42 CT",
+  "version": "0.1.17",
+  "deployed": "2026-05-23 01:33:31 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -82,6 +82,16 @@
       "version": "0.1.15",
       "date": "2026-05-23",
       "change": "Matched title to terminal aesthetic: monospace font, solid #00ff99 color, subtle glow, no animation or uppercase transform"
+    },
+    {
+      "version": "0.1.16",
+      "date": "2026-05-23",
+      "change": "Sexier title: uppercase 3.6rem bold with animated green-cyan-purple-pink neon gradient sweep and pulsing glow"
+    },
+    {
+      "version": "0.1.17",
+      "date": "2026-05-23",
+      "change": "Sexier title: enlarged to 4.8rem, wider letter-spacing, faster gradient, plus animated tagline beneath"
     }
   ]
 }

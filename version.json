@@ -1,6 +1,6 @@
 {
-  "version": "0.1.21",
-  "deployed": "2026-05-23 12:09:31 CT",
+  "version": "0.1.22",
+  "deployed": "2026-05-23 12:33:35 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -112,6 +112,11 @@
       "version": "0.1.21",
       "date": "2026-05-23",
       "change": "Updated typography and color scheme to match brand standards: Inter font stack, warmer dark background, more visible tagline accent, consistent nav border-radius"
+    },
+    {
+      "version": "0.1.22",
+      "date": "2026-05-23",
+      "change": "Changed homepage title text color to red with matching red neon glow animation"
     }
   ]
 }

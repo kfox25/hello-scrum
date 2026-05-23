@@ -23,8 +23,8 @@
       100% { background-position: 0% 50%; }
     }
     @keyframes glow-pulse {
-      0%, 100% { filter: drop-shadow(0 0 6px #00ff99aa) drop-shadow(0 0 18px #00ccff55); }
-      50%       { filter: drop-shadow(0 0 14px #00ff99ff) drop-shadow(0 0 36px #cc00ffaa); }
+      0%, 100% { filter: drop-shadow(0 0 6px #ff0000aa) drop-shadow(0 0 18px #ff000055); }
+      50%       { filter: drop-shadow(0 0 14px #ff0000ff) drop-shadow(0 0 36px #cc0000aa); }
     }
     h1 {
       font-family: monospace;
@@ -33,12 +33,9 @@
       letter-spacing: 0.12em;
       font-weight: 900;
       text-transform: uppercase;
-      background: linear-gradient(120deg, #00ff99, #00ccff, #cc00ff, #ff0099, #00ff99);
-      background-size: 300% 300%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: neon-sweep 4s ease infinite, glow-pulse 3s ease-in-out infinite;
+      color: #ff0000;
+      -webkit-text-fill-color: #ff0000;
+      animation: glow-pulse 3s ease-in-out infinite;
     }
     .tagline {
       font-family: monospace;
@@ -107,8 +104,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.21</div>
-  <div class="meta">Last deployed: 2026-05-23 12:09:31 CT</div>
+  <div class="version" id="version-badge">v0.1.22</div>
+  <div class="meta">Last deployed: 2026-05-23 12:33:35 CT</div>
   <div class="meta">Status: baseline</div>
   <div class="changelog">
     <h2>Recent Changes</h2>

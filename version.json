@@ -1,6 +1,6 @@
 {
-  "version": "0.1.6",
-  "deployed": "2026-05-22 23:32:05 CT",
+  "version": "0.1.7",
+  "deployed": "2026-05-22 23:38:01 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -37,6 +37,11 @@
       "version": "0.1.6",
       "date": "2026-05-22",
       "change": "Made title bland: muted gray color, reduced weight and letter-spacing, no decorative styling"
+    },
+    {
+      "version": "0.1.7",
+      "date": "2026-05-22",
+      "change": "Made title attractive: large bold font with teal-to-cyan gradient and subtle glow"
     }
   ]
 }

@@ -67,19 +67,15 @@
     h1 {
       font-size: 2.6rem;
       font-weight: 800;
-      background: linear-gradient(270deg, #a78bfa, #60a5fa, #f472b6, #a78bfa);
-      background-size: 300% 300%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #00e87a;
       margin: 0 0 0.25rem 0;
       letter-spacing: -1px;
-      animation: fade-in-up 0.5s ease both, title-shimmer-slow 20s ease infinite;
-      filter: drop-shadow(0 0 18px #a78bfa55);
+      animation: fade-in-up 0.5s ease both;
+      filter: drop-shadow(0 0 14px #00e87a44);
     }
     .title-subtitle {
       font-size: 0.95rem;
-      color: #60a5fa;
+      color: #888;
       margin: 0 0 0.1rem 0;
       letter-spacing: 0.08em;
       font-weight: 500;
@@ -96,7 +92,7 @@
       display: inline-block;
       width: 2px;
       height: 1em;
-      background: #60a5fa;
+      background: #00e87a;
       margin-left: 2px;
       vertical-align: middle;
       animation: cursor-blink-slow 2s step-end infinite;
@@ -331,15 +327,15 @@
       text-transform: uppercase;
       padding: 0.2rem 0.65rem;
       border-radius: 20px;
-      background: #0d1f33;
-      color: #4da6ff;
-      border: 1px solid #1a4a7a;
+      background: #0b2318;
+      color: #00e87a;
+      border: 1px solid #00e87a33;
     }
     .status-badge .status-icon {
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: #4da6ff;
+      background: #00e87a;
       flex-shrink: 0;
     }
     .tip-box {
@@ -441,9 +437,9 @@
       text-transform: uppercase;
       padding: 0.15rem 0.5rem;
       border-radius: 20px;
-      background: #1a1530;
-      color: #a78bfa;
-      border: 1px solid #3b2d6a;
+      background: #161a1d;
+      color: #555;
+      border: 1px solid #2a2d3a;
       white-space: nowrap;
       align-self: center;
     }
@@ -460,11 +456,11 @@
   <div class="title-subtitle"><span class="subtitle-text" id="title-subtitle"></span><span class="cursor"></span></div>
   <div class="tagline">Iterate. Improve. Deliver.</div>
   <div class="version-wrap">
-    <div class="version" id="version-badge" onclick="toggleVersionPopover(event)" title="Click to see what's new">v0.1.21</div>
+    <div class="version" id="version-badge" onclick="toggleVersionPopover(event)" title="Click to see what's new">v0.1.22</div>
     <div class="version-popover" id="version-popover">
-      <div class="vp-version">v0.1.21</div>
+      <div class="vp-version">v0.1.22</div>
       <div class="vp-date">2026-05-22</div>
-      <div class="vp-change">Reduced visual noise: slowed title shimmer, health ping, subtitle cycle, cursor blink, and streak pulse so the page feels calm and readable</div>
+      <div class="vp-change">Reduced color palette to two accents (green and orange): unified title, subtitle, status badge, and sprint badge colors</div>
       <div class="vp-hint">click badge to dismiss</div>
     </div>
   </div>
@@ -477,14 +473,14 @@
     <span class="health-sub">&mdash; all systems operational</span>
   </div>
   <div class="features-counter">
-    <div class="count">22</div>
+    <div class="count">23</div>
     <div class="label">Features Deployed</div>
   </div>
   <div class="streak-counter">
-    <div class="streak-value">&#128293; 22</div>
+    <div class="streak-value">&#128293; 23</div>
     <div class="streak-label">Consecutive Successful Deploys</div>
   </div>
-  <div class="meta">Last deployed: 2026-05-22 21:58:58 CT</div>
+  <div class="meta">Last deployed: 2026-05-22 22:39:44 CT</div>
   <div class="status-row">
     <span class="status-label">Status:</span>
     <span class="status-badge"><span class="status-icon"></span>baseline</span>

@@ -1,6 +1,6 @@
 {
-  "version": "0.1.14",
-  "deployed": "2026-05-23 01:17:23 CT",
+  "version": "0.1.15",
+  "deployed": "2026-05-23 01:17:42 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -77,6 +77,11 @@
       "version": "0.1.14",
       "date": "2026-05-23",
       "change": "Bolder title: increased font-size to 4rem, tightened letter-spacing, and added subtle text-stroke for extra visual weight"
+    },
+    {
+      "version": "0.1.15",
+      "date": "2026-05-23",
+      "change": "Matched title to terminal aesthetic: monospace font, solid #00ff99 color, subtle glow, no animation or uppercase transform"
     }
   ]
 }

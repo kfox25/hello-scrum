@@ -1,6 +1,6 @@
 {
-  "version": "0.1.9",
-  "deployed": "2026-05-23 00:33:09 CT",
+  "version": "0.1.10",
+  "deployed": "2026-05-23 00:33:29 CT",
   "status": "baseline",
   "changelog": [
     {
@@ -52,6 +52,11 @@
       "version": "0.1.9",
       "date": "2026-05-23",
       "change": "Made title more colorful: five-stop gradient spanning pink, amber, yellow, mint, and sky blue"
+    },
+    {
+      "version": "0.1.10",
+      "date": "2026-05-23",
+      "change": "Aligned title style with page theme: solid #00ff99 green with subtle glow to match terminal aesthetic"
     }
   ]
 }

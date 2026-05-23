@@ -33,13 +33,52 @@
       ],
       "deployed": "2026-05-23 00:33:09 CT",
       "hermes_verdict": "approve",
-      "hermes_reason": "The gradient was changed from two warm tones (#ffb347, #ff6b6b) to five distinct hues (pink, amber, yellow, mint, sky blue) spanning the full spectrum, meeting all acceptance criteria while maintaining legibility."
+      "hermes_reason": "The gradient was changed from two warm tones (#ffb347, #ff6b6b) to five distinct hues (pink, amber, yellow, mint, sky blue) spanning the full spectrum, meeting all acceptance criteria while maintaining legibility.",
+      "started": 1779514389.369589,
+      "stage_times": {
+        "pull": 1779514389.369589,
+        "story": 1779514389.404724,
+        "code": 1779514402.598892,
+        "test": 1779514402.733186,
+        "review": 1779514403.005981,
+        "deploy": 1779514405.029876,
+        "done": 1779514409.394633
+      }
     },
     {
       "id": 41,
       "idea": "title doesnt match the rest of the page",
-      "status": "pending",
-      "in_sprint": true
+      "status": "done",
+      "in_sprint": true,
+      "story": "As a user, I want the title styling to match the overall page aesthetic so the page feels cohesive and consistent",
+      "acceptance_criteria": [
+        "The h1 title uses the same monospace font as the rest of the page",
+        "The title color palette is consistent with the green-on-dark terminal theme used elsewhere",
+        "The title does not use a multi-color rainbow gradient that clashes with the minimal dark UI"
+      ],
+      "summary": "Align title color with terminal green theme to match rest of page",
+      "diff": "diff --git a/index.html b/index.html\nindex 5145ca9..d54383c 100644\n--- a/index.html\n+++ b/index.html\n@@ -22,12 +22,8 @@\n       margin-bottom: 0.5rem;\n       letter-spacing: 0.08em;\n       font-weight: 700;\n-      background: linear-gradient(135deg, #ff6ec7 0%, #ffb347 25%, #ffe033 50%, #6bffb8 75%, #6ec6ff 100%);\n-      -webkit-background-clip: text;\n-      -webkit-text-fill-color: transparent;\n-      background-clip: text;\n-      text-shadow: none;\n-      filter: drop-shadow(0 0 12px rgba(110, 198, 255, 0.5));\n+      color: #00ff99;\n+      text-shadow: 0 0 10px rgba(0, 255, 153, 0.4);\n     }\n     .title-wrap {\n       display: flex;\n@@ -84,8 +80,8 @@\n     <h1>Hello Scrum</h1>\n \n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.9</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 00:33:09 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.10</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 00:33:29 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\ndiff --git a/version.json b/version.json\nindex c9abdcf..6706c8f 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.9\",\n-  \"deployed\": \"2026-05-23 00:33:09 CT\",\n+  \"version\": \"0.1.10\",\n+  \"deployed\": \"2026-05-23 00:33:29 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -52,6 +52,11 @@\n       \"version\": \"0.1.9\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Made title more colorful: five-stop gradient spanning pink, amber, yellow, mint, and sky blue\"\n+    },\n+    {\n+      \"version\": \"0.1.10\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Aligned title style with page theme: solid #00ff99 green with subtle glow to match terminal aesthetic\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.10 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-23 00:33:29 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.10: Aligned title style with page theme: solid #00ff99 green with subtle glow to match terminal aesthetic"
+        }
+      ],
+      "deployed": "2026-05-23 00:33:29 CT",
+      "hermes_verdict": "approve",
+      "hermes_reason": "The diff successfully removes the clashing rainbow gradient and replaces it with #00ff99 green text with subtle glow effect, matching all three acceptance criteria: monospace font already present, green-on-dark terminal theme applied, and rainbow gradient eliminated."
     },
     {
       "id": 43,

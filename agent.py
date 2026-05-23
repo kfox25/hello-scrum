@@ -61,7 +61,10 @@ def clear_log():
     except Exception:
         pass
 
-client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+client = anthropic.Anthropic(
+    api_key=os.environ.get("ANTHROPIC_API_KEY"),
+    timeout=180.0,
+)
 
 SYSTEM_PROMPT = """You are an AI developer working on the hello-scrum web app.
 

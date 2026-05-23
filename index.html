@@ -9,6 +9,11 @@
       from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+    @keyframes title-shimmer {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
     @keyframes health-ping {
       0% { transform: scale(1); opacity: 1; }
       70% { transform: scale(2.2); opacity: 0; }
@@ -41,12 +46,17 @@
       padding: 2rem 1rem;
     }
     h1 {
-      font-size: 2.4rem;
-      font-weight: 700;
-      color: #a78bfa;
+      font-size: 2.6rem;
+      font-weight: 800;
+      background: linear-gradient(270deg, #a78bfa, #60a5fa, #f472b6, #a78bfa);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin: 0 0 0.25rem 0;
-      letter-spacing: -0.5px;
-      animation: fade-in-up 0.5s ease both;
+      letter-spacing: -1px;
+      animation: fade-in-up 0.5s ease both, title-shimmer 6s ease infinite;
+      filter: drop-shadow(0 0 18px #a78bfa55);
     }
     .tagline {
       font-size: 1rem;
@@ -405,11 +415,11 @@
   <h1>AgileDesk</h1>
   <div class="tagline">Iterate. Improve. Deliver.</div>
   <div class="version-wrap">
-    <div class="version" id="version-badge" onclick="toggleVersionPopover(event)" title="Click to see what's new">v0.1.18</div>
+    <div class="version" id="version-badge" onclick="toggleVersionPopover(event)" title="Click to see what's new">v0.1.19</div>
     <div class="version-popover" id="version-popover">
-      <div class="vp-version">v0.1.18</div>
+      <div class="vp-version">v0.1.19</div>
       <div class="vp-date">2026-05-22</div>
-      <div class="vp-change">Changed title color to violet (#a78bfa) for a fresh, distinctive branded look</div>
+      <div class="vp-change">Title now has an animated gradient shimmer and glow for a bold, eye-catching look</div>
       <div class="vp-hint">click badge to dismiss</div>
     </div>
   </div>
@@ -422,14 +432,14 @@
     <span class="health-sub">&mdash; all systems operational</span>
   </div>
   <div class="features-counter">
-    <div class="count">19</div>
+    <div class="count">20</div>
     <div class="label">Features Deployed</div>
   </div>
   <div class="streak-counter">
-    <div class="streak-value">&#128293; 19</div>
+    <div class="streak-value">&#128293; 20</div>
     <div class="streak-label">Consecutive Successful Deploys</div>
   </div>
-  <div class="meta">Last deployed: 2026-05-22 21:26:08 CT</div>
+  <div class="meta">Last deployed: 2026-05-22 21:40:19 CT</div>
   <div class="status-row">
     <span class="status-label">Status:</span>
     <span class="status-badge"><span class="status-icon"></span>baseline</span>
@@ -443,6 +453,12 @@
   </div>
   <div class="changelog">
     <h2>Recent Changes</h2>
+    <div class="changelog-entry">
+      <span class="cv">v0.1.19</span>
+      <span class="cd">2026-05-22</span>
+      <span class="sprint-badge">Sprint 3</span>
+      <span class="ct">Title now has an animated gradient shimmer and glow for a bold, eye-catching look</span>
+    </div>
     <div class="changelog-entry">
       <span class="cv">v0.1.18</span>
       <span class="cd">2026-05-22</span>

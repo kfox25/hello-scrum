@@ -1,19 +1,19 @@
 {
   "items": [
     {
-      "id": 30,
-      "idea": "change the title color",
-      "status": "done",
+      "error": "Parse error: Patch target not found in index.html: '  <div class=\"version-badge\" id=\"version-badge\" onclick=\"toggleVersionPopover(ev' | Response preview: {\n  \"story\": \"As a user, I want the page title to look cool and eye-catching so that the app feels modern and energetic.\",\n  \"acceptance_criteria\": [\n    \"The h1 title 'AgileDesk' has a visually strik",
+      "id": 31,
+      "idea": "make title cool",
       "in_sprint": true,
-      "story": "As a user, I want the main title to display in a distinct color so that it stands out visually and gives the page a fresh, branded look.",
+      "status": "done",
+      "story": "As a user, I want the title to look visually impressive so that the page makes a strong first impression",
       "acceptance_criteria": [
-        "The h1 title 'AgileDesk' is rendered in a new color different from the current green (#00e87a)",
-        "The color change is visible on page load without any interaction",
-        "The rest of the page styling remains intact",
-        "The version is bumped to 0.1.18 and the changelog reflects the change"
+        "The h1 title has a gradient or glow effect that makes it stand out",
+        "The title animation is enhanced to feel more dynamic and polished",
+        "The effect is purely CSS-based and does not break the existing layout"
       ],
-      "summary": "Change h1 title color from green to violet (#a78bfa)",
-      "diff": "diff --git a/index.html b/index.html\nindex ea55e53..d7bf3d4 100644\n--- a/index.html\n+++ b/index.html\n@@ -43,7 +43,7 @@\n     h1 {\n       font-size: 2.4rem;\n       font-weight: 700;\n-      color: #00e87a;\n+      color: #a78bfa;\n       margin: 0 0 0.25rem 0;\n       letter-spacing: -0.5px;\n       animation: fade-in-up 0.5s ease both;\n@@ -405,11 +405,11 @@\n   <h1>AgileDesk</h1>\n   <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n   <div class=\"version-wrap\">\n-    <div class=\"version\" id=\"version-badge\" onclick=\"toggleVersionPopover(event)\" title=\"Click to see what's new\">v0.1.17</div>\n+    <div class=\"version\" id=\"version-badge\" onclick=\"toggleVersionPopover(event)\" title=\"Click to see what's new\">v0.1.18</div>\n     <div class=\"version-popover\" id=\"version-popover\">\n-      <div class=\"vp-version\">v0.1.17</div>\n+      <div class=\"vp-version\">v0.1.18</div>\n       <div class=\"vp-date\">2026-05-22</div>\n-      <div class=\"vp-change\">Rebranded page title to &ldquo;AgileDesk&rdquo; for a professional product identity</div>\n+      <div class=\"vp-change\">Changed title color to violet (#a78bfa) for a fresh, distinctive branded look</div>\n       <div class=\"vp-hint\">click badge to dismiss</div>\n     </div>\n   </div>\n@@ -422,14 +422,14 @@\n     <span class=\"health-sub\">&mdash; all systems operational</span>\n   </div>\n   <div class=\"features-counter\">\n-    <div class=\"count\">18</div>\n+    <div class=\"count\">19</div>\n     <div class=\"label\">Features Deployed</div>\n   </div>\n   <div class=\"streak-counter\">\n-    <div class=\"streak-value\">&#128293; 18</div>\n+    <div class=\"streak-value\">&#128293; 19</div>\n     <div class=\"streak-label\">Consecutive Successful Deploys</div>\n   </div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 19:37:03 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 21:26:08 CT</div>\n   <div class=\"status-row\">\n     <span class=\"status-label\">Status:</span>\n     <span class=\"status-badge\"><span class=\"status-icon\"></span>baseline</span>\n@@ -443,6 +443,12 @@\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.18</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 3</span>\n+      <span class=\"ct\">Changed title color to violet (#a78bfa) for a fresh, distinctive branded look</span>\n+    </div>\n     <div class=\"changelog-entry\">\n       <span class=\"cv\">v0.1.17</span>\n       <span class=\"cd\">2026-05-22</span>\ndiff --git a/version.json b/version.json\nindex 132a670..7e7c32f 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.17\",\n-  \"deployed\": \"2026-05-22 19:37:03 CT\",\n+  \"version\": \"0.1.18\",\n+  \"deployed\": \"2026-05-22 21:26:08 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -92,6 +92,11 @@\n       \"version\": \"0.1.17\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Rebranded page title to \\\"AgileDesk\\\" for a professional product identity\"\n+    },\n+    {\n+      \"version\": \"0.1.18\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Changed title color to violet (#a78bfa) for a fresh, distinctive branded look\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "summary": "Add animated gradient shimmer and glow to h1 title",
+      "diff": "diff --git a/index.html b/index.html\nindex d7bf3d4..fc1a6d1 100644\n--- a/index.html\n+++ b/index.html\n@@ -9,6 +9,11 @@\n       from { opacity: 0; transform: translateY(10px); }\n       to   { opacity: 1; transform: translateY(0); }\n     }\n+    @keyframes title-shimmer {\n+      0% { background-position: 0% 50%; }\n+      50% { background-position: 100% 50%; }\n+      100% { background-position: 0% 50%; }\n+    }\n     @keyframes health-ping {\n       0% { transform: scale(1); opacity: 1; }\n       70% { transform: scale(2.2); opacity: 0; }\n@@ -41,12 +46,17 @@\n       padding: 2rem 1rem;\n     }\n     h1 {\n-      font-size: 2.4rem;\n-      font-weight: 700;\n-      color: #a78bfa;\n+      font-size: 2.6rem;\n+      font-weight: 800;\n+      background: linear-gradient(270deg, #a78bfa, #60a5fa, #f472b6, #a78bfa);\n+      background-size: 300% 300%;\n+      -webkit-background-clip: text;\n+      -webkit-text-fill-color: transparent;\n+      background-clip: text;\n       margin: 0 0 0.25rem 0;\n-      letter-spacing: -0.5px;\n-      animation: fade-in-up 0.5s ease both;\n+      letter-spacing: -1px;\n+      animation: fade-in-up 0.5s ease both, title-shimmer 6s ease infinite;\n+      filter: drop-shadow(0 0 18px #a78bfa55);\n     }\n     .tagline {\n       font-size: 1rem;\n@@ -405,11 +415,11 @@\n   <h1>AgileDesk</h1>\n   <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n   <div class=\"version-wrap\">\n-    <div class=\"version\" id=\"version-badge\" onclick=\"toggleVersionPopover(event)\" title=\"Click to see what's new\">v0.1.18</div>\n+    <div class=\"version\" id=\"version-badge\" onclick=\"toggleVersionPopover(event)\" title=\"Click to see what's new\">v0.1.19</div>\n     <div class=\"version-popover\" id=\"version-popover\">\n-      <div class=\"vp-version\">v0.1.18</div>\n+      <div class=\"vp-version\">v0.1.19</div>\n       <div class=\"vp-date\">2026-05-22</div>\n-      <div class=\"vp-change\">Changed title color to violet (#a78bfa) for a fresh, distinctive branded look</div>\n+      <div class=\"vp-change\">Title now has an animated gradient shimmer and glow for a bold, eye-catching look</div>\n       <div class=\"vp-hint\">click badge to dismiss</div>\n     </div>\n   </div>\n@@ -422,14 +432,14 @@\n     <span class=\"health-sub\">&mdash; all systems operational</span>\n   </div>\n   <div class=\"features-counter\">\n-    <div class=\"count\">19</div>\n+    <div class=\"count\">20</div>\n     <div class=\"label\">Features Deployed</div>\n   </div>\n   <div class=\"streak-counter\">\n-    <div class=\"streak-value\">&#128293; 19</div>\n+    <div class=\"streak-value\">&#128293; 20</div>\n     <div class=\"streak-label\">Consecutive Successful Deploys</div>\n   </div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 21:26:08 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 21:40:19 CT</div>\n   <div class=\"status-row\">\n     <span class=\"status-label\">Status:</span>\n     <span class=\"status-badge\"><span class=\"status-icon\"></span>baseline</span>\n@@ -443,6 +453,12 @@\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.19</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 3</span>\n+      <span class=\"ct\">Title now has an animated gradient shimmer and glow for a bold, eye-catching look</span>\n+    </div>\n     <div class=\"changelog-entry\">\n       <span class=\"cv\">v0.1.18</span>\n       <span class=\"cd\">2026-05-22</span>\ndiff --git a/version.json b/version.json\nindex 7e7c32f..7b2b50a 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.18\",\n-  \"deployed\": \"2026-05-22 21:26:08 CT\",\n+  \"version\": \"0.1.19\",\n+  \"deployed\": \"2026-05-22 21:40:19 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -97,6 +97,11 @@\n       \"version\": \"0.1.18\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Changed title color to violet (#a78bfa) for a fresh, distinctive branded look\"\n+    },\n+    {\n+      \"version\": \"0.1.19\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Title now has an animated gradient shimmer and glow for a bold, eye-catching look\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "test_results": [
         {
           "status": "pass",
@@ -21,20 +21,56 @@
         },
         {
           "status": "pass",
-          "message": "version 0.1.18 matches between version.json and index.html"
+          "message": "version 0.1.19 matches between version.json and index.html"
         },
         {
           "status": "pass",
-          "message": "deployed timestamp '2026-05-22 21:26:08 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-22 21:40:19 CT' present in index.html"
         },
         {
           "status": "pass",
-          "message": "changelog has entry for v0.1.18: Changed title color to violet (#a78bfa) for a fresh, distinctive branded look"
+          "message": "changelog has entry for v0.1.19: Title now has an animated gradient shimmer and glow for a bold, eye-catching look"
         }
       ],
-      "deployed": "2026-05-22 21:26:08 CT",
+      "deployed": "2026-05-22 21:40:19 CT",
       "hermes_verdict": "approve",
-      "hermes_reason": "The h1 title color has been changed from green (#00e87a) to violet (#a78bfa), is visible on page load, all other styling remains intact, version is bumped to 0.1.18, and the changelog reflects the change with all tests passing."
+      "hermes_reason": "The diff implements all three acceptance criteria: adds a multi-color gradient effect to the h1 title with background-clip, enhances the animation with a shimmer keyframe (6s infinite), uses only CSS, maintains layout integrity, and all tests pass."
+    },
+    {
+      "acceptance_criteria": [
+        "The h1 title 'AgileDesk' is rendered in a new color different from the current green (#00e87a)",
+        "The color change is visible on page load without any interaction",
+        "The rest of the page styling remains intact",
+        "The version is bumped to 0.1.18 and the changelog reflects the change"
+      ],
+      "deployed": "2026-05-22 21:26:08 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex ea55e53..d7bf3d4 100644\n--- a/index.html\n+++ b/index.html\n@@ -43,7 +43,7 @@\n     h1 {\n       font-size: 2.4rem;\n       font-weight: 700;\n-      color: #00e87a;\n+      color: #a78bfa;\n       margin: 0 0 0.25rem 0;\n       letter-spacing: -0.5px;\n       animation: fade-in-up 0.5s ease both;\n@@ -405,11 +405,11 @@\n   <h1>AgileDesk</h1>\n   <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n   <div class=\"version-wrap\">\n-    <div class=\"version\" id=\"version-badge\" onclick=\"toggleVersionPopover(event)\" title=\"Click to see what's new\">v0.1.17</div>\n+    <div class=\"version\" id=\"version-badge\" onclick=\"toggleVersionPopover(event)\" title=\"Click to see what's new\">v0.1.18</div>\n     <div class=\"version-popover\" id=\"version-popover\">\n-      <div class=\"vp-version\">v0.1.17</div>\n+      <div class=\"vp-version\">v0.1.18</div>\n       <div class=\"vp-date\">2026-05-22</div>\n-      <div class=\"vp-change\">Rebranded page title to &ldquo;AgileDesk&rdquo; for a professional product identity</div>\n+      <div class=\"vp-change\">Changed title color to violet (#a78bfa) for a fresh, distinctive branded look</div>\n       <div class=\"vp-hint\">click badge to dismiss</div>\n     </div>\n   </div>\n@@ -422,14 +422,14 @@\n     <span class=\"health-sub\">&mdash; all systems operational</span>\n   </div>\n   <div class=\"features-counter\">\n-    <div class=\"count\">18</div>\n+    <div class=\"count\">19</div>\n     <div class=\"label\">Features Deployed</div>\n   </div>\n   <div class=\"streak-counter\">\n-    <div class=\"streak-value\">&#128293; 18</div>\n+    <div class=\"streak-value\">&#128293; 19</div>\n     <div class=\"streak-label\">Consecutive Successful Deploys</div>\n   </div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 19:37:03 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 21:26:08 CT</div>\n   <div class=\"status-row\">\n     <span class=\"status-label\">Status:</span>\n     <span class=\"status-badge\"><span class=\"status-icon\"></span>baseline</span>\n@@ -443,6 +443,12 @@\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.18</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"sprint-badge\">Sprint 3</span>\n+      <span class=\"ct\">Changed title color to violet (#a78bfa) for a fresh, distinctive branded look</span>\n+    </div>\n     <div class=\"changelog-entry\">\n       <span class=\"cv\">v0.1.17</span>\n       <span class=\"cd\">2026-05-22</span>\ndiff --git a/version.json b/version.json\nindex 132a670..7e7c32f 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.17\",\n-  \"deployed\": \"2026-05-22 19:37:03 CT\",\n+  \"version\": \"0.1.18\",\n+  \"deployed\": \"2026-05-22 21:26:08 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -92,6 +92,11 @@\n       \"version\": \"0.1.17\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Rebranded page title to \\\"AgileDesk\\\" for a professional product identity\"\n+    },\n+    {\n+      \"version\": \"0.1.18\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Changed title color to violet (#a78bfa) for a fresh, distinctive branded look\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_reason": "The h1 title color has been changed from green (#00e87a) to violet (#a78bfa), is visible on page load, all other styling remains intact, version is bumped to 0.1.18, and the changelog reflects the change with all tests passing.",
+      "hermes_verdict": "approve",
+      "id": 30,
+      "idea": "change the title color",
+      "in_sprint": true,
+      "status": "done",
+      "story": "As a user, I want the main title to display in a distinct color so that it stands out visually and gives the page a fresh, branded look.",
+      "summary": "Change h1 title color from green to violet (#a78bfa)",
+      "test_results": [
+        {
+          "message": "index.html exists and contains title",
+          "status": "pass"
+        },
+        {
+          "message": "version 0.1.18 matches between version.json and index.html",
+          "status": "pass"
+        },
+        {
+          "message": "deployed timestamp '2026-05-22 21:26:08 CT' present in index.html",
+          "status": "pass"
+        },
+        {
+          "message": "changelog has entry for v0.1.18: Changed title color to violet (#a78bfa) for a fresh, distinctive branded look",
+          "status": "pass"
+        }
+      ]
     },
     {
       "acceptance_criteria": [

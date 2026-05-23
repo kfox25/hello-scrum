@@ -81,6 +81,19 @@ def workflow_page():
     return send_file(os.path.join(BASE, "workflow.html"))
 
 
+@app.route("/retro.html")
+def retro_page():
+    return send_file(os.path.join(BASE, "retro.html"))
+
+
+@app.route("/retrospective.json")
+def retrospective_json():
+    path = os.path.join(BASE, "retrospective.json")
+    if os.path.exists(path):
+        return send_file(path)
+    return jsonify({"retros": []})
+
+
 @app.route("/active/clear", methods=["POST"])
 def clear_active():
     with open(ACTIVE_FILE, "w") as f:

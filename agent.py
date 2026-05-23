@@ -28,6 +28,7 @@ INDEX_FILE   = "index.html"
 VERSION_FILE = "version.json"
 TEST_SCRIPT  = "test.py"
 REPO_URL     = "https://kfox25.github.io/hello-scrum"
+RETRO_FILE   = "retrospective.json"
 
 _log_lines = []
 
@@ -90,6 +91,26 @@ Respond with ONLY valid JSON — no markdown, no code blocks, no extra text:
   "version_json": { <full updated version.json object> },
   "summary": "Short commit message describing what changed"
 }"""
+
+RETRO_SYSTEM_PROMPT = """You are a Scrum retrospective facilitator analyzing sprint results for an AI coding agent.
+
+Identify patterns across the sprint items and produce actionable findings.
+
+Finding types:
+- failure_pattern: a recurring reason items failed (e.g. patch errors, test failures, Hermes rejections)
+- success_pattern: something that worked well this sprint
+- improvement: a concrete suggestion to reduce failures or improve quality
+- observation: a neutral noteworthy fact about this sprint
+
+Respond with ONLY valid JSON — no markdown, no extra text:
+{
+  "findings": [
+    {"type": "failure_pattern|success_pattern|improvement|observation", "text": "..."}
+  ],
+  "summary": "One sentence describing the overall sprint health"
+}
+
+Include 2-5 findings total. Be specific and actionable."""
 
 HERMES_SYSTEM_PROMPT = """You are Hermes, a QA reviewer for the hello-scrum web app.
 
@@ -354,15 +375,78 @@ def rollback():
     subprocess.run(["git", "checkout", "--", INDEX_FILE, VERSION_FILE])
 
 
+# ── Retrospective ─────────────────────────────────────────────────────────────
+
+def run_retro(processed_items):
+    """Analyze sprint results with Haiku and append findings to retrospective.json."""
+    if not processed_items:
+        return
+
+    sprint_data = [
+        {
+            "idea":            i.get("idea"),
+            "status":          i.get("status"),
+            "story":           i.get("story", ""),
+            "error":           i.get("error", ""),
+            "hermes_verdict":  i.get("hermes_verdict", ""),
+            "hermes_reason":   i.get("hermes_reason", ""),
+            "test_results":    i.get("test_results", []),
+        }
+        for i in processed_items
+    ]
+
+    prompt = f"""Sprint items processed: {len(processed_items)}
+Items done:   {sum(1 for i in processed_items if i.get('status') == 'done')}
+Items failed: {sum(1 for i in processed_items if i.get('status') == 'failed')}
+
+Results:
+{json.dumps(sprint_data, indent=2)}
+
+Analyze this sprint and return findings JSON."""
+
+    message = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=512,
+        system=RETRO_SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    text = message.content[0].text.strip()
+    if text.startswith("```"):
+        text = "\n".join(text.split("\n")[1:-1])
+
+    retro = json.loads(text)
+    retro["sprint_date"]    = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    retro["items_analyzed"] = len(processed_items)
+    retro["items_done"]     = sum(1 for i in processed_items if i.get("status") == "done")
+    retro["items_failed"]   = sum(1 for i in processed_items if i.get("status") == "failed")
+
+    try:
+        with open(RETRO_FILE) as f:
+            store = json.load(f)
+    except Exception:
+        store = {"retros": []}
+
+    store.setdefault("retros", []).insert(0, retro)
+
+    with open(RETRO_FILE, "w") as f:
+        json.dump(store, f, indent=2)
+
+    log(f"\nRetro: {retro.get('summary', '')}")
+    log(f"Findings: {len(retro.get('findings', []))} item(s) written to retrospective.json")
+
+
 # ── Main loop ─────────────────────────────────────────────────────────────────
 
-def run_one(sprint_only=False):
+def run_one(sprint_only=False, processed=None):
     backlog = load_backlog()
     item = get_next_item(backlog, sprint_only=sprint_only)
 
     if not item:
         print("No items to process.")
         return False
+
+    if processed is not None:
+        processed.append(item)
 
     clear_log()
     log(f"\n{'=' * 50}")
@@ -511,8 +595,15 @@ def main():
     print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     if sprint_mode or loop_mode:
-        while run_one(sprint_only=sprint_mode):
+        processed = []
+        while run_one(sprint_only=sprint_mode, processed=processed):
             pass
+        if sprint_mode and processed:
+            log("\nRunning sprint retrospective...")
+            try:
+                run_retro(processed)
+            except Exception as e:
+                log(f"Retro error: {e}")
     else:
         run_one()
 

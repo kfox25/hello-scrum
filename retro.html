@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Retrospective — Hello Scrum</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: monospace;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    .top-nav {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .top-nav a {
+      font-family: monospace;
+      font-size: 0.85rem;
+      background: #1a1a1a;
+      color: #00ff99;
+      border: 1px solid #00ff9940;
+      padding: 0.4rem 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+    .top-nav a:hover { background: #0d3320; border-color: #00ff99; }
+    header {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #222;
+    }
+    h1 { color: #00ff99; font-size: 1.8rem; }
+    .subtitle { color: #555; font-size: 0.85rem; margin-top: 0.25rem; }
+
+    .retro-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .retro-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid #2a2a2a;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .retro-date { color: #00ff99; font-size: 0.9rem; flex-shrink: 0; }
+    .retro-summary { color: #aaa; font-size: 0.85rem; flex: 1; line-height: 1.4; }
+    .retro-stats {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.75rem;
+      color: #555;
+      flex-shrink: 0;
+    }
+    .stat-done   { color: #00ff9980; }
+    .stat-failed { color: #ff444480; }
+
+    .findings {
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .finding {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid #1f1f1f;
+    }
+    .finding:last-child { border-bottom: none; }
+    .finding-badge {
+      font-size: 0.65rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .badge-failure_pattern { background: #2a0a0a; color: #ff6666; border: 1px solid #ff444440; }
+    .badge-success_pattern { background: #0d3320; color: #00ff99; border: 1px solid #00ff9940; }
+    .badge-improvement     { background: #0a0f1f; color: #4488ff; border: 1px solid #4488ff40; }
+    .badge-observation     { background: #1a1400; color: #ffcc00; border: 1px solid #ffcc0040; }
+    .finding-text { font-size: 0.85rem; color: #ccc; line-height: 1.5; }
+
+    .empty   { color: #333; text-align: center; padding: 3rem; }
+    .loading { color: #444; text-align: center; padding: 3rem; }
+    .error   { color: #ff4444; text-align: center; padding: 3rem; }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="index.html">App</a>
+    <a href="/">Board</a>
+    <a href="active.html">Active</a>
+    <a href="audit.html">Audit</a>
+    <a href="retro.html">Retro</a>
+    <a href="workflow.html">Workflow</a>
+  </nav>
+  <header>
+    <h1>Retrospective</h1>
+    <div class="subtitle">AI Scrum Agent — sprint reflections</div>
+  </header>
+
+  <div id="retros"><div class="loading">Loading...</div></div>
+
+  <script>
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    const TYPE_LABELS = {
+      failure_pattern: 'Failure',
+      success_pattern: 'Success',
+      improvement: 'Improve',
+      observation: 'Observe',
+    };
+
+    function renderRetro(r) {
+      const findings = (r.findings || []).map(f => {
+        const label = TYPE_LABELS[f.type] || f.type;
+        return `<div class="finding">
+          <span class="finding-badge badge-${escHtml(f.type)}">${escHtml(label)}</span>
+          <span class="finding-text">${escHtml(f.text)}</span>
+        </div>`;
+      }).join('');
+
+      return `<div class="retro-card">
+        <div class="retro-header">
+          <div class="retro-date">${escHtml(r.sprint_date || '')}</div>
+          <div class="retro-summary">${escHtml(r.summary || '')}</div>
+          <div class="retro-stats">
+            <span>${r.items_analyzed || 0} items</span>
+            <span class="stat-done">${r.items_done || 0} done</span>
+            <span class="stat-failed">${r.items_failed || 0} failed</span>
+          </div>
+        </div>
+        ${findings ? `<div class="findings">${findings}</div>` : ''}
+      </div>`;
+    }
+
+    fetch('/retrospective.json?t=' + Date.now())
+      .then(r => r.json())
+      .then(data => {
+        const retros = data.retros || [];
+        if (!retros.length) {
+          document.getElementById('retros').innerHTML = '<div class="empty">No retrospectives yet — run a sprint to generate findings.</div>';
+          return;
+        }
+        document.getElementById('retros').innerHTML = retros.map(renderRetro).join('');
+      })
+      .catch(err => {
+        document.getElementById('retros').innerHTML = `<div class="error">Failed to load retrospective.json<br>${err}</div>`;
+      });
+  </script>
+</body>
+</html>

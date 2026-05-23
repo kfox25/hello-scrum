@@ -482,8 +482,16 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
     timestamp = get_ct_timestamp()
 
     log(f"Timestamp : {timestamp}")
+    if retro_context:
+        log("=== RETRO CONTEXT ===")
+        for line in retro_context.splitlines():
+            log(f"  {line}")
+        log("")
     log("Calling agent...")
-    write_active(item, "story")
+    write_active(item, "story", retro_context=retro_context)
+
+    if retro_context:
+        item["retro_context"] = retro_context
 
     try:
         response, t_in, t_out = call_agent(item["idea"], index_html, version_json, timestamp, retro_context=retro_context)

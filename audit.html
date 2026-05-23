@@ -330,6 +330,20 @@
         return `↑${ft(item.tokens_in)} ↓${ft(item.tokens_out)} tok`;
       })();
 
+      const retroSection = item.retro_context ? `
+        <div class="section">
+          <div class="section-title">Sprint Context Fed In</div>
+          <div style="font-size:0.8rem;line-height:1.6">
+            ${item.retro_context.split("\n").map(l => {
+              const m = l.match(/^\[(\w+)\] (.+)$/);
+              if (!m) return '';
+              const typeMap = {failure_pattern:'#ff666690',success_pattern:'#00ff9980',improvement:'#4488ff80',observation:'#ffcc0080'};
+              const col = typeMap[m[1]] || '#88888880';
+              return `<div style="color:${col};padding:0.15rem 0">${escHtml(l)}</div>`;
+            }).join("")}
+          </div>
+        </div>` : "";
+
       const storySection = item.story ? `
         <div class="section">
           <div class="section-title">User Story</div>
@@ -397,6 +411,7 @@
             <div class="steps">${steps}</div>
             ${(totalTime || tokenLine) ? `<div class="steps-total">${totalTime}${totalTime && tokenLine ? '  ·  ' : ''}${tokenLine}</div>` : ''}
             ${failureSection}
+            ${retroSection}
             ${storySection}
             ${diffSection}
             ${testSection}

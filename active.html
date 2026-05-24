@@ -297,18 +297,19 @@
   <button id="clear-btn" onclick="clearActive()">✕ clear stuck state</button>
 
   <script>
-    const STAGES = ["pull", "story", "code", "test", "review", "deploy"];
-    const LABELS = { pull: "Pull", story: "Story", code: "Code", test: "Test", review: "Review", deploy: "Deploy" };
+    const STAGES = ["pull", "story", "code", "test", "code_review", "ac_check", "deploy"];
+    const LABELS = { pull: "Pull", story: "Story", code: "Code", test: "Test (DoD)", code_review: "Code Review", ac_check: "AC Check", deploy: "Deploy" };
     const STATUS_TEXT = {
-      pull:     "Pulling item from backlog…",
-      story:    "Writing user story and implementing…",
-      code:     "Applying code changes…",
-      test:     "Running tests…",
-      review:   "Hermes reviewing…",
-      deploy:   "Pushing to GitHub…",
-      done:     "Deployed successfully.",
-      rejected: "Hermes rejected this story.",
-      failed:   "An error occurred — see activity stream for details.",
+      pull:        "Pulling item from backlog…",
+      story:       "Writing user story and implementing…",
+      code:        "Applying code changes…",
+      test:        "Running tests (DoD)…",
+      code_review: "Hermes — reviewing code quality…",
+      ac_check:    "Hermes — checking acceptance criteria…",
+      deploy:      "Pushing to GitHub…",
+      done:        "Deployed successfully.",
+      rejected:    "Hermes rejected this story.",
+      failed:      "An error occurred — see activity stream for details.",
     };
 
     let lastStageKey = undefined;
@@ -331,7 +332,7 @@
       const isRejected = data.stage === "rejected";
       const isFailed   = data.stage === "failed";
       const isDone     = data.stage === "done";
-      const stageIdx   = isRejected ? STAGES.indexOf("review")
+      const stageIdx   = isRejected ? STAGES.indexOf(data.rejected_at || "ac_check")
                        : isFailed   ? STAGES.indexOf(data.failed_at || "code")
                        : isDone     ? STAGES.length
                        : STAGES.indexOf(data.stage);

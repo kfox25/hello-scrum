@@ -430,12 +430,14 @@
       .then(data => {
         const items = data.items
           .filter(i => i.status !== "pending")
-          .sort((a, b) => {
-            if (a.deployed && b.deployed) return b.deployed.localeCompare(a.deployed);
-            if (a.deployed) return 1;
-            if (b.deployed) return -1;
-            return b.id - a.id;
-          });
+          .sort((a, b) => itemTime(b) - itemTime(a));
+
+        function itemTime(item) {
+          if (item.deployed) return new Date(item.deployed).getTime();
+          const times = Object.values(item.stage_times || {});
+          if (times.length) return Math.max(...times) * 1000;
+          return Number(item.id) || 0;
+        }
         if (!items.length) {
           document.getElementById("log").innerHTML = '<div class="empty">No completed items yet.</div>';
           return;

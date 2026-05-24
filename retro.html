@@ -101,6 +101,41 @@
     .empty   { color: #333; text-align: center; padding: 3rem; }
     .loading { color: #444; text-align: center; padding: 3rem; }
     .error   { color: #ff4444; text-align: center; padding: 3rem; }
+
+    .impact {
+      border-top: 1px solid #1f1f1f;
+      padding: 0.75rem 1.25rem;
+    }
+    .impact-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+    .impact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .impact-item:last-child { border-bottom: none; }
+    .impact-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-top: 0.45rem;
+      flex-shrink: 0;
+    }
+    .dot-done   { background: #00ff99; }
+    .dot-failed { background: #ff4444; }
+    .impact-body { flex: 1; }
+    .impact-idea { font-size: 0.85rem; color: #ccc; margin-bottom: 0.2rem; }
+    .impact-outcome { font-size: 0.78rem; color: #555; line-height: 1.4; }
+    .outcome-done   { color: #00ff9980; }
+    .outcome-failed { color: #ff444480; }
+    .impact-none { font-size: 0.8rem; color: #2a2a2a; font-style: italic; }
   </style>
 </head>
 <body>
@@ -132,7 +167,32 @@
       observation: 'Observe',
     };
 
-    function renderRetro(r) {
+    function contextKey(r) {
+      return (r.findings || []).map(f => `[${f.type}] ${f.text}`).join('\n');
+    }
+
+    function renderImpact(recipients) {
+      if (!recipients.length) {
+        return `<div class="impact"><div class="impact-none">Sprint ended — no subsequent story received this context.</div></div>`;
+      }
+      const rows = recipients.map(item => {
+        const done = item.status === 'done';
+        const dotClass = done ? 'dot-done' : 'dot-failed';
+        const outcomeClass = done ? 'outcome-done' : 'outcome-failed';
+        const outcomeLabel = done ? '✓ passed' : '✗ failed';
+        const reason = escHtml((item.ac_check_reason || item.hermes_reason || item.error || '').slice(0, 160));
+        return `<div class="impact-item">
+          <div class="impact-dot ${dotClass}"></div>
+          <div class="impact-body">
+            <div class="impact-idea">${escHtml(item.idea || '')}</div>
+            <div class="impact-outcome"><span class="${outcomeClass}">${outcomeLabel}</span>${reason ? ' — ' + reason : ''}</div>
+          </div>
+        </div>`;
+      }).join('');
+      return `<div class="impact"><div class="impact-label">Passed forward to</div>${rows}</div>`;
+    }
+
+    function renderRetro(r, recipients) {
       const findings = (r.findings || []).map(f => {
         const label = TYPE_LABELS[f.type] || f.type;
         return `<div class="finding">
@@ -152,21 +212,29 @@
           </div>
         </div>
         ${findings ? `<div class="findings">${findings}</div>` : ''}
+        ${renderImpact(recipients)}
       </div>`;
     }
 
-    fetch('/retrospective.json?t=' + Date.now())
-      .then(r => r.json())
-      .then(data => {
-        const retros = data.retros || [];
+    Promise.all([
+      fetch('/retrospective.json?t=' + Date.now()).then(r => r.json()),
+      fetch('/backlog.json?t=' + Date.now()).then(r => r.json()),
+    ]).then(([retroData, backlogData]) => {
+        const retros = retroData.retros || [];
         if (!retros.length) {
           document.getElementById('retros').innerHTML = '<div class="empty">No retrospectives yet — run a sprint to generate findings.</div>';
           return;
         }
-        document.getElementById('retros').innerHTML = retros.map(renderRetro).join('');
+        const sprintItems = (backlogData.items || []).filter(i => i.in_sprint);
+        const html = retros.map(r => {
+          const key = contextKey(r);
+          const recipients = sprintItems.filter(i => i.retro_context === key);
+          return renderRetro(r, recipients);
+        }).join('');
+        document.getElementById('retros').innerHTML = html;
       })
       .catch(err => {
-        document.getElementById('retros').innerHTML = `<div class="error">Failed to load retrospective.json<br>${err}</div>`;
+        document.getElementById('retros').innerHTML = `<div class="error">Failed to load data<br>${err}</div>`;
       });
   </script>
 </body>

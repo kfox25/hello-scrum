@@ -77,11 +77,12 @@ Your job:
 Rules:
 - Only modify index.html and version.json
 - Bump the patch version (e.g. 0.1.0 -> 0.1.1) in version_json
-- Add the new entry as the LAST item in version_json.changelog: {"version": "...", "date": "...", "change": "..."}
+- The changelog you receive contains only the most recent entry. Return version_json with ONLY that entry plus your new one — the pipeline merges it with the full history
 - DO NOT patch: the version badge, version popover, meta/last-deployed line, features counter, streak counter, or changelog HTML entries — the pipeline handles those
 - patches must contain ONLY the story-specific change (new elements, CSS additions, etc.)
 - Each patch "find" must be a verbatim unique substring copied directly from the provided file
-- If adding CSS, insert it before an existing unique selector (e.g. before ".meta {")
+- NEVER use "</style>" as a patch "find" — it is not a unique anchor
+- If adding CSS, use the /* [existing-styles] */ comment as your "find" anchor and put your new CSS in "replace" alongside it
 - Keep the page clean and minimal
 
 Respond with ONLY valid JSON — no markdown, no code blocks, no extra text:
@@ -115,17 +116,29 @@ Respond with ONLY valid JSON — no markdown, no extra text:
 
 Include 2-5 findings total. Be specific and actionable."""
 
-HERMES_SYSTEM_PROMPT = """You are Hermes, a QA reviewer for the hello-scrum web app.
+CODE_REVIEW_SYSTEM_PROMPT = """You are Hermes, performing a code review for the hello-scrum web app.
 
-Review the worker agent's implementation and decide if it genuinely delivers what was requested.
+Review the diff for technical quality only. Focus on:
+- Does the change introduce bugs, syntax errors, or broken CSS/HTML?
+- Is the scope appropriate — does it touch only what it needs to?
+- Is the implementation technically sound?
+
+Do NOT evaluate whether it satisfies business requirements — that is a separate check.
 
 Respond with ONLY valid JSON — no markdown, no extra text:
 {"verdict": "approve", "reason": "one sentence"}
 or
-{"verdict": "reject", "reason": "one sentence explaining what is wrong or missing"}
+{"verdict": "reject", "reason": "one sentence describing the code quality issue"}"""
 
-Approve if the diff clearly implements the idea and tests pass.
-Reject if the implementation is unrelated to the idea, clearly wrong, or missing the point."""
+AC_CHECK_SYSTEM_PROMPT = """You are Hermes, performing an acceptance criteria check for the hello-scrum web app.
+
+Assume the code is technically correct. Evaluate only whether the implementation satisfies
+the original idea and each acceptance criterion listed.
+
+Respond with ONLY valid JSON — no markdown, no extra text:
+{"verdict": "approve", "reason": "one sentence"}
+or
+{"verdict": "reject", "reason": "one sentence identifying which criterion was not met"}"""
 
 
 # ── Active status ─────────────────────────────────────────────────────────────
@@ -197,9 +210,21 @@ def strip_styles_for_prompt(html):
     """Replace style block with a placeholder to reduce prompt tokens."""
     return re.sub(
         r'(<style>)[\s\S]*?(</style>)',
-        r'\1\n  /* existing styles — add new CSS before </style> */\n\2',
+        r'\1\n  /* [existing-styles] */\n\2',
         html, count=1
     )
+
+
+def strip_changelog_for_prompt(version_json_str):
+    """Send only current version metadata to agent — never the full changelog."""
+    data = json.loads(version_json_str)
+    last = data.get("changelog", [])[-1:]
+    return json.dumps({
+        "version": data.get("version", "0.1.0"),
+        "deployed": data.get("deployed", ""),
+        "status": data.get("status", ""),
+        "changelog": last,
+    }, indent=2)
 
 
 def get_ct_timestamp():
@@ -213,6 +238,9 @@ def call_agent(idea, index_html, version_json, timestamp, retro_context=None):
     retro_section = ""
     if retro_context:
         retro_section = f"\n\nLearnings from earlier in this sprint (apply to this implementation):\n{retro_context}"
+
+    index_html = strip_styles_for_prompt(index_html)
+    version_json = strip_changelog_for_prompt(version_json)
 
     prompt = f"""Deploy timestamp to use (exact): {timestamp}
 
@@ -277,7 +305,15 @@ def auto_update_html(content, version_json_data, timestamp):
     return content
 
 
+STYLE_PLACEHOLDER = "/* [existing-styles] */"
+
 def apply_patch(content, find, replace):
+    if STYLE_PLACEHOLDER in find:
+        # Remove placeholder and any stray </style> tags; remainder is new CSS to inject
+        new_css = replace.replace(STYLE_PLACEHOLDER, "").replace("</style>", "").strip()
+        if new_css:
+            return content.replace("</style>", "\n" + new_css + "\n</style>", 1)
+        return content
     if find in content:
         return content.replace(find, replace, 1)
     # Fallback: allow any leading whitespace per line
@@ -308,15 +344,44 @@ def apply_changes(response_text, timestamp):
     with open(INDEX_FILE, "w", encoding="utf-8") as f:
         f.write(content)
 
+    # Merge agent's new changelog entry into the real full changelog
+    with open(VERSION_FILE, encoding="utf-8") as f:
+        real = json.load(f)
+    agent_vj = data["version_json"]
+    new_entries = [e for e in agent_vj.get("changelog", [])
+                   if e.get("version") != real.get("version")]
+    real["version"] = agent_vj.get("version", real["version"])
+    real["deployed"] = agent_vj.get("deployed", real["deployed"])
+    real["changelog"].extend(new_entries)
     with open(VERSION_FILE, "w", encoding="utf-8") as f:
-        json.dump(data["version_json"], f, indent=2)
+        json.dump(real, f, indent=2)
 
     return data
 
 
 # ── Hermes reviewer ───────────────────────────────────────────────────────────
 
-def call_hermes(idea, story, acceptance_criteria, diff, test_results):
+def call_code_review(idea, story, diff):
+    prompt = f"""Idea: {idea}
+
+Story: {story}
+
+Diff:
+{diff[:12000]}"""
+
+    message = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=256,
+        system=CODE_REVIEW_SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    text = message.content[0].text.strip()
+    if text.startswith("```"):
+        text = "\n".join(text.split("\n")[1:-1])
+    return json.loads(text), message.usage.input_tokens, message.usage.output_tokens
+
+
+def call_ac_check(idea, story, acceptance_criteria, diff, test_results):
     prompt = f"""Idea: {idea}
 
 Story: {story}
@@ -333,7 +398,7 @@ Test results:
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
         max_tokens=256,
-        system=HERMES_SYSTEM_PROMPT,
+        system=AC_CHECK_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": prompt}],
     )
     text = message.content[0].text.strip()
@@ -559,10 +624,42 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
         save_backlog(backlog)
         return False
 
-    log("Hermes reviewing...")
-    write_active(item, "review", tokens_in=tokens_in, tokens_out=tokens_out)
+    log("Hermes — code review...")
+    write_active(item, "code_review", tokens_in=tokens_in, tokens_out=tokens_out)
     try:
-        verdict, t_in, t_out = call_hermes(
+        cr_verdict, t_in, t_out = call_code_review(item["idea"], result["story"], diff)
+        tokens_in += t_in
+        tokens_out += t_out
+        code_review_verdict = cr_verdict.get("verdict", "approve")
+        code_review_reason  = cr_verdict.get("reason", "")
+    except Exception as e:
+        log(f"Code review error (defaulting to approve): {e}")
+        code_review_verdict = "approve"
+        code_review_reason  = "Code review failed — defaulting to approve"
+
+    log(f"Code review: {code_review_verdict.upper()} — {code_review_reason}")
+
+    if code_review_verdict == "reject":
+        rollback()
+        item["status"] = "failed"
+        item["story"] = result.get("story", "")
+        item["acceptance_criteria"] = result.get("acceptance_criteria", [])
+        item["diff"] = diff
+        item["test_results"] = test_results
+        item["code_review_verdict"] = code_review_verdict
+        item["code_review_reason"]  = code_review_reason
+        item["hermes_verdict"] = code_review_verdict
+        item["hermes_reason"]  = code_review_reason
+        ad = write_active(item, "rejected", rejected_at="code_review", hermes_verdict="reject", hermes_reason=code_review_reason, tokens_in=tokens_in, tokens_out=tokens_out)
+        item["started"] = ad.get("started"); item["stage_times"] = ad.get("stage_times", {})
+        item["tokens_in"] = tokens_in; item["tokens_out"] = tokens_out
+        save_backlog(backlog)
+        return False
+
+    log("Hermes — AC check...")
+    write_active(item, "ac_check", tokens_in=tokens_in, tokens_out=tokens_out)
+    try:
+        ac_verdict, t_in, t_out = call_ac_check(
             item["idea"],
             result["story"],
             result.get("acceptance_criteria", []),
@@ -571,30 +668,37 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
         )
         tokens_in += t_in
         tokens_out += t_out
-        hermes_verdict = verdict.get("verdict", "approve")
-        hermes_reason = verdict.get("reason", "")
+        ac_check_verdict = ac_verdict.get("verdict", "approve")
+        ac_check_reason  = ac_verdict.get("reason", "")
     except Exception as e:
-        log(f"Hermes error (defaulting to approve): {e}")
-        hermes_verdict = "approve"
-        hermes_reason = "Hermes review failed — defaulting to approve"
+        log(f"AC check error (defaulting to approve): {e}")
+        ac_check_verdict = "approve"
+        ac_check_reason  = "AC check failed — defaulting to approve"
 
-    log(f"Hermes: {hermes_verdict.upper()} — {hermes_reason}")
+    log(f"AC check: {ac_check_verdict.upper()} — {ac_check_reason}")
     log(f"Tokens : ↑{tokens_in:,} in  ↓{tokens_out:,} out")
 
-    if hermes_verdict == "reject":
+    if ac_check_verdict == "reject":
         rollback()
         item["status"] = "failed"
         item["story"] = result.get("story", "")
         item["acceptance_criteria"] = result.get("acceptance_criteria", [])
         item["diff"] = diff
         item["test_results"] = test_results
-        item["hermes_verdict"] = hermes_verdict
-        item["hermes_reason"] = hermes_reason
-        ad = write_active(item, "rejected", hermes_verdict="reject", hermes_reason=hermes_reason, tokens_in=tokens_in, tokens_out=tokens_out)
+        item["code_review_verdict"] = code_review_verdict
+        item["code_review_reason"]  = code_review_reason
+        item["ac_check_verdict"] = ac_check_verdict
+        item["ac_check_reason"]  = ac_check_reason
+        item["hermes_verdict"] = ac_check_verdict
+        item["hermes_reason"]  = ac_check_reason
+        ad = write_active(item, "rejected", rejected_at="ac_check", hermes_verdict="reject", hermes_reason=ac_check_reason, tokens_in=tokens_in, tokens_out=tokens_out)
         item["started"] = ad.get("started"); item["stage_times"] = ad.get("stage_times", {})
         item["tokens_in"] = tokens_in; item["tokens_out"] = tokens_out
         save_backlog(backlog)
         return False
+
+    hermes_verdict = "approve"
+    hermes_reason  = f"Code review: {code_review_reason} | AC: {ac_check_reason}"
 
     log("Pushing to GitHub...")
     write_active(item, "deploy", hermes_verdict="approve", hermes_reason=hermes_reason, tokens_in=tokens_in, tokens_out=tokens_out)
@@ -605,8 +709,12 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
     item["diff"] = diff
     item["test_results"] = test_results
     item["deployed"] = timestamp
+    item["code_review_verdict"] = code_review_verdict
+    item["code_review_reason"]  = code_review_reason
+    item["ac_check_verdict"] = ac_check_verdict
+    item["ac_check_reason"]  = ac_check_reason
     item["hermes_verdict"] = hermes_verdict
-    item["hermes_reason"] = hermes_reason
+    item["hermes_reason"]  = hermes_reason
     save_backlog(backlog)
 
     try:
@@ -641,7 +749,7 @@ def main():
 
     if sprint_mode or loop_mode:
         processed = []
-        retro_context = None
+        retro_context = load_latest_retro_context()  # carry forward wisdom from previous sprints
         while True:
             prev_len = len(processed)
             success = run_one(sprint_only=sprint_mode, processed=processed, retro_context=retro_context)

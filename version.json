@@ -1,9 +1,179 @@
 {
   "version": "0.1.36",
-  "deployed": "2026-05-23 21:25:12 CT",
+  "deployed": "2026-05-23 20:53:46 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
+    {
+      "version": "0.1.0",
+      "date": "2026-05-22",
+      "change": "Initial hello world"
+    },
+    {
+      "version": "0.1.1",
+      "date": "2026-05-22",
+      "change": "Added glowing flicker animation to title for more visual spark"
+    },
+    {
+      "version": "0.1.2",
+      "date": "2026-05-22",
+      "change": "Enhanced title with animated neon rainbow gradient sweep for extra spark"
+    },
+    {
+      "version": "0.1.3",
+      "date": "2026-05-22",
+      "change": "Added pulse-scale bounce and animated neon glow bar beneath title for extra spark"
+    },
+    {
+      "version": "0.1.4",
+      "date": "2026-05-22",
+      "change": "Toned down title size and animations for a calmer, less overwhelming appearance"
+    },
+    {
+      "version": "0.1.5",
+      "date": "2026-05-22",
+      "change": "Further toned down title: removed all animations and gradient, replaced with simple static styling"
+    },
+    {
+      "version": "0.1.6",
+      "date": "2026-05-22",
+      "change": "Made title bland: muted gray color, reduced weight and letter-spacing, no decorative styling"
+    },
+    {
+      "version": "0.1.7",
+      "date": "2026-05-22",
+      "change": "Made title attractive: large bold font with teal-to-cyan gradient and subtle glow"
+    },
+    {
+      "version": "0.1.8",
+      "date": "2026-05-22",
+      "change": "Made title warmer: replaced cool teal gradient with amber-to-coral warm tones and soft orange glow"
+    },
+    {
+      "version": "0.1.9",
+      "date": "2026-05-23",
+      "change": "Made title more colorful: five-stop gradient spanning pink, amber, yellow, mint, and sky blue"
+    },
+    {
+      "version": "0.1.10",
+      "date": "2026-05-23",
+      "change": "Aligned title style with page theme: solid #00ff99 green with subtle glow to match terminal aesthetic"
+    },
+    {
+      "version": "0.1.11",
+      "date": "2026-05-23",
+      "change": "Sexier title: larger uppercase lettering with green-to-cyan-to-purple gradient and layered neon glow"
+    },
+    {
+      "version": "0.1.12",
+      "date": "2026-05-23",
+      "change": "Animated title: sweeping neon gradient loop with pulsing glow in green, cyan, purple, and pink"
+    },
+    {
+      "version": "0.1.13",
+      "date": "2026-05-23",
+      "change": "Bolder title: increased font-weight to 900 for stronger visual presence"
+    },
+    {
+      "version": "0.1.14",
+      "date": "2026-05-23",
+      "change": "Bolder title: increased font-size to 4rem, tightened letter-spacing, and added subtle text-stroke for extra visual weight"
+    },
+    {
+      "version": "0.1.15",
+      "date": "2026-05-23",
+      "change": "Matched title to terminal aesthetic: monospace font, solid #00ff99 color, subtle glow, no animation or uppercase transform"
+    },
+    {
+      "version": "0.1.16",
+      "date": "2026-05-23",
+      "change": "Sexier title: uppercase 3.6rem bold with animated green-cyan-purple-pink neon gradient sweep and pulsing glow"
+    },
+    {
+      "version": "0.1.17",
+      "date": "2026-05-23",
+      "change": "Sexier title: enlarged to 4.8rem, wider letter-spacing, faster gradient, plus animated tagline beneath"
+    },
+    {
+      "version": "0.1.18",
+      "date": "2026-05-23",
+      "change": "Calmer title: removed all animations, reduced to 2.8rem muted teal, lighter weight, subtle letter-spacing, static tagline"
+    },
+    {
+      "version": "0.1.19",
+      "date": "2026-05-23",
+      "change": "Title color updated to #00ff99 to match terminal aesthetic and page-wide green accent style"
+    },
+    {
+      "version": "0.1.20",
+      "date": "2026-05-23",
+      "change": "Spicier title: 3.6rem uppercase 900-weight with animated green-cyan-purple-pink neon gradient sweep, pulsing glow, and punchier tagline"
+    },
+    {
+      "version": "0.1.21",
+      "date": "2026-05-23",
+      "change": "Updated typography and color scheme to match brand standards: Inter font stack, warmer dark background, more visible tagline accent, consistent nav border-radius"
+    },
+    {
+      "version": "0.1.22",
+      "date": "2026-05-23",
+      "change": "Changed homepage title text color to red with matching red neon glow animation"
+    },
+    {
+      "version": "0.1.23",
+      "date": "2026-05-23",
+      "change": "Restored green title styling: #00ff99 color and green neon glow animation to match terminal aesthetic"
+    },
+    {
+      "version": "0.1.24",
+      "date": "2026-05-23",
+      "change": "Added footer with copyright notice and tagline in terminal aesthetic styling"
+    },
+    {
+      "version": "0.1.25",
+      "date": "2026-05-23",
+      "change": "Added separator line above footer to visually distinguish footer from main page content"
+    },
+    {
+      "version": "0.1.26",
+      "date": "2026-05-23",
+      "change": "Added GitHub repo URL link to footer in muted neon green style"
+    },
+    {
+      "version": "0.1.27",
+      "date": "2026-05-23",
+      "change": "Added 'Powered by Claude' label to footer in muted neon green terminal style"
+    },
+    {
+      "version": "0.1.28",
+      "date": "2026-05-23",
+      "change": "Added stats section displaying versions, days active, and features shipped with neon terminal card styling"
+    },
+    {
+      "version": "0.1.29",
+      "date": "2026-05-23",
+      "change": "Added Tokens Used stat card to stats section, reading total_tokens from version.json with locale-formatted display"
+    },
+    {
+      "version": "0.1.30",
+      "date": "2026-05-23",
+      "change": "Added Sprint Success Rate stat card showing versions-per-day as a percentage, capped at 100%, with dash fallback when days unavailable"
+    },
+    {
+      "version": "0.1.31",
+      "date": "2026-05-23",
+      "change": "Added Last Deploy stat card showing the most recent changelog date formatted as Month DD, YYYY"
+    },
+    {
+      "version": "0.1.32",
+      "date": "2026-05-23",
+      "change": "Added Releases This Year stat card showing count of changelog entries dated within the current calendar year"
+    },
+    {
+      "version": "0.1.33",
+      "date": "2026-05-23",
+      "change": "Added Days Since Launch stat card showing the number of days elapsed from the first changelog entry date to today"
+    },
     {
       "version": "0.1.34",
       "date": "2026-05-23",
@@ -17,7 +187,7 @@
     {
       "version": "0.1.36",
       "date": "2026-05-23",
-      "change": "Trimmed changelog to last 3 entries and capped Recent Changes display to 3 items for a cleaner page"
+      "change": "Trimmed changelog to last 3 entries and capped Recent Changes display to 3 items"
     }
   ]
 }

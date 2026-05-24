@@ -5,69 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hello Scrum</title>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Inter', system-ui, monospace;
+      font-family: monospace;
       background: #0d0d0f;
       color: #e8e8e8;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       min-height: 100vh;
-      margin: 0;
       padding: 2rem 1rem;
     }
-    @keyframes neon-sweep {
-      0%   { background-position: 0% 50%; }
-      50%  { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    @keyframes glow-pulse {
-      0%, 100% { filter: drop-shadow(0 0 6px #00ff99aa) drop-shadow(0 0 18px #00ff9955); }
-      50%       { filter: drop-shadow(0 0 14px #00ff99ff) drop-shadow(0 0 36px #00cc7aaa); }
-    }
-    h1 {
-      font-family: monospace;
-      font-size: 3.6rem;
-      margin-bottom: 0.15rem;
-      letter-spacing: 0.12em;
-      font-weight: 900;
-      text-transform: uppercase;
-      color: #00ff99;
-      -webkit-text-fill-color: #00ff99;
-      animation: glow-pulse 3s ease-in-out infinite;
-    }
-    .tagline {
-      font-family: monospace;
-      font-size: 0.85rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: #3a7a5a;
-      margin-bottom: 0.4rem;
-    }
-    .title-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 0.25rem;
-    }
-    .meta { font-size: 0.9rem; color: #888; margin: 0.2rem 0; }
-    .version {
-      font-size: 0.85rem;
-      color: #00ff99;
-      background: #0b1f14;
-      border: 1px solid #00ff9933;
-      padding: 0.3rem 0.9rem;
-      border-radius: 20px;
-      margin-bottom: 0.5rem;
-    }
-    .changelog { margin-top: 1.5rem; width: 100%; max-width: 480px; }
-    .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 0.5rem 0; }
-    .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }
-    .changelog-entry:first-of-type { border-top: none; }
-    .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }
-    .changelog-entry .cd { color: #444; font-size: 0.73rem; }
-    .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }
     .top-nav {
       position: fixed;
       top: 1rem;
@@ -88,87 +36,46 @@
     .top-nav a:hover { background: #0d3320; border-color: #00ff99; }
     .top-nav a[href="messenger.html"] { background: #1a1a2e; color: #6fa8ff; border-color: #6fa8ff40; }
     .top-nav a[href="messenger.html"]:hover { background: #0d1a3a; border-color: #6fa8ff; }
-    .site-footer {
-      width: 100%;
-      text-align: center;
-      padding: 1.5rem 1rem 1rem;
-      margin-top: 0;
-      border-top: none;
+    h1 {
       font-family: monospace;
-      font-size: 0.75rem;
-      color: #444;
-      letter-spacing: 0.08em;
-    }
-    .site-footer span { color: #00ff9955; }
-    .footer-repo-link {
-      color: #00ff9966;
-      text-decoration: none;
-      letter-spacing: 0.06em;
-      font-size: 0.72rem;
-      transition: color 0.2s;
-    }
-    .footer-repo-link:hover { color: #00ff99; }
-    .powered-by {
-      display: inline-block;
-      margin-top: 0.6rem;
-      color: #00ff9944;
-      font-size: 0.68rem;
+      font-size: 3.6rem;
+      margin-bottom: 0.15rem;
       letter-spacing: 0.12em;
+      font-weight: 900;
       text-transform: uppercase;
+      color: #00ff99;
     }
-    .footer-sep {
-      width: 100%;
-      max-width: 480px;
-      border: none;
-      border-top: 1px solid #2a2a2a;
-      margin: 2.5rem auto 0;
+    .tagline {
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #3a7a5a;
+      margin-bottom: 0.4rem;
     }
-  
-.stats-section {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-    margin: 1.5rem auto;
-    max-width: 720px;
-    padding: 0 1rem;
-  }
-  .stat-card {
-    background: #0d1f14;
-    border: 1px solid #00ff9944;
-    border-radius: 8px;
-    padding: 1rem 1.5rem;
-    min-width: 140px;
-    flex: 1 1 140px;
-    text-align: center;
-  }
-  .stat-value {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #00ff99;
-    text-shadow: 0 0 8px #00ff9966;
-    display: block;
-  }
-  .stat-label {
-    font-size: 0.72rem;
-    color: #556;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-top: 0.25rem;
-    display: block;
-  }
-
-.stat-card-wide {
-    grid-column: 1 / -1;
-    text-align: center;
-  }
-  .stat-card-wide .stat-value {
-    font-size: 0.95rem;
-    white-space: normal;
-    word-break: break-word;
-    line-height: 1.5;
-  }
-</style>
+    .title-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .version {
+      font-size: 0.85rem;
+      color: #00ff99;
+      background: #0b1f14;
+      border: 1px solid #00ff9933;
+      padding: 0.3rem 0.9rem;
+      border-radius: 20px;
+      margin-bottom: 0.4rem;
+    }
+    .meta { font-size: 0.85rem; color: #555; margin: 0.15rem 0; }
+    .changelog { margin-top: 1.5rem; width: 100%; max-width: 480px; }
+    .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 0.5rem 0; }
+    .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }
+    .changelog-entry:first-of-type { border-top: none; }
+    .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }
+    .changelog-entry .cd { color: #444; font-size: 0.73rem; }
+    .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }
+  </style>
 </head>
 <body>
   <nav class="top-nav">
@@ -186,49 +93,6 @@
   </div>
   <div class="version" id="version-badge">v0.1.36</div>
   <div class="meta">Last deployed: 2026-05-23 21:25:12 CT</div>
-  <div class="meta">Status: baseline</div>
-  <div class="stats-section" id="stats-section">
-    <div class="stat-card">
-      <span class="stat-value" id="stat-versions">—</span>
-      <span class="stat-label">Versions</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-value" id="stat-days">—</span>
-      <span class="stat-label">Days Active</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-value" id="stat-features">—</span>
-      <span class="stat-label">Features Shipped</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-value" id="stat-tokens">0</span>
-      <span class="stat-label">Tokens Used</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-value" id="stat-success-rate">—</span>
-      <span class="stat-label">Sprint Success Rate</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-value" id="stat-last-deploy">—</span>
-      <span class="stat-label">Last Deploy</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-value" id="stat-releases-year">—</span>
-      <span class="stat-label">Releases This Year</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-value" id="stat-days-since-launch">—</span>
-      <span class="stat-label">Days Since Launch</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-value" id="stat-release-days">—</span>
-      <span class="stat-label">Release Days</span>
-    </div>
-    <div class="stat-card stat-card-wide">
-      <span class="stat-value" id="stat-latest-change">—</span>
-      <span class="stat-label">Latest Change</span>
-    </div>
-  </div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -241,91 +105,19 @@
       fetch('/version.json')
         .then(r => r.json())
         .then(data => {
-          const entries = (data.changelog || []).slice().reverse().slice(0, 3);
+          const entries = (data.changelog || []).slice().reverse().slice(0, 5);
           document.getElementById('changelog-entries').innerHTML = entries.map(e => {
             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;
             return `<div class="changelog-entry">
-      <span class="cv">${escHtml(ver)}</span>
-      <span class="cd">${escHtml(e.date || '')}</span>
-      <span class="ct">${escHtml(e.change || '')}</span>
-    </div>`;
+              <span class="cv">${escHtml(ver)}</span>
+              <span class="cd">${escHtml(e.date || '')}</span>
+              <span class="ct">${escHtml(e.change || '')}</span>
+            </div>`;
           }).join('');
         })
         .catch(() => {});
     }
     loadChangelog();
-    function loadStats() {
-      fetch('/version.json')
-        .then(r => r.json())
-        .then(data => {
-          const log = data.changelog || [];
-          document.getElementById('stat-versions').textContent = log.length;
-          const dates = log.map(e => e.date).filter(Boolean).sort();
-          if (dates.length >= 2) {
-            const first = new Date(dates[0]);
-            const last = new Date(dates[dates.length - 1]);
-            const diff = Math.round((last - first) / 86400000) + 1;
-            document.getElementById('stat-days').textContent = diff;
-          } else {
-            document.getElementById('stat-days').textContent = dates.length ? '1' : '—';
-          }
-          document.getElementById('stat-features').textContent = log.length;
-          // Sprint success rate: (versions / days) * 100, capped at 100%
-          const srVersions = log.length;
-          let srDays = 0;
-          if (dates.length >= 2) {
-            const srFirst = new Date(dates[0]);
-            const srLast = new Date(dates[dates.length - 1]);
-            srDays = Math.round((srLast - srFirst) / 86400000) + 1;
-          } else if (dates.length === 1) {
-            srDays = 1;
-          }
-          if (srDays > 0) {
-            const rate = Math.min(100, Math.round((srVersions / srDays) * 100));
-            document.getElementById('stat-success-rate').textContent = rate + '%';
-          } else {
-            document.getElementById('stat-success-rate').textContent = '—';
-          }
-          const deployDates = log.map(e => e.date).filter(Boolean).sort();
-          if (deployDates.length > 0) {
-            const latestDate = new Date(deployDates[deployDates.length - 1] + 'T00:00:00');
-            const formatted = latestDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' });
-            document.getElementById('stat-last-deploy').textContent = formatted;
-          } else {
-            document.getElementById('stat-last-deploy').textContent = '—';
-          }
-          const currentYear = new Date().getFullYear().toString();
-          const releasesThisYear = log.filter(e => e.date && e.date.startsWith(currentYear)).length;
-          document.getElementById('stat-releases-year').textContent = releasesThisYear;
-          const tokens = data.total_tokens;
-          document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';
-          if (dates.length > 0) {
-            const launchDate = new Date(dates[0] + 'T00:00:00');
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const daysSinceLaunch = Math.round((today - launchDate) / 86400000) + 1;
-            document.getElementById('stat-days-since-launch').textContent = daysSinceLaunch;
-          } else {
-            document.getElementById('stat-days-since-launch').textContent = '—';
-          }
-          const distinctDates = new Set(log.map(e => e.date).filter(Boolean));
-          document.getElementById('stat-release-days').textContent = distinctDates.size > 0 ? distinctDates.size : '—';
-          if (log.length > 0) {
-            const latest = log[log.length - 1];
-            document.getElementById('stat-latest-change').textContent = latest.change || '—';
-          } else {
-            document.getElementById('stat-latest-change').textContent = '—';
-          }
-        })
-        .catch(() => {});
-    }
-    loadStats();
   </script>
-  <hr class="footer-sep" />
-  <footer class="site-footer">
-    <span>&copy;</span> 2026 Hello Scrum &mdash; ship fast · break things · own it<br/>
-    <a href="https://github.com/hello-scrum/hello-scrum" target="_blank" rel="noopener noreferrer" class="footer-repo-link">github.com/hello-scrum/hello-scrum</a><br/>
-    <span class="powered-by">powered by Claude</span>
-  </footer>
 </body>
 </html>

@@ -10,6 +10,7 @@ Usage:
 
 import json
 import os
+import queue
 import subprocess
 import threading
 import time
@@ -148,9 +149,11 @@ Classify the message into exactly one of three types and respond with JSON only 
             else:
                 query_str = str(raw_query)
                 keywords = query_str.lower().split()
+            stop_words = {"a","an","the","is","are","was","were","has","have","been","be","to","of","in","on","at","for","with","this","that","it","its","by","as","from","and","or","but","not","what","whats","status","story","did","does","get","about"}
+            search_terms = [kw for kw in keywords if kw not in stop_words] or keywords
             matches = [
                 i for i in backlog.get("items", [])
-                if any(kw in (i.get("idea") or i.get("title") or "").lower() for kw in keywords)
+                if all(kw in (i.get("idea") or i.get("title") or "").lower() for kw in search_terms)
             ]
             if not matches:
                 return jsonify({"reply": f"No stories found matching <em>{query_str}</em>.", "stories": None})
@@ -159,23 +162,43 @@ Classify the message into exactly one of three types and respond with JSON only 
                 title = item.get("idea") or item.get("title") or "(untitled)"
                 status = item.get("status", "pending")
                 in_sprint = item.get("in_sprint", False)
+
                 if status == "done":
-                    label = "✓ completed"
-                    color = "#00ff99"
-                elif status == "failed":
-                    label = "✗ failed"
+                    parts = [f'<span style="color:#00ff99">✓ completed</span> — <strong>{title}</strong>']
+                    if item.get("summary"):
+                        parts.append(f'<span style="color:#aaa">{item["summary"]}</span>')
+                    if item.get("story"):
+                        parts.append(f'<span style="color:#666;font-style:italic">{item["story"]}</span>')
+                    if item.get("acceptance_criteria"):
+                        criteria = "".join(f'<br>&nbsp;&nbsp;· {c}' for c in item["acceptance_criteria"])
+                        parts.append(f'<span style="color:#555">Acceptance criteria:{criteria}</span>')
+                    verdict = item.get("hermes_verdict", "")
+                    hermes_color = "#00ff99" if verdict == "approve" else "#ff4444"
+                    if verdict:
+                        parts.append(f'<span style="color:{hermes_color}">Hermes: {verdict}</span>'
+                                     + (f' — <span style="color:#777">{item["hermes_reason"]}</span>' if item.get("hermes_reason") else ""))
+                    if item.get("test_results"):
+                        passed = sum(1 for t in item["test_results"] if t.get("status") == "pass")
+                        total  = len(item["test_results"])
+                        parts.append(f'<span style="color:#555">Tests: {passed}/{total} passed</span>')
+                    if item.get("deployed"):
+                        parts.append(f'<span style="color:#444">Deployed: {item["deployed"]}</span>')
+                    tok_in  = item.get("tokens_in", 0)
+                    tok_out = item.get("tokens_out", 0)
+                    if tok_in or tok_out:
+                        parts.append(f'<span style="color:#333">Tokens: {tok_in} in / {tok_out} out</span>')
+                    lines.append("<br>".join(parts))
+
+                elif status in ("failed", "rejected"):
                     color = "#ff4444"
-                elif status == "rejected":
-                    label = "✗ rejected"
-                    color = "#ff4444"
+                    label = "✗ " + status
+                    lines.append(f'<span style="color:{color}">{label}</span> — {title}')
                 elif in_sprint:
-                    label = "⟳ in sprint"
-                    color = "#ffcc00"
+                    lines.append(f'<span style="color:#ffcc00">⟳ in sprint</span> — {title}')
                 else:
-                    label = "· in backlog"
-                    color = "#888"
-                lines.append(f'<span style="color:{color}">{label}</span> — {title}')
-            return jsonify({"reply": "<br>".join(lines), "stories": None})
+                    lines.append(f'<span style="color:#888">· in backlog</span> — {title}')
+
+            return jsonify({"reply": "<br><br>".join(lines), "stories": None})
 
         return jsonify({"reply": result.get("reply", ""), "stories": None})
 
@@ -260,7 +283,9 @@ def start_sprint():
             return jsonify({"error": "Agent already running"}), 409
         agent_running = True
 
-    def generate():
+    line_queue = queue.Queue()
+
+    def _reader():
         global agent_running
         try:
             with open(AGENT_LOG_FILE, "w") as f:
@@ -278,11 +303,30 @@ def start_sprint():
                 env=os.environ.copy(),
             )
             for line in proc.stdout:
-                yield f"data: {json.dumps(line.rstrip())}\n\n"
+                line_queue.put(line.rstrip())
             proc.wait()
+        except Exception as e:
+            line_queue.put(f"[server error] {e}")
         finally:
             agent_running = False
-            yield f"data: {json.dumps('__done__')}\n\n"
+            line_queue.put(None)  # sentinel — subprocess finished
+
+    threading.Thread(target=_reader, daemon=True).start()
+
+    def generate():
+        try:
+            while True:
+                try:
+                    line = line_queue.get(timeout=30)
+                except queue.Empty:
+                    yield ": heartbeat\n\n"
+                    continue
+                if line is None:
+                    yield f"data: {json.dumps('__done__')}\n\n"
+                    break
+                yield f"data: {json.dumps(line)}\n\n"
+        except GeneratorExit:
+            pass  # client disconnected; _reader thread keeps draining so pipe never deadlocks
 
     return Response(
         generate(),

@@ -18,7 +18,7 @@
 
     .board {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 0;
       flex: 1;
       border-bottom: 1px solid #222;
@@ -255,27 +255,45 @@
     <div class="column">
       <div class="col-header">
         <div>
-          <span class="col-title">Backlog</span>
-          <span class="col-count" id="backlog-count"></span>
+          <span class="col-title">Opportunity Backlog</span>
+          <span class="col-count" id="opp-count"></span>
         </div>
       </div>
       <div class="add-item">
-        <input id="new-idea" placeholder="Add an idea..." onkeydown="if(event.key==='Enter')addItem('top')" />
-        <button onclick="addItem('top')" title="Add to backlog">↓</button>
-        <button onclick="addItem('sprint')" title="Add to sprint">→</button>
+        <input id="new-opp" placeholder="Add an opportunity..." onkeydown="if(event.key==='Enter')addOpportunity()" />
+        <button onclick="addOpportunity()" title="Add opportunity">+</button>
       </div>
-      <div class="drop-zone" id="backlog-zone"
+      <div class="drop-zone" id="opp-zone"
            ondragover="onDragOver(event)"
            ondragleave="onDragLeave(event)"
-           ondrop="onDrop(event, false)">
-        <div class="empty-hint">Backlog items appear here</div>
+           ondrop="onDrop(event, 'opportunity')">
+        <div class="empty-hint">Add opportunities here</div>
       </div>
     </div>
 
     <div class="column">
       <div class="col-header">
         <div>
-          <span class="col-title">Sprint</span>
+          <span class="col-title">Product Backlog</span>
+          <span class="col-count" id="backlog-count"></span>
+        </div>
+      </div>
+      <div class="add-item">
+        <input id="new-idea" placeholder="Add an idea..." onkeydown="if(event.key==='Enter')addItem('top')" />
+        <button onclick="addItem('top')" title="Add to backlog">+</button>
+      </div>
+      <div class="drop-zone" id="backlog-zone"
+           ondragover="onDragOver(event)"
+           ondragleave="onDragLeave(event)"
+           ondrop="onDrop(event, 'backlog')">
+        <div class="empty-hint">Product backlog items appear here</div>
+      </div>
+    </div>
+
+    <div class="column">
+      <div class="col-header">
+        <div>
+          <span class="col-title">Sprint Backlog</span>
           <span class="col-count" id="sprint-count"></span>
         </div>
         <div style="display:flex;gap:0.4rem">
@@ -286,7 +304,7 @@
       <div class="drop-zone" id="sprint-zone"
            ondragover="onDragOver(event)"
            ondragleave="onDragLeave(event)"
-           ondrop="onDrop(event, true)">
+           ondrop="onDrop(event, 'sprint')">
         <div class="empty-hint">Drag items here to add to sprint</div>
       </div>
     </div>
@@ -322,22 +340,36 @@
       });
     }
 
+    function addOpportunity() {
+      const input = document.getElementById('new-opp');
+      const idea = input.value.trim();
+      if (!idea) return;
+      const maxId = backlogData.items.reduce((m, i) => Math.max(m, i.id), 0);
+      backlogData.items.unshift({ id: maxId + 1, idea, status: 'pending', opportunity: true });
+      input.value = '';
+      renderBoard();
+      persistBacklog();
+    }
+
     function renderBoard() {
       const items = backlogData.items;
-      const backlogItems = items.filter(i => i.status === 'pending' && !i.in_sprint);
+      const oppItems     = items.filter(i => i.opportunity);
+      const backlogItems = items.filter(i => i.status === 'pending' && !i.in_sprint && !i.opportunity);
       const sprintItems  = items.filter(i => i.in_sprint);
 
+      document.getElementById('opp-count').textContent     = `(${oppItems.length})`;
       document.getElementById('backlog-count').textContent = `(${backlogItems.length})`;
       document.getElementById('sprint-count').textContent  = `(${sprintItems.length})`;
 
-      const backlogZone = document.getElementById('backlog-zone');
-      const sprintZone  = document.getElementById('sprint-zone');
+      document.getElementById('opp-zone').innerHTML = oppItems.length
+        ? oppItems.map(renderCard).join('')
+        : '<div class="empty-hint">Add opportunities here</div>';
 
-      backlogZone.innerHTML = backlogItems.length
+      document.getElementById('backlog-zone').innerHTML = backlogItems.length
         ? backlogItems.map(renderCard).join('')
-        : '<div class="empty-hint">No pending items</div>';
+        : '<div class="empty-hint">Product backlog items appear here</div>';
 
-      sprintZone.innerHTML = sprintItems.length
+      document.getElementById('sprint-zone').innerHTML = sprintItems.length
         ? sprintItems.map(renderCard).join('')
         : '<div class="empty-hint">Drag items here to add to sprint</div>';
 
@@ -404,7 +436,7 @@
       e.currentTarget.classList.remove('drag-over');
     }
 
-    function onDrop(e, toSprint) {
+    function onDrop(e, dest) {
       e.preventDefault();
       e.currentTarget.classList.remove('drag-over');
       if (dragId === null) return;
@@ -412,9 +444,17 @@
       const item = backlogData.items.find(i => String(i.id) === dragId);
       if (!item || item.status !== 'pending') return;
 
-      item.in_sprint = toSprint;
+      if (dest === 'opportunity') {
+        item.opportunity = true;
+        item.in_sprint = false;
+      } else if (dest === 'backlog') {
+        delete item.opportunity;
+        item.in_sprint = false;
+      } else if (dest === 'sprint') {
+        delete item.opportunity;
+        item.in_sprint = true;
+      }
       dragId = null;
-
       renderBoard();
       persistBacklog();
     }
@@ -450,7 +490,16 @@
       if (!dragItem || dragItem.status !== 'pending') return;
 
       // move to same column as target
-      dragItem.in_sprint = targetItem.in_sprint || false;
+      if (targetItem.opportunity) {
+        dragItem.opportunity = true;
+        dragItem.in_sprint = false;
+      } else if (targetItem.in_sprint) {
+        delete dragItem.opportunity;
+        dragItem.in_sprint = true;
+      } else {
+        delete dragItem.opportunity;
+        dragItem.in_sprint = false;
+      }
 
       // reorder in array
       const srcIdx = items.indexOf(dragItem);

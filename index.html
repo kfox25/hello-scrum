@@ -184,8 +184,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.34</div>
-  <div class="meta">Last deployed: 2026-05-23 20:53:04 CT</div>
+  <div class="version" id="version-badge">v0.1.35</div>
+  <div class="meta">Last deployed: 2026-05-23 20:53:46 CT</div>
   <div class="meta">Status: baseline</div>
   <div class="stats-section" id="stats-section">
     <div class="stat-card">
@@ -219,6 +219,10 @@
     <div class="stat-card">
       <span class="stat-value" id="stat-days-since-launch">—</span>
       <span class="stat-label">Days Since Launch</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value" id="stat-release-days">—</span>
+      <span class="stat-label">Release Days</span>
     </div>
     <div class="stat-card stat-card-wide">
       <span class="stat-value" id="stat-latest-change">—</span>
@@ -304,6 +308,8 @@
           } else {
             document.getElementById('stat-days-since-launch').textContent = '—';
           }
+          const distinctDates = new Set(log.map(e => e.date).filter(Boolean));
+          document.getElementById('stat-release-days').textContent = distinctDates.size > 0 ? distinctDates.size : '—';
           if (log.length > 0) {
             const latest = log[log.length - 1];
             document.getElementById('stat-latest-change').textContent = latest.change || '—';

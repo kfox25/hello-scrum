@@ -2140,13 +2140,61 @@
       "ac_check_verdict": "approve",
       "ac_check_reason": "All acceptance criteria are met: the 'Latest Change' stat card appears in the stats section, displays the most recent changelog description dynamically from version.json, includes fallback '\u2014' handling, and implements text wrapping with proper styling.",
       "hermes_verdict": "approve",
-      "hermes_reason": "Code review: The code change is technically sound with proper CSS styling, correct DOM manipulation accessing the last array element, appropriate fallback handling, and no syntax errors or breaking changes. | AC: All acceptance criteria are met: the 'Latest Change' stat card appears in the stats section, displays the most recent changelog description dynamically from version.json, includes fallback '\u2014' handling, and implements text wrapping with proper styling."
+      "hermes_reason": "Code review: The code change is technically sound with proper CSS styling, correct DOM manipulation accessing the last array element, appropriate fallback handling, and no syntax errors or breaking changes. | AC: All acceptance criteria are met: the 'Latest Change' stat card appears in the stats section, displays the most recent changelog description dynamically from version.json, includes fallback '\u2014' handling, and implements text wrapping with proper styling.",
+      "started": 1779587584.049866,
+      "stage_times": {
+        "pull": 1779587584.049866,
+        "story": 1779587584.056599,
+        "code": 1779587614.948436,
+        "test": 1779587615.085484,
+        "code_review": 1779587615.296805,
+        "ac_check": 1779587616.664268,
+        "deploy": 1779587618.207539,
+        "done": 1779587621.310213
+      },
+      "tokens_in": 7508,
+      "tokens_out": 3160
     },
     {
       "id": "1779587297357",
       "idea": "Show the number of distinct release dates in the stats section",
-      "status": "pending",
-      "in_sprint": true
+      "status": "done",
+      "in_sprint": true,
+      "retro_context": "[success_pattern] All four items passed Hermes review and all tests on first submission. The agent consistently implemented features with proper fallback handling (dash/em-dash for missing data), correct data extraction logic, and appropriate styling without syntax errors.\n[success_pattern] Feature cohesion: All four items logically extend the stats section with complementary metrics (deploy date, yearly releases, project lifespan, latest change). This suggests good sprint planning and understanding of user needs for visibility into project activity.\n[observation] Version increments are sequential (0.1.31 \u2192 0.1.34) with one minor version bump per completed item, and deployments occurred within 1-2 minutes of each other on 2026-05-23, indicating rapid, continuous delivery.\n[improvement] Consider adding integration tests that validate stat card calculations (e.g., verifying 'Releases This Year' actually counts correct entries, 'Days Since Launch' math) in addition to presence checks, to catch logic errors earlier.",
+      "story": "As a user, I want to see the number of distinct release dates in the stats section so I can understand how many unique days the team has shipped code.",
+      "acceptance_criteria": [
+        "A new stat card labeled 'Release Days' is visible in the stats section",
+        "The card displays the count of distinct (unique) dates found across all changelog entries",
+        "The value updates dynamically by reading version.json",
+        "If no dates are available, the card displays '\u2014' as a fallback"
+      ],
+      "summary": "Add Release Days stat card showing count of distinct changelog entry dates",
+      "diff": "diff --git a/index.html b/index.html\nindex 1b1807a..cfe6a33 100644\n--- a/index.html\n+++ b/index.html\n@@ -184,8 +184,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.34</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 20:53:04 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.35</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:53:46 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -220,6 +220,10 @@\n       <span class=\"stat-value\" id=\"stat-days-since-launch\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Days Since Launch</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-release-days\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Release Days</span>\n+    </div>\n     <div class=\"stat-card stat-card-wide\">\n       <span class=\"stat-value\" id=\"stat-latest-change\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Latest Change</span>\n@@ -304,6 +308,8 @@\n           } else {\n             document.getElementById('stat-days-since-launch').textContent = '\u00e2\u20ac\u201d';\n           }\n+          const distinctDates = new Set(log.map(e => e.date).filter(Boolean));\n+          document.getElementById('stat-release-days').textContent = distinctDates.size > 0 ? distinctDates.size : '\u00e2\u20ac\u201d';\n           if (log.length > 0) {\n             const latest = log[log.length - 1];\n             document.getElementById('stat-latest-change').textContent = latest.change || '\u00e2\u20ac\u201d';\ndiff --git a/version.json b/version.json\nindex 7ccff77..5a53973 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.34\",\n-  \"deployed\": \"2026-05-23 20:53:04 CT\",\n+  \"version\": \"0.1.35\",\n+  \"deployed\": \"2026-05-23 20:53:46 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -178,6 +178,11 @@\n       \"version\": \"0.1.34\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Latest Change stat card in the stats section displaying the most recent changelog entry description\"\n+    },\n+    {\n+      \"version\": \"0.1.35\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Release Days stat card showing the count of distinct dates across all changelog entries\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.35 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-23 20:53:46 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.35: Added Release Days stat card showing the count of distinct dates across all changelog entries"
+        }
+      ],
+      "deployed": "2026-05-23 20:53:46 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The implementation correctly counts distinct release dates using a Set, properly filters null/undefined values, handles empty states with '\u2014', and integrates cleanly into the existing stats section without introducing syntax errors or breaking changes.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All acceptance criteria are met: the 'Release Days' stat card is visible in the stats section, it displays the count of distinct dates by using a Set to filter unique dates from changelog entries, it updates dynamically by reading version.json, and it displays '\u2014' as a fallback when no dates are available.",
+      "hermes_verdict": "approve",
+      "hermes_reason": "Code review: The implementation correctly counts distinct release dates using a Set, properly filters null/undefined values, handles empty states with '\u2014', and integrates cleanly into the existing stats section without introducing syntax errors or breaking changes. | AC: All acceptance criteria are met: the 'Release Days' stat card is visible in the stats section, it displays the count of distinct dates by using a Set to filter unique dates from changelog entries, it updates dynamically by reading version.json, and it displays '\u2014' as a fallback when no dates are available."
     }
   ]
 }

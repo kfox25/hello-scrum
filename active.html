@@ -5,13 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="google" content="notranslate" />
   <title>Active Work — Hello Scrum</title>
+  <link rel="stylesheet" href="shared.css">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: monospace;
-      background: #0f0f0f;
-      color: #e0e0e0;
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
       padding: 4rem 2rem 2rem;
@@ -25,27 +21,6 @@
     }
     .left-pane  { flex: 1; min-width: 0; }
     .right-pane { flex: 1; min-width: 0; }
-
-    .top-nav {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      display: flex;
-      gap: 0.5rem;
-    }
-    .top-nav a {
-      font-family: monospace;
-      font-size: 0.85rem;
-      background: #1a1a1a;
-      color: #00ff99;
-      border: 1px solid #00ff9940;
-      padding: 0.4rem 1rem;
-      border-radius: 4px;
-      text-decoration: none;
-    }
-    .top-nav a:hover { background: #0d3320; border-color: #00ff99; }
-    .top-nav a[href="messenger.html"] { background: #1a1a2e; color: #6fa8ff; border-color: #6fa8ff40; }
-    .top-nav a[href="messenger.html"]:hover { background: #0d1a3a; border-color: #6fa8ff; }
     #clear-btn {
       position: fixed;
       bottom: 1.5rem;

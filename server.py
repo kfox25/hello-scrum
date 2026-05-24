@@ -42,6 +42,11 @@ except Exception:
         json.dump({"item_id": None, "stage": None}, _f)
 
 
+@app.route("/shared.css")
+def shared_css():
+    return send_file(os.path.join(BASE, "shared.css"))
+
+
 @app.route("/")
 def index():
     return send_file(os.path.join(BASE, "board.html"))

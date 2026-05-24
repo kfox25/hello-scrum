@@ -1,0 +1,29 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { overflow-y: scroll; scrollbar-gutter: stable; }
+body {
+  font-family: monospace;
+  background: #0f0f0f;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+.top-nav {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 100;
+}
+.top-nav a {
+  font-family: monospace;
+  font-size: 0.85rem;
+  background: #1a1a1a;
+  color: #00ff99;
+  border: 1px solid #00ff9940;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  text-decoration: none;
+}
+.top-nav a:hover { background: #0d3320; border-color: #00ff99; }
+.top-nav a[href="messenger.html"] { background: #1a1a2e; color: #6fa8ff; border-color: #6fa8ff40; }
+.top-nav a[href="messenger.html"]:hover { background: #0d1a3a; border-color: #6fa8ff; }

@@ -1,6 +1,6 @@
 {
-  "version": "0.1.30",
-  "deployed": "2026-05-23 20:39:10 CT",
+  "version": "0.1.31",
+  "deployed": "2026-05-23 20:50:59 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -158,6 +158,11 @@
       "version": "0.1.30",
       "date": "2026-05-23",
       "change": "Added Sprint Success Rate stat card showing versions-per-day as a percentage, capped at 100%, with dash fallback when days unavailable"
+    },
+    {
+      "version": "0.1.31",
+      "date": "2026-05-23",
+      "change": "Added Last Deploy stat card showing the most recent changelog date formatted as Month DD, YYYY"
     }
   ]
 }

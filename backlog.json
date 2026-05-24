@@ -57,7 +57,7 @@
       "id": "1779573738103",
       "idea": "Show the number of stories shipped in the stats section",
       "status": "failed",
-      "in_sprint": true,
+      "in_sprint": false,
       "story": "As a user, I want to see the number of stories shipped in the stats section so I can track delivery progress at a glance.",
       "acceptance_criteria": [
         "A 'Stories Shipped' stat card is visible in the stats section",
@@ -104,7 +104,7 @@
       "id": "1779573738104",
       "idea": "Show the number of stories failed in the stats section",
       "status": "failed",
-      "in_sprint": true,
+      "in_sprint": false,
       "retro_context": "[failure_pattern] Feature ambiguity leading to Hermes rejection: the item failed because 'Stories Shipped' and 'Features Shipped' use identical data sources (log.length), creating redundant metrics without clear semantic distinction. Requirements lacked definition of differentiating factors between story and feature concepts.\n[observation] Technical implementation quality is solid: all four test cases passed (HTML structure, version consistency, deployment metadata, changelog entries), indicating code quality wasn't the rejection driver\u2014the issue was requirements clarity.\n[improvement] Before implementing stats features, define distinct data sources and business logic for each metric. For 'Stories Shipped' vs 'Features Shipped', establish clear criteria: e.g., stories = user-facing work items, features = infrastructure/backend work, or filter by label/category rather than reusing the same data.\n[improvement] Add a requirements validation step before development to catch Hermes-level concerns early. Involve stakeholders in defining what metrics actually measure and ensure each stat has unique, non-redundant value.",
       "story": "As a user, I want to see the number of stories failed in the stats section so I can track quality and failure rate alongside other project metrics.",
       "acceptance_criteria": [
@@ -209,7 +209,7 @@
       "id": "1779573738106",
       "idea": "Add a sprint success rate percentage to the stats section",
       "status": "done",
-      "in_sprint": true,
+      "in_sprint": false,
       "retro_context": "[failure_pattern] Both items were rejected by Hermes due to insufficient requirement definition before implementation. The first lacked clarity on story vs. feature distinction; the second had incomplete conditional logic for zero values. Requirements need validation before coding begins.\n[observation] All tests passed for both items (4/4 each), indicating the deployment and versioning infrastructure is solid, but Hermes-level validation (business logic and design) is catching issues that unit tests miss.\n[improvement] Implement a requirement review gate before sprint work starts. For stat features specifically, define exact data sources and distinguish overlapping metrics upfront to prevent redundant implementation.\n[improvement] Add edge-case validation to Hermes checks: verify that conditional display logic explicitly handles zero/falsy values to match requirement intent, not just truthy evaluation.",
       "story": "As a user, I want to see a sprint success rate percentage in the stats section so I can gauge overall delivery health at a glance.",
       "acceptance_criteria": [
@@ -244,7 +244,20 @@
       "ac_check_verdict": "approve",
       "ac_check_reason": "All acceptance criteria are met: the stat card is labeled 'Sprint Success Rate', the calculation implements (versions/days)*100 capped at 100% as whole-number percentage, the dash fallback handles zero/unavailable days, and the card uses the existing neon terminal styling.",
       "hermes_verdict": "approve",
-      "hermes_reason": "Code review: Code review failed \u2014 defaulting to approve | AC: All acceptance criteria are met: the stat card is labeled 'Sprint Success Rate', the calculation implements (versions/days)*100 capped at 100% as whole-number percentage, the dash fallback handles zero/unavailable days, and the card uses the existing neon terminal styling."
+      "hermes_reason": "Code review: Code review failed \u2014 defaulting to approve | AC: All acceptance criteria are met: the stat card is labeled 'Sprint Success Rate', the calculation implements (versions/days)*100 capped at 100% as whole-number percentage, the dash fallback handles zero/unavailable days, and the card uses the existing neon terminal styling.",
+      "started": 1779586750.677573,
+      "stage_times": {
+        "pull": 1779586750.677573,
+        "story": 1779586750.748311,
+        "code": 1779586776.668195,
+        "test": 1779586776.789782,
+        "code_review": 1779586776.953851,
+        "ac_check": 1779586778.346995,
+        "deploy": 1779586780.2024,
+        "done": 1779586783.262253
+      },
+      "tokens_in": 5299,
+      "tokens_out": 2670
     },
     {
       "ac_check_reason": "All four acceptance criteria are met: h1 color changed to #00ff99, glow animation uses green tones (#00ff99 and #00cc7a), -webkit-text-fill-color set to #00ff99, and animation keyframes use green/teal drop-shadow values.",
@@ -1923,6 +1936,72 @@
           "status": "pass"
         }
       ]
+    },
+    {
+      "id": "1779587297353",
+      "idea": "Show the date of the most recent deploy in the stats section formatted as Month DD, YYYY",
+      "status": "done",
+      "in_sprint": true,
+      "retro_context": "[failure_pattern] Hermes rejections are blocking identical/redundant metrics and incomplete implementations. Both failed items (Stories Shipped and Stories Failed) passed all technical tests but were rejected for logical flaws: Stories Shipped duplicates Features Shipped's data source, and Stories Failed has incomplete conditional logic for zero values.\n[improvement] Require metric design review before implementation. Before coding stats items, validate that the new metric is semantically distinct from existing ones (distinct data source or calculation) and document what constitutes the measured entity (e.g., how 'story' differs from 'feature').\n[improvement] Add edge-case validation to acceptance criteria. For stats displaying numeric values, explicitly require handling of zero and falsy states in the AC to catch conditional logic gaps during review, not during Hermes validation.\n[success_pattern] The Sprint Success Rate feature succeeded by having clear, well-defined acceptance criteria (specific calculation, percentage format, capping at 100%, dash fallback) that prevented ambiguity and passed Hermes approval despite code review tool failure.\n[observation] Sprint velocity is low (1 of 3 items done, 67% failure rate). Both failures are preventable through better requirements analysis, not technical execution\u2014all items passed functional testing.",
+      "story": "As a user, I want to see the date of the most recent deploy displayed in the stats section so I can quickly understand how current the application is.",
+      "acceptance_criteria": [
+        "A new stat card labeled 'Last Deploy' appears in the stats section",
+        "The card displays the most recent deploy date formatted as Month DD, YYYY (e.g., May 23, 2026)",
+        "The date is derived from version.json changelog by finding the latest date entry",
+        "If no date is available, the card displays '\u2014' as a fallback",
+        "The card follows the same visual style as the existing stat cards"
+      ],
+      "summary": "Add Last Deploy stat card showing most recent changelog date formatted as Month DD, YYYY",
+      "diff": "diff --git a/index.html b/index.html\nindex 7911033..5629c73 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.30</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 20:39:10 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.31</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:50:59 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -197,6 +197,10 @@\n       <span class=\"stat-value\" id=\"stat-success-rate\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Sprint Success Rate</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-last-deploy\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Last Deploy</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -255,6 +259,14 @@\n           } else {\n             document.getElementById('stat-success-rate').textContent = '\u00e2\u20ac\u201d';\n           }\n+          const deployDates = log.map(e => e.date).filter(Boolean).sort();\n+          if (deployDates.length > 0) {\n+            const latestDate = new Date(deployDates[deployDates.length - 1] + 'T00:00:00');\n+            const formatted = latestDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' });\n+            document.getElementById('stat-last-deploy').textContent = formatted;\n+          } else {\n+            document.getElementById('stat-last-deploy').textContent = '\u00e2\u20ac\u201d';\n+          }\n           const tokens = data.total_tokens;\n           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n         })\ndiff --git a/version.json b/version.json\nindex d4cb9fd..3609dba 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.30\",\n-  \"deployed\": \"2026-05-23 20:39:10 CT\",\n+  \"version\": \"0.1.31\",\n+  \"deployed\": \"2026-05-23 20:50:59 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -158,6 +158,11 @@\n       \"version\": \"0.1.30\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Sprint Success Rate stat card showing versions-per-day as a percentage, capped at 100%, with dash fallback when days unavailable\"\n+    },\n+    {\n+      \"version\": \"0.1.31\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Last Deploy stat card showing the most recent changelog date formatted as Month DD, YYYY\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.31 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-23 20:50:59 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.31: Added Last Deploy stat card showing the most recent changelog date formatted as Month DD, YYYY"
+        }
+      ],
+      "deployed": "2026-05-23 20:50:59 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The implementation correctly extracts the latest deploy date from the changelog, formats it as requested (Month DD, YYYY), and gracefully handles missing data with a dash fallback.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All acceptance criteria are met: the 'Last Deploy' stat card is added to the stats section, the date is formatted as Month DD, YYYY (e.g., 'May 23, 2026'), it derives the date from version.json changelog by sorting dates, displays '\u2014' as fallback when unavailable, and follows the same visual style as existing stat cards.",
+      "hermes_verdict": "approve",
+      "hermes_reason": "Code review: The implementation correctly extracts the latest deploy date from the changelog, formats it as requested (Month DD, YYYY), and gracefully handles missing data with a dash fallback. | AC: All acceptance criteria are met: the 'Last Deploy' stat card is added to the stats section, the date is formatted as Month DD, YYYY (e.g., 'May 23, 2026'), it derives the date from version.json changelog by sorting dates, displays '\u2014' as fallback when unavailable, and follows the same visual style as existing stat cards."
+    },
+    {
+      "id": "1779587297354",
+      "idea": "Show the number of releases made this calendar year in the stats section",
+      "status": "pending",
+      "in_sprint": true
+    },
+    {
+      "id": "1779587297355",
+      "idea": "Show the number of days since the first release in the stats section",
+      "status": "pending",
+      "in_sprint": true
+    },
+    {
+      "id": "1779587297356",
+      "idea": "Show the most recent changelog description in the stats section",
+      "status": "pending",
+      "in_sprint": true
+    },
+    {
+      "id": "1779587297357",
+      "idea": "Show the number of distinct release dates in the stats section",
+      "status": "pending",
+      "in_sprint": true
     }
   ]
 }

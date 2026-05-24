@@ -49,34 +49,6 @@
       height: calc(100vh - 5.5rem);
     }
 
-    /* Channels sidebar */
-    .sidebar {
-      width: 200px;
-      border-right: 1px solid #222;
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-    }
-    .sidebar-header {
-      padding: 0.75rem 1rem;
-      font-size: 0.7rem;
-      color: #555;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      border-bottom: 1px solid #1a1a1a;
-    }
-    .channel-list { flex: 1; overflow-y: auto; }
-    .channel {
-      padding: 0.5rem 1rem;
-      font-size: 0.85rem;
-      color: #777;
-      cursor: pointer;
-      border-left: 2px solid transparent;
-    }
-    .channel:hover { background: #141414; color: #aaa; }
-    .channel.active { color: #6fa8ff; border-left-color: #6fa8ff; background: #0d1a3a22; }
-    .channel-prefix { color: #444; margin-right: 0.35rem; }
-
     /* Main chat area */
     .chat-area {
       flex: 1;
@@ -224,27 +196,9 @@
   </header>
 
   <div class="layout">
-    <aside class="sidebar">
-      <div class="sidebar-header">Channels</div>
-      <div class="channel-list">
-        <div class="channel active" data-channel="general">
-          <span class="channel-prefix">#</span>general
-        </div>
-        <div class="channel" data-channel="backlog">
-          <span class="channel-prefix">#</span>backlog
-        </div>
-        <div class="channel" data-channel="sprint">
-          <span class="channel-prefix">#</span>sprint
-        </div>
-        <div class="channel" data-channel="deployments">
-          <span class="channel-prefix">#</span>deployments
-        </div>
-      </div>
-    </aside>
-
     <div class="chat-area">
       <div class="chat-header">
-        <span id="channel-name">#general</span> &mdash; team channel
+        <span>#general</span> &mdash; team channel
       </div>
       <div class="messages" id="messages">
         <div class="system-msg">— channel created —</div>
@@ -270,13 +224,9 @@
     const messagesEl = document.getElementById('messages');
     const composeEl  = document.getElementById('compose');
     const sendBtn    = document.getElementById('send-btn');
-    const channelNameEl = document.getElementById('channel-name');
+    const STORAGE_KEY = 'hs-msgs-general';
 
-    let activeChannel = 'general';
-
-    function storageKey(ch) { return 'hs-msgs-' + ch; }
-
-    function saveMessages(ch) {
+    function saveMessages() {
       try {
         const msgs = [...messagesEl.querySelectorAll('.message:not(#thinking-msg)')].map(el => ({
           author:  el.querySelector('.msg-author').textContent,
@@ -284,20 +234,20 @@
           isBot:   el.querySelector('.avatar').classList.contains('bot'),
           time:    el.querySelector('.msg-time').textContent,
         }));
-        localStorage.setItem(storageKey(ch), JSON.stringify(msgs));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
       } catch {}
     }
 
-    function loadMessages(ch) {
+    function loadMessages() {
       messagesEl.innerHTML = '';
       try {
-        const stored = JSON.parse(localStorage.getItem(storageKey(ch)) || '[]');
+        const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
         stored.forEach(m => renderMessage(m.author, m.text, m.isBot, m.time));
       } catch {}
       if (!messagesEl.children.length) {
-        renderMessage('hello-scrum', 'Ready. Type a message or a command like <code>/add &lt;story&gt;</code> to queue a backlog item.', true, now());
+        renderMessage('hello-scrum', 'Ready. Type a requirement or ask about a story status.', true, now());
       }
-      messagesEl.scrollTop = messagesEl.scrollHeight;
+      requestAnimationFrame(() => { messagesEl.scrollTop = messagesEl.scrollHeight; });
     }
 
     function renderMessage(author, text, isBot, time) {
@@ -316,18 +266,6 @@
       messagesEl.appendChild(div);
     }
 
-    document.querySelectorAll('.channel').forEach(el => {
-      el.addEventListener('click', () => {
-        saveMessages(activeChannel);
-        document.querySelectorAll('.channel').forEach(c => c.classList.remove('active'));
-        el.classList.add('active');
-        activeChannel = el.dataset.channel;
-        channelNameEl.textContent = '#' + activeChannel;
-        composeEl.placeholder = 'Message #' + activeChannel;
-        loadMessages(activeChannel);
-      });
-    });
-
     function now() {
       return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
@@ -335,7 +273,7 @@
     function appendMessage(author, text, isBot) {
       renderMessage(author, text, isBot, now());
       messagesEl.scrollTop = messagesEl.scrollHeight;
-      saveMessages(activeChannel);
+      saveMessages();
     }
 
     function appendThinking() {
@@ -397,7 +335,7 @@
       container.querySelectorAll('.story-choice').forEach(c => {
         c.classList.add(c === choice ? 'selected' : 'dimmed');
       });
-      saveMessages(activeChannel);
+      saveMessages();
 
       try {
         const res = await fetch('/messenger/choose', {
@@ -412,7 +350,7 @@
       }
     });
 
-    loadMessages(activeChannel);
+    loadMessages();
 
     sendBtn.addEventListener('click', send);
     composeEl.addEventListener('keydown', e => {

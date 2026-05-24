@@ -1,6 +1,6 @@
 {
-  "version": "0.1.32",
-  "deployed": "2026-05-23 20:51:42 CT",
+  "version": "0.1.33",
+  "deployed": "2026-05-23 20:52:23 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -168,6 +168,11 @@
       "version": "0.1.32",
       "date": "2026-05-23",
       "change": "Added Releases This Year stat card showing count of changelog entries dated within the current calendar year"
+    },
+    {
+      "version": "0.1.33",
+      "date": "2026-05-23",
+      "change": "Added Days Since Launch stat card showing the number of days elapsed from the first changelog entry date to today"
     }
   ]
 }

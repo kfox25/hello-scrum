@@ -173,8 +173,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.32</div>
-  <div class="meta">Last deployed: 2026-05-23 20:51:42 CT</div>
+  <div class="version" id="version-badge">v0.1.33</div>
+  <div class="meta">Last deployed: 2026-05-23 20:52:23 CT</div>
   <div class="meta">Status: baseline</div>
   <div class="stats-section" id="stats-section">
     <div class="stat-card">
@@ -204,6 +204,10 @@
     <div class="stat-card">
       <span class="stat-value" id="stat-releases-year">—</span>
       <span class="stat-label">Releases This Year</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value" id="stat-days-since-launch">—</span>
+      <span class="stat-label">Days Since Launch</span>
     </div>
   </div>
   <div class="changelog">
@@ -276,6 +280,15 @@
           document.getElementById('stat-releases-year').textContent = releasesThisYear;
           const tokens = data.total_tokens;
           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';
+          if (dates.length > 0) {
+            const launchDate = new Date(dates[0] + 'T00:00:00');
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const daysSinceLaunch = Math.round((today - launchDate) / 86400000) + 1;
+            document.getElementById('stat-days-since-launch').textContent = daysSinceLaunch;
+          } else {
+            document.getElementById('stat-days-since-launch').textContent = '—';
+          }
         })
         .catch(() => {});
     }

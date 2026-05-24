@@ -2031,13 +2031,61 @@
       "ac_check_verdict": "approve",
       "ac_check_reason": "All acceptance criteria are met: the 'Releases This Year' stat card is visible in the stats section, the JavaScript filters changelog entries by current calendar year using startsWith matching, the value updates dynamically from version.json data, and it displays '0' when no releases exist for the year.",
       "hermes_verdict": "approve",
-      "hermes_reason": "Code review: The code correctly adds a new stat card with proper HTML structure, implements year filtering logic using `startsWith()` on date strings, and updates version/changelog metadata appropriately without introducing syntax errors or scope creep. | AC: All acceptance criteria are met: the 'Releases This Year' stat card is visible in the stats section, the JavaScript filters changelog entries by current calendar year using startsWith matching, the value updates dynamically from version.json data, and it displays '0' when no releases exist for the year."
+      "hermes_reason": "Code review: The code correctly adds a new stat card with proper HTML structure, implements year filtering logic using `startsWith()` on date strings, and updates version/changelog metadata appropriately without introducing syntax errors or scope creep. | AC: All acceptance criteria are met: the 'Releases This Year' stat card is visible in the stats section, the JavaScript filters changelog entries by current calendar year using startsWith matching, the value updates dynamically from version.json data, and it displays '0' when no releases exist for the year.",
+      "started": 1779587502.71759,
+      "stage_times": {
+        "pull": 1779587502.71759,
+        "story": 1779587502.723609,
+        "code": 1779587531.968169,
+        "test": 1779587532.106972,
+        "code_review": 1779587532.26349,
+        "ac_check": 1779587533.772212,
+        "deploy": 1779587535.71071,
+        "done": 1779587538.641928
+      },
+      "tokens_in": 6694,
+      "tokens_out": 2625
     },
     {
       "id": "1779587297355",
       "idea": "Show the number of days since the first release in the stats section",
-      "status": "pending",
-      "in_sprint": true
+      "status": "done",
+      "in_sprint": true,
+      "retro_context": "[success_pattern] Perfect execution on stats section features: both items passed all tests, received Hermes approval, and met 100% of acceptance criteria with clean implementations that handle edge cases (fallback for missing data, zero-count scenarios).\n[success_pattern] Consistent code quality and proper metadata management: version numbers correctly synchronized between version.json and index.html, changelog entries accurately documented, and deployment timestamps properly tracked across both items.\n[observation] Sprint focused on UI enhancements with low complexity\u2014both items involved adding new stat cards with date/count logic rather than substantial architectural changes, enabling rapid delivery with minimal risk.\n[improvement] Maintain this momentum by documenting the stat card component pattern (HTML structure, data-binding approach, fallback handling) to accelerate future similar requests and ensure consistency across stats section additions.",
+      "story": "As a user, I want to see the number of days since the first release in the stats section, so I can understand how long the project has been running.",
+      "acceptance_criteria": [
+        "A new stat card labeled 'Days Since Launch' is displayed in the stats section",
+        "The card shows the number of days from the first changelog entry date to today",
+        "The value updates dynamically by reading the earliest date from version.json changelog",
+        "If no changelog dates are available, the card shows '\u2014' as a fallback"
+      ],
+      "summary": "Add Days Since Launch stat card showing days elapsed from first release date to today",
+      "diff": "diff --git a/index.html b/index.html\nindex 19a9549..d4790d4 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.32</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 20:51:42 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.33</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:52:23 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -205,6 +205,10 @@\n       <span class=\"stat-value\" id=\"stat-releases-year\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Releases This Year</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-days-since-launch\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Days Since Launch</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -276,6 +280,15 @@\n           document.getElementById('stat-releases-year').textContent = releasesThisYear;\n           const tokens = data.total_tokens;\n           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n+          if (dates.length > 0) {\n+            const launchDate = new Date(dates[0] + 'T00:00:00');\n+            const today = new Date();\n+            today.setHours(0, 0, 0, 0);\n+            const daysSinceLaunch = Math.round((today - launchDate) / 86400000) + 1;\n+            document.getElementById('stat-days-since-launch').textContent = daysSinceLaunch;\n+          } else {\n+            document.getElementById('stat-days-since-launch').textContent = '\u00e2\u20ac\u201d';\n+          }\n         })\n         .catch(() => {});\n     }\ndiff --git a/version.json b/version.json\nindex 451cb93..00e2d02 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.32\",\n-  \"deployed\": \"2026-05-23 20:51:42 CT\",\n+  \"version\": \"0.1.33\",\n+  \"deployed\": \"2026-05-23 20:52:23 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -168,6 +168,11 @@\n       \"version\": \"0.1.32\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Releases This Year stat card showing count of changelog entries dated within the current calendar year\"\n+    },\n+    {\n+      \"version\": \"0.1.33\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Days Since Launch stat card showing the number of days elapsed from the first changelog entry date to today\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.33 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-23 20:52:23 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.33: Added Days Since Launch stat card showing the number of days elapsed from the first changelog entry date to today"
+        }
+      ],
+      "deployed": "2026-05-23 20:52:23 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The implementation correctly adds a new stat card with proper date calculations (including timezone normalization and rounding), handles the edge case of missing dates, and maintains consistent code style with existing stats.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All acceptance criteria are met: the 'Days Since Launch' stat card is displayed in the stats section, it calculates days from the earliest changelog date to today, the value updates dynamically by reading from version.json, and it shows '\u2014' as a fallback when no dates are available.",
+      "hermes_verdict": "approve",
+      "hermes_reason": "Code review: The implementation correctly adds a new stat card with proper date calculations (including timezone normalization and rounding), handles the edge case of missing dates, and maintains consistent code style with existing stats. | AC: All acceptance criteria are met: the 'Days Since Launch' stat card is displayed in the stats section, it calculates days from the earliest changelog date to today, the value updates dynamically by reading from version.json, and it shows '\u2014' as a fallback when no dates are available."
     },
     {
       "id": "1779587297356",

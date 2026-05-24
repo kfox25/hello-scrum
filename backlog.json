@@ -1,6 +1,58 @@
 {
   "items": [
     {
+      "id": "1779651021221",
+      "idea": "Change index page title color to red",
+      "in_sprint": true,
+      "status": "done",
+      "story": "As a user, I want the index page title to display in red so that it stands out visually.",
+      "acceptance_criteria": [
+        "The 'Hello Scrum' h1 title on index.html is rendered in red",
+        "No other elements are affected by the color change"
+      ],
+      "retro_context": "[success_pattern] Perfect execution on a well-scoped task: the item passed all acceptance criteria, all tests, and received Hermes approval on the first attempt with clear, correct implementation of the .slice(0, 3) logic.\n[observation] Sprint consisted of a single item with 100% completion rate and zero defects, suggesting either a very short sprint cycle or a selective workload.\n[improvement] Expand sprint capacity or batch multiple related items together: a 1-item sprint with full success indicates the team may be underutilized or working in overly granular increments\u2014consider grouping similar UI cleanup or changelog management tasks.",
+      "summary": "Change index page title color to red",
+      "diff": "diff --git a/index.html b/index.html\nindex 3cced9d..6f4471c 100644\n--- a/index.html\n+++ b/index.html\n@@ -51,7 +51,9 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n-  </style>\n+  \n+.title-wrap h1 { color: red; }\n+</style>\n </head>\n <body>\n   <nav class=\"top-nav\">\n@@ -67,8 +69,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.36</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 21:25:12 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.37</div>\n+  <div class=\"meta\">Last deployed: 2026-05-24 14:50:57 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex efbf8d9..7266584 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.36\",\n-  \"deployed\": \"2026-05-23 20:53:46 CT\",\n+  \"version\": \"0.1.37\",\n+  \"deployed\": \"2026-05-24 14:50:57 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -188,6 +188,11 @@\n       \"version\": \"0.1.36\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Trimmed changelog to last 3 entries and capped Recent Changes display to 3 items\"\n+    },\n+    {\n+      \"version\": \"0.1.37\",\n+      \"date\": \"2026-05-24\",\n+      \"change\": \"Changed index page title color to red\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.37 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-24 14:50:57 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.37: Changed index page title color to red"
+        }
+      ],
+      "deployed": "2026-05-24 14:50:57 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The CSS rule is syntactically valid and correctly targets the h1 element within .title-wrap; the scope is appropriately limited to the requested change, and version/deployment metadata updates are consistent.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The 'Hello Scrum' h1 title is now styled with red color via the .title-wrap h1 selector, no other elements are affected, and all test cases pass.",
+      "hermes_verdict": "approve",
+      "hermes_reason": "Code review: The CSS rule is syntactically valid and correctly targets the h1 element within .title-wrap; the scope is appropriately limited to the requested change, and version/deployment metadata updates are consistent. | AC: The 'Hello Scrum' h1 title is now styled with red color via the .title-wrap h1 selector, no other elements are affected, and all test cases pass."
+    },
+    {
+      "acceptance_criteria": [
+        "The index page title text is rendered in blue color",
+        "The blue color is applied consistently across all browsers",
+        "The color change does not affect the title's font size or layout",
+        "The blue color meets accessibility contrast requirements for readability"
+      ],
+      "id": "1779650086583",
+      "idea": "Style index page title with blue color",
+      "in_sprint": true,
+      "status": "pending",
+      "story": "As a user, I want the index page title to be displayed in blue color so that it stands out and matches the visual design."
+    },
+    {
       "ac_check_reason": "All acceptance criteria are met: the Recent Changes section displays at most 3 entries via .slice(0, 3), shows the most recent entries (0.1.34, 0.1.35, 0.1.36), displays them in reverse-chronological order (newest first), and all older entries have been removed from version.json's changelog array.",
       "ac_check_verdict": "approve",
       "acceptance_criteria": [

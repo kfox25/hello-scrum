@@ -1977,13 +1977,61 @@
       "ac_check_verdict": "approve",
       "ac_check_reason": "All acceptance criteria are met: the 'Last Deploy' stat card is added to the stats section, the date is formatted as Month DD, YYYY (e.g., 'May 23, 2026'), it derives the date from version.json changelog by sorting dates, displays '\u2014' as fallback when unavailable, and follows the same visual style as existing stat cards.",
       "hermes_verdict": "approve",
-      "hermes_reason": "Code review: The implementation correctly extracts the latest deploy date from the changelog, formats it as requested (Month DD, YYYY), and gracefully handles missing data with a dash fallback. | AC: All acceptance criteria are met: the 'Last Deploy' stat card is added to the stats section, the date is formatted as Month DD, YYYY (e.g., 'May 23, 2026'), it derives the date from version.json changelog by sorting dates, displays '\u2014' as fallback when unavailable, and follows the same visual style as existing stat cards."
+      "hermes_reason": "Code review: The implementation correctly extracts the latest deploy date from the changelog, formats it as requested (Month DD, YYYY), and gracefully handles missing data with a dash fallback. | AC: All acceptance criteria are met: the 'Last Deploy' stat card is added to the stats section, the date is formatted as Month DD, YYYY (e.g., 'May 23, 2026'), it derives the date from version.json changelog by sorting dates, displays '\u2014' as fallback when unavailable, and follows the same visual style as existing stat cards.",
+      "started": 1779587459.78831,
+      "stage_times": {
+        "pull": 1779587459.78831,
+        "story": 1779587459.812311,
+        "code": 1779587492.60676,
+        "test": 1779587492.734848,
+        "code_review": 1779587492.990752,
+        "ac_check": 1779587494.133005,
+        "deploy": 1779587495.99458,
+        "done": 1779587499.435839
+      },
+      "tokens_in": 6822,
+      "tokens_out": 2706
     },
     {
       "id": "1779587297354",
       "idea": "Show the number of releases made this calendar year in the stats section",
-      "status": "pending",
-      "in_sprint": true
+      "status": "done",
+      "in_sprint": true,
+      "retro_context": "[success_pattern] Perfect execution on feature delivery: item passed all tests, met all acceptance criteria, and received Hermes approval on first submission with no errors or rework needed.\n[success_pattern] Strong attention to edge cases and UX details: implementation included fallback handling for missing deploy data (dash character) and proper date formatting, demonstrating defensive coding practices.\n[observation] Sprint velocity limited by throughput of 1 item completed; consider evaluating whether sprint capacity or item complexity is the constraining factor.\n[improvement] Document the changelog-as-source-of-truth pattern used for deploy dates to ensure consistency across future features that may need to reference deployment metadata.",
+      "story": "As a user, I want to see the number of releases made this calendar year in the stats section, so I can quickly gauge yearly shipping activity.",
+      "acceptance_criteria": [
+        "A new stat card labeled 'Releases This Year' is visible in the stats section",
+        "The value counts changelog entries whose date falls within the current calendar year",
+        "The value updates dynamically from version.json data",
+        "If no releases exist for the current year, the card displays '0'"
+      ],
+      "summary": "Add Releases This Year stat card counting changelog entries from the current calendar year",
+      "diff": "diff --git a/index.html b/index.html\nindex 5629c73..19a9549 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.31</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 20:50:59 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.32</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:51:42 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -201,6 +201,10 @@\n       <span class=\"stat-value\" id=\"stat-last-deploy\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Last Deploy</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-releases-year\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Releases This Year</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -267,6 +271,9 @@\n           } else {\n             document.getElementById('stat-last-deploy').textContent = '\u00e2\u20ac\u201d';\n           }\n+          const currentYear = new Date().getFullYear().toString();\n+          const releasesThisYear = log.filter(e => e.date && e.date.startsWith(currentYear)).length;\n+          document.getElementById('stat-releases-year').textContent = releasesThisYear;\n           const tokens = data.total_tokens;\n           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n         })\ndiff --git a/version.json b/version.json\nindex 3609dba..451cb93 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.31\",\n-  \"deployed\": \"2026-05-23 20:50:59 CT\",\n+  \"version\": \"0.1.32\",\n+  \"deployed\": \"2026-05-23 20:51:42 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -163,6 +163,11 @@\n       \"version\": \"0.1.31\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Last Deploy stat card showing the most recent changelog date formatted as Month DD, YYYY\"\n+    },\n+    {\n+      \"version\": \"0.1.32\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Releases This Year stat card showing count of changelog entries dated within the current calendar year\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.32 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-23 20:51:42 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.32: Added Releases This Year stat card showing count of changelog entries dated within the current calendar year"
+        }
+      ],
+      "deployed": "2026-05-23 20:51:42 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The code correctly adds a new stat card with proper HTML structure, implements year filtering logic using `startsWith()` on date strings, and updates version/changelog metadata appropriately without introducing syntax errors or scope creep.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All acceptance criteria are met: the 'Releases This Year' stat card is visible in the stats section, the JavaScript filters changelog entries by current calendar year using startsWith matching, the value updates dynamically from version.json data, and it displays '0' when no releases exist for the year.",
+      "hermes_verdict": "approve",
+      "hermes_reason": "Code review: The code correctly adds a new stat card with proper HTML structure, implements year filtering logic using `startsWith()` on date strings, and updates version/changelog metadata appropriately without introducing syntax errors or scope creep. | AC: All acceptance criteria are met: the 'Releases This Year' stat card is visible in the stats section, the JavaScript filters changelog entries by current calendar year using startsWith matching, the value updates dynamically from version.json data, and it displays '0' when no releases exist for the year."
     },
     {
       "id": "1779587297355",

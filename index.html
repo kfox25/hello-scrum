@@ -173,8 +173,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.31</div>
-  <div class="meta">Last deployed: 2026-05-23 20:50:59 CT</div>
+  <div class="version" id="version-badge">v0.1.32</div>
+  <div class="meta">Last deployed: 2026-05-23 20:51:42 CT</div>
   <div class="meta">Status: baseline</div>
   <div class="stats-section" id="stats-section">
     <div class="stat-card">
@@ -200,6 +200,10 @@
     <div class="stat-card">
       <span class="stat-value" id="stat-last-deploy">—</span>
       <span class="stat-label">Last Deploy</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value" id="stat-releases-year">—</span>
+      <span class="stat-label">Releases This Year</span>
     </div>
   </div>
   <div class="changelog">
@@ -267,6 +271,9 @@
           } else {
             document.getElementById('stat-last-deploy').textContent = '—';
           }
+          const currentYear = new Date().getFullYear().toString();
+          const releasesThisYear = log.filter(e => e.date && e.date.startsWith(currentYear)).length;
+          document.getElementById('stat-releases-year').textContent = releasesThisYear;
           const tokens = data.total_tokens;
           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';
         })

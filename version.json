@@ -1,6 +1,6 @@
 {
-  "version": "0.1.29",
-  "deployed": "2026-05-23 17:40:52 CT",
+  "version": "0.1.30",
+  "deployed": "2026-05-23 20:39:10 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -153,6 +153,11 @@
       "version": "0.1.29",
       "date": "2026-05-23",
       "change": "Added Tokens Used stat card to stats section, reading total_tokens from version.json with locale-formatted display"
+    },
+    {
+      "version": "0.1.30",
+      "date": "2026-05-23",
+      "change": "Added Sprint Success Rate stat card showing versions-per-day as a percentage, capped at 100%, with dash fallback when days unavailable"
     }
   ]
 }

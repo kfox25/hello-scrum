@@ -173,8 +173,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.29</div>
-  <div class="meta">Last deployed: 2026-05-23 17:40:52 CT</div>
+  <div class="version" id="version-badge">v0.1.30</div>
+  <div class="meta">Last deployed: 2026-05-23 20:39:10 CT</div>
   <div class="meta">Status: baseline</div>
   <div class="stats-section" id="stats-section">
     <div class="stat-card">
@@ -192,6 +192,10 @@
     <div class="stat-card">
       <span class="stat-value" id="stat-tokens">0</span>
       <span class="stat-label">Tokens Used</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value" id="stat-success-rate">—</span>
+      <span class="stat-label">Sprint Success Rate</span>
     </div>
   </div>
   <div class="changelog">
@@ -235,6 +239,22 @@
             document.getElementById('stat-days').textContent = dates.length ? '1' : '—';
           }
           document.getElementById('stat-features').textContent = log.length;
+          // Sprint success rate: (versions / days) * 100, capped at 100%
+          const srVersions = log.length;
+          let srDays = 0;
+          if (dates.length >= 2) {
+            const srFirst = new Date(dates[0]);
+            const srLast = new Date(dates[dates.length - 1]);
+            srDays = Math.round((srLast - srFirst) / 86400000) + 1;
+          } else if (dates.length === 1) {
+            srDays = 1;
+          }
+          if (srDays > 0) {
+            const rate = Math.min(100, Math.round((srVersions / srDays) * 100));
+            document.getElementById('stat-success-rate').textContent = rate + '%';
+          } else {
+            document.getElementById('stat-success-rate').textContent = '—';
+          }
           const tokens = data.total_tokens;
           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';
         })

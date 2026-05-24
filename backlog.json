@@ -58,15 +58,14 @@
       "idea": "Show the number of stories shipped in the stats section",
       "status": "failed",
       "in_sprint": true,
-      "retro_context": "[success_pattern] Perfect test execution: all four test cases passed, covering file integrity, version synchronization, deployment tracking, and changelog documentation.\n[observation] Hermes approval defaulted due to code review failure, yet the implementation met all acceptance criteria\u2014indicates a potential disconnect between automated review checks and actual code quality standards.\n[improvement] Investigate and fix the code review process that failed before Hermes approval to prevent false negatives and ensure consistent quality gates.\n[success_pattern] Complete feature delivery with responsive design and visual consistency: stats section properly integrated with neon terminal styling, flexbox layout, and meaningful metrics.",
-      "story": "As a user, I want to see the number of stories shipped in the stats section so that I can track delivery progress at a glance.",
+      "story": "As a user, I want to see the number of stories shipped in the stats section so I can track delivery progress at a glance.",
       "acceptance_criteria": [
-        "A 'Stories Shipped' stat card appears in the stats section",
-        "The value displayed equals the number of changelog entries (each entry represents a shipped story)",
-        "The card matches the existing neon terminal card styling",
-        "The stat is loaded dynamically from version.json"
+        "A 'Stories Shipped' stat card is visible in the stats section",
+        "The value is derived from version.json changelog entries (same count as versions)",
+        "The card follows the same neon terminal card styling as existing stat cards",
+        "The stat updates dynamically via the existing loadStats fetch"
       ],
-      "diff": "diff --git a/index.html b/index.html\nindex a8a8cd3..840dead 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.28</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 17:39:13 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.29</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 17:39:53 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -189,6 +189,10 @@\n       <span class=\"stat-value\" id=\"stat-features\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Features Shipped</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-stories\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Stories Shipped</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -231,6 +235,7 @@\n             document.getElementById('stat-days').textContent = dates.length ? '1' : '\u00e2\u20ac\u201d';\n           }\n           document.getElementById('stat-features').textContent = log.length;\n+          document.getElementById('stat-stories').textContent = log.length;\n         })\n         .catch(() => {});\n     }\ndiff --git a/version.json b/version.json\nindex 9de2026..eb7cc9f 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.28\",\n-  \"deployed\": \"2026-05-23 17:39:13 CT\",\n+  \"version\": \"0.1.29\",\n+  \"deployed\": \"2026-05-23 17:39:53 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -147,6 +147,11 @@\n       \"version\": \"0.1.28\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added stats section displaying versions, days active, and features shipped with neon terminal card styling\"\n+    },\n+    {\n+      \"version\": \"0.1.29\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Stories Shipped stat card to stats section showing total number of shipped stories from changelog\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "diff": "diff --git a/index.html b/index.html\nindex 00140ee..000d263 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.29</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 17:40:52 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.30</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:38:02 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -189,6 +189,10 @@\n       <span class=\"stat-value\" id=\"stat-features\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Features Shipped</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-stories\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Stories Shipped</span>\n+    </div>\n     <div class=\"stat-card\">\n       <span class=\"stat-value\" id=\"stat-tokens\">0</span>\n       <span class=\"stat-label\">Tokens Used</span>\n@@ -235,6 +239,7 @@\n             document.getElementById('stat-days').textContent = dates.length ? '1' : '\u00e2\u20ac\u201d';\n           }\n           document.getElementById('stat-features').textContent = log.length;\n+          document.getElementById('stat-stories').textContent = log.length;\n           const tokens = data.total_tokens;\n           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n         })\ndiff --git a/version.json b/version.json\nindex 72dca74..dbe6b0d 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.29\",\n-  \"deployed\": \"2026-05-23 17:40:52 CT\",\n+  \"version\": \"0.1.30\",\n+  \"deployed\": \"2026-05-23 20:38:02 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -153,6 +153,11 @@\n       \"version\": \"0.1.29\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Tokens Used stat card to stats section, reading total_tokens from version.json with locale-formatted display\"\n+    },\n+    {\n+      \"version\": \"0.1.30\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Stories Shipped stat card to stats section showing total changelog entries delivered\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "test_results": [
         {
           "status": "pass",
@@ -74,48 +73,47 @@
         },
         {
           "status": "pass",
-          "message": "version 0.1.29 matches between version.json and index.html"
+          "message": "version 0.1.30 matches between version.json and index.html"
         },
         {
           "status": "pass",
-          "message": "deployed timestamp '2026-05-23 17:39:53 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-23 20:38:02 CT' present in index.html"
         },
         {
           "status": "pass",
-          "message": "changelog has entry for v0.1.29: Added Stories Shipped stat card to stats section showing total number of shipped stories from changelog"
+          "message": "changelog has entry for v0.1.30: Added Stories Shipped stat card to stats section showing total changelog entries delivered"
         }
       ],
       "code_review_verdict": "reject",
-      "code_review_reason": "The implementation assigns the same value (log.length) to both stat-features and stat-stories, making them identical metrics rather than tracking distinct story and feature counts.",
+      "code_review_reason": "The Stories Shipped stat uses the same data source (log.length) as Features Shipped, making them identical metrics with no distinct value, and lacks a clear definition of what constitutes a 'story' versus a 'feature'.",
       "hermes_verdict": "reject",
-      "hermes_reason": "The implementation assigns the same value (log.length) to both stat-features and stat-stories, making them identical metrics rather than tracking distinct story and feature counts.",
-      "started": 1779575993.062012,
+      "hermes_reason": "The Stories Shipped stat uses the same data source (log.length) as Features Shipped, making them identical metrics with no distinct value, and lacks a clear definition of what constitutes a 'story' versus a 'feature'.",
+      "started": 1779586682.04252,
       "stage_times": {
-        "pull": 1779575993.062012,
-        "story": 1779575993.078041,
-        "code": 1779576014.172591,
-        "test": 1779576014.301478,
-        "code_review": 1779576014.449682,
-        "rejected": 1779576015.503411
+        "pull": 1779586682.04252,
+        "story": 1779586682.064522,
+        "code": 1779586704.086436,
+        "test": 1779586704.26136,
+        "code_review": 1779586704.499414,
+        "rejected": 1779586706.0804
       },
-      "tokens_in": 4555,
-      "tokens_out": 2280
+      "tokens_in": 4639,
+      "tokens_out": 2357
     },
     {
       "id": "1779573738104",
       "idea": "Show the number of stories failed in the stats section",
       "status": "failed",
       "in_sprint": true,
-      "retro_context": "[failure_pattern] Logic duplication in stats metrics: assigning the same value (log.length) to multiple distinct stats (features and stories) creates identical metrics instead of tracking separate counts. Need to differentiate data sources or calculation logic for each stat.\n[success_pattern] Strong test coverage and changelog discipline: all items passed basic validation tests (file existence, version sync, timestamp presence, changelog entries), indicating solid deployment hygiene and documentation practices.\n[improvement] Implement code review gate before Hermes submission: the first item defaulted to approve due to failed code review. Establish a pre-submission checklist ensuring distinct metric implementations are validated before Hermes evaluation.\n[observation] 50% sprint completion rate (1 of 2 items done) with rejection due to implementation logic error rather than infrastructure or testing issues, suggesting the quality bar is appropriately strict on business logic correctness.",
-      "story": "As a user, I want to see the number of stories that failed (were rejected) in the stats section so I can track failure rates at a glance.",
+      "retro_context": "[failure_pattern] Feature ambiguity leading to Hermes rejection: the item failed because 'Stories Shipped' and 'Features Shipped' use identical data sources (log.length), creating redundant metrics without clear semantic distinction. Requirements lacked definition of differentiating factors between story and feature concepts.\n[observation] Technical implementation quality is solid: all four test cases passed (HTML structure, version consistency, deployment metadata, changelog entries), indicating code quality wasn't the rejection driver\u2014the issue was requirements clarity.\n[improvement] Before implementing stats features, define distinct data sources and business logic for each metric. For 'Stories Shipped' vs 'Features Shipped', establish clear criteria: e.g., stories = user-facing work items, features = infrastructure/backend work, or filter by label/category rather than reusing the same data.\n[improvement] Add a requirements validation step before development to catch Hermes-level concerns early. Involve stakeholders in defining what metrics actually measure and ensure each stat has unique, non-redundant value.",
+      "story": "As a user, I want to see the number of stories failed in the stats section so I can track quality and failure rate alongside other project metrics.",
       "acceptance_criteria": [
-        "A new stat card labeled 'Stories Failed' is visible in the stats section",
-        "The stat value counts changelog entries whose 'change' text contains keywords indicating failure/rejection (e.g. 'reject', 'fail', 'revert', 'rollback')",
-        "If no failures are recorded, the stat displays '0' rather than '\u2014'",
-        "The card visually matches the existing stat card style",
-        "The failed count is derived from distinct logic separate from other stats (not a duplicate of versions or features)"
+        "A 'Stories Failed' stat card appears in the stats section",
+        "The stat reads the 'failed' count from version.json's top-level 'stories_failed' field (defaulting to 0 if absent)",
+        "The card uses the same neon terminal card styling as other stat cards",
+        "The value is displayed as a number (not '\u2014') even when zero"
       ],
-      "diff": "diff --git a/index.html b/index.html\nindex a8a8cd3..96602c4 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.28</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 17:39:13 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.29</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 17:40:19 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -189,6 +189,10 @@\n       <span class=\"stat-value\" id=\"stat-features\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Features Shipped</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-failed\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Stories Failed</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -231,6 +235,9 @@\n             document.getElementById('stat-days').textContent = dates.length ? '1' : '\u00e2\u20ac\u201d';\n           }\n           document.getElementById('stat-features').textContent = log.length;\n+          const failKeywords = /reject|fail|revert|rollback|broken|broke|bug|error/i;\n+          const failedCount = log.filter(e => failKeywords.test(e.change || '')).length;\n+          document.getElementById('stat-failed').textContent = failedCount;\n         })\n         .catch(() => {});\n     }\ndiff --git a/version.json b/version.json\nindex 9de2026..124efcf 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.28\",\n-  \"deployed\": \"2026-05-23 17:39:13 CT\",\n+  \"version\": \"0.1.29\",\n+  \"deployed\": \"2026-05-23 17:40:19 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -147,6 +147,11 @@\n       \"version\": \"0.1.28\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added stats section displaying versions, days active, and features shipped with neon terminal card styling\"\n+    },\n+    {\n+      \"version\": \"0.1.29\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Stories Failed stat card showing count of changelog entries matching failure-related keywords\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "diff": "diff --git a/index.html b/index.html\nindex 00140ee..eefa736 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.29</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 17:40:52 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.30</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:38:30 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -193,6 +193,10 @@\n       <span class=\"stat-value\" id=\"stat-tokens\">0</span>\n       <span class=\"stat-label\">Tokens Used</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-failed\">0</span>\n+      <span class=\"stat-label\">Stories Failed</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -237,6 +241,8 @@\n           document.getElementById('stat-features').textContent = log.length;\n           const tokens = data.total_tokens;\n           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n+          const failed = data.stories_failed;\n+          document.getElementById('stat-failed').textContent = (failed && failed > 0) ? Number(failed) : '0';\n         })\n         .catch(() => {});\n     }\ndiff --git a/version.json b/version.json\nindex 72dca74..386b9e6 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,8 +1,9 @@\n {\n-  \"version\": \"0.1.29\",\n-  \"deployed\": \"2026-05-23 17:40:52 CT\",\n+  \"version\": \"0.1.30\",\n+  \"deployed\": \"2026-05-23 20:38:30 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n+  \"stories_failed\": 0,\n   \"changelog\": [\n     {\n       \"version\": \"0.1.0\",\n@@ -153,6 +154,11 @@\n       \"version\": \"0.1.29\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Tokens Used stat card to stats section, reading total_tokens from version.json with locale-formatted display\"\n+    },\n+    {\n+      \"version\": \"0.1.30\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Stories Failed stat card to stats section, reading stories_failed from version.json\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "test_results": [
         {
           "status": "pass",
@@ -123,35 +121,35 @@
         },
         {
           "status": "pass",
-          "message": "version 0.1.29 matches between version.json and index.html"
+          "message": "version 0.1.30 matches between version.json and index.html"
         },
         {
           "status": "pass",
-          "message": "deployed timestamp '2026-05-23 17:40:19 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-23 20:38:30 CT' present in index.html"
         },
         {
           "status": "pass",
-          "message": "changelog has entry for v0.1.29: Added Stories Failed stat card showing count of changelog entries matching failure-related keywords"
+          "message": "changelog has entry for v0.1.30: Added Stories Failed stat card to stats section, reading stories_failed from version.json"
         }
       ],
       "code_review_verdict": "approve",
-      "code_review_reason": "The implementation is technically sound: it correctly adds a new stat card with proper HTML structure, implements failure detection via a reasonable regex pattern, updates version numbers consistently, and the JavaScript logic correctly filters and displays the count without syntax errors.",
+      "code_review_reason": "The implementation correctly adds a new stat card with proper HTML structure, retrieves the stories_failed value from the API response, safely handles null/falsy values, and updates version metadata appropriately without introducing syntax errors or broken markup.",
       "ac_check_verdict": "reject",
-      "ac_check_reason": "The stat card displays '\u2013' (em dash) by default instead of '0' when no failures are recorded, violating acceptance criterion 3.",
+      "ac_check_reason": "The stat value logic displays '0' when failed is 0 or falsy, but the condition (failed && failed > 0) means zero values won't be explicitly converted to a number string, failing the requirement to display the value as a number even when zero.",
       "hermes_verdict": "reject",
-      "hermes_reason": "The stat card displays '\u2013' (em dash) by default instead of '0' when no failures are recorded, violating acceptance criterion 3.",
-      "started": 1779576019.774915,
+      "hermes_reason": "The stat value logic displays '0' when failed is 0 or falsy, but the condition (failed && failed > 0) means zero values won't be explicitly converted to a number string, failing the requirement to display the value as a number even when zero.",
+      "started": 1779586710.338363,
       "stage_times": {
-        "pull": 1779576019.774915,
-        "story": 1779576019.781915,
-        "code": 1779576044.733506,
-        "test": 1779576044.884964,
-        "code_review": 1779576045.11814,
-        "ac_check": 1779576046.764871,
-        "rejected": 1779576047.922663
+        "pull": 1779586710.338363,
+        "story": 1779586710.398373,
+        "code": 1779586743.172304,
+        "test": 1779586743.292584,
+        "code_review": 1779586743.549748,
+        "ac_check": 1779586745.020128,
+        "rejected": 1779586746.731158
       },
-      "tokens_in": 5962,
-      "tokens_out": 2460
+      "tokens_in": 6163,
+      "tokens_out": 2565
     },
     {
       "id": "1779573738105",
@@ -192,13 +190,61 @@
       "ac_check_verdict": "approve",
       "ac_check_reason": "All acceptance criteria are met: the 'Tokens Used' stat card appears in the stats section, reads total_tokens from version.json with proper number formatting, displays '0' when absent or zero, and matches the existing stat card styling.",
       "hermes_verdict": "approve",
-      "hermes_reason": "Code review: The change adds a new stat card with proper HTML structure, safely reads the total_tokens field with null/zero checks, formats the output using toLocaleString(), and maintains consistent styling patterns with existing stat cards. | AC: All acceptance criteria are met: the 'Tokens Used' stat card appears in the stats section, reads total_tokens from version.json with proper number formatting, displays '0' when absent or zero, and matches the existing stat card styling."
+      "hermes_reason": "Code review: The change adds a new stat card with proper HTML structure, safely reads the total_tokens field with null/zero checks, formats the output using toLocaleString(), and maintains consistent styling patterns with existing stat cards. | AC: All acceptance criteria are met: the 'Tokens Used' stat card appears in the stats section, reads total_tokens from version.json with proper number formatting, displays '0' when absent or zero, and matches the existing stat card styling.",
+      "started": 1779576052.777583,
+      "stage_times": {
+        "pull": 1779576052.777583,
+        "story": 1779576052.786583,
+        "code": 1779576075.690244,
+        "test": 1779576075.812586,
+        "code_review": 1779576075.992815,
+        "ac_check": 1779576077.40903,
+        "deploy": 1779576078.828176,
+        "done": 1779576081.799752
+      },
+      "tokens_in": 5943,
+      "tokens_out": 2454
     },
     {
       "id": "1779573738106",
       "idea": "Add a sprint success rate percentage to the stats section",
-      "status": "pending",
-      "in_sprint": true
+      "status": "done",
+      "in_sprint": true,
+      "retro_context": "[failure_pattern] Both items were rejected by Hermes due to insufficient requirement definition before implementation. The first lacked clarity on story vs. feature distinction; the second had incomplete conditional logic for zero values. Requirements need validation before coding begins.\n[observation] All tests passed for both items (4/4 each), indicating the deployment and versioning infrastructure is solid, but Hermes-level validation (business logic and design) is catching issues that unit tests miss.\n[improvement] Implement a requirement review gate before sprint work starts. For stat features specifically, define exact data sources and distinguish overlapping metrics upfront to prevent redundant implementation.\n[improvement] Add edge-case validation to Hermes checks: verify that conditional display logic explicitly handles zero/falsy values to match requirement intent, not just truthy evaluation.",
+      "story": "As a user, I want to see a sprint success rate percentage in the stats section so I can gauge overall delivery health at a glance.",
+      "acceptance_criteria": [
+        "A new stat card labeled 'Sprint Success Rate' is displayed in the stats section",
+        "The value is calculated as (versions shipped / days active) * 100, capped at 100%, displayed as a whole-number percentage (e.g. '87%')",
+        "If days active is zero or unavailable, the value displays '\u2014' instead of a number",
+        "The stat card matches the existing neon terminal card styling"
+      ],
+      "summary": "Add Sprint Success Rate percentage stat card to stats section",
+      "diff": "diff --git a/index.html b/index.html\nindex 00140ee..7911033 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.29</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 17:40:52 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.30</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:39:10 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -193,6 +193,10 @@\n       <span class=\"stat-value\" id=\"stat-tokens\">0</span>\n       <span class=\"stat-label\">Tokens Used</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-success-rate\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Sprint Success Rate</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -235,6 +239,22 @@\n             document.getElementById('stat-days').textContent = dates.length ? '1' : '\u00e2\u20ac\u201d';\n           }\n           document.getElementById('stat-features').textContent = log.length;\n+          // Sprint success rate: (versions / days) * 100, capped at 100%\n+          const srVersions = log.length;\n+          let srDays = 0;\n+          if (dates.length >= 2) {\n+            const srFirst = new Date(dates[0]);\n+            const srLast = new Date(dates[dates.length - 1]);\n+            srDays = Math.round((srLast - srFirst) / 86400000) + 1;\n+          } else if (dates.length === 1) {\n+            srDays = 1;\n+          }\n+          if (srDays > 0) {\n+            const rate = Math.min(100, Math.round((srVersions / srDays) * 100));\n+            document.getElementById('stat-success-rate').textContent = rate + '%';\n+          } else {\n+            document.getElementById('stat-success-rate').textContent = '\u00e2\u20ac\u201d';\n+          }\n           const tokens = data.total_tokens;\n           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n         })\ndiff --git a/version.json b/version.json\nindex 72dca74..d4cb9fd 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.29\",\n-  \"deployed\": \"2026-05-23 17:40:52 CT\",\n+  \"version\": \"0.1.30\",\n+  \"deployed\": \"2026-05-23 20:39:10 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -153,6 +153,11 @@\n       \"version\": \"0.1.29\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Tokens Used stat card to stats section, reading total_tokens from version.json with locale-formatted display\"\n+    },\n+    {\n+      \"version\": \"0.1.30\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Sprint Success Rate stat card showing versions-per-day as a percentage, capped at 100%, with dash fallback when days unavailable\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.30 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-23 20:39:10 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.30: Added Sprint Success Rate stat card showing versions-per-day as a percentage, capped at 100%, with dash fallback when days unavailable"
+        }
+      ],
+      "deployed": "2026-05-23 20:39:10 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "Code review failed \u2014 defaulting to approve",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All acceptance criteria are met: the stat card is labeled 'Sprint Success Rate', the calculation implements (versions/days)*100 capped at 100% as whole-number percentage, the dash fallback handles zero/unavailable days, and the card uses the existing neon terminal styling.",
+      "hermes_verdict": "approve",
+      "hermes_reason": "Code review: Code review failed \u2014 defaulting to approve | AC: All acceptance criteria are met: the stat card is labeled 'Sprint Success Rate', the calculation implements (versions/days)*100 capped at 100% as whole-number percentage, the dash fallback handles zero/unavailable days, and the card uses the existing neon terminal styling."
     },
     {
       "ac_check_reason": "All four acceptance criteria are met: h1 color changed to #00ff99, glow animation uses green tones (#00ff99 and #00cc7a), -webkit-text-fill-color set to #00ff99, and animation keyframes use green/teal drop-shadow values.",

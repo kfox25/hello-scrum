@@ -51,7 +51,41 @@
     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }
     .changelog-entry .cd { color: #444; font-size: 0.73rem; }
     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }
-  </style>
+  
+body {
+    background: #0f1117;
+    color: #e8eaf0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+  }
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px 48px;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: 3.2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 12px;
+    background: linear-gradient(135deg, #7c6aff 0%, #3ecfcf 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero .tagline {
+    font-size: 1.05rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #7a8099;
+    margin-bottom: 0;
+  }
+</style>
 </head>
 <body>
   <nav class="top-nav">
@@ -63,12 +97,12 @@
     <a href="retro.html">Retro</a>
     <a href="workflow.html">Workflow</a>
   </nav>
-  <div class="title-wrap">
+  <div class="hero">
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.37</div>
-  <div class="meta">Last deployed: 2026-05-24 14:50:57 CT</div>
+  <div class="version" id="version-badge">v0.1.38</div>
+  <div class="meta">Last deployed: 2026-05-24 16:23:55 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>

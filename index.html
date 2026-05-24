@@ -184,8 +184,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.35</div>
-  <div class="meta">Last deployed: 2026-05-23 20:53:46 CT</div>
+  <div class="version" id="version-badge">v0.1.36</div>
+  <div class="meta">Last deployed: 2026-05-23 21:25:12 CT</div>
   <div class="meta">Status: baseline</div>
   <div class="stats-section" id="stats-section">
     <div class="stat-card">
@@ -241,7 +241,7 @@
       fetch('/version.json')
         .then(r => r.json())
         .then(data => {
-          const entries = (data.changelog || []).slice().reverse();
+          const entries = (data.changelog || []).slice().reverse().slice(0, 3);
           document.getElementById('changelog-entries').innerHTML = entries.map(e => {
             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;
             return `<div class="changelog-entry">

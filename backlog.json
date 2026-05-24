@@ -1,261 +1,302 @@
 {
   "items": [
     {
-      "id": "1779573738102",
-      "idea": "Add a stats section to the page",
+      "id": 1779587297358,
+      "idea": "clear out all but the last 3 recent changes",
       "status": "done",
       "in_sprint": true,
-      "story": "As a user, I want to see a stats section on the homepage so I can quickly understand key metrics about the project at a glance.",
+      "retro_context": "[success_pattern] Perfect execution on stats section feature set: all 5 items passed Hermes review and all tests on first attempt. The agent demonstrated strong consistency in implementing date-derived metrics with proper fallback handling and dynamic data binding.\n[success_pattern] High-quality acceptance criteria implementation: every item fully satisfied its AC, with Hermes specifically noting correct edge case handling (missing data, timezone normalization, empty states) and clean integration into existing code style.\n[observation] Stats card feature cohesion: all 5 items logically complement each other (deploy date, yearly releases, days since launch, latest change, distinct release days), suggesting strong sprint planning and feature domain focus.\n[improvement] Consider adding integration tests across the full stats section in future sprints to catch potential date calculation edge cases (leap years, timezone boundaries, daylight saving transitions) that unit tests alone may miss.",
+      "story": "As a user, I want the Recent Changes section to show only the last 3 changelog entries so the page stays clean and focused on what matters most.",
+      "acceptance_criteria": [
+        "The Recent Changes section displays at most 3 entries",
+        "The 3 entries shown are the most recent (highest version) entries",
+        "Entries are displayed in reverse-chronological order (newest first)",
+        "All older entries are removed from the changelog array in version.json"
+      ],
+      "summary": "Trim changelog to last 3 entries and cap Recent Changes display to 3 items",
+      "diff": "diff --git a/index.html b/index.html\nindex cfe6a33..bcc49b7 100644\n--- a/index.html\n+++ b/index.html\n@@ -184,8 +184,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.35</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 20:53:46 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.36</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 21:25:12 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -241,7 +241,7 @@\n       fetch('/version.json')\n         .then(r => r.json())\n         .then(data => {\n-          const entries = (data.changelog || []).slice().reverse();\n+          const entries = (data.changelog || []).slice().reverse().slice(0, 3);\n           document.getElementById('changelog-entries').innerHTML = entries.map(e => {\n             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;\n             return `<div class=\"changelog-entry\">\ndiff --git a/version.json b/version.json\nindex 5a53973..a4e6293 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,179 +1,9 @@\n {\n-  \"version\": \"0.1.35\",\n-  \"deployed\": \"2026-05-23 20:53:46 CT\",\n+  \"version\": \"0.1.36\",\n+  \"deployed\": \"2026-05-23 21:25:12 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n-    {\n-      \"version\": \"0.1.0\",\n-      \"date\": \"2026-05-22\",\n-      \"change\": \"Initial hello world\"\n-    },\n-    {\n-      \"version\": \"0.1.1\",\n-      \"date\": \"2026-05-22\",\n-      \"change\": \"Added glowing flicker animation to title for more visual spark\"\n-    },\n-    {\n-      \"version\": \"0.1.2\",\n-      \"date\": \"2026-05-22\",\n-      \"change\": \"Enhanced title with animated neon rainbow gradient sweep for extra spark\"\n-    },\n-    {\n-      \"version\": \"0.1.3\",\n-      \"date\": \"2026-05-22\",\n-      \"change\": \"Added pulse-scale bounce and animated neon glow bar beneath title for extra spark\"\n-    },\n-    {\n-      \"version\": \"0.1.4\",\n-      \"date\": \"2026-05-22\",\n-      \"change\": \"Toned down title size and animations for a calmer, less overwhelming appearance\"\n-    },\n-    {\n-      \"version\": \"0.1.5\",\n-      \"date\": \"2026-05-22\",\n-      \"change\": \"Further toned down title: removed all animations and gradient, replaced with simple static styling\"\n-    },\n-    {\n-      \"version\": \"0.1.6\",\n-      \"date\": \"2026-05-22\",\n-      \"change\": \"Made title bland: muted gray color, reduced weight and letter-spacing, no decorative styling\"\n-    },\n-    {\n-      \"version\": \"0.1.7\",\n-      \"date\": \"2026-05-22\",\n-      \"change\": \"Made title attractive: large bold font with teal-to-cyan gradient and subtle glow\"\n-    },\n-    {\n-      \"version\": \"0.1.8\",\n-      \"date\": \"2026-05-22\",\n-      \"change\": \"Made title warmer: replaced cool teal gradient with amber-to-coral warm tones and soft orange glow\"\n-    },\n-    {\n-      \"version\": \"0.1.9\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Made title more colorful: five-stop gradient spanning pink, amber, yellow, mint, and sky blue\"\n-    },\n-    {\n-      \"version\": \"0.1.10\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Aligned title style with page theme: solid #00ff99 green with subtle glow to match terminal aesthetic\"\n-    },\n-    {\n-      \"version\": \"0.1.11\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Sexier title: larger uppercase lettering with green-to-cyan-to-purple gradient and layered neon glow\"\n-    },\n-    {\n-      \"version\": \"0.1.12\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Animated title: sweeping neon gradient loop with pulsing glow in green, cyan, purple, and pink\"\n-    },\n-    {\n-      \"version\": \"0.1.13\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Bolder title: increased font-weight to 900 for stronger visual presence\"\n-    },\n-    {\n-      \"version\": \"0.1.14\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Bolder title: increased font-size to 4rem, tightened letter-spacing, and added subtle text-stroke for extra visual weight\"\n-    },\n-    {\n-      \"version\": \"0.1.15\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Matched title to terminal aesthetic: monospace font, solid #00ff99 color, subtle glow, no animation or uppercase transform\"\n-    },\n-    {\n-      \"version\": \"0.1.16\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Sexier title: uppercase 3.6rem bold with animated green-cyan-purple-pink neon gradient sweep and pulsing glow\"\n-    },\n-    {\n-      \"version\": \"0.1.17\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Sexier title: enlarged to 4.8rem, wider letter-spacing, faster gradient, plus animated tagline beneath\"\n-    },\n-    {\n-      \"version\": \"0.1.18\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Calmer title: removed all animations, reduced to 2.8rem muted teal, lighter weight, subtle letter-spacing, static tagline\"\n-    },\n-    {\n-      \"version\": \"0.1.19\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Title color updated to #00ff99 to match terminal aesthetic and page-wide green accent style\"\n-    },\n-    {\n-      \"version\": \"0.1.20\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Spicier title: 3.6rem uppercase 900-weight with animated green-cyan-purple-pink neon gradient sweep, pulsing glow, and punchier tagline\"\n-    },\n-    {\n-      \"version\": \"0.1.21\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Updated typography and color scheme to match brand standards: Inter font stack, warmer dark background, more visible tagline accent, consistent nav border-radius\"\n-    },\n-    {\n-      \"version\": \"0.1.22\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Changed homepage title text color to red with matching red neon glow animation\"\n-    },\n-    {\n-      \"version\": \"0.1.23\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Restored green title styling: #00ff99 color and green neon glow animation to match terminal aesthetic\"\n-    },\n-    {\n-      \"version\": \"0.1.24\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Added footer with copyright notice and tagline in terminal aesthetic styling\"\n-    },\n-    {\n-      \"version\": \"0.1.25\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Added separator line above footer to visually distinguish footer from main page content\"\n-    },\n-    {\n-      \"version\": \"0.1.26\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Added GitHub repo URL link to footer in muted neon green style\"\n-    },\n-    {\n-      \"version\": \"0.1.27\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Added 'Powered by Claude' label to footer in muted neon green terminal style\"\n-    },\n-    {\n-      \"version\": \"0.1.28\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Added stats section displaying versions, days active, and features shipped with neon terminal card styling\"\n-    },\n-    {\n-      \"version\": \"0.1.29\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Added Tokens Used stat card to stats section, reading total_tokens from version.json with locale-formatted display\"\n-    },\n-    {\n-      \"version\": \"0.1.30\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Added Sprint Success Rate stat card showing versions-per-day as a percentage, capped at 100%, with dash fallback when days unavailable\"\n-    },\n-    {\n-      \"version\": \"0.1.31\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Added Last Deploy stat card showing the most recent changelog date formatted as Month DD, YYYY\"\n-    },\n-    {\n-      \"version\": \"0.1.32\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Added Releases This Year stat card showing count of changelog entries dated within the current calendar year\"\n-    },\n-    {\n-      \"version\": \"0.1.33\",\n-      \"date\": \"2026-05-23\",\n-      \"change\": \"Added Days Since Launch stat card showing the number of days elapsed from the first changelog entry date to today\"\n-    },\n     {\n       \"version\": \"0.1.34\",\n       \"date\": \"2026-05-23\",\n@@ -183,6 +13,11 @@\n       \"version\": \"0.1.35\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Release Days stat card showing the count of distinct dates across all changelog entries\"\n+    },\n+    {\n+      \"version\": \"0.1.36\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Trimmed changelog to last 3 entries and capped Recent Changes display to 3 items for a cleaner page\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.36 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-23 21:25:12 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.36: Trimmed changelog to last 3 entries and capped Recent Changes display to 3 items for a cleaner page"
+        }
+      ],
+      "deployed": "2026-05-23 21:25:12 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The code change is technically sound: it correctly chains `.slice(0, 3)` to limit displayed entries to the last 3, the version bump and deployment timestamp are properly updated, and the changelog data structure remains valid JSON with appropriate entries preserved.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All acceptance criteria are met: the Recent Changes section displays at most 3 entries via .slice(0, 3), shows the most recent entries (0.1.34, 0.1.35, 0.1.36), displays them in reverse-chronological order (newest first), and all older entries have been removed from version.json's changelog array.",
+      "hermes_verdict": "approve",
+      "hermes_reason": "Code review: The code change is technically sound: it correctly chains `.slice(0, 3)` to limit displayed entries to the last 3, the version bump and deployment timestamp are properly updated, and the changelog data structure remains valid JSON with appropriate entries preserved. | AC: All acceptance criteria are met: the Recent Changes section displays at most 3 entries via .slice(0, 3), shows the most recent entries (0.1.34, 0.1.35, 0.1.36), displays them in reverse-chronological order (newest first), and all older entries have been removed from version.json's changelog array."
+    },
+    {
+      "ac_check_reason": "All four acceptance criteria are met: stats section is positioned between meta info and changelog, displays three meaningful metrics (versions, days active, features shipped), uses consistent neon green terminal styling with appropriate colors and text-shadow effects, and employs flexbox with flex-wrap for responsive horizontal card layout.",
+      "ac_check_verdict": "approve",
       "acceptance_criteria": [
         "A stats section is visible on the homepage between the meta info and the changelog",
         "The stats section displays at least three meaningful metrics (e.g. total versions, days active, features shipped)",
         "Stats are styled consistently with the terminal/neon aesthetic of the page",
         "Stats are laid out in a horizontal row of cards that wraps on small screens"
       ],
-      "summary": "Add stats section with version count, days active, and features shipped metrics",
-      "diff": "diff --git a/index.html b/index.html\nindex 61066fc..a8a8cd3 100644\n--- a/index.html\n+++ b/index.html\n@@ -123,7 +123,41 @@\n       border-top: 1px solid #2a2a2a;\n       margin: 2.5rem auto 0;\n     }\n-  </style>\n+  \n+.stats-section {\n+    display: flex;\n+    flex-wrap: wrap;\n+    gap: 1rem;\n+    justify-content: center;\n+    margin: 1.5rem auto;\n+    max-width: 720px;\n+    padding: 0 1rem;\n+  }\n+  .stat-card {\n+    background: #0d1f14;\n+    border: 1px solid #00ff9944;\n+    border-radius: 8px;\n+    padding: 1rem 1.5rem;\n+    min-width: 140px;\n+    flex: 1 1 140px;\n+    text-align: center;\n+  }\n+  .stat-value {\n+    font-size: 2rem;\n+    font-weight: 700;\n+    color: #00ff99;\n+    text-shadow: 0 0 8px #00ff9966;\n+    display: block;\n+  }\n+  .stat-label {\n+    font-size: 0.72rem;\n+    color: #556;\n+    text-transform: uppercase;\n+    letter-spacing: 0.08em;\n+    margin-top: 0.25rem;\n+    display: block;\n+  }\n+</style>\n </head>\n <body>\n   <nav class=\"top-nav\">\n@@ -139,9 +173,23 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.27</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 15:45:48 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.28</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 17:39:13 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n+  <div class=\"stats-section\" id=\"stats-section\">\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-versions\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Versions</span>\n+    </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-days\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Days Active</span>\n+    </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-features\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Features Shipped</span>\n+    </div>\n+  </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -167,6 +215,26 @@\n         .catch(() => {});\n     }\n     loadChangelog();\n+    function loadStats() {\n+      fetch('/version.json')\n+        .then(r => r.json())\n+        .then(data => {\n+          const log = data.changelog || [];\n+          document.getElementById('stat-versions').textContent = log.length;\n+          const dates = log.map(e => e.date).filter(Boolean).sort();\n+          if (dates.length >= 2) {\n+            const first = new Date(dates[0]);\n+            const last = new Date(dates[dates.length - 1]);\n+            const diff = Math.round((last - first) / 86400000) + 1;\n+            document.getElementById('stat-days').textContent = diff;\n+          } else {\n+            document.getElementById('stat-days').textContent = dates.length ? '1' : '\u00e2\u20ac\u201d';\n+          }\n+          document.getElementById('stat-features').textContent = log.length;\n+        })\n+        .catch(() => {});\n+    }\n+    loadStats();\n   </script>\n   <hr class=\"footer-sep\" />\n   <footer class=\"site-footer\">\ndiff --git a/version.json b/version.json\nindex 3cea703..9de2026 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.27\",\n-  \"deployed\": \"2026-05-23 15:45:48 CT\",\n+  \"version\": \"0.1.28\",\n+  \"deployed\": \"2026-05-23 17:39:13 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -142,6 +142,11 @@\n       \"version\": \"0.1.27\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added 'Powered by Claude' label to footer in muted neon green terminal style\"\n+    },\n+    {\n+      \"version\": \"0.1.28\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added stats section displaying versions, days active, and features shipped with neon terminal card styling\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
-      "test_results": [
-        {
-          "status": "pass",
-          "message": "index.html exists and contains title"
-        },
-        {
-          "status": "pass",
-          "message": "version 0.1.28 matches between version.json and index.html"
-        },
-        {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 17:39:13 CT' present in index.html"
-        },
-        {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.28: Added stats section displaying versions, days active, and features shipped with neon terminal card styling"
-        }
-      ],
-      "deployed": "2026-05-23 17:39:13 CT",
-      "code_review_verdict": "approve",
       "code_review_reason": "Code review failed \u2014 defaulting to approve",
-      "ac_check_verdict": "approve",
-      "ac_check_reason": "All four acceptance criteria are met: stats section is positioned between meta info and changelog, displays three meaningful metrics (versions, days active, features shipped), uses consistent neon green terminal styling with appropriate colors and text-shadow effects, and employs flexbox with flex-wrap for responsive horizontal card layout.",
-      "hermes_verdict": "approve",
+      "code_review_verdict": "approve",
+      "deployed": "2026-05-23 17:39:13 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex 61066fc..a8a8cd3 100644\n--- a/index.html\n+++ b/index.html\n@@ -123,7 +123,41 @@\n       border-top: 1px solid #2a2a2a;\n       margin: 2.5rem auto 0;\n     }\n-  </style>\n+  \n+.stats-section {\n+    display: flex;\n+    flex-wrap: wrap;\n+    gap: 1rem;\n+    justify-content: center;\n+    margin: 1.5rem auto;\n+    max-width: 720px;\n+    padding: 0 1rem;\n+  }\n+  .stat-card {\n+    background: #0d1f14;\n+    border: 1px solid #00ff9944;\n+    border-radius: 8px;\n+    padding: 1rem 1.5rem;\n+    min-width: 140px;\n+    flex: 1 1 140px;\n+    text-align: center;\n+  }\n+  .stat-value {\n+    font-size: 2rem;\n+    font-weight: 700;\n+    color: #00ff99;\n+    text-shadow: 0 0 8px #00ff9966;\n+    display: block;\n+  }\n+  .stat-label {\n+    font-size: 0.72rem;\n+    color: #556;\n+    text-transform: uppercase;\n+    letter-spacing: 0.08em;\n+    margin-top: 0.25rem;\n+    display: block;\n+  }\n+</style>\n </head>\n <body>\n   <nav class=\"top-nav\">\n@@ -139,9 +173,23 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.27</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 15:45:48 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.28</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 17:39:13 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n+  <div class=\"stats-section\" id=\"stats-section\">\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-versions\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Versions</span>\n+    </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-days\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Days Active</span>\n+    </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-features\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Features Shipped</span>\n+    </div>\n+  </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -167,6 +215,26 @@\n         .catch(() => {});\n     }\n     loadChangelog();\n+    function loadStats() {\n+      fetch('/version.json')\n+        .then(r => r.json())\n+        .then(data => {\n+          const log = data.changelog || [];\n+          document.getElementById('stat-versions').textContent = log.length;\n+          const dates = log.map(e => e.date).filter(Boolean).sort();\n+          if (dates.length >= 2) {\n+            const first = new Date(dates[0]);\n+            const last = new Date(dates[dates.length - 1]);\n+            const diff = Math.round((last - first) / 86400000) + 1;\n+            document.getElementById('stat-days').textContent = diff;\n+          } else {\n+            document.getElementById('stat-days').textContent = dates.length ? '1' : '\u00e2\u20ac\u201d';\n+          }\n+          document.getElementById('stat-features').textContent = log.length;\n+        })\n+        .catch(() => {});\n+    }\n+    loadStats();\n   </script>\n   <hr class=\"footer-sep\" />\n   <footer class=\"site-footer\">\ndiff --git a/version.json b/version.json\nindex 3cea703..9de2026 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.27\",\n-  \"deployed\": \"2026-05-23 15:45:48 CT\",\n+  \"version\": \"0.1.28\",\n+  \"deployed\": \"2026-05-23 17:39:13 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -142,6 +142,11 @@\n       \"version\": \"0.1.27\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added 'Powered by Claude' label to footer in muted neon green terminal style\"\n+    },\n+    {\n+      \"version\": \"0.1.28\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added stats section displaying versions, days active, and features shipped with neon terminal card styling\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "hermes_reason": "Code review: Code review failed \u2014 defaulting to approve | AC: All four acceptance criteria are met: stats section is positioned between meta info and changelog, displays three meaningful metrics (versions, days active, features shipped), uses consistent neon green terminal styling with appropriate colors and text-shadow effects, and employs flexbox with flex-wrap for responsive horizontal card layout.",
-      "started": 1779575953.943862,
+      "hermes_verdict": "approve",
+      "id": "1779573738102",
+      "idea": "Add a stats section to the page",
+      "in_sprint": false,
       "stage_times": {
+        "ac_check": 1779575984.696402,
+        "code": 1779575982.947651,
+        "code_review": 1779575983.269481,
+        "deploy": 1779575986.218386,
+        "done": 1779575989.91878,
         "pull": 1779575953.943862,
         "story": 1779575953.969863,
-        "code": 1779575982.947651,
-        "test": 1779575983.077222,
-        "code_review": 1779575983.269481,
-        "ac_check": 1779575984.696402,
-        "deploy": 1779575986.218386,
-        "done": 1779575989.91878
+        "test": 1779575983.077222
       },
+      "started": 1779575953.943862,
+      "status": "done",
+      "story": "As a user, I want to see a stats section on the homepage so I can quickly understand key metrics about the project at a glance.",
+      "summary": "Add stats section with version count, days active, and features shipped metrics",
+      "test_results": [
+        {
+          "message": "index.html exists and contains title",
+          "status": "pass"
+        },
+        {
+          "message": "version 0.1.28 matches between version.json and index.html",
+          "status": "pass"
+        },
+        {
+          "message": "deployed timestamp '2026-05-23 17:39:13 CT' present in index.html",
+          "status": "pass"
+        },
+        {
+          "message": "changelog has entry for v0.1.28: Added stats section displaying versions, days active, and features shipped with neon terminal card styling",
+          "status": "pass"
+        }
+      ],
       "tokens_in": 4843,
       "tokens_out": 2840
     },
     {
-      "id": "1779573738103",
-      "idea": "Show the number of stories shipped in the stats section",
-      "status": "failed",
-      "in_sprint": false,
-      "story": "As a user, I want to see the number of stories shipped in the stats section so I can track delivery progress at a glance.",
       "acceptance_criteria": [
         "A 'Stories Shipped' stat card is visible in the stats section",
         "The value is derived from version.json changelog entries (same count as versions)",
         "The card follows the same neon terminal card styling as existing stat cards",
         "The stat updates dynamically via the existing loadStats fetch"
       ],
+      "code_review_reason": "The Stories Shipped stat uses the same data source (log.length) as Features Shipped, making them identical metrics with no distinct value, and lacks a clear definition of what constitutes a 'story' versus a 'feature'.",
+      "code_review_verdict": "reject",
       "diff": "diff --git a/index.html b/index.html\nindex 00140ee..000d263 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.29</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 17:40:52 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.30</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:38:02 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -189,6 +189,10 @@\n       <span class=\"stat-value\" id=\"stat-features\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Features Shipped</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-stories\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Stories Shipped</span>\n+    </div>\n     <div class=\"stat-card\">\n       <span class=\"stat-value\" id=\"stat-tokens\">0</span>\n       <span class=\"stat-label\">Tokens Used</span>\n@@ -235,6 +239,7 @@\n             document.getElementById('stat-days').textContent = dates.length ? '1' : '\u00e2\u20ac\u201d';\n           }\n           document.getElementById('stat-features').textContent = log.length;\n+          document.getElementById('stat-stories').textContent = log.length;\n           const tokens = data.total_tokens;\n           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n         })\ndiff --git a/version.json b/version.json\nindex 72dca74..dbe6b0d 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.29\",\n-  \"deployed\": \"2026-05-23 17:40:52 CT\",\n+  \"version\": \"0.1.30\",\n+  \"deployed\": \"2026-05-23 20:38:02 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -153,6 +153,11 @@\n       \"version\": \"0.1.29\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Tokens Used stat card to stats section, reading total_tokens from version.json with locale-formatted display\"\n+    },\n+    {\n+      \"version\": \"0.1.30\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Stories Shipped stat card to stats section showing total changelog entries delivered\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_reason": "The Stories Shipped stat uses the same data source (log.length) as Features Shipped, making them identical metrics with no distinct value, and lacks a clear definition of what constitutes a 'story' versus a 'feature'.",
+      "hermes_verdict": "reject",
+      "id": "1779573738103",
+      "idea": "Show the number of stories shipped in the stats section",
+      "in_sprint": false,
+      "stage_times": {
+        "code": 1779586704.086436,
+        "code_review": 1779586704.499414,
+        "pull": 1779586682.04252,
+        "rejected": 1779586706.0804,
+        "story": 1779586682.064522,
+        "test": 1779586704.26136
+      },
+      "started": 1779586682.04252,
+      "status": "failed",
+      "story": "As a user, I want to see the number of stories shipped in the stats section so I can track delivery progress at a glance.",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.30 matches between version.json and index.html"
+          "message": "version 0.1.30 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 20:38:02 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-23 20:38:02 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.30: Added Stories Shipped stat card to stats section showing total changelog entries delivered"
+          "message": "changelog has entry for v0.1.30: Added Stories Shipped stat card to stats section showing total changelog entries delivered",
+          "status": "pass"
         }
       ],
-      "code_review_verdict": "reject",
-      "code_review_reason": "The Stories Shipped stat uses the same data source (log.length) as Features Shipped, making them identical metrics with no distinct value, and lacks a clear definition of what constitutes a 'story' versus a 'feature'.",
-      "hermes_verdict": "reject",
-      "hermes_reason": "The Stories Shipped stat uses the same data source (log.length) as Features Shipped, making them identical metrics with no distinct value, and lacks a clear definition of what constitutes a 'story' versus a 'feature'.",
-      "started": 1779586682.04252,
-      "stage_times": {
-        "pull": 1779586682.04252,
-        "story": 1779586682.064522,
-        "code": 1779586704.086436,
-        "test": 1779586704.26136,
-        "code_review": 1779586704.499414,
-        "rejected": 1779586706.0804
-      },
       "tokens_in": 4639,
       "tokens_out": 2357
     },
     {
-      "id": "1779573738104",
-      "idea": "Show the number of stories failed in the stats section",
-      "status": "failed",
-      "in_sprint": false,
-      "retro_context": "[failure_pattern] Feature ambiguity leading to Hermes rejection: the item failed because 'Stories Shipped' and 'Features Shipped' use identical data sources (log.length), creating redundant metrics without clear semantic distinction. Requirements lacked definition of differentiating factors between story and feature concepts.\n[observation] Technical implementation quality is solid: all four test cases passed (HTML structure, version consistency, deployment metadata, changelog entries), indicating code quality wasn't the rejection driver\u2014the issue was requirements clarity.\n[improvement] Before implementing stats features, define distinct data sources and business logic for each metric. For 'Stories Shipped' vs 'Features Shipped', establish clear criteria: e.g., stories = user-facing work items, features = infrastructure/backend work, or filter by label/category rather than reusing the same data.\n[improvement] Add a requirements validation step before development to catch Hermes-level concerns early. Involve stakeholders in defining what metrics actually measure and ensure each stat has unique, non-redundant value.",
-      "story": "As a user, I want to see the number of stories failed in the stats section so I can track quality and failure rate alongside other project metrics.",
+      "ac_check_reason": "The stat value logic displays '0' when failed is 0 or falsy, but the condition (failed && failed > 0) means zero values won't be explicitly converted to a number string, failing the requirement to display the value as a number even when zero.",
+      "ac_check_verdict": "reject",
       "acceptance_criteria": [
         "A 'Stories Failed' stat card appears in the stats section",
         "The stat reads the 'failed' count from version.json's top-level 'stories_failed' field (defaulting to 0 if absent)",
         "The card uses the same neon terminal card styling as other stat cards",
         "The value is displayed as a number (not '\u2014') even when zero"
       ],
+      "code_review_reason": "The implementation correctly adds a new stat card with proper HTML structure, retrieves the stories_failed value from the API response, safely handles null/falsy values, and updates version metadata appropriately without introducing syntax errors or broken markup.",
+      "code_review_verdict": "approve",
       "diff": "diff --git a/index.html b/index.html\nindex 00140ee..eefa736 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.29</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 17:40:52 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.30</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:38:30 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -193,6 +193,10 @@\n       <span class=\"stat-value\" id=\"stat-tokens\">0</span>\n       <span class=\"stat-label\">Tokens Used</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-failed\">0</span>\n+      <span class=\"stat-label\">Stories Failed</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -237,6 +241,8 @@\n           document.getElementById('stat-features').textContent = log.length;\n           const tokens = data.total_tokens;\n           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n+          const failed = data.stories_failed;\n+          document.getElementById('stat-failed').textContent = (failed && failed > 0) ? Number(failed) : '0';\n         })\n         .catch(() => {});\n     }\ndiff --git a/version.json b/version.json\nindex 72dca74..386b9e6 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,8 +1,9 @@\n {\n-  \"version\": \"0.1.29\",\n-  \"deployed\": \"2026-05-23 17:40:52 CT\",\n+  \"version\": \"0.1.30\",\n+  \"deployed\": \"2026-05-23 20:38:30 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n+  \"stories_failed\": 0,\n   \"changelog\": [\n     {\n       \"version\": \"0.1.0\",\n@@ -153,6 +154,11 @@\n       \"version\": \"0.1.29\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Tokens Used stat card to stats section, reading total_tokens from version.json with locale-formatted display\"\n+    },\n+    {\n+      \"version\": \"0.1.30\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Stories Failed stat card to stats section, reading stories_failed from version.json\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_reason": "The stat value logic displays '0' when failed is 0 or falsy, but the condition (failed && failed > 0) means zero values won't be explicitly converted to a number string, failing the requirement to display the value as a number even when zero.",
+      "hermes_verdict": "reject",
+      "id": "1779573738104",
+      "idea": "Show the number of stories failed in the stats section",
+      "in_sprint": false,
+      "retro_context": "[failure_pattern] Feature ambiguity leading to Hermes rejection: the item failed because 'Stories Shipped' and 'Features Shipped' use identical data sources (log.length), creating redundant metrics without clear semantic distinction. Requirements lacked definition of differentiating factors between story and feature concepts.\n[observation] Technical implementation quality is solid: all four test cases passed (HTML structure, version consistency, deployment metadata, changelog entries), indicating code quality wasn't the rejection driver\u2014the issue was requirements clarity.\n[improvement] Before implementing stats features, define distinct data sources and business logic for each metric. For 'Stories Shipped' vs 'Features Shipped', establish clear criteria: e.g., stories = user-facing work items, features = infrastructure/backend work, or filter by label/category rather than reusing the same data.\n[improvement] Add a requirements validation step before development to catch Hermes-level concerns early. Involve stakeholders in defining what metrics actually measure and ensure each stat has unique, non-redundant value.",
+      "stage_times": {
+        "ac_check": 1779586745.020128,
+        "code": 1779586743.172304,
+        "code_review": 1779586743.549748,
+        "pull": 1779586710.338363,
+        "rejected": 1779586746.731158,
+        "story": 1779586710.398373,
+        "test": 1779586743.292584
+      },
+      "started": 1779586710.338363,
+      "status": "failed",
+      "story": "As a user, I want to see the number of stories failed in the stats section so I can track quality and failure rate alongside other project metrics.",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.30 matches between version.json and index.html"
+          "message": "version 0.1.30 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 20:38:30 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-23 20:38:30 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.30: Added Stories Failed stat card to stats section, reading stories_failed from version.json"
+          "message": "changelog has entry for v0.1.30: Added Stories Failed stat card to stats section, reading stories_failed from version.json",
+          "status": "pass"
         }
       ],
-      "code_review_verdict": "approve",
-      "code_review_reason": "The implementation correctly adds a new stat card with proper HTML structure, retrieves the stories_failed value from the API response, safely handles null/falsy values, and updates version metadata appropriately without introducing syntax errors or broken markup.",
-      "ac_check_verdict": "reject",
-      "ac_check_reason": "The stat value logic displays '0' when failed is 0 or falsy, but the condition (failed && failed > 0) means zero values won't be explicitly converted to a number string, failing the requirement to display the value as a number even when zero.",
-      "hermes_verdict": "reject",
-      "hermes_reason": "The stat value logic displays '0' when failed is 0 or falsy, but the condition (failed && failed > 0) means zero values won't be explicitly converted to a number string, failing the requirement to display the value as a number even when zero.",
-      "started": 1779586710.338363,
-      "stage_times": {
-        "pull": 1779586710.338363,
-        "story": 1779586710.398373,
-        "code": 1779586743.172304,
-        "test": 1779586743.292584,
-        "code_review": 1779586743.549748,
-        "ac_check": 1779586745.020128,
-        "rejected": 1779586746.731158
-      },
       "tokens_in": 6163,
       "tokens_out": 2565
     },
     {
-      "id": "1779573738105",
-      "idea": "Show total tokens consumed in the stats section",
-      "status": "done",
-      "in_sprint": true,
-      "retro_context": "[failure_pattern] Logic errors in metric calculation: both failed items assigned identical values to different metrics (stat-features and stat-stories both using log.length) rather than computing distinct counts. Root cause appears to be copy-paste implementation without adapting the data source.\n[failure_pattern] Default value handling violations: em dash (\u2013) used as fallback instead of numeric zero when no data exists, breaking acceptance criteria that require explicit numeric display for failed story counts.\n[success_pattern] Strong test coverage and changelog discipline: all items passed basic structural tests (file existence, version matching, timestamp presence) and changelog documentation was consistently updated, enabling rapid iteration.\n[improvement] Implement pre-submission validation for metric calculations: add unit tests that verify distinct metrics produce different values and validate default/zero-value rendering matches acceptance criteria before Hermes review.\n[observation] Stats section expansion (3 related items in one sprint) revealed implementation gaps; narrower scope with paired validation tests would have caught duplicate logic and edge case handling before rejection.",
-      "story": "As a user, I want to see the total tokens consumed displayed in the stats section so I can track AI resource usage at a glance.",
+      "ac_check_reason": "All acceptance criteria are met: the 'Tokens Used' stat card appears in the stats section, reads total_tokens from version.json with proper number formatting, displays '0' when absent or zero, and matches the existing stat card styling.",
+      "ac_check_verdict": "approve",
       "acceptance_criteria": [
         "A new stat card labeled 'Tokens Used' appears in the stats section",
         "The card reads the total_tokens field from version.json and displays it as a formatted number",
         "If total_tokens is absent or zero, the card displays '0' (not an em dash)",
         "The card visually matches the existing stat card style"
       ],
-      "summary": "Add Tokens Used stat card to stats section reading total_tokens from version.json",
-      "diff": "diff --git a/index.html b/index.html\nindex a8a8cd3..00140ee 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.28</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 17:39:13 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.29</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 17:40:52 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -189,6 +189,10 @@\n       <span class=\"stat-value\" id=\"stat-features\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Features Shipped</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-tokens\">0</span>\n+      <span class=\"stat-label\">Tokens Used</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -231,6 +235,8 @@\n             document.getElementById('stat-days').textContent = dates.length ? '1' : '\u00e2\u20ac\u201d';\n           }\n           document.getElementById('stat-features').textContent = log.length;\n+          const tokens = data.total_tokens;\n+          document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n         })\n         .catch(() => {});\n     }\ndiff --git a/version.json b/version.json\nindex 9de2026..72dca74 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,7 +1,8 @@\n {\n-  \"version\": \"0.1.28\",\n-  \"deployed\": \"2026-05-23 17:39:13 CT\",\n+  \"version\": \"0.1.29\",\n+  \"deployed\": \"2026-05-23 17:40:52 CT\",\n   \"status\": \"baseline\",\n+  \"total_tokens\": 0,\n   \"changelog\": [\n     {\n       \"version\": \"0.1.0\",\n@@ -147,6 +148,11 @@\n       \"version\": \"0.1.28\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added stats section displaying versions, days active, and features shipped with neon terminal card styling\"\n+    },\n+    {\n+      \"version\": \"0.1.29\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Tokens Used stat card to stats section, reading total_tokens from version.json with locale-formatted display\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
-      "test_results": [
-        {
-          "status": "pass",
-          "message": "index.html exists and contains title"
-        },
-        {
-          "status": "pass",
-          "message": "version 0.1.29 matches between version.json and index.html"
-        },
-        {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 17:40:52 CT' present in index.html"
-        },
-        {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.29: Added Tokens Used stat card to stats section, reading total_tokens from version.json with locale-formatted display"
-        }
-      ],
-      "deployed": "2026-05-23 17:40:52 CT",
-      "code_review_verdict": "approve",
       "code_review_reason": "The change adds a new stat card with proper HTML structure, safely reads the total_tokens field with null/zero checks, formats the output using toLocaleString(), and maintains consistent styling patterns with existing stat cards.",
-      "ac_check_verdict": "approve",
-      "ac_check_reason": "All acceptance criteria are met: the 'Tokens Used' stat card appears in the stats section, reads total_tokens from version.json with proper number formatting, displays '0' when absent or zero, and matches the existing stat card styling.",
-      "hermes_verdict": "approve",
+      "code_review_verdict": "approve",
+      "deployed": "2026-05-23 17:40:52 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex a8a8cd3..00140ee 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.28</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 17:39:13 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.29</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 17:40:52 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -189,6 +189,10 @@\n       <span class=\"stat-value\" id=\"stat-features\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Features Shipped</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-tokens\">0</span>\n+      <span class=\"stat-label\">Tokens Used</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -231,6 +235,8 @@\n             document.getElementById('stat-days').textContent = dates.length ? '1' : '\u00e2\u20ac\u201d';\n           }\n           document.getElementById('stat-features').textContent = log.length;\n+          const tokens = data.total_tokens;\n+          document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n         })\n         .catch(() => {});\n     }\ndiff --git a/version.json b/version.json\nindex 9de2026..72dca74 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,7 +1,8 @@\n {\n-  \"version\": \"0.1.28\",\n-  \"deployed\": \"2026-05-23 17:39:13 CT\",\n+  \"version\": \"0.1.29\",\n+  \"deployed\": \"2026-05-23 17:40:52 CT\",\n   \"status\": \"baseline\",\n+  \"total_tokens\": 0,\n   \"changelog\": [\n     {\n       \"version\": \"0.1.0\",\n@@ -147,6 +148,11 @@\n       \"version\": \"0.1.28\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added stats section displaying versions, days active, and features shipped with neon terminal card styling\"\n+    },\n+    {\n+      \"version\": \"0.1.29\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Tokens Used stat card to stats section, reading total_tokens from version.json with locale-formatted display\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "hermes_reason": "Code review: The change adds a new stat card with proper HTML structure, safely reads the total_tokens field with null/zero checks, formats the output using toLocaleString(), and maintains consistent styling patterns with existing stat cards. | AC: All acceptance criteria are met: the 'Tokens Used' stat card appears in the stats section, reads total_tokens from version.json with proper number formatting, displays '0' when absent or zero, and matches the existing stat card styling.",
-      "started": 1779576052.777583,
+      "hermes_verdict": "approve",
+      "id": "1779573738105",
+      "idea": "Show total tokens consumed in the stats section",
+      "in_sprint": false,
+      "retro_context": "[failure_pattern] Logic errors in metric calculation: both failed items assigned identical values to different metrics (stat-features and stat-stories both using log.length) rather than computing distinct counts. Root cause appears to be copy-paste implementation without adapting the data source.\n[failure_pattern] Default value handling violations: em dash (\u2013) used as fallback instead of numeric zero when no data exists, breaking acceptance criteria that require explicit numeric display for failed story counts.\n[success_pattern] Strong test coverage and changelog discipline: all items passed basic structural tests (file existence, version matching, timestamp presence) and changelog documentation was consistently updated, enabling rapid iteration.\n[improvement] Implement pre-submission validation for metric calculations: add unit tests that verify distinct metrics produce different values and validate default/zero-value rendering matches acceptance criteria before Hermes review.\n[observation] Stats section expansion (3 related items in one sprint) revealed implementation gaps; narrower scope with paired validation tests would have caught duplicate logic and edge case handling before rejection.",
       "stage_times": {
+        "ac_check": 1779576077.40903,
+        "code": 1779576075.690244,
+        "code_review": 1779576075.992815,
+        "deploy": 1779576078.828176,
+        "done": 1779576081.799752,
         "pull": 1779576052.777583,
         "story": 1779576052.786583,
-        "code": 1779576075.690244,
-        "test": 1779576075.812586,
-        "code_review": 1779576075.992815,
-        "ac_check": 1779576077.40903,
-        "deploy": 1779576078.828176,
-        "done": 1779576081.799752
+        "test": 1779576075.812586
       },
+      "started": 1779576052.777583,
+      "status": "done",
+      "story": "As a user, I want to see the total tokens consumed displayed in the stats section so I can track AI resource usage at a glance.",
+      "summary": "Add Tokens Used stat card to stats section reading total_tokens from version.json",
+      "test_results": [
+        {
+          "message": "index.html exists and contains title",
+          "status": "pass"
+        },
+        {
+          "message": "version 0.1.29 matches between version.json and index.html",
+          "status": "pass"
+        },
+        {
+          "message": "deployed timestamp '2026-05-23 17:40:52 CT' present in index.html",
+          "status": "pass"
+        },
+        {
+          "message": "changelog has entry for v0.1.29: Added Tokens Used stat card to stats section, reading total_tokens from version.json with locale-formatted display",
+          "status": "pass"
+        }
+      ],
       "tokens_in": 5943,
       "tokens_out": 2454
     },
     {
-      "id": "1779573738106",
-      "idea": "Add a sprint success rate percentage to the stats section",
-      "status": "done",
-      "in_sprint": false,
-      "retro_context": "[failure_pattern] Both items were rejected by Hermes due to insufficient requirement definition before implementation. The first lacked clarity on story vs. feature distinction; the second had incomplete conditional logic for zero values. Requirements need validation before coding begins.\n[observation] All tests passed for both items (4/4 each), indicating the deployment and versioning infrastructure is solid, but Hermes-level validation (business logic and design) is catching issues that unit tests miss.\n[improvement] Implement a requirement review gate before sprint work starts. For stat features specifically, define exact data sources and distinguish overlapping metrics upfront to prevent redundant implementation.\n[improvement] Add edge-case validation to Hermes checks: verify that conditional display logic explicitly handles zero/falsy values to match requirement intent, not just truthy evaluation.",
-      "story": "As a user, I want to see a sprint success rate percentage in the stats section so I can gauge overall delivery health at a glance.",
+      "ac_check_reason": "All acceptance criteria are met: the stat card is labeled 'Sprint Success Rate', the calculation implements (versions/days)*100 capped at 100% as whole-number percentage, the dash fallback handles zero/unavailable days, and the card uses the existing neon terminal styling.",
+      "ac_check_verdict": "approve",
       "acceptance_criteria": [
         "A new stat card labeled 'Sprint Success Rate' is displayed in the stats section",
         "The value is calculated as (versions shipped / days active) * 100, capped at 100%, displayed as a whole-number percentage (e.g. '87%')",
         "If days active is zero or unavailable, the value displays '\u2014' instead of a number",
         "The stat card matches the existing neon terminal card styling"
       ],
-      "summary": "Add Sprint Success Rate percentage stat card to stats section",
-      "diff": "diff --git a/index.html b/index.html\nindex 00140ee..7911033 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.29</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 17:40:52 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.30</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:39:10 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -193,6 +193,10 @@\n       <span class=\"stat-value\" id=\"stat-tokens\">0</span>\n       <span class=\"stat-label\">Tokens Used</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-success-rate\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Sprint Success Rate</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -235,6 +239,22 @@\n             document.getElementById('stat-days').textContent = dates.length ? '1' : '\u00e2\u20ac\u201d';\n           }\n           document.getElementById('stat-features').textContent = log.length;\n+          // Sprint success rate: (versions / days) * 100, capped at 100%\n+          const srVersions = log.length;\n+          let srDays = 0;\n+          if (dates.length >= 2) {\n+            const srFirst = new Date(dates[0]);\n+            const srLast = new Date(dates[dates.length - 1]);\n+            srDays = Math.round((srLast - srFirst) / 86400000) + 1;\n+          } else if (dates.length === 1) {\n+            srDays = 1;\n+          }\n+          if (srDays > 0) {\n+            const rate = Math.min(100, Math.round((srVersions / srDays) * 100));\n+            document.getElementById('stat-success-rate').textContent = rate + '%';\n+          } else {\n+            document.getElementById('stat-success-rate').textContent = '\u00e2\u20ac\u201d';\n+          }\n           const tokens = data.total_tokens;\n           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n         })\ndiff --git a/version.json b/version.json\nindex 72dca74..d4cb9fd 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.29\",\n-  \"deployed\": \"2026-05-23 17:40:52 CT\",\n+  \"version\": \"0.1.30\",\n+  \"deployed\": \"2026-05-23 20:39:10 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -153,6 +153,11 @@\n       \"version\": \"0.1.29\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Tokens Used stat card to stats section, reading total_tokens from version.json with locale-formatted display\"\n+    },\n+    {\n+      \"version\": \"0.1.30\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Sprint Success Rate stat card showing versions-per-day as a percentage, capped at 100%, with dash fallback when days unavailable\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
-      "test_results": [
-        {
-          "status": "pass",
-          "message": "index.html exists and contains title"
-        },
-        {
-          "status": "pass",
-          "message": "version 0.1.30 matches between version.json and index.html"
-        },
-        {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 20:39:10 CT' present in index.html"
-        },
-        {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.30: Added Sprint Success Rate stat card showing versions-per-day as a percentage, capped at 100%, with dash fallback when days unavailable"
-        }
-      ],
-      "deployed": "2026-05-23 20:39:10 CT",
-      "code_review_verdict": "approve",
       "code_review_reason": "Code review failed \u2014 defaulting to approve",
-      "ac_check_verdict": "approve",
-      "ac_check_reason": "All acceptance criteria are met: the stat card is labeled 'Sprint Success Rate', the calculation implements (versions/days)*100 capped at 100% as whole-number percentage, the dash fallback handles zero/unavailable days, and the card uses the existing neon terminal styling.",
-      "hermes_verdict": "approve",
+      "code_review_verdict": "approve",
+      "deployed": "2026-05-23 20:39:10 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex 00140ee..7911033 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.29</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 17:40:52 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.30</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:39:10 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -193,6 +193,10 @@\n       <span class=\"stat-value\" id=\"stat-tokens\">0</span>\n       <span class=\"stat-label\">Tokens Used</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-success-rate\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Sprint Success Rate</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -235,6 +239,22 @@\n             document.getElementById('stat-days').textContent = dates.length ? '1' : '\u00e2\u20ac\u201d';\n           }\n           document.getElementById('stat-features').textContent = log.length;\n+          // Sprint success rate: (versions / days) * 100, capped at 100%\n+          const srVersions = log.length;\n+          let srDays = 0;\n+          if (dates.length >= 2) {\n+            const srFirst = new Date(dates[0]);\n+            const srLast = new Date(dates[dates.length - 1]);\n+            srDays = Math.round((srLast - srFirst) / 86400000) + 1;\n+          } else if (dates.length === 1) {\n+            srDays = 1;\n+          }\n+          if (srDays > 0) {\n+            const rate = Math.min(100, Math.round((srVersions / srDays) * 100));\n+            document.getElementById('stat-success-rate').textContent = rate + '%';\n+          } else {\n+            document.getElementById('stat-success-rate').textContent = '\u00e2\u20ac\u201d';\n+          }\n           const tokens = data.total_tokens;\n           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n         })\ndiff --git a/version.json b/version.json\nindex 72dca74..d4cb9fd 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.29\",\n-  \"deployed\": \"2026-05-23 17:40:52 CT\",\n+  \"version\": \"0.1.30\",\n+  \"deployed\": \"2026-05-23 20:39:10 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -153,6 +153,11 @@\n       \"version\": \"0.1.29\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Tokens Used stat card to stats section, reading total_tokens from version.json with locale-formatted display\"\n+    },\n+    {\n+      \"version\": \"0.1.30\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Sprint Success Rate stat card showing versions-per-day as a percentage, capped at 100%, with dash fallback when days unavailable\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "hermes_reason": "Code review: Code review failed \u2014 defaulting to approve | AC: All acceptance criteria are met: the stat card is labeled 'Sprint Success Rate', the calculation implements (versions/days)*100 capped at 100% as whole-number percentage, the dash fallback handles zero/unavailable days, and the card uses the existing neon terminal styling.",
-      "started": 1779586750.677573,
+      "hermes_verdict": "approve",
+      "id": "1779573738106",
+      "idea": "Add a sprint success rate percentage to the stats section",
+      "in_sprint": false,
+      "retro_context": "[failure_pattern] Both items were rejected by Hermes due to insufficient requirement definition before implementation. The first lacked clarity on story vs. feature distinction; the second had incomplete conditional logic for zero values. Requirements need validation before coding begins.\n[observation] All tests passed for both items (4/4 each), indicating the deployment and versioning infrastructure is solid, but Hermes-level validation (business logic and design) is catching issues that unit tests miss.\n[improvement] Implement a requirement review gate before sprint work starts. For stat features specifically, define exact data sources and distinguish overlapping metrics upfront to prevent redundant implementation.\n[improvement] Add edge-case validation to Hermes checks: verify that conditional display logic explicitly handles zero/falsy values to match requirement intent, not just truthy evaluation.",
       "stage_times": {
+        "ac_check": 1779586778.346995,
+        "code": 1779586776.668195,
+        "code_review": 1779586776.953851,
+        "deploy": 1779586780.2024,
+        "done": 1779586783.262253,
         "pull": 1779586750.677573,
         "story": 1779586750.748311,
-        "code": 1779586776.668195,
-        "test": 1779586776.789782,
-        "code_review": 1779586776.953851,
-        "ac_check": 1779586778.346995,
-        "deploy": 1779586780.2024,
-        "done": 1779586783.262253
+        "test": 1779586776.789782
       },
+      "started": 1779586750.677573,
+      "status": "done",
+      "story": "As a user, I want to see a sprint success rate percentage in the stats section so I can gauge overall delivery health at a glance.",
+      "summary": "Add Sprint Success Rate percentage stat card to stats section",
+      "test_results": [
+        {
+          "message": "index.html exists and contains title",
+          "status": "pass"
+        },
+        {
+          "message": "version 0.1.30 matches between version.json and index.html",
+          "status": "pass"
+        },
+        {
+          "message": "deployed timestamp '2026-05-23 20:39:10 CT' present in index.html",
+          "status": "pass"
+        },
+        {
+          "message": "changelog has entry for v0.1.30: Added Sprint Success Rate stat card showing versions-per-day as a percentage, capped at 100%, with dash fallback when days unavailable",
+          "status": "pass"
+        }
+      ],
       "tokens_in": 5299,
       "tokens_out": 2670
     },
@@ -1938,12 +1979,8 @@
       ]
     },
     {
-      "id": "1779587297353",
-      "idea": "Show the date of the most recent deploy in the stats section formatted as Month DD, YYYY",
-      "status": "done",
-      "in_sprint": true,
-      "retro_context": "[failure_pattern] Hermes rejections are blocking identical/redundant metrics and incomplete implementations. Both failed items (Stories Shipped and Stories Failed) passed all technical tests but were rejected for logical flaws: Stories Shipped duplicates Features Shipped's data source, and Stories Failed has incomplete conditional logic for zero values.\n[improvement] Require metric design review before implementation. Before coding stats items, validate that the new metric is semantically distinct from existing ones (distinct data source or calculation) and document what constitutes the measured entity (e.g., how 'story' differs from 'feature').\n[improvement] Add edge-case validation to acceptance criteria. For stats displaying numeric values, explicitly require handling of zero and falsy states in the AC to catch conditional logic gaps during review, not during Hermes validation.\n[success_pattern] The Sprint Success Rate feature succeeded by having clear, well-defined acceptance criteria (specific calculation, percentage format, capping at 100%, dash fallback) that prevented ambiguity and passed Hermes approval despite code review tool failure.\n[observation] Sprint velocity is low (1 of 3 items done, 67% failure rate). Both failures are preventable through better requirements analysis, not technical execution\u2014all items passed functional testing.",
-      "story": "As a user, I want to see the date of the most recent deploy displayed in the stats section so I can quickly understand how current the application is.",
+      "ac_check_reason": "All acceptance criteria are met: the 'Last Deploy' stat card is added to the stats section, the date is formatted as Month DD, YYYY (e.g., 'May 23, 2026'), it derives the date from version.json changelog by sorting dates, displays '\u2014' as fallback when unavailable, and follows the same visual style as existing stat cards.",
+      "ac_check_verdict": "approve",
       "acceptance_criteria": [
         "A new stat card labeled 'Last Deploy' appears in the stats section",
         "The card displays the most recent deploy date formatted as Month DD, YYYY (e.g., May 23, 2026)",
@@ -1951,162 +1988,162 @@
         "If no date is available, the card displays '\u2014' as a fallback",
         "The card follows the same visual style as the existing stat cards"
       ],
-      "summary": "Add Last Deploy stat card showing most recent changelog date formatted as Month DD, YYYY",
-      "diff": "diff --git a/index.html b/index.html\nindex 7911033..5629c73 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.30</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 20:39:10 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.31</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:50:59 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -197,6 +197,10 @@\n       <span class=\"stat-value\" id=\"stat-success-rate\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Sprint Success Rate</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-last-deploy\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Last Deploy</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -255,6 +259,14 @@\n           } else {\n             document.getElementById('stat-success-rate').textContent = '\u00e2\u20ac\u201d';\n           }\n+          const deployDates = log.map(e => e.date).filter(Boolean).sort();\n+          if (deployDates.length > 0) {\n+            const latestDate = new Date(deployDates[deployDates.length - 1] + 'T00:00:00');\n+            const formatted = latestDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' });\n+            document.getElementById('stat-last-deploy').textContent = formatted;\n+          } else {\n+            document.getElementById('stat-last-deploy').textContent = '\u00e2\u20ac\u201d';\n+          }\n           const tokens = data.total_tokens;\n           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n         })\ndiff --git a/version.json b/version.json\nindex d4cb9fd..3609dba 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.30\",\n-  \"deployed\": \"2026-05-23 20:39:10 CT\",\n+  \"version\": \"0.1.31\",\n+  \"deployed\": \"2026-05-23 20:50:59 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -158,6 +158,11 @@\n       \"version\": \"0.1.30\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Sprint Success Rate stat card showing versions-per-day as a percentage, capped at 100%, with dash fallback when days unavailable\"\n+    },\n+    {\n+      \"version\": \"0.1.31\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Last Deploy stat card showing the most recent changelog date formatted as Month DD, YYYY\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
-      "test_results": [
-        {
-          "status": "pass",
-          "message": "index.html exists and contains title"
-        },
-        {
-          "status": "pass",
-          "message": "version 0.1.31 matches between version.json and index.html"
-        },
-        {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 20:50:59 CT' present in index.html"
-        },
-        {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.31: Added Last Deploy stat card showing the most recent changelog date formatted as Month DD, YYYY"
-        }
-      ],
-      "deployed": "2026-05-23 20:50:59 CT",
-      "code_review_verdict": "approve",
       "code_review_reason": "The implementation correctly extracts the latest deploy date from the changelog, formats it as requested (Month DD, YYYY), and gracefully handles missing data with a dash fallback.",
-      "ac_check_verdict": "approve",
-      "ac_check_reason": "All acceptance criteria are met: the 'Last Deploy' stat card is added to the stats section, the date is formatted as Month DD, YYYY (e.g., 'May 23, 2026'), it derives the date from version.json changelog by sorting dates, displays '\u2014' as fallback when unavailable, and follows the same visual style as existing stat cards.",
-      "hermes_verdict": "approve",
+      "code_review_verdict": "approve",
+      "deployed": "2026-05-23 20:50:59 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex 7911033..5629c73 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.30</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 20:39:10 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.31</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:50:59 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -197,6 +197,10 @@\n       <span class=\"stat-value\" id=\"stat-success-rate\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Sprint Success Rate</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-last-deploy\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Last Deploy</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -255,6 +259,14 @@\n           } else {\n             document.getElementById('stat-success-rate').textContent = '\u00e2\u20ac\u201d';\n           }\n+          const deployDates = log.map(e => e.date).filter(Boolean).sort();\n+          if (deployDates.length > 0) {\n+            const latestDate = new Date(deployDates[deployDates.length - 1] + 'T00:00:00');\n+            const formatted = latestDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' });\n+            document.getElementById('stat-last-deploy').textContent = formatted;\n+          } else {\n+            document.getElementById('stat-last-deploy').textContent = '\u00e2\u20ac\u201d';\n+          }\n           const tokens = data.total_tokens;\n           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n         })\ndiff --git a/version.json b/version.json\nindex d4cb9fd..3609dba 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.30\",\n-  \"deployed\": \"2026-05-23 20:39:10 CT\",\n+  \"version\": \"0.1.31\",\n+  \"deployed\": \"2026-05-23 20:50:59 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -158,6 +158,11 @@\n       \"version\": \"0.1.30\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Sprint Success Rate stat card showing versions-per-day as a percentage, capped at 100%, with dash fallback when days unavailable\"\n+    },\n+    {\n+      \"version\": \"0.1.31\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Last Deploy stat card showing the most recent changelog date formatted as Month DD, YYYY\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "hermes_reason": "Code review: The implementation correctly extracts the latest deploy date from the changelog, formats it as requested (Month DD, YYYY), and gracefully handles missing data with a dash fallback. | AC: All acceptance criteria are met: the 'Last Deploy' stat card is added to the stats section, the date is formatted as Month DD, YYYY (e.g., 'May 23, 2026'), it derives the date from version.json changelog by sorting dates, displays '\u2014' as fallback when unavailable, and follows the same visual style as existing stat cards.",
-      "started": 1779587459.78831,
+      "hermes_verdict": "approve",
+      "id": "1779587297353",
+      "idea": "Show the date of the most recent deploy in the stats section formatted as Month DD, YYYY",
+      "in_sprint": false,
+      "retro_context": "[failure_pattern] Hermes rejections are blocking identical/redundant metrics and incomplete implementations. Both failed items (Stories Shipped and Stories Failed) passed all technical tests but were rejected for logical flaws: Stories Shipped duplicates Features Shipped's data source, and Stories Failed has incomplete conditional logic for zero values.\n[improvement] Require metric design review before implementation. Before coding stats items, validate that the new metric is semantically distinct from existing ones (distinct data source or calculation) and document what constitutes the measured entity (e.g., how 'story' differs from 'feature').\n[improvement] Add edge-case validation to acceptance criteria. For stats displaying numeric values, explicitly require handling of zero and falsy states in the AC to catch conditional logic gaps during review, not during Hermes validation.\n[success_pattern] The Sprint Success Rate feature succeeded by having clear, well-defined acceptance criteria (specific calculation, percentage format, capping at 100%, dash fallback) that prevented ambiguity and passed Hermes approval despite code review tool failure.\n[observation] Sprint velocity is low (1 of 3 items done, 67% failure rate). Both failures are preventable through better requirements analysis, not technical execution\u2014all items passed functional testing.",
       "stage_times": {
+        "ac_check": 1779587494.133005,
+        "code": 1779587492.60676,
+        "code_review": 1779587492.990752,
+        "deploy": 1779587495.99458,
+        "done": 1779587499.435839,
         "pull": 1779587459.78831,
         "story": 1779587459.812311,
-        "code": 1779587492.60676,
-        "test": 1779587492.734848,
-        "code_review": 1779587492.990752,
-        "ac_check": 1779587494.133005,
-        "deploy": 1779587495.99458,
-        "done": 1779587499.435839
+        "test": 1779587492.734848
       },
+      "started": 1779587459.78831,
+      "status": "done",
+      "story": "As a user, I want to see the date of the most recent deploy displayed in the stats section so I can quickly understand how current the application is.",
+      "summary": "Add Last Deploy stat card showing most recent changelog date formatted as Month DD, YYYY",
+      "test_results": [
+        {
+          "message": "index.html exists and contains title",
+          "status": "pass"
+        },
+        {
+          "message": "version 0.1.31 matches between version.json and index.html",
+          "status": "pass"
+        },
+        {
+          "message": "deployed timestamp '2026-05-23 20:50:59 CT' present in index.html",
+          "status": "pass"
+        },
+        {
+          "message": "changelog has entry for v0.1.31: Added Last Deploy stat card showing the most recent changelog date formatted as Month DD, YYYY",
+          "status": "pass"
+        }
+      ],
       "tokens_in": 6822,
       "tokens_out": 2706
     },
     {
-      "id": "1779587297354",
-      "idea": "Show the number of releases made this calendar year in the stats section",
-      "status": "done",
-      "in_sprint": true,
-      "retro_context": "[success_pattern] Perfect execution on feature delivery: item passed all tests, met all acceptance criteria, and received Hermes approval on first submission with no errors or rework needed.\n[success_pattern] Strong attention to edge cases and UX details: implementation included fallback handling for missing deploy data (dash character) and proper date formatting, demonstrating defensive coding practices.\n[observation] Sprint velocity limited by throughput of 1 item completed; consider evaluating whether sprint capacity or item complexity is the constraining factor.\n[improvement] Document the changelog-as-source-of-truth pattern used for deploy dates to ensure consistency across future features that may need to reference deployment metadata.",
-      "story": "As a user, I want to see the number of releases made this calendar year in the stats section, so I can quickly gauge yearly shipping activity.",
+      "ac_check_reason": "All acceptance criteria are met: the 'Releases This Year' stat card is visible in the stats section, the JavaScript filters changelog entries by current calendar year using startsWith matching, the value updates dynamically from version.json data, and it displays '0' when no releases exist for the year.",
+      "ac_check_verdict": "approve",
       "acceptance_criteria": [
         "A new stat card labeled 'Releases This Year' is visible in the stats section",
         "The value counts changelog entries whose date falls within the current calendar year",
         "The value updates dynamically from version.json data",
         "If no releases exist for the current year, the card displays '0'"
       ],
-      "summary": "Add Releases This Year stat card counting changelog entries from the current calendar year",
-      "diff": "diff --git a/index.html b/index.html\nindex 5629c73..19a9549 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.31</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 20:50:59 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.32</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:51:42 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -201,6 +201,10 @@\n       <span class=\"stat-value\" id=\"stat-last-deploy\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Last Deploy</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-releases-year\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Releases This Year</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -267,6 +271,9 @@\n           } else {\n             document.getElementById('stat-last-deploy').textContent = '\u00e2\u20ac\u201d';\n           }\n+          const currentYear = new Date().getFullYear().toString();\n+          const releasesThisYear = log.filter(e => e.date && e.date.startsWith(currentYear)).length;\n+          document.getElementById('stat-releases-year').textContent = releasesThisYear;\n           const tokens = data.total_tokens;\n           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n         })\ndiff --git a/version.json b/version.json\nindex 3609dba..451cb93 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.31\",\n-  \"deployed\": \"2026-05-23 20:50:59 CT\",\n+  \"version\": \"0.1.32\",\n+  \"deployed\": \"2026-05-23 20:51:42 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -163,6 +163,11 @@\n       \"version\": \"0.1.31\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Last Deploy stat card showing the most recent changelog date formatted as Month DD, YYYY\"\n+    },\n+    {\n+      \"version\": \"0.1.32\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Releases This Year stat card showing count of changelog entries dated within the current calendar year\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
-      "test_results": [
-        {
-          "status": "pass",
-          "message": "index.html exists and contains title"
-        },
-        {
-          "status": "pass",
-          "message": "version 0.1.32 matches between version.json and index.html"
-        },
-        {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 20:51:42 CT' present in index.html"
-        },
-        {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.32: Added Releases This Year stat card showing count of changelog entries dated within the current calendar year"
-        }
-      ],
-      "deployed": "2026-05-23 20:51:42 CT",
-      "code_review_verdict": "approve",
       "code_review_reason": "The code correctly adds a new stat card with proper HTML structure, implements year filtering logic using `startsWith()` on date strings, and updates version/changelog metadata appropriately without introducing syntax errors or scope creep.",
-      "ac_check_verdict": "approve",
-      "ac_check_reason": "All acceptance criteria are met: the 'Releases This Year' stat card is visible in the stats section, the JavaScript filters changelog entries by current calendar year using startsWith matching, the value updates dynamically from version.json data, and it displays '0' when no releases exist for the year.",
-      "hermes_verdict": "approve",
+      "code_review_verdict": "approve",
+      "deployed": "2026-05-23 20:51:42 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex 5629c73..19a9549 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.31</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 20:50:59 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.32</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:51:42 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -201,6 +201,10 @@\n       <span class=\"stat-value\" id=\"stat-last-deploy\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Last Deploy</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-releases-year\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Releases This Year</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -267,6 +271,9 @@\n           } else {\n             document.getElementById('stat-last-deploy').textContent = '\u00e2\u20ac\u201d';\n           }\n+          const currentYear = new Date().getFullYear().toString();\n+          const releasesThisYear = log.filter(e => e.date && e.date.startsWith(currentYear)).length;\n+          document.getElementById('stat-releases-year').textContent = releasesThisYear;\n           const tokens = data.total_tokens;\n           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n         })\ndiff --git a/version.json b/version.json\nindex 3609dba..451cb93 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.31\",\n-  \"deployed\": \"2026-05-23 20:50:59 CT\",\n+  \"version\": \"0.1.32\",\n+  \"deployed\": \"2026-05-23 20:51:42 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -163,6 +163,11 @@\n       \"version\": \"0.1.31\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Last Deploy stat card showing the most recent changelog date formatted as Month DD, YYYY\"\n+    },\n+    {\n+      \"version\": \"0.1.32\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Releases This Year stat card showing count of changelog entries dated within the current calendar year\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "hermes_reason": "Code review: The code correctly adds a new stat card with proper HTML structure, implements year filtering logic using `startsWith()` on date strings, and updates version/changelog metadata appropriately without introducing syntax errors or scope creep. | AC: All acceptance criteria are met: the 'Releases This Year' stat card is visible in the stats section, the JavaScript filters changelog entries by current calendar year using startsWith matching, the value updates dynamically from version.json data, and it displays '0' when no releases exist for the year.",
-      "started": 1779587502.71759,
+      "hermes_verdict": "approve",
+      "id": "1779587297354",
+      "idea": "Show the number of releases made this calendar year in the stats section",
+      "in_sprint": false,
+      "retro_context": "[success_pattern] Perfect execution on feature delivery: item passed all tests, met all acceptance criteria, and received Hermes approval on first submission with no errors or rework needed.\n[success_pattern] Strong attention to edge cases and UX details: implementation included fallback handling for missing deploy data (dash character) and proper date formatting, demonstrating defensive coding practices.\n[observation] Sprint velocity limited by throughput of 1 item completed; consider evaluating whether sprint capacity or item complexity is the constraining factor.\n[improvement] Document the changelog-as-source-of-truth pattern used for deploy dates to ensure consistency across future features that may need to reference deployment metadata.",
       "stage_times": {
+        "ac_check": 1779587533.772212,
+        "code": 1779587531.968169,
+        "code_review": 1779587532.26349,
+        "deploy": 1779587535.71071,
+        "done": 1779587538.641928,
         "pull": 1779587502.71759,
         "story": 1779587502.723609,
-        "code": 1779587531.968169,
-        "test": 1779587532.106972,
-        "code_review": 1779587532.26349,
-        "ac_check": 1779587533.772212,
-        "deploy": 1779587535.71071,
-        "done": 1779587538.641928
+        "test": 1779587532.106972
       },
+      "started": 1779587502.71759,
+      "status": "done",
+      "story": "As a user, I want to see the number of releases made this calendar year in the stats section, so I can quickly gauge yearly shipping activity.",
+      "summary": "Add Releases This Year stat card counting changelog entries from the current calendar year",
+      "test_results": [
+        {
+          "message": "index.html exists and contains title",
+          "status": "pass"
+        },
+        {
+          "message": "version 0.1.32 matches between version.json and index.html",
+          "status": "pass"
+        },
+        {
+          "message": "deployed timestamp '2026-05-23 20:51:42 CT' present in index.html",
+          "status": "pass"
+        },
+        {
+          "message": "changelog has entry for v0.1.32: Added Releases This Year stat card showing count of changelog entries dated within the current calendar year",
+          "status": "pass"
+        }
+      ],
       "tokens_in": 6694,
       "tokens_out": 2625
     },
     {
-      "id": "1779587297355",
-      "idea": "Show the number of days since the first release in the stats section",
-      "status": "done",
-      "in_sprint": true,
-      "retro_context": "[success_pattern] Perfect execution on stats section features: both items passed all tests, received Hermes approval, and met 100% of acceptance criteria with clean implementations that handle edge cases (fallback for missing data, zero-count scenarios).\n[success_pattern] Consistent code quality and proper metadata management: version numbers correctly synchronized between version.json and index.html, changelog entries accurately documented, and deployment timestamps properly tracked across both items.\n[observation] Sprint focused on UI enhancements with low complexity\u2014both items involved adding new stat cards with date/count logic rather than substantial architectural changes, enabling rapid delivery with minimal risk.\n[improvement] Maintain this momentum by documenting the stat card component pattern (HTML structure, data-binding approach, fallback handling) to accelerate future similar requests and ensure consistency across stats section additions.",
-      "story": "As a user, I want to see the number of days since the first release in the stats section, so I can understand how long the project has been running.",
+      "ac_check_reason": "All acceptance criteria are met: the 'Days Since Launch' stat card is displayed in the stats section, it calculates days from the earliest changelog date to today, the value updates dynamically by reading from version.json, and it shows '\u2014' as a fallback when no dates are available.",
+      "ac_check_verdict": "approve",
       "acceptance_criteria": [
         "A new stat card labeled 'Days Since Launch' is displayed in the stats section",
         "The card shows the number of days from the first changelog entry date to today",
         "The value updates dynamically by reading the earliest date from version.json changelog",
         "If no changelog dates are available, the card shows '\u2014' as a fallback"
       ],
-      "summary": "Add Days Since Launch stat card showing days elapsed from first release date to today",
-      "diff": "diff --git a/index.html b/index.html\nindex 19a9549..d4790d4 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.32</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 20:51:42 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.33</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:52:23 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -205,6 +205,10 @@\n       <span class=\"stat-value\" id=\"stat-releases-year\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Releases This Year</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-days-since-launch\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Days Since Launch</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -276,6 +280,15 @@\n           document.getElementById('stat-releases-year').textContent = releasesThisYear;\n           const tokens = data.total_tokens;\n           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n+          if (dates.length > 0) {\n+            const launchDate = new Date(dates[0] + 'T00:00:00');\n+            const today = new Date();\n+            today.setHours(0, 0, 0, 0);\n+            const daysSinceLaunch = Math.round((today - launchDate) / 86400000) + 1;\n+            document.getElementById('stat-days-since-launch').textContent = daysSinceLaunch;\n+          } else {\n+            document.getElementById('stat-days-since-launch').textContent = '\u00e2\u20ac\u201d';\n+          }\n         })\n         .catch(() => {});\n     }\ndiff --git a/version.json b/version.json\nindex 451cb93..00e2d02 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.32\",\n-  \"deployed\": \"2026-05-23 20:51:42 CT\",\n+  \"version\": \"0.1.33\",\n+  \"deployed\": \"2026-05-23 20:52:23 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -168,6 +168,11 @@\n       \"version\": \"0.1.32\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Releases This Year stat card showing count of changelog entries dated within the current calendar year\"\n+    },\n+    {\n+      \"version\": \"0.1.33\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Days Since Launch stat card showing the number of days elapsed from the first changelog entry date to today\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
-      "test_results": [
-        {
-          "status": "pass",
-          "message": "index.html exists and contains title"
-        },
-        {
-          "status": "pass",
-          "message": "version 0.1.33 matches between version.json and index.html"
-        },
-        {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 20:52:23 CT' present in index.html"
-        },
-        {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.33: Added Days Since Launch stat card showing the number of days elapsed from the first changelog entry date to today"
-        }
-      ],
-      "deployed": "2026-05-23 20:52:23 CT",
-      "code_review_verdict": "approve",
       "code_review_reason": "The implementation correctly adds a new stat card with proper date calculations (including timezone normalization and rounding), handles the edge case of missing dates, and maintains consistent code style with existing stats.",
-      "ac_check_verdict": "approve",
-      "ac_check_reason": "All acceptance criteria are met: the 'Days Since Launch' stat card is displayed in the stats section, it calculates days from the earliest changelog date to today, the value updates dynamically by reading from version.json, and it shows '\u2014' as a fallback when no dates are available.",
-      "hermes_verdict": "approve",
+      "code_review_verdict": "approve",
+      "deployed": "2026-05-23 20:52:23 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex 19a9549..d4790d4 100644\n--- a/index.html\n+++ b/index.html\n@@ -173,8 +173,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.32</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 20:51:42 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.33</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:52:23 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -205,6 +205,10 @@\n       <span class=\"stat-value\" id=\"stat-releases-year\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Releases This Year</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-days-since-launch\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Days Since Launch</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -276,6 +280,15 @@\n           document.getElementById('stat-releases-year').textContent = releasesThisYear;\n           const tokens = data.total_tokens;\n           document.getElementById('stat-tokens').textContent = (tokens && tokens > 0) ? Number(tokens).toLocaleString() : '0';\n+          if (dates.length > 0) {\n+            const launchDate = new Date(dates[0] + 'T00:00:00');\n+            const today = new Date();\n+            today.setHours(0, 0, 0, 0);\n+            const daysSinceLaunch = Math.round((today - launchDate) / 86400000) + 1;\n+            document.getElementById('stat-days-since-launch').textContent = daysSinceLaunch;\n+          } else {\n+            document.getElementById('stat-days-since-launch').textContent = '\u00e2\u20ac\u201d';\n+          }\n         })\n         .catch(() => {});\n     }\ndiff --git a/version.json b/version.json\nindex 451cb93..00e2d02 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.32\",\n-  \"deployed\": \"2026-05-23 20:51:42 CT\",\n+  \"version\": \"0.1.33\",\n+  \"deployed\": \"2026-05-23 20:52:23 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -168,6 +168,11 @@\n       \"version\": \"0.1.32\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Releases This Year stat card showing count of changelog entries dated within the current calendar year\"\n+    },\n+    {\n+      \"version\": \"0.1.33\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Days Since Launch stat card showing the number of days elapsed from the first changelog entry date to today\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "hermes_reason": "Code review: The implementation correctly adds a new stat card with proper date calculations (including timezone normalization and rounding), handles the edge case of missing dates, and maintains consistent code style with existing stats. | AC: All acceptance criteria are met: the 'Days Since Launch' stat card is displayed in the stats section, it calculates days from the earliest changelog date to today, the value updates dynamically by reading from version.json, and it shows '\u2014' as a fallback when no dates are available.",
-      "started": 1779587543.508274,
+      "hermes_verdict": "approve",
+      "id": "1779587297355",
+      "idea": "Show the number of days since the first release in the stats section",
+      "in_sprint": false,
+      "retro_context": "[success_pattern] Perfect execution on stats section features: both items passed all tests, received Hermes approval, and met 100% of acceptance criteria with clean implementations that handle edge cases (fallback for missing data, zero-count scenarios).\n[success_pattern] Consistent code quality and proper metadata management: version numbers correctly synchronized between version.json and index.html, changelog entries accurately documented, and deployment timestamps properly tracked across both items.\n[observation] Sprint focused on UI enhancements with low complexity\u2014both items involved adding new stat cards with date/count logic rather than substantial architectural changes, enabling rapid delivery with minimal risk.\n[improvement] Maintain this momentum by documenting the stat card component pattern (HTML structure, data-binding approach, fallback handling) to accelerate future similar requests and ensure consistency across stats section additions.",
       "stage_times": {
+        "ac_check": 1779587574.538295,
+        "code": 1779587571.025615,
+        "code_review": 1779587571.380841,
+        "deploy": 1779587576.070909,
+        "done": 1779587579.215867,
         "pull": 1779587543.508274,
         "story": 1779587543.513273,
-        "code": 1779587571.025615,
-        "test": 1779587571.15809,
-        "code_review": 1779587571.380841,
-        "ac_check": 1779587574.538295,
-        "deploy": 1779587576.070909,
-        "done": 1779587579.215867
+        "test": 1779587571.15809
       },
+      "started": 1779587543.508274,
+      "status": "done",
+      "story": "As a user, I want to see the number of days since the first release in the stats section, so I can understand how long the project has been running.",
+      "summary": "Add Days Since Launch stat card showing days elapsed from first release date to today",
+      "test_results": [
+        {
+          "message": "index.html exists and contains title",
+          "status": "pass"
+        },
+        {
+          "message": "version 0.1.33 matches between version.json and index.html",
+          "status": "pass"
+        },
+        {
+          "message": "deployed timestamp '2026-05-23 20:52:23 CT' present in index.html",
+          "status": "pass"
+        },
+        {
+          "message": "changelog has entry for v0.1.33: Added Days Since Launch stat card showing the number of days elapsed from the first changelog entry date to today",
+          "status": "pass"
+        }
+      ],
       "tokens_in": 7116,
       "tokens_out": 2825
     },
     {
-      "id": "1779587297356",
-      "idea": "Show the most recent changelog description in the stats section",
-      "status": "done",
-      "in_sprint": true,
-      "retro_context": "[success_pattern] Perfect execution on stats section feature batch: all 3 items completed with 0 failures, 100% test pass rates, and unanimous Hermes approvals. Implementation shows consistent patterns\u2014proper fallback handling (dash display), dynamic data binding to version.json, and adherence to existing visual style.\n[success_pattern] Strong code review quality demonstrated by Hermes verdicts that validate both acceptance criteria and implementation details (timezone normalization, date filtering logic, graceful error handling), indicating clear requirements and well-executed solutions.\n[observation] All three items are thematically cohesive (date/release metrics in stats section) and deployed within 2 minutes of each other (20:50\u201320:52 CT), suggesting either batched implementation or streamlined deployment process.\n[improvement] Document the date filtering and calculation logic (e.g., startsWith() for year matching, timezone normalization for day calculations) in a shared helper module to reduce duplication if similar date operations are needed in future stats cards.",
-      "story": "As a user, I want to see the most recent changelog description in the stats section so I can quickly know what the latest update was without scrolling to the changelog.",
+      "ac_check_reason": "All acceptance criteria are met: the 'Latest Change' stat card appears in the stats section, displays the most recent changelog description dynamically from version.json, includes fallback '\u2014' handling, and implements text wrapping with proper styling.",
+      "ac_check_verdict": "approve",
       "acceptance_criteria": [
         "A new stat card labeled 'Latest Change' appears in the stats section",
         "The card displays the change description text from the most recent changelog entry",
@@ -2114,87 +2151,104 @@
         "If no changelog entries exist, the card displays '\u2014' as a fallback",
         "Long descriptions are truncated or wrapped cleanly within the card"
       ],
-      "summary": "Add Latest Change stat card showing most recent changelog description in stats section",
-      "diff": "diff --git a/index.html b/index.html\nindex d4790d4..1b1807a 100644\n--- a/index.html\n+++ b/index.html\n@@ -157,6 +157,17 @@\n     margin-top: 0.25rem;\n     display: block;\n   }\n+\n+.stat-card-wide {\n+    grid-column: 1 / -1;\n+    text-align: center;\n+  }\n+  .stat-card-wide .stat-value {\n+    font-size: 0.95rem;\n+    white-space: normal;\n+    word-break: break-word;\n+    line-height: 1.5;\n+  }\n </style>\n </head>\n <body>\n@@ -173,8 +184,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.33</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 20:52:23 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.34</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:53:04 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -209,6 +220,10 @@\n       <span class=\"stat-value\" id=\"stat-days-since-launch\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Days Since Launch</span>\n     </div>\n+    <div class=\"stat-card stat-card-wide\">\n+      <span class=\"stat-value\" id=\"stat-latest-change\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Latest Change</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -289,6 +304,12 @@\n           } else {\n             document.getElementById('stat-days-since-launch').textContent = '\u00e2\u20ac\u201d';\n           }\n+          if (log.length > 0) {\n+            const latest = log[log.length - 1];\n+            document.getElementById('stat-latest-change').textContent = latest.change || '\u00e2\u20ac\u201d';\n+          } else {\n+            document.getElementById('stat-latest-change').textContent = '\u00e2\u20ac\u201d';\n+          }\n         })\n         .catch(() => {});\n     }\ndiff --git a/version.json b/version.json\nindex 00e2d02..7ccff77 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.33\",\n-  \"deployed\": \"2026-05-23 20:52:23 CT\",\n+  \"version\": \"0.1.34\",\n+  \"deployed\": \"2026-05-23 20:53:04 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -173,6 +173,11 @@\n       \"version\": \"0.1.33\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Days Since Launch stat card showing the number of days elapsed from the first changelog entry date to today\"\n+    },\n+    {\n+      \"version\": \"0.1.34\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Latest Change stat card in the stats section displaying the most recent changelog entry description\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
-      "test_results": [
-        {
-          "status": "pass",
-          "message": "index.html exists and contains title"
-        },
-        {
-          "status": "pass",
-          "message": "version 0.1.34 matches between version.json and index.html"
-        },
-        {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 20:53:04 CT' present in index.html"
-        },
-        {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.34: Added Latest Change stat card in the stats section displaying the most recent changelog entry description"
-        }
-      ],
-      "deployed": "2026-05-23 20:53:04 CT",
-      "code_review_verdict": "approve",
       "code_review_reason": "The code change is technically sound with proper CSS styling, correct DOM manipulation accessing the last array element, appropriate fallback handling, and no syntax errors or breaking changes.",
-      "ac_check_verdict": "approve",
-      "ac_check_reason": "All acceptance criteria are met: the 'Latest Change' stat card appears in the stats section, displays the most recent changelog description dynamically from version.json, includes fallback '\u2014' handling, and implements text wrapping with proper styling.",
-      "hermes_verdict": "approve",
+      "code_review_verdict": "approve",
+      "deployed": "2026-05-23 20:53:04 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex d4790d4..1b1807a 100644\n--- a/index.html\n+++ b/index.html\n@@ -157,6 +157,17 @@\n     margin-top: 0.25rem;\n     display: block;\n   }\n+\n+.stat-card-wide {\n+    grid-column: 1 / -1;\n+    text-align: center;\n+  }\n+  .stat-card-wide .stat-value {\n+    font-size: 0.95rem;\n+    white-space: normal;\n+    word-break: break-word;\n+    line-height: 1.5;\n+  }\n </style>\n </head>\n <body>\n@@ -173,8 +184,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.33</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 20:52:23 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.34</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:53:04 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -209,6 +220,10 @@\n       <span class=\"stat-value\" id=\"stat-days-since-launch\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Days Since Launch</span>\n     </div>\n+    <div class=\"stat-card stat-card-wide\">\n+      <span class=\"stat-value\" id=\"stat-latest-change\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Latest Change</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -289,6 +304,12 @@\n           } else {\n             document.getElementById('stat-days-since-launch').textContent = '\u00e2\u20ac\u201d';\n           }\n+          if (log.length > 0) {\n+            const latest = log[log.length - 1];\n+            document.getElementById('stat-latest-change').textContent = latest.change || '\u00e2\u20ac\u201d';\n+          } else {\n+            document.getElementById('stat-latest-change').textContent = '\u00e2\u20ac\u201d';\n+          }\n         })\n         .catch(() => {});\n     }\ndiff --git a/version.json b/version.json\nindex 00e2d02..7ccff77 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.33\",\n-  \"deployed\": \"2026-05-23 20:52:23 CT\",\n+  \"version\": \"0.1.34\",\n+  \"deployed\": \"2026-05-23 20:53:04 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -173,6 +173,11 @@\n       \"version\": \"0.1.33\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Days Since Launch stat card showing the number of days elapsed from the first changelog entry date to today\"\n+    },\n+    {\n+      \"version\": \"0.1.34\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Latest Change stat card in the stats section displaying the most recent changelog entry description\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "hermes_reason": "Code review: The code change is technically sound with proper CSS styling, correct DOM manipulation accessing the last array element, appropriate fallback handling, and no syntax errors or breaking changes. | AC: All acceptance criteria are met: the 'Latest Change' stat card appears in the stats section, displays the most recent changelog description dynamically from version.json, includes fallback '\u2014' handling, and implements text wrapping with proper styling.",
-      "started": 1779587584.049866,
+      "hermes_verdict": "approve",
+      "id": "1779587297356",
+      "idea": "Show the most recent changelog description in the stats section",
+      "in_sprint": false,
+      "retro_context": "[success_pattern] Perfect execution on stats section feature batch: all 3 items completed with 0 failures, 100% test pass rates, and unanimous Hermes approvals. Implementation shows consistent patterns\u2014proper fallback handling (dash display), dynamic data binding to version.json, and adherence to existing visual style.\n[success_pattern] Strong code review quality demonstrated by Hermes verdicts that validate both acceptance criteria and implementation details (timezone normalization, date filtering logic, graceful error handling), indicating clear requirements and well-executed solutions.\n[observation] All three items are thematically cohesive (date/release metrics in stats section) and deployed within 2 minutes of each other (20:50\u201320:52 CT), suggesting either batched implementation or streamlined deployment process.\n[improvement] Document the date filtering and calculation logic (e.g., startsWith() for year matching, timezone normalization for day calculations) in a shared helper module to reduce duplication if similar date operations are needed in future stats cards.",
       "stage_times": {
+        "ac_check": 1779587616.664268,
+        "code": 1779587614.948436,
+        "code_review": 1779587615.296805,
+        "deploy": 1779587618.207539,
+        "done": 1779587621.310213,
         "pull": 1779587584.049866,
         "story": 1779587584.056599,
-        "code": 1779587614.948436,
-        "test": 1779587615.085484,
-        "code_review": 1779587615.296805,
-        "ac_check": 1779587616.664268,
-        "deploy": 1779587618.207539,
-        "done": 1779587621.310213
+        "test": 1779587615.085484
       },
+      "started": 1779587584.049866,
+      "status": "done",
+      "story": "As a user, I want to see the most recent changelog description in the stats section so I can quickly know what the latest update was without scrolling to the changelog.",
+      "summary": "Add Latest Change stat card showing most recent changelog description in stats section",
+      "test_results": [
+        {
+          "message": "index.html exists and contains title",
+          "status": "pass"
+        },
+        {
+          "message": "version 0.1.34 matches between version.json and index.html",
+          "status": "pass"
+        },
+        {
+          "message": "deployed timestamp '2026-05-23 20:53:04 CT' present in index.html",
+          "status": "pass"
+        },
+        {
+          "message": "changelog has entry for v0.1.34: Added Latest Change stat card in the stats section displaying the most recent changelog entry description",
+          "status": "pass"
+        }
+      ],
       "tokens_in": 7508,
       "tokens_out": 3160
     },
     {
-      "id": "1779587297357",
-      "idea": "Show the number of distinct release dates in the stats section",
-      "status": "done",
-      "in_sprint": true,
-      "retro_context": "[success_pattern] All four items passed Hermes review and all tests on first submission. The agent consistently implemented features with proper fallback handling (dash/em-dash for missing data), correct data extraction logic, and appropriate styling without syntax errors.\n[success_pattern] Feature cohesion: All four items logically extend the stats section with complementary metrics (deploy date, yearly releases, project lifespan, latest change). This suggests good sprint planning and understanding of user needs for visibility into project activity.\n[observation] Version increments are sequential (0.1.31 \u2192 0.1.34) with one minor version bump per completed item, and deployments occurred within 1-2 minutes of each other on 2026-05-23, indicating rapid, continuous delivery.\n[improvement] Consider adding integration tests that validate stat card calculations (e.g., verifying 'Releases This Year' actually counts correct entries, 'Days Since Launch' math) in addition to presence checks, to catch logic errors earlier.",
-      "story": "As a user, I want to see the number of distinct release dates in the stats section so I can understand how many unique days the team has shipped code.",
+      "ac_check_reason": "All acceptance criteria are met: the 'Release Days' stat card is visible in the stats section, it displays the count of distinct dates by using a Set to filter unique dates from changelog entries, it updates dynamically by reading version.json, and it displays '\u2014' as a fallback when no dates are available.",
+      "ac_check_verdict": "approve",
       "acceptance_criteria": [
         "A new stat card labeled 'Release Days' is visible in the stats section",
         "The card displays the count of distinct (unique) dates found across all changelog entries",
         "The value updates dynamically by reading version.json",
         "If no dates are available, the card displays '\u2014' as a fallback"
       ],
-      "summary": "Add Release Days stat card showing count of distinct changelog entry dates",
+      "code_review_reason": "The implementation correctly counts distinct release dates using a Set, properly filters null/undefined values, handles empty states with '\u2014', and integrates cleanly into the existing stats section without introducing syntax errors or breaking changes.",
+      "code_review_verdict": "approve",
+      "deployed": "2026-05-23 20:53:46 CT",
       "diff": "diff --git a/index.html b/index.html\nindex 1b1807a..cfe6a33 100644\n--- a/index.html\n+++ b/index.html\n@@ -184,8 +184,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.34</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 20:53:04 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.35</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:53:46 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -220,6 +220,10 @@\n       <span class=\"stat-value\" id=\"stat-days-since-launch\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Days Since Launch</span>\n     </div>\n+    <div class=\"stat-card\">\n+      <span class=\"stat-value\" id=\"stat-release-days\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Release Days</span>\n+    </div>\n     <div class=\"stat-card stat-card-wide\">\n       <span class=\"stat-value\" id=\"stat-latest-change\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Latest Change</span>\n@@ -304,6 +308,8 @@\n           } else {\n             document.getElementById('stat-days-since-launch').textContent = '\u00e2\u20ac\u201d';\n           }\n+          const distinctDates = new Set(log.map(e => e.date).filter(Boolean));\n+          document.getElementById('stat-release-days').textContent = distinctDates.size > 0 ? distinctDates.size : '\u00e2\u20ac\u201d';\n           if (log.length > 0) {\n             const latest = log[log.length - 1];\n             document.getElementById('stat-latest-change').textContent = latest.change || '\u00e2\u20ac\u201d';\ndiff --git a/version.json b/version.json\nindex 7ccff77..5a53973 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.34\",\n-  \"deployed\": \"2026-05-23 20:53:04 CT\",\n+  \"version\": \"0.1.35\",\n+  \"deployed\": \"2026-05-23 20:53:46 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -178,6 +178,11 @@\n       \"version\": \"0.1.34\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Latest Change stat card in the stats section displaying the most recent changelog entry description\"\n+    },\n+    {\n+      \"version\": \"0.1.35\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Release Days stat card showing the count of distinct dates across all changelog entries\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_reason": "Code review: The implementation correctly counts distinct release dates using a Set, properly filters null/undefined values, handles empty states with '\u2014', and integrates cleanly into the existing stats section without introducing syntax errors or breaking changes. | AC: All acceptance criteria are met: the 'Release Days' stat card is visible in the stats section, it displays the count of distinct dates by using a Set to filter unique dates from changelog entries, it updates dynamically by reading version.json, and it displays '\u2014' as a fallback when no dates are available.",
+      "hermes_verdict": "approve",
+      "id": "1779587297357",
+      "idea": "Show the number of distinct release dates in the stats section",
+      "in_sprint": false,
+      "retro_context": "[success_pattern] All four items passed Hermes review and all tests on first submission. The agent consistently implemented features with proper fallback handling (dash/em-dash for missing data), correct data extraction logic, and appropriate styling without syntax errors.\n[success_pattern] Feature cohesion: All four items logically extend the stats section with complementary metrics (deploy date, yearly releases, project lifespan, latest change). This suggests good sprint planning and understanding of user needs for visibility into project activity.\n[observation] Version increments are sequential (0.1.31 \u2192 0.1.34) with one minor version bump per completed item, and deployments occurred within 1-2 minutes of each other on 2026-05-23, indicating rapid, continuous delivery.\n[improvement] Consider adding integration tests that validate stat card calculations (e.g., verifying 'Releases This Year' actually counts correct entries, 'Days Since Launch' math) in addition to presence checks, to catch logic errors earlier.",
+      "stage_times": {
+        "ac_check": 1779587656.501503,
+        "code": 1779587654.813957,
+        "code_review": 1779587655.149253,
+        "deploy": 1779587658.180069,
+        "done": 1779587661.214441,
+        "pull": 1779587626.027631,
+        "story": 1779587626.041591,
+        "test": 1779587654.932073
+      },
+      "started": 1779587626.027631,
+      "status": "done",
+      "story": "As a user, I want to see the number of distinct release dates in the stats section so I can understand how many unique days the team has shipped code.",
+      "summary": "Add Release Days stat card showing count of distinct changelog entry dates",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.35 matches between version.json and index.html"
+          "message": "version 0.1.35 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-23 20:53:46 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-23 20:53:46 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.35: Added Release Days stat card showing the count of distinct dates across all changelog entries"
+          "message": "changelog has entry for v0.1.35: Added Release Days stat card showing the count of distinct dates across all changelog entries",
+          "status": "pass"
         }
       ],
-      "deployed": "2026-05-23 20:53:46 CT",
-      "code_review_verdict": "approve",
-      "code_review_reason": "The implementation correctly counts distinct release dates using a Set, properly filters null/undefined values, handles empty states with '\u2014', and integrates cleanly into the existing stats section without introducing syntax errors or breaking changes.",
-      "ac_check_verdict": "approve",
-      "ac_check_reason": "All acceptance criteria are met: the 'Release Days' stat card is visible in the stats section, it displays the count of distinct dates by using a Set to filter unique dates from changelog entries, it updates dynamically by reading version.json, and it displays '\u2014' as a fallback when no dates are available.",
-      "hermes_verdict": "approve",
-      "hermes_reason": "Code review: The implementation correctly counts distinct release dates using a Set, properly filters null/undefined values, handles empty states with '\u2014', and integrates cleanly into the existing stats section without introducing syntax errors or breaking changes. | AC: All acceptance criteria are met: the 'Release Days' stat card is visible in the stats section, it displays the count of distinct dates by using a Set to filter unique dates from changelog entries, it updates dynamically by reading version.json, and it displays '\u2014' as a fallback when no dates are available."
+      "tokens_in": 7439,
+      "tokens_out": 2816
     }
   ]
 }

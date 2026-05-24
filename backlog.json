@@ -2085,13 +2085,62 @@
       "ac_check_verdict": "approve",
       "ac_check_reason": "All acceptance criteria are met: the 'Days Since Launch' stat card is displayed in the stats section, it calculates days from the earliest changelog date to today, the value updates dynamically by reading from version.json, and it shows '\u2014' as a fallback when no dates are available.",
       "hermes_verdict": "approve",
-      "hermes_reason": "Code review: The implementation correctly adds a new stat card with proper date calculations (including timezone normalization and rounding), handles the edge case of missing dates, and maintains consistent code style with existing stats. | AC: All acceptance criteria are met: the 'Days Since Launch' stat card is displayed in the stats section, it calculates days from the earliest changelog date to today, the value updates dynamically by reading from version.json, and it shows '\u2014' as a fallback when no dates are available."
+      "hermes_reason": "Code review: The implementation correctly adds a new stat card with proper date calculations (including timezone normalization and rounding), handles the edge case of missing dates, and maintains consistent code style with existing stats. | AC: All acceptance criteria are met: the 'Days Since Launch' stat card is displayed in the stats section, it calculates days from the earliest changelog date to today, the value updates dynamically by reading from version.json, and it shows '\u2014' as a fallback when no dates are available.",
+      "started": 1779587543.508274,
+      "stage_times": {
+        "pull": 1779587543.508274,
+        "story": 1779587543.513273,
+        "code": 1779587571.025615,
+        "test": 1779587571.15809,
+        "code_review": 1779587571.380841,
+        "ac_check": 1779587574.538295,
+        "deploy": 1779587576.070909,
+        "done": 1779587579.215867
+      },
+      "tokens_in": 7116,
+      "tokens_out": 2825
     },
     {
       "id": "1779587297356",
       "idea": "Show the most recent changelog description in the stats section",
-      "status": "pending",
-      "in_sprint": true
+      "status": "done",
+      "in_sprint": true,
+      "retro_context": "[success_pattern] Perfect execution on stats section feature batch: all 3 items completed with 0 failures, 100% test pass rates, and unanimous Hermes approvals. Implementation shows consistent patterns\u2014proper fallback handling (dash display), dynamic data binding to version.json, and adherence to existing visual style.\n[success_pattern] Strong code review quality demonstrated by Hermes verdicts that validate both acceptance criteria and implementation details (timezone normalization, date filtering logic, graceful error handling), indicating clear requirements and well-executed solutions.\n[observation] All three items are thematically cohesive (date/release metrics in stats section) and deployed within 2 minutes of each other (20:50\u201320:52 CT), suggesting either batched implementation or streamlined deployment process.\n[improvement] Document the date filtering and calculation logic (e.g., startsWith() for year matching, timezone normalization for day calculations) in a shared helper module to reduce duplication if similar date operations are needed in future stats cards.",
+      "story": "As a user, I want to see the most recent changelog description in the stats section so I can quickly know what the latest update was without scrolling to the changelog.",
+      "acceptance_criteria": [
+        "A new stat card labeled 'Latest Change' appears in the stats section",
+        "The card displays the change description text from the most recent changelog entry",
+        "The text is sourced dynamically from version.json",
+        "If no changelog entries exist, the card displays '\u2014' as a fallback",
+        "Long descriptions are truncated or wrapped cleanly within the card"
+      ],
+      "summary": "Add Latest Change stat card showing most recent changelog description in stats section",
+      "diff": "diff --git a/index.html b/index.html\nindex d4790d4..1b1807a 100644\n--- a/index.html\n+++ b/index.html\n@@ -157,6 +157,17 @@\n     margin-top: 0.25rem;\n     display: block;\n   }\n+\n+.stat-card-wide {\n+    grid-column: 1 / -1;\n+    text-align: center;\n+  }\n+  .stat-card-wide .stat-value {\n+    font-size: 0.95rem;\n+    white-space: normal;\n+    word-break: break-word;\n+    line-height: 1.5;\n+  }\n </style>\n </head>\n <body>\n@@ -173,8 +184,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.33</div>\n-  <div class=\"meta\">Last deployed: 2026-05-23 20:52:23 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.34</div>\n+  <div class=\"meta\">Last deployed: 2026-05-23 20:53:04 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n   <div class=\"stats-section\" id=\"stats-section\">\n     <div class=\"stat-card\">\n@@ -209,6 +220,10 @@\n       <span class=\"stat-value\" id=\"stat-days-since-launch\">\u00e2\u20ac\u201d</span>\n       <span class=\"stat-label\">Days Since Launch</span>\n     </div>\n+    <div class=\"stat-card stat-card-wide\">\n+      <span class=\"stat-value\" id=\"stat-latest-change\">\u00e2\u20ac\u201d</span>\n+      <span class=\"stat-label\">Latest Change</span>\n+    </div>\n   </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n@@ -289,6 +304,12 @@\n           } else {\n             document.getElementById('stat-days-since-launch').textContent = '\u00e2\u20ac\u201d';\n           }\n+          if (log.length > 0) {\n+            const latest = log[log.length - 1];\n+            document.getElementById('stat-latest-change').textContent = latest.change || '\u00e2\u20ac\u201d';\n+          } else {\n+            document.getElementById('stat-latest-change').textContent = '\u00e2\u20ac\u201d';\n+          }\n         })\n         .catch(() => {});\n     }\ndiff --git a/version.json b/version.json\nindex 00e2d02..7ccff77 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.33\",\n-  \"deployed\": \"2026-05-23 20:52:23 CT\",\n+  \"version\": \"0.1.34\",\n+  \"deployed\": \"2026-05-23 20:53:04 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -173,6 +173,11 @@\n       \"version\": \"0.1.33\",\n       \"date\": \"2026-05-23\",\n       \"change\": \"Added Days Since Launch stat card showing the number of days elapsed from the first changelog entry date to today\"\n+    },\n+    {\n+      \"version\": \"0.1.34\",\n+      \"date\": \"2026-05-23\",\n+      \"change\": \"Added Latest Change stat card in the stats section displaying the most recent changelog entry description\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.34 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-23 20:53:04 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.34: Added Latest Change stat card in the stats section displaying the most recent changelog entry description"
+        }
+      ],
+      "deployed": "2026-05-23 20:53:04 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The code change is technically sound with proper CSS styling, correct DOM manipulation accessing the last array element, appropriate fallback handling, and no syntax errors or breaking changes.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All acceptance criteria are met: the 'Latest Change' stat card appears in the stats section, displays the most recent changelog description dynamically from version.json, includes fallback '\u2014' handling, and implements text wrapping with proper styling.",
+      "hermes_verdict": "approve",
+      "hermes_reason": "Code review: The code change is technically sound with proper CSS styling, correct DOM manipulation accessing the last array element, appropriate fallback handling, and no syntax errors or breaking changes. | AC: All acceptance criteria are met: the 'Latest Change' stat card appears in the stats section, displays the most recent changelog description dynamically from version.json, includes fallback '\u2014' handling, and implements text wrapping with proper styling."
     },
     {
       "id": "1779587297357",

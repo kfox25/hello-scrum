@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sprint Board — Hello Scrum</title>
+  <title>Product Backlog — Hello Scrum</title>
   <link rel="stylesheet" href="shared.css">
   <style>
     body { display: flex; flex-direction: column; }
@@ -43,11 +43,11 @@
       font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: #555;
+      color: #888;
     }
     .col-count {
       font-size: 0.7rem;
-      color: #333;
+      color: #666;
       margin-left: 0.5rem;
     }
 
@@ -99,15 +99,25 @@
     .card.insert-below { border-bottom: 2px solid #00ff99; }
 
     .drag-handle {
-      color: #333;
+      color: #555;
       font-size: 0.9rem;
       flex-shrink: 0;
     }
-    .card.pending .drag-handle { color: #444; }
+    .card.pending .drag-handle { color: #666; }
     .card.pending:hover .drag-handle { color: #00ff9980; }
 
-    .card-id { color: #444; font-size: 0.75rem; flex-shrink: 0; }
-    .card-idea { flex: 1; font-size: 0.9rem; color: #ccc; }
+    .card-content { flex: 1; display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+    .card-idea { font-size: 0.9rem; color: #ccc; }
+    .card-story { font-size: 0.78rem; color: #888; line-height: 1.4; }
+    .card-story.elaborating { color: #444; font-style: italic; animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .expand-chevron { color: #555; font-size: 0.65rem; margin-right: 0.3rem; display: inline-block; transition: transform 0.15s; }
+    .card.expanded .expand-chevron { transform: rotate(90deg); }
+    .card-content { cursor: default; }
+    .card-content.has-ac { cursor: pointer; }
+    .card-ac { display: none; margin-top: 0.45rem; padding-top: 0.45rem; border-top: 1px solid #1e1e1e; }
+    .card.expanded .card-ac { display: block; }
+    .ac-item { font-size: 0.73rem; color: #666; line-height: 1.6; }
 
     .badge {
       font-size: 0.7rem;
@@ -155,7 +165,7 @@
     .delete-btn:hover { color: #ff4444; border-color: #ff444460; }
 
     .empty-hint {
-      color: #2a2a2a;
+      color: #555;
       font-size: 0.8rem;
       text-align: center;
       padding: 2rem 1rem;
@@ -177,7 +187,7 @@
       padding: 0.4rem 0.75rem;
       outline: none;
     }
-    .add-item input::placeholder { color: #333; }
+    .add-item input::placeholder { color: #555; }
     .add-item input:focus { border-color: #00ff9940; }
     .add-item button {
       font-family: monospace;
@@ -209,7 +219,7 @@
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #444;
+      color: #666;
     }
     #clear-log {
       background: none;
@@ -227,7 +237,7 @@
       font-size: 0.78rem;
       line-height: 1.6;
     }
-    .log-line { white-space: pre-wrap; color: #555; }
+    .log-line { white-space: pre-wrap; color: #777; }
     .log-pass  { color: #00ff9990; }
     .log-fail  { color: #ff444490; }
     .log-hermes-approve { color: #00ff99; }
@@ -248,7 +258,7 @@
     <a href="workflow.html">Workflow</a>
   </nav>
   <header>
-    <h1>Sprint Board</h1>
+    <h1>Product Backlog</h1>
   </header>
 
   <div class="board">
@@ -274,7 +284,7 @@
     <div class="column">
       <div class="col-header">
         <div>
-          <span class="col-title">Product Backlog</span>
+          <span class="col-title">Story Backlog</span>
           <span class="col-count" id="backlog-count"></span>
         </div>
       </div>
@@ -301,6 +311,9 @@
           <button id="complete-btn" class="sprint-btn" onclick="completeSprint()">✓ Complete Sprint</button>
         </div>
       </div>
+      <div class="add-item">
+        <input id="sprint-goal" placeholder="Sprint goal..." oninput="saveGoal()" />
+      </div>
       <div class="drop-zone" id="sprint-zone"
            ondragover="onDragOver(event)"
            ondragleave="onDragLeave(event)"
@@ -321,6 +334,7 @@
   <script>
     let backlogData = null;
     let dragId = null;
+    const expandedIds = new Set();
 
     function escHtml(s) {
       return (s == null ? '' : String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
@@ -338,6 +352,11 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(backlogData),
       });
+    }
+
+    function saveGoal() {
+      backlogData.sprint_goal = document.getElementById('sprint-goal').value;
+      persistBacklog();
     }
 
     function addOpportunity() {
@@ -367,11 +386,16 @@
 
       document.getElementById('backlog-zone').innerHTML = backlogItems.length
         ? backlogItems.map(renderCard).join('')
-        : '<div class="empty-hint">Product backlog items appear here</div>';
+        : '<div class="empty-hint">Detailed stories appear here</div>';
 
       document.getElementById('sprint-zone').innerHTML = sprintItems.length
         ? sprintItems.map(renderCard).join('')
         : '<div class="empty-hint">Drag items here to add to sprint</div>';
+
+      const goalEl = document.getElementById('sprint-goal');
+      if (goalEl && document.activeElement !== goalEl) {
+        goalEl.value = backlogData.sprint_goal || '';
+      }
 
       const hasPending    = sprintItems.some(i => i.status === 'pending');
       const hasFinished   = sprintItems.some(i => i.status === 'done' || i.status === 'failed');
@@ -398,20 +422,47 @@
         ? `<button class="delete-btn" onclick="deleteItem('${item.id}', event)" title="Delete">✕</button>`
         : '';
 
-      return `<div class="card ${item.status}" data-id="${item.id}" ${draggable}
+      const hasAC = !!(item.acceptance_criteria && item.acceptance_criteria.length);
+      const isExpanded = expandedIds.has(String(item.id));
+
+      let storyLine = '';
+      if (item.elaborating) {
+        storyLine = '<div class="card-story elaborating">generating story...</div>';
+      } else if (item.story) {
+        storyLine = `<div class="card-story">${escHtml(item.story)}</div>`;
+      }
+
+      const acHtml = hasAC
+        ? `<div class="card-ac">${item.acceptance_criteria.map(c => `<div class="ac-item">· ${escHtml(c)}</div>`).join('')}</div>`
+        : '';
+
+      const chevron = hasAC ? '<span class="expand-chevron">&#9658;</span>' : '';
+
+      return `<div class="card ${item.status}${isExpanded ? ' expanded' : ''}" data-id="${item.id}" ${draggable}
                    ondragstart="onDragStart(event)"
                    ondragend="onDragEnd(event)"
                    ondragover="onCardDragOver(event)"
                    ondragleave="onCardDragLeave(event)"
                    ondrop="onCardDrop(event)">
         ${handle}
-        <span class="card-id">#${item.id}</span>
-        <span class="card-idea">${escHtml(item.idea)}</span>
+        <div class="card-content${hasAC ? ' has-ac' : ''}"${hasAC ? ` onclick="toggleCard('${item.id}', event)"` : ''}>
+          <div class="card-idea">${chevron}${escHtml(item.idea)}</div>
+          ${storyLine}
+          ${acHtml}
+        </div>
         ${hermesTag}
         <span class="badge badge-${item.status}">${item.status}</span>
         ${retryBtn}
         ${deleteBtn}
       </div>`;
+    }
+
+    function toggleCard(id, e) {
+      e.stopPropagation();
+      const sid = String(id);
+      if (expandedIds.has(sid)) expandedIds.delete(sid); else expandedIds.add(sid);
+      const card = document.querySelector(`.card[data-id="${sid}"]`);
+      if (card) card.classList.toggle('expanded', expandedIds.has(sid));
     }
 
     // ── Drag and drop ─────────────────────────────────────────────────────────
@@ -444,12 +495,15 @@
       const item = backlogData.items.find(i => String(i.id) === dragId);
       if (!item || item.status !== 'pending') return;
 
+      const wasOpportunity = !!item.opportunity;
+
       if (dest === 'opportunity') {
         item.opportunity = true;
         item.in_sprint = false;
       } else if (dest === 'backlog') {
         delete item.opportunity;
         item.in_sprint = false;
+        if (wasOpportunity) elaborateStory(item.id);
       } else if (dest === 'sprint') {
         delete item.opportunity;
         item.in_sprint = true;
@@ -489,6 +543,8 @@
       const targetItem = items.find(i => String(i.id) === targetId);
       if (!dragItem || dragItem.status !== 'pending') return;
 
+      const wasOpportunity = !!dragItem.opportunity;
+
       // move to same column as target
       if (targetItem.opportunity) {
         dragItem.opportunity = true;
@@ -499,6 +555,7 @@
       } else {
         delete dragItem.opportunity;
         dragItem.in_sprint = false;
+        if (wasOpportunity) elaborateStory(dragItem.id);
       }
 
       // reorder in array
@@ -640,6 +697,31 @@
         backlogData.items.push(newItem);
       }
       input.value = '';
+      renderBoard();
+      persistBacklog();
+    }
+
+    // ── Story elaboration ─────────────────────────────────────────────────────
+
+    async function elaborateStory(id) {
+      const item = backlogData.items.find(i => String(i.id) === String(id));
+      if (!item) return;
+      item.elaborating = true;
+      renderBoard();
+
+      try {
+        const res = await fetch('/backlog/elaborate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: item.id, idea: item.idea }),
+        });
+        const data = await res.json();
+        delete item.elaborating;
+        if (data.story) item.story = data.story;
+        if (data.acceptance_criteria) item.acceptance_criteria = data.acceptance_criteria;
+      } catch (_) {
+        delete item.elaborating;
+      }
       renderBoard();
       persistBacklog();
     }

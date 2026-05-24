@@ -226,11 +226,12 @@ def messenger_choose():
             "idea": story,
             "status": "pending",
             "in_sprint": False,
+            "opportunity": True,
         }
         backlog.setdefault("items", []).insert(0, new_item)
         with open(BACKLOG_FILE, "w") as f:
             json.dump(backlog, f, indent=2)
-        return jsonify({"reply": f"Added to top of backlog: <em>{story}</em>"})
+        return jsonify({"reply": f"Added to opportunity backlog: <em>{story}</em>"})
 
     except Exception as e:
         return jsonify({"reply": f"Server error: {e}"}), 500
@@ -263,6 +264,35 @@ def save_backlog():
     with open(BACKLOG_FILE, "w") as f:
         json.dump(data, f, indent=2)
     return jsonify({"ok": True})
+
+
+@app.route("/backlog/elaborate", methods=["POST"])
+def elaborate_story():
+    try:
+        data = request.get_json()
+        idea = (data or {}).get("idea", "").strip()
+        if not idea:
+            return jsonify({"error": "No idea provided"}), 400
+
+        client = anthropic.Anthropic()
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=600,
+            system="""You are a scrum story writer. Given a raw idea, write a user story and acceptance criteria.
+Respond with JSON only (no markdown):
+{"story": "As a <role>, I want <goal> so that <benefit>.", "acceptance_criteria": ["<criterion 1>", "<criterion 2>", "<criterion 3>"]}
+Keep the story concise. Write 3-4 acceptance criteria as short, testable statements.""",
+            messages=[{"role": "user", "content": idea}],
+        )
+
+        text = response.content[0].text.strip()
+        if text.startswith("```"):
+            text = text.split("\n", 1)[-1]
+            text = text.rsplit("```", 1)[0].strip()
+        result = json.loads(text)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/agent-log")

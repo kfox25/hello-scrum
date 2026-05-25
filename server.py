@@ -190,9 +190,9 @@ def health_diagnostics():
         retros = retro_data.get("retros", [])
         last_retro_str = retros[0]["sprint_date"] if retros else None
 
-        with open(os.path.join(BASE, "system_wisdom.json"), encoding="utf-8") as f:
+        with open(os.path.join(BASE, "coding_wisdom.json"), encoding="utf-8") as f:
             sys_w = json.load(f)
-        with open(os.path.join(BASE, "story_wisdom.json"), encoding="utf-8") as f:
+        with open(os.path.join(BASE, "ac_wisdom.json"), encoding="utf-8") as f:
             story_w = json.load(f)
 
         sys_at   = sys_w.get("synthesized_at")
@@ -224,8 +224,8 @@ def health_diagnostics():
         data_flow = {
             "last_sprint_ts":     last_sprint_ts,
             "last_retro_date":    last_retro_str,
-            "system_wisdom_at":   sys_at,
-            "story_wisdom_at":    story_at,
+            "coding_wisdom_at":   sys_at,
+            "ac_wisdom_at":       story_at,
             "wisdom_stale":       wisdom_stale,
             "retro_count":        len(retros),
             "sprints_since_retro": sprints_since_retro,
@@ -239,7 +239,7 @@ def health_diagnostics():
     ver_re     = re.compile(r'v\d+\.\d+')
     specific   = ['index.html', '.hero', '.tagline', 'hello scrum', 'board.html']
     wisdom_q   = {}
-    for key, fname in [("system", "system_wisdom.json"), ("story", "story_wisdom.json")]:
+    for key, fname in [("coding", "coding_wisdom.json"), ("ac", "ac_wisdom.json")]:
         try:
             with open(os.path.join(BASE, fname), encoding="utf-8") as f:
                 wd = json.load(f)
@@ -419,9 +419,9 @@ def retrospective_json():
     return jsonify({"retros": []})
 
 
-@app.route("/system_wisdom.json")
-def system_wisdom_json():
-    path = os.path.join(BASE, "system_wisdom.json")
+@app.route("/coding_wisdom.json")
+def coding_wisdom_json():
+    path = os.path.join(BASE, "coding_wisdom.json")
     if os.path.exists(path):
         return send_file(path)
     return jsonify({"bullets": [], "synthesized_at": None, "finding_count": 0})
@@ -444,9 +444,9 @@ def save_notes():
     return jsonify({"ok": True})
 
 
-@app.route("/story_wisdom.json")
-def story_wisdom_json():
-    path = os.path.join(BASE, "story_wisdom.json")
+@app.route("/ac_wisdom.json")
+def ac_wisdom_json():
+    path = os.path.join(BASE, "ac_wisdom.json")
     if os.path.exists(path):
         return send_file(path)
     return jsonify({"bullets": [], "synthesized_at": None, "item_count": 0})
@@ -507,26 +507,26 @@ def elaborate_story():
             return jsonify({"error": "No idea provided"}), 400
 
         # Load wisdom layers for injection
-        story_wisdom_bullets = []
-        system_wisdom_bullets = []
+        ac_wisdom_bullets = []
+        coding_wisdom_bullets = []
         try:
-            with open(os.path.join(BASE, "story_wisdom.json"), encoding="utf-8") as f:
+            with open(os.path.join(BASE, "ac_wisdom.json"), encoding="utf-8") as f:
                 sw = json.load(f)
-            story_wisdom_bullets = [b.lstrip("•").strip() for b in sw.get("bullets", []) if b.strip()]
+            ac_wisdom_bullets = [b.lstrip("•").strip() for b in sw.get("bullets", []) if b.strip()]
         except Exception:
             pass
         try:
-            with open(os.path.join(BASE, "system_wisdom.json"), encoding="utf-8") as f:
+            with open(os.path.join(BASE, "coding_wisdom.json"), encoding="utf-8") as f:
                 sw = json.load(f)
-            system_wisdom_bullets = [b.lstrip("•").strip() for b in sw.get("bullets", []) if b.strip()]
+            coding_wisdom_bullets = [b.lstrip("•").strip() for b in sw.get("bullets", []) if b.strip()]
         except Exception:
             pass
 
         wisdom_parts = []
-        if story_wisdom_bullets:
-            wisdom_parts.append("STORY RULES:\n" + "\n".join(f"- {b}" for b in story_wisdom_bullets))
-        if system_wisdom_bullets:
-            wisdom_parts.append("RULES:\n" + "\n".join(f"- {b}" for b in system_wisdom_bullets))
+        if ac_wisdom_bullets:
+            wisdom_parts.append("AC WISDOM:\n" + "\n".join(f"- {b}" for b in ac_wisdom_bullets))
+        if coding_wisdom_bullets:
+            wisdom_parts.append("CODING WISDOM:\n" + "\n".join(f"- {b}" for b in coding_wisdom_bullets))
         wisdom_section = ("\n\n" + "\n\n".join(wisdom_parts)) if wisdom_parts else ""
 
         system_prompt = (

@@ -29,8 +29,8 @@ VERSION_FILE = "version.json"
 TEST_SCRIPT  = "test.py"
 REPO_URL     = "https://kfox25.github.io/hello-scrum"
 RETRO_FILE         = "retrospective.json"
-WISDOM_FILE        = "system_wisdom.json"
-STORY_WISDOM_FILE  = "story_wisdom.json"
+WISDOM_FILE        = "coding_wisdom.json"
+STORY_WISDOM_FILE  = "ac_wisdom.json"
 
 _log_lines = []
 
@@ -237,7 +237,7 @@ def call_agent(idea, story, acceptance_criteria, index_html, version_json, times
     context_parts = []
     wisdom = load_wisdom()
     if wisdom:
-        context_parts.append("RULES:\n" + "\n".join(f"- {b}" for b in wisdom))
+        context_parts.append("CODING WISDOM:\n" + "\n".join(f"- {b}" for b in wisdom))
     if retro_context:
         context_parts.append("THIS SPRINT:\n" + retro_context)
     context_section = ("\n\n" + "\n\n".join(context_parts)) if context_parts else ""
@@ -476,7 +476,7 @@ def load_latest_retro_context():
 
 
 def load_wisdom():
-    """Return list of stripped bullet strings from system_wisdom.json, or empty list."""
+    """Return list of stripped bullet strings from coding_wisdom.json, or empty list."""
     try:
         with open(WISDOM_FILE, encoding="utf-8") as f:
             data = json.load(f)
@@ -542,10 +542,10 @@ Analyze this sprint and return findings JSON."""
     log(f"\nRetro: {retro.get('summary', '')}")
     log(f"Findings: {len(retro.get('findings', []))} item(s) written to retrospective.json")
 
-    synthesize_system_wisdom(processed_items)
+    synthesize_coding_wisdom(processed_items)
 
 
-def synthesize_story_wisdom(sprint_items=None):
+def synthesize_ac_wisdom(sprint_items=None):
     """Update AC-writing directives incrementally from this sprint's outcomes, or bootstrap from history."""
     existing_bullets = []
     try:
@@ -606,10 +606,10 @@ def synthesize_story_wisdom(sprint_items=None):
 
     with open(STORY_WISDOM_FILE, "w", encoding="utf-8") as f:
         json.dump({"bullets": bullets, "synthesized_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "item_count": total_count}, f, indent=2)
-    log(f"Story wisdom: {len(bullets)} bullet(s) written to story_wisdom.json")
+    log(f"AC wisdom: {len(bullets)} bullet(s) written to ac_wisdom.json")
 
 
-def synthesize_system_wisdom(processed_items=None):
+def synthesize_coding_wisdom(processed_items=None):
     """Update coding directives incrementally from this sprint's findings, or bootstrap from history."""
     existing_bullets = []
     try:
@@ -623,12 +623,12 @@ def synthesize_system_wisdom(processed_items=None):
         with open(RETRO_FILE, encoding="utf-8") as f:
             store = json.load(f)
     except Exception:
-        synthesize_story_wisdom(processed_items)
+        synthesize_ac_wisdom(processed_items)
         return
 
     retros = store.get("retros", [])
     if not retros:
-        synthesize_story_wisdom(processed_items)
+        synthesize_ac_wisdom(processed_items)
         return
 
     latest_findings = retros[0].get("findings", [])
@@ -653,7 +653,7 @@ def synthesize_system_wisdom(processed_items=None):
                     seen.add(key)
                     all_findings.append(f"[{fnd['type']}] {fnd['text']}")
         if not all_findings:
-            synthesize_story_wisdom(processed_items)
+            synthesize_ac_wisdom(processed_items)
             return
         prompt = (
             "Distill these sprint findings into 6-8 coding directives for an AI agent.\n"
@@ -678,8 +678,8 @@ def synthesize_system_wisdom(processed_items=None):
     )
     with open(WISDOM_FILE, "w", encoding="utf-8") as f:
         json.dump({"bullets": bullets, "synthesized_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "finding_count": total_findings}, f, indent=2)
-    log(f"Wisdom: {len(bullets)} bullet(s) written to system_wisdom.json")
-    synthesize_story_wisdom(processed_items)
+    log(f"Coding wisdom: {len(bullets)} bullet(s) written to coding_wisdom.json")
+    synthesize_ac_wisdom(processed_items)
 
 
 # ── Main loop ─────────────────────────────────────────────────────────────────
@@ -899,7 +899,7 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
 
 def main():
     if "--synthesize" in sys.argv:
-        synthesize_system_wisdom()
+        synthesize_coding_wisdom()
         return
 
     sprint_mode = "--sprint" in sys.argv

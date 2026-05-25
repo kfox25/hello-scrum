@@ -307,9 +307,9 @@
           </div>
           <div class="step-card">
             <div class="step-name">Elaborate <span class="agent-badge badge-haiku">claude-haiku-4-5</span></div>
-            <div class="step-purpose">Drag from Opportunity → Story Backlog. Haiku auto-generates a user story and 3–4 testable acceptance criteria — informed by STORY RULES (AC patterns from past story outcomes) and CODING RULES (synthesized wisdom). Card pulses while generating, then shows a ▼ arrow at the bottom to expand AC.</div>
+            <div class="step-purpose">Drag from Opportunity → Story Backlog. Haiku auto-generates a user story and 3–4 testable acceptance criteria — informed by AC WISDOM (AC patterns from past story outcomes) and CODING WISDOM (coding directives from past sprints). Card pulses while generating, then shows a ▼ arrow at the bottom to expand AC.</div>
             <div class="step-io">
-              <div class="io-item"><span class="io-label">Input</span> <span>Raw idea + STORY RULES + RULES</span></div>
+              <div class="io-item"><span class="io-label">Input</span> <span>Raw idea + AC WISDOM + CODING WISDOM</span></div>
               <div class="io-item"><span class="io-label">Output</span> <span>User story + acceptance criteria</span></div>
             </div>
           </div>
@@ -337,7 +337,7 @@
           </div>
           <div class="step-card">
             <div class="step-name">Start Sprint → Implementation <span class="agent-badge badge-sonnet">claude-sonnet-4-6</span> <span class="agent-badge badge-system">Automated</span></div>
-            <div class="step-purpose">Triggered automatically by Start Sprint — no human gate. Sonnet receives the story and AC written at Step 2 as its brief, plus full index.html, last-1 changelog entry, RULES (synthesized wisdom), and THIS SPRINT (retro context — previous sprint on story 1, current sprint on story 2+). Implements the story, patches index.html, bumps version.</div>
+            <div class="step-purpose">Triggered automatically by Start Sprint — no human gate. Sonnet receives the story and AC written at Step 2 as its brief, plus full index.html, last-1 changelog entry, CODING WISDOM, and THIS SPRINT (retro context — previous sprint on story 1, current sprint on story 2+). Implements the story, patches index.html, bumps version.</div>
             <div class="step-io">
               <div class="io-item"><span class="io-label">Input</span> <span>Story + AC (from Step 2), index.html, version.json, wisdom, retro context</span></div>
               <div class="io-item"><span class="io-label">Output</span> <span>Patched files, summary</span></div>
@@ -411,10 +411,10 @@
           </div>
           <div class="step-card">
             <div class="step-name">Retro + Wisdom <span class="agent-badge badge-haiku">claude-haiku-4-5</span></div>
-            <div class="step-purpose">Runs after every item. Haiku analyzes all sprint items so far and writes findings to retrospective.json. Then synthesize_system_wisdom() updates system_wisdom.json by merging the existing directives with only this sprint's new findings. Then synthesize_story_wisdom() updates story_wisdom.json by merging existing directives with only this sprint's story outcomes. Both functions bootstrap from full history on first run.</div>
+            <div class="step-purpose">Runs after every item. Haiku analyzes all sprint items so far and writes findings to retrospective.json. Then synthesize_coding_wisdom() updates coding_wisdom.json by merging the existing directives with only this sprint's new findings. Then synthesize_ac_wisdom() updates ac_wisdom.json by merging existing directives with only this sprint's story outcomes. Both functions bootstrap from full history on first run.</div>
             <div class="step-io">
               <div class="io-item"><span class="io-label">Input</span> <span>This sprint's items + existing wisdom bullets</span></div>
-              <div class="io-item"><span class="io-label">Output</span> <span>retrospective.json + system_wisdom.json + story_wisdom.json</span></div>
+              <div class="io-item"><span class="io-label">Output</span> <span>retrospective.json + coding_wisdom.json + ac_wisdom.json</span></div>
             </div>
           </div>
         </div>
@@ -434,18 +434,18 @@
               </thead>
               <tbody>
                 <tr>
-                  <td>System Wisdom</td>
-                  <td>system_wisdom.json</td>
+                  <td>Coding Wisdom</td>
+                  <td>coding_wisdom.json</td>
                   <td>retrospective.json findings</td>
-                  <td>synthesize_system_wisdom()</td>
-                  <td>Step 4 Sonnet — RULES block</td>
+                  <td>synthesize_coding_wisdom()</td>
+                  <td>Step 4 Sonnet — CODING WISDOM block</td>
                 </tr>
                 <tr>
-                  <td>Story Wisdom</td>
-                  <td>story_wisdom.json</td>
+                  <td>AC Wisdom</td>
+                  <td>ac_wisdom.json</td>
                   <td>backlog.json outcomes</td>
-                  <td>synthesize_story_wisdom()</td>
-                  <td>Step 2 Haiku — STORY RULES block</td>
+                  <td>synthesize_ac_wisdom()</td>
+                  <td>Step 2 Haiku — AC WISDOM block</td>
                 </tr>
                 <tr>
                   <td>Retrospective</td>
@@ -502,7 +502,7 @@
           </div>
           <div class="prose-body">
             <p>You drag an item from <strong>Opportunity Backlog</strong> → <strong>Story Backlog</strong>. On drop, Haiku auto-generates a full user story (<em>As a user, I want...</em>) with 3–4 short, testable acceptance criteria.</p>
-            <p>The prompt is augmented with two wisdom layers: <strong>STORY RULES</strong> (AC-writing directives from story_wisdom.json, distilled from all past story outcomes) and <strong>RULES</strong> (coding directives from system_wisdom.json, distilled from all previous sprint retrospectives). Both inform how the AC are written before any code is run.</p>
+            <p>The prompt is augmented with two wisdom layers: <strong>AC WISDOM</strong> (AC-writing directives from ac_wisdom.json, distilled from all past story outcomes) and <strong>CODING WISDOM</strong> (coding directives from coding_wisdom.json, distilled from all previous sprint retrospectives). Both inform how the AC are written before any code is run.</p>
             <p>The card pulses with a "generating story..." animation while in flight. When done, a ▼ arrow appears at the bottom of the card — clicking it expands to show the AC and rotates the arrow to ▲. Expansion state persists across re-renders.</p>
           </div>
         </div>
@@ -526,7 +526,7 @@
           <div class="prose-substeps">
             <div class="prose-substep">
               <span class="prose-substep-label lbl-system">a</span>
-              <span class="prose-substep-text"><strong>Wisdom + context injection.</strong> Before calling Sonnet, the prompt is built with two stacked sections: <strong>RULES</strong> (synthesized cross-sprint bullet directives from system_wisdom.json) and <strong>THIS SPRINT</strong> (retro findings — loaded from the previous sprint at sprint start, then refreshed after each item so story 2+ sees the current sprint's outcomes). Only the changelog is trimmed — full index.html and wisdom bullets are sent as-is.</span>
+              <span class="prose-substep-text"><strong>Wisdom + context injection.</strong> Before calling Sonnet, the prompt is built with two stacked sections: <strong>CODING WISDOM</strong> (synthesized cross-sprint bullet directives from coding_wisdom.json) and <strong>THIS SPRINT</strong> (retro findings — loaded from the previous sprint at sprint start, then refreshed after each item so story 2+ sees the current sprint's outcomes). Only the changelog is trimmed — full index.html and wisdom bullets are sent as-is.</span>
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-sonnet">b</span>
@@ -563,11 +563,11 @@
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-haiku">Wisdom</span>
-              <span class="prose-substep-text">synthesize_system_wisdom() passes the existing system_wisdom.json bullets plus only this sprint's new findings to Haiku, which merges them — incorporating new patterns and dropping outdated ones — and rewrites system_wisdom.json. First run bootstraps from full history.</span>
+              <span class="prose-substep-text">synthesize_coding_wisdom() passes the existing coding_wisdom.json bullets plus only this sprint's new findings to Haiku, which merges them — incorporating new patterns and dropping outdated ones — and rewrites coding_wisdom.json. First run bootstraps from full history.</span>
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-haiku">Wisdom</span>
-              <span class="prose-substep-text">synthesize_story_wisdom() passes the existing story_wisdom.json bullets plus only this sprint's story outcomes to Haiku, which merges them and rewrites story_wisdom.json. First run bootstraps from the last 50 story outcomes.</span>
+              <span class="prose-substep-text">synthesize_ac_wisdom() passes the existing ac_wisdom.json bullets plus only this sprint's story outcomes to Haiku, which merges them and rewrites ac_wisdom.json. First run bootstraps from the last 50 story outcomes.</span>
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-system">Context</span>
@@ -582,8 +582,8 @@
             <span class="prose-title">Repeat Until Sprint Empty</span>
           </div>
           <div class="prose-body">
-            <p>Steps 4–5 repeat for each story in the sprint queue. By story 3, the agent has seen what failed in stories 1 and 2 of this sprint (THIS SPRINT) plus the freshly updated all-time wisdom (RULES). The feedback loops compound within the sprint.</p>
-            <p>When the queue is empty, the sprint ends. The Retro page shows all findings in the <strong>Sprint Retrospective</strong> column, and the <strong>System Wisdom</strong> and <strong>Story Wisdom</strong> panels on the right show the updated directives ready for the next sprint.</p>
+            <p>Steps 4–5 repeat for each story in the sprint queue. By story 3, the agent has seen what failed in stories 1 and 2 of this sprint (THIS SPRINT) plus the freshly updated all-time wisdom (CODING WISDOM). The feedback loops compound within the sprint.</p>
+            <p>When the queue is empty, the sprint ends. The Retro page shows all findings in the <strong>Sprint Retrospective</strong> column, and the <strong>Coding Wisdom</strong> and <strong>AC Wisdom</strong> panels on the right show the updated directives ready for the next sprint.</p>
           </div>
         </div>
 
@@ -604,7 +604,7 @@
               </thead>
               <tbody>
                 <tr>
-                  <td>system_wisdom.json RULES</td>
+                  <td>coding_wisdom.json CODING WISDOM</td>
                   <td>Haiku (after each item)</td>
                   <td>Sonnet (every story)</td>
                   <td>All sprints, all time</td>
@@ -628,7 +628,7 @@
                   <td>Current story</td>
                 </tr>
                 <tr>
-                  <td>story_wisdom.json STORY RULES</td>
+                  <td>ac_wisdom.json AC WISDOM</td>
                   <td>Haiku (after each item)</td>
                   <td>Haiku (Elaborate, Step 2)</td>
                   <td>All stories, all time</td>

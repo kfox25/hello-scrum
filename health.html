@@ -234,12 +234,12 @@
   </div>
 
   <div class="section">
-    <h2>System Wisdom Quality</h2>
+    <h2>Coding Wisdom Quality</h2>
     <div class="bullet-list" id="system-wisdom-bullets"></div>
   </div>
 
   <div class="section">
-    <h2>Story Wisdom Quality</h2>
+    <h2>AC Wisdom Quality</h2>
     <div class="bullet-list" id="story-wisdom-bullets"></div>
   </div>
 
@@ -330,7 +330,7 @@
         card('Last Retro', fmtDate(df.last_retro_date), '') +
         card('Retro Count', df.retro_count ?? '—', '') +
         card('Wisdom Sync', staleVal, staleCol,
-          df.system_wisdom_at ? 'Synced ' + fmtDate(df.system_wisdom_at) : 'Never synthesized') +
+          df.coding_wisdom_at ? 'Synced ' + fmtDate(df.coding_wisdom_at) : 'Never synthesized') +
         card('Sprints Since Retro', sprintsSince, typeof sprintsSince === 'number' ? sprintsCol : '');
 
       // ── Sprint Trend ───────────────────────────────────────────────────────
@@ -415,8 +415,8 @@
       }
 
       const wq = d.wisdom_quality || {};
-      renderWisdomBullets('system-wisdom-bullets', wq.system);
-      renderWisdomBullets('story-wisdom-bullets', wq.story);
+      renderWisdomBullets('system-wisdom-bullets', wq.coding);
+      renderWisdomBullets('story-wisdom-bullets', wq.ac);
     }
 
     load();

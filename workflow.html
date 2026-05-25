@@ -662,7 +662,9 @@
       }
 
       function drawLabels() {
-        // Remove any previously created label divs
+        const pipeline = document.querySelector('.pipeline');
+        if (!pipeline) return;
+
         pipeline.querySelectorAll('.feedback-label').forEach(el => el.remove());
 
         const steps = [...pipeline.querySelectorAll('.step')];

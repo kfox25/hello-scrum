@@ -6,14 +6,15 @@
   <title>Retrospective — Hello Scrum</title>
   <link rel="stylesheet" href="shared.css">
   <style>
-    body { padding: 4rem 2rem 2rem; }
+    body { padding: 4rem 2rem 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
     .page-layout {
       display: flex;
       gap: 2rem;
-      align-items: flex-start;
+      flex: 1;
+      min-height: 0;
     }
-    .col { flex: 1; min-width: 0; }
+    .col { flex: 1; min-width: 0; overflow-y: auto; padding-bottom: 2rem; }
 
     .col-header {
       margin-bottom: 1.5rem;
@@ -23,32 +24,39 @@
     h2 { color: #00ff99; font-size: 1.4rem; }
     .subtitle { color: #555; font-size: 0.85rem; margin-top: 0.25rem; }
 
-    .system-retro { display: flex; flex-direction: column; gap: 1rem; }
-    .sys-section label {
-      display: block;
-      font-size: 0.7rem;
+    .sys-group { margin-bottom: 1.75rem; }
+    .sys-group-label {
+      font-size: 0.65rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #444;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid #1a1a1a;
     }
-    .sys-section textarea {
-      width: 100%;
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      border-radius: 6px;
-      padding: 0.75rem 1rem;
-      color: #e0e0e0;
-      font-family: monospace;
-      font-size: 0.85rem;
-      line-height: 1.6;
-      resize: vertical;
-      min-height: 120px;
+    .sys-group-label.lbl-failure    { color: #ff444480; }
+    .sys-group-label.lbl-improve    { color: #4488ff80; }
+    .sys-group-label.lbl-success    { color: #00ff9980; }
+    .sys-group-label.lbl-observe    { color: #ffcc0080; }
+    .sys-finding {
+      display: flex;
+      gap: 0.6rem;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid #141414;
     }
-    .sys-section textarea:focus { outline: none; border-color: #00ff9940; }
-    .sys-section textarea::placeholder { color: #2a2a2a; }
-    .save-indicator { font-size: 0.7rem; color: #333; text-align: right; margin-top: 0.25rem; height: 1rem; }
-    .save-indicator.saved { color: #00ff9960; }
+    .sys-finding:last-child { border-bottom: none; }
+    .sys-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      margin-top: 0.6rem;
+      flex-shrink: 0;
+    }
+    .dot-failure { background: #ff4444; }
+    .dot-improve { background: #4488ff; }
+    .dot-success { background: #00ff99; }
+    .dot-observe { background: #ffcc00; }
+    .sys-body { flex: 1; }
+    .sys-text { font-size: 0.85rem; color: #ccc; line-height: 1.5; }
+    .sys-origin { font-size: 0.7rem; color: #2a2a2a; margin-top: 0.1rem; }
 
     .retro-card {
       background: #1a1a1a;
@@ -171,45 +179,12 @@
     <div class="col">
       <div class="col-header">
         <h2>System Retro</h2>
-        <div class="subtitle">Ongoing process observations</div>
+        <div class="subtitle">Aggregated learnings across all sprints</div>
       </div>
-      <div class="system-retro">
-        <div class="sys-section">
-          <label>What's working well</label>
-          <textarea id="sys-working" placeholder="Patterns, practices, or decisions that are paying off..." oninput="sysave('working')"></textarea>
-        </div>
-        <div class="sys-section">
-          <label>Needs improvement</label>
-          <textarea id="sys-improve" placeholder="Friction points, recurring failures, gaps in the process..." oninput="sysave('improve')"></textarea>
-        </div>
-        <div class="sys-section">
-          <label>Action items</label>
-          <textarea id="sys-actions" placeholder="Concrete changes to make to the pipeline, prompts, or workflow..." oninput="sysave('actions')"></textarea>
-        </div>
-        <div class="save-indicator" id="sysSaveInd"></div>
-      </div>
+      <div id="system-retro"><div class="loading">Loading...</div></div>
     </div>
 
   </div>
-
-  <script>
-    const SYS_KEY = 'hello-scrum-system-retro';
-    const sysData = JSON.parse(localStorage.getItem(SYS_KEY) || '{}');
-    ['working','improve','actions'].forEach(k => {
-      const el = document.getElementById('sys-' + k);
-      if (el && sysData[k]) el.value = sysData[k];
-    });
-    let sysSaveTimer;
-    function sysave(field) {
-      sysData[field] = document.getElementById('sys-' + field).value;
-      localStorage.setItem(SYS_KEY, JSON.stringify(sysData));
-      const ind = document.getElementById('sysSaveInd');
-      ind.textContent = 'saved';
-      ind.className = 'save-indicator saved';
-      clearTimeout(sysSaveTimer);
-      sysSaveTimer = setTimeout(() => { ind.textContent = ''; ind.className = 'save-indicator'; }, 1500);
-    }
-  </script>
 
   <script>
     function escHtml(s) {
@@ -272,6 +247,44 @@
       </div>`;
     }
 
+    const SYS_GROUPS = [
+      { type: 'failure_pattern', label: 'Avoid — failure patterns',  lbl: 'lbl-failure', dot: 'dot-failure' },
+      { type: 'improvement',     label: 'Apply — improvements',       lbl: 'lbl-improve', dot: 'dot-improve' },
+      { type: 'success_pattern', label: 'Keep — success patterns',    lbl: 'lbl-success', dot: 'dot-success' },
+      { type: 'observation',     label: 'Note — observations',        lbl: 'lbl-observe', dot: 'dot-observe' },
+    ];
+
+    function renderSystemRetro(retros) {
+      if (!retros.length) {
+        return '<div class="empty">No sprint data yet — run a sprint to populate learnings.</div>';
+      }
+      return SYS_GROUPS.map(g => {
+        const seen = new Set();
+        const findings = [];
+        retros.forEach(r => {
+          (r.findings || []).filter(f => f.type === g.type).forEach(f => {
+            if (!seen.has(f.text)) {
+              seen.add(f.text);
+              findings.push({ text: f.text, date: r.sprint_date || '' });
+            }
+          });
+        });
+        if (!findings.length) return '';
+        const rows = findings.map(f => `
+          <div class="sys-finding">
+            <div class="sys-dot ${g.dot}"></div>
+            <div class="sys-body">
+              <div class="sys-text">${escHtml(f.text)}</div>
+              ${f.date ? `<div class="sys-origin">${escHtml(f.date)}</div>` : ''}
+            </div>
+          </div>`).join('');
+        return `<div class="sys-group">
+          <div class="sys-group-label ${g.lbl}">${g.label}</div>
+          ${rows}
+        </div>`;
+      }).join('');
+    }
+
     Promise.all([
       fetch('/retrospective.json?t=' + Date.now()).then(r => r.json()),
       fetch('/backlog.json?t=' + Date.now()).then(r => r.json()),
@@ -279,18 +292,20 @@
         const retros = retroData.retros || [];
         if (!retros.length) {
           document.getElementById('retros').innerHTML = '<div class="empty">No retrospectives yet — run a sprint to generate findings.</div>';
-          return;
+        } else {
+          const sprintItems = (backlogData.items || []).filter(i => i.in_sprint);
+          const html = retros.map(r => {
+            const key = contextKey(r);
+            const recipients = sprintItems.filter(i => i.retro_context === key);
+            return renderRetro(r, recipients);
+          }).join('');
+          document.getElementById('retros').innerHTML = html;
         }
-        const sprintItems = (backlogData.items || []).filter(i => i.in_sprint);
-        const html = retros.map(r => {
-          const key = contextKey(r);
-          const recipients = sprintItems.filter(i => i.retro_context === key);
-          return renderRetro(r, recipients);
-        }).join('');
-        document.getElementById('retros').innerHTML = html;
+        document.getElementById('system-retro').innerHTML = renderSystemRetro(retros);
       })
       .catch(err => {
         document.getElementById('retros').innerHTML = `<div class="error">Failed to load data<br>${err}</div>`;
+        document.getElementById('system-retro').innerHTML = `<div class="error">Failed to load data<br>${err}</div>`;
       });
   </script>
 </body>

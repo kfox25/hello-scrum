@@ -395,7 +395,7 @@
           </div>
           <div class="step-card">
             <div class="step-name">Retro + Wisdom <span class="agent-badge badge-haiku">claude-haiku-4-5</span></div>
-            <div class="step-purpose">Runs after every item. Haiku analyzes all sprint items so far and writes findings to retrospective.json. Then synthesize_wisdom() updates wisdom.json by merging the existing directives with only this sprint's new findings. Then synthesize_story_wisdom() updates story_wisdom.json by merging existing directives with only this sprint's story outcomes. Both functions bootstrap from full history on first run.</div>
+            <div class="step-purpose">Runs after every item. Haiku analyzes all sprint items so far and writes findings to retrospective.json. Then synthesize_system_wisdom() updates wisdom.json by merging the existing directives with only this sprint's new findings. Then synthesize_story_wisdom() updates story_wisdom.json by merging existing directives with only this sprint's story outcomes. Both functions bootstrap from full history on first run.</div>
             <div class="step-io">
               <div class="io-item"><span class="io-label">Input</span> <span>This sprint's items + existing wisdom bullets</span></div>
               <div class="io-item"><span class="io-label">Output</span> <span>retrospective.json + wisdom.json + story_wisdom.json</span></div>
@@ -507,7 +507,7 @@
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-haiku">Wisdom</span>
-              <span class="prose-substep-text">synthesize_wisdom() passes the existing wisdom.json bullets plus only this sprint's new findings to Haiku, which merges them — incorporating new patterns and dropping outdated ones — and rewrites wisdom.json. First run bootstraps from full history.</span>
+              <span class="prose-substep-text">synthesize_system_wisdom() passes the existing wisdom.json bullets plus only this sprint's new findings to Haiku, which merges them — incorporating new patterns and dropping outdated ones — and rewrites wisdom.json. First run bootstraps from full history.</span>
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-haiku">Wisdom</span>

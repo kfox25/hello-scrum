@@ -239,7 +239,7 @@ def call_agent(idea, story, acceptance_criteria, index_html, version_json, times
     if wisdom:
         context_parts.append("CODING WISDOM:\n" + "\n".join(f"- {b}" for b in wisdom))
     if retro_context:
-        context_parts.append("THIS SPRINT:\n" + retro_context)
+        context_parts.append("SPRINT WISDOM:\n" + retro_context)
     context_section = ("\n\n" + "\n\n".join(context_parts)) if context_parts else ""
 
     version_json = strip_changelog_for_prompt(version_json)
@@ -910,7 +910,7 @@ def main():
 
     if sprint_mode or loop_mode:
         processed = []
-        retro_context = None  # story 1 relies on CODING WISDOM only; THIS SPRINT loads after first item
+        retro_context = None  # story 1 relies on CODING WISDOM only; SPRINT WISDOM loads after first item
         while True:
             prev_len = len(processed)
             success = run_one(sprint_only=sprint_mode, processed=processed, retro_context=retro_context)

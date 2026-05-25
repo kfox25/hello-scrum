@@ -337,7 +337,7 @@
           </div>
           <div class="step-card">
             <div class="step-name">Start Sprint → Implementation <span class="agent-badge badge-sonnet">claude-sonnet-4-6</span> <span class="agent-badge badge-system">Automated</span></div>
-            <div class="step-purpose">Triggered automatically by Start Sprint — no human gate. Sonnet receives the story and AC written at Step 2 as its brief, plus full index.html, last-1 changelog entry, CODING WISDOM, and THIS SPRINT (retro context — absent on story 1, current sprint findings on story 2+). Implements the story, patches index.html, bumps version.</div>
+            <div class="step-purpose">Triggered automatically by Start Sprint — no human gate. Sonnet receives the story and AC written at Step 2 as its brief, plus full index.html, last-1 changelog entry, CODING WISDOM, and SPRINT WISDOM (retro context — absent on story 1, current sprint findings on story 2+). Implements the story, patches index.html, bumps version.</div>
             <div class="step-io">
               <div class="io-item"><span class="io-label">Input</span> <span>Story + AC (from Step 2), index.html, version.json, wisdom, retro context</span></div>
               <div class="io-item"><span class="io-label">Output</span> <span>Patched files, summary</span></div>
@@ -452,7 +452,7 @@
                   <td>retrospective.json</td>
                   <td>sprint items (live)</td>
                   <td>run_retro()</td>
-                  <td>Step 4 Sonnet — THIS SPRINT block</td>
+                  <td>Step 4 Sonnet — SPRINT WISDOM block</td>
                 </tr>
               </tbody>
             </table>
@@ -526,7 +526,7 @@
           <div class="prose-substeps">
             <div class="prose-substep">
               <span class="prose-substep-label lbl-system">a</span>
-              <span class="prose-substep-text"><strong>Wisdom + context injection.</strong> Before calling Sonnet, the prompt is built with two stacked sections: <strong>CODING WISDOM</strong> (synthesized cross-sprint bullet directives from coding_wisdom.json) and <strong>THIS SPRINT</strong> (absent on story 1 — story 1 relies on CODING WISDOM only; refreshed after each item so story 2+ sees the current sprint's raw findings). Only the changelog is trimmed — full index.html and wisdom bullets are sent as-is.</span>
+              <span class="prose-substep-text"><strong>Wisdom + context injection.</strong> Before calling Sonnet, the prompt is built with two stacked sections: <strong>CODING WISDOM</strong> (synthesized cross-sprint bullet directives from coding_wisdom.json) and <strong>SPRINT WISDOM</strong> (absent on story 1 — story 1 relies on CODING WISDOM only; refreshed after each item so story 2+ sees the current sprint's raw findings). Only the changelog is trimmed — full index.html and wisdom bullets are sent as-is.</span>
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-sonnet">b</span>
@@ -571,7 +571,7 @@
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-system">Context</span>
-              <span class="prose-substep-text">retro_context is reloaded from retrospective.json so the next story's THIS SPRINT block reflects what just happened — including whether the previous item passed or failed and why.</span>
+              <span class="prose-substep-text">retro_context is reloaded from retrospective.json so the next story's SPRINT WISDOM block reflects what just happened — including whether the previous item passed or failed and why.</span>
             </div>
           </div>
         </div>
@@ -582,7 +582,7 @@
             <span class="prose-title">Repeat Until Sprint Empty</span>
           </div>
           <div class="prose-body">
-            <p>Steps 4–5 repeat for each story in the sprint queue. By story 3, the agent has seen what failed in stories 1 and 2 of this sprint (THIS SPRINT) plus the freshly updated all-time wisdom (CODING WISDOM). The feedback loops compound within the sprint.</p>
+            <p>Steps 4–5 repeat for each story in the sprint queue. By story 3, the agent has seen what failed in stories 1 and 2 of this sprint (SPRINT WISDOM) plus the freshly updated all-time wisdom (CODING WISDOM). The feedback loops compound within the sprint.</p>
             <p>When the queue is empty, the sprint ends. The Retro page shows all findings in the <strong>Sprint Retrospective</strong> column, and the <strong>Coding Wisdom</strong> and <strong>AC Wisdom</strong> panels on the right show the updated directives ready for the next sprint.</p>
           </div>
         </div>
@@ -610,7 +610,7 @@
                   <td>All sprints, all time</td>
                 </tr>
                 <tr>
-                  <td>retro_context THIS SPRINT</td>
+                  <td>retro_context SPRINT WISDOM</td>
                   <td>Haiku (after each item)</td>
                   <td>Sonnet (next story)</td>
                   <td>Absent story 1 → current sprint story 2+</td>

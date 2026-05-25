@@ -1,5 +1,5 @@
 {
-  "version": "0.1.42",
+  "version": "0.1.43",
   "deployed": "2026-05-25 CT",
   "status": "baseline",
   "total_tokens": 0,
@@ -218,6 +218,11 @@
       "version": "0.1.42",
       "date": "2026-05-25",
       "change": "Sprint agent now implements against Step 2 story/AC instead of generating its own"
+    },
+    {
+      "version": "0.1.43",
+      "date": "2026-05-25",
+      "change": "Incremental wisdom synthesis: merge new sprint findings into existing bullets instead of full re-synthesis"
     }
   ]
 }

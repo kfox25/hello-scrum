@@ -1,5 +1,5 @@
 {
-  "version": "0.1.43",
+  "version": "0.1.44",
   "deployed": "2026-05-25 CT",
   "status": "baseline",
   "total_tokens": 0,
@@ -223,6 +223,11 @@
       "version": "0.1.43",
       "date": "2026-05-25",
       "change": "Incremental wisdom synthesis: merge new sprint findings into existing bullets instead of full re-synthesis"
+    },
+    {
+      "version": "0.1.44",
+      "date": "2026-05-25",
+      "change": "Renamed synthesize_wisdom to synthesize_system_wisdom and wisdom.json to system_wisdom.json"
     }
   ]
 }

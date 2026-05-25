@@ -395,9 +395,9 @@
           </div>
           <div class="step-card">
             <div class="step-name">Retro + Wisdom <span class="agent-badge badge-haiku">claude-haiku-4-5</span></div>
-            <div class="step-purpose">Runs after every item. Haiku analyzes all sprint items so far and writes findings to retrospective.json. Then synthesize_wisdom() re-distills all findings from all sprints into coding directives (wisdom.json → Step 4). Then synthesize_story_wisdom() mines all story outcomes into AC-writing directives (story_wisdom.json → Step 2).</div>
+            <div class="step-purpose">Runs after every item. Haiku analyzes all sprint items so far and writes findings to retrospective.json. Then synthesize_wisdom() updates wisdom.json by merging the existing directives with only this sprint's new findings. Then synthesize_story_wisdom() updates story_wisdom.json by merging existing directives with only this sprint's story outcomes. Both functions bootstrap from full history on first run.</div>
             <div class="step-io">
-              <div class="io-item"><span class="io-label">Input</span> <span>All processed items this sprint + full backlog history</span></div>
+              <div class="io-item"><span class="io-label">Input</span> <span>This sprint's items + existing wisdom bullets</span></div>
               <div class="io-item"><span class="io-label">Output</span> <span>retrospective.json + wisdom.json + story_wisdom.json</span></div>
             </div>
           </div>
@@ -507,11 +507,11 @@
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-haiku">Wisdom</span>
-              <span class="prose-substep-text">synthesize_wisdom() re-reads all findings from all sprints ever, asks Haiku to distill them into 6–8 terse directive bullets (≤12 words each), and overwrites wisdom.json. The next story gets the freshly updated RULES block.</span>
+              <span class="prose-substep-text">synthesize_wisdom() passes the existing wisdom.json bullets plus only this sprint's new findings to Haiku, which merges them — incorporating new patterns and dropping outdated ones — and rewrites wisdom.json. First run bootstraps from full history.</span>
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-haiku">Wisdom</span>
-              <span class="prose-substep-text">synthesize_story_wisdom() reads the last 50 completed/failed/rejected stories from backlog.json, asks Haiku to distill 6–8 AC-writing directives, and overwrites story_wisdom.json. The next Elaborate call gets freshly updated STORY RULES.</span>
+              <span class="prose-substep-text">synthesize_story_wisdom() passes the existing story_wisdom.json bullets plus only this sprint's story outcomes to Haiku, which merges them and rewrites story_wisdom.json. First run bootstraps from the last 50 story outcomes.</span>
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-system">Context</span>

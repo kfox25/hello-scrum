@@ -542,108 +542,144 @@ Analyze this sprint and return findings JSON."""
     log(f"\nRetro: {retro.get('summary', '')}")
     log(f"Findings: {len(retro.get('findings', []))} item(s) written to retrospective.json")
 
-    synthesize_wisdom()
+    synthesize_wisdom(processed_items)
 
 
-def synthesize_story_wisdom():
-    """Distill AC-writing directives from all story outcomes and save to story_wisdom.json."""
+def synthesize_story_wisdom(sprint_items=None):
+    """Update AC-writing directives incrementally from this sprint's outcomes, or bootstrap from history."""
+    existing_bullets = []
+    try:
+        with open(STORY_WISDOM_FILE) as f:
+            sw = json.load(f)
+        existing_bullets = [b.lstrip("•").strip() for b in sw.get("bullets", []) if b.strip()]
+    except Exception:
+        pass
+
     try:
         with open(BACKLOG_FILE) as f:
             backlog = json.load(f)
     except Exception:
         return
 
-    completed = [i for i in backlog.get("items", [])
-                 if i.get("status") in ("done", "failed", "rejected")]
-    if len(completed) < 3:
+    all_completed = [i for i in backlog.get("items", [])
+                     if i.get("status") in ("done", "failed", "rejected")]
+    total_count = len(all_completed)
+    if total_count < 3:
         return
 
-    # Compact dataset: idea, AC, status, failure reason
-    data = []
-    for i in completed[-50:]:  # cap at 50 items for token efficiency
-        entry = {
-            "idea":   i.get("idea", "")[:80],
-            "ac":     i.get("acceptance_criteria", []),
-            "status": i.get("status"),
-        }
+    def to_entry(i):
+        entry = {"idea": i.get("idea", "")[:80], "ac": i.get("acceptance_criteria", []), "status": i.get("status")}
         reason = i.get("ac_check_reason") or i.get("hermes_reason") or i.get("error", "")
         if reason and i.get("status") != "done":
             entry["rejected_for"] = reason[:120]
-        data.append(entry)
+        return entry
+
+    if existing_bullets and sprint_items:
+        new_outcomes = [to_entry(i) for i in sprint_items
+                        if i.get("status") in ("done", "failed", "rejected")]
+        if not new_outcomes:
+            return
+        prompt = (
+            "Update these AC-writing directives for a scrum story writer using new outcomes. "
+            "Incorporate new patterns, drop outdated ones. "
+            "Keep 6-8 bullets, ≤12 words each, plain text, imperative voice. Start each with •\n\n"
+            "Current directives:\n" + "\n".join(f"• {b}" for b in existing_bullets) + "\n\n"
+            "New story outcomes:\n" + json.dumps(new_outcomes, indent=2)
+        )
+    else:
+        data = [to_entry(i) for i in all_completed[-50:]]
+        prompt = (
+            "Distill 6-8 AC-writing directives for a scrum story writer from these outcomes.\n"
+            "Requirements: ≤12 words each, plain text, imperative voice, "
+            "specific to AI-implemented HTML/CSS/JS stories. Start each with •\n\n"
+            "Story outcomes:\n" + json.dumps(data, indent=2)
+        )
 
     log("Synthesizing story wisdom...")
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
         max_tokens=400,
-        messages=[{"role": "user", "content": (
-            "Analyze these story outcomes from an AI coding agent. "
-            "Identify what acceptance criteria characteristics lead to success vs failure.\n"
-            "Distill 6-8 directives for writing better acceptance criteria.\n"
-            "Requirements: ≤12 words each, plain text (no markdown/bold), imperative voice, "
-            "specific to writing AC for AI-implemented HTML/CSS/JS stories. Start each line with •\n\n"
-            "Story outcomes:\n" + json.dumps(data, indent=2)
-        )}],
+        messages=[{"role": "user", "content": prompt}],
     )
     text = message.content[0].text.strip()
     bullets = [ln.strip() for ln in text.splitlines() if ln.strip().startswith("•")]
 
-    story_wisdom = {
-        "bullets":        bullets,
-        "synthesized_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "item_count":     len(completed),
-    }
     with open(STORY_WISDOM_FILE, "w") as f:
-        json.dump(story_wisdom, f, indent=2)
+        json.dump({"bullets": bullets, "synthesized_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "item_count": total_count}, f, indent=2)
     log(f"Story wisdom: {len(bullets)} bullet(s) written to story_wisdom.json")
 
 
-def synthesize_wisdom():
-    """Distill all retro findings into actionable bullets and save to wisdom.json."""
+def synthesize_wisdom(processed_items=None):
+    """Update coding directives incrementally from this sprint's findings, or bootstrap from history."""
+    existing_bullets = []
+    try:
+        with open(WISDOM_FILE) as f:
+            data = json.load(f)
+        existing_bullets = [b.lstrip("•").strip() for b in data.get("bullets", []) if b.strip()]
+    except Exception:
+        pass
+
     try:
         with open(RETRO_FILE) as f:
             store = json.load(f)
     except Exception:
+        synthesize_story_wisdom(processed_items)
         return
 
     retros = store.get("retros", [])
     if not retros:
+        synthesize_story_wisdom(processed_items)
         return
 
-    seen = set()
-    findings = []
-    for r in retros:
-        for fnd in r.get("findings", []):
-            key = f"{fnd['type']}:{fnd['text']}"
-            if key not in seen:
-                seen.add(key)
-                findings.append(f"[{fnd['type']}] {fnd['text']}")
+    latest_findings = retros[0].get("findings", [])
 
-    if not findings:
-        return
+    if existing_bullets and latest_findings:
+        new_text = "\n".join(f"[{f['type']}] {f['text']}" for f in latest_findings)
+        prompt = (
+            "Update these coding directives for an AI agent using new sprint findings. "
+            "Incorporate new patterns, drop outdated ones. "
+            "Keep 6-8 bullets, ≤12 words each, plain text, imperative voice, "
+            "specific to HTML/CSS/JS patching. Start each with •\n\n"
+            "Current directives:\n" + "\n".join(f"• {b}" for b in existing_bullets) + "\n\n"
+            "New findings:\n" + new_text
+        )
+    else:
+        seen = set()
+        all_findings = []
+        for r in retros:
+            for fnd in r.get("findings", []):
+                key = f"{fnd['type']}:{fnd['text']}"
+                if key not in seen:
+                    seen.add(key)
+                    all_findings.append(f"[{fnd['type']}] {fnd['text']}")
+        if not all_findings:
+            synthesize_story_wisdom(processed_items)
+            return
+        prompt = (
+            "Distill these sprint findings into 6-8 coding directives for an AI agent.\n"
+            "Requirements: ≤12 words each, plain text (no markdown/bold), imperative voice, "
+            "specific to HTML/CSS/JS patching. Start each line with •\n\n"
+            "Findings:\n" + "\n".join(all_findings)
+        )
 
     log("Synthesizing wisdom...")
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
         max_tokens=400,
-        messages=[{"role": "user", "content": (
-            "Distill these sprint findings into 6-8 coding directives for an AI agent.\n"
-            "Requirements: ≤12 words each, plain text (no markdown/bold), imperative voice, "
-            "specific to HTML/CSS/JS patching. Start each line with •\n\n"
-            "Findings:\n" + "\n".join(findings)
-        )}],
+        messages=[{"role": "user", "content": prompt}],
     )
     text = message.content[0].text.strip()
     bullets = [ln.strip() for ln in text.splitlines() if ln.strip().startswith("•")]
 
-    wisdom = {
-        "bullets": bullets,
-        "synthesized_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "finding_count": len(findings),
-    }
+    seen = set()
+    total_findings = sum(
+        1 for r in retros for fnd in r.get("findings", [])
+        if not seen.add(f"{fnd['type']}:{fnd['text']}")  # type: ignore[func-returns-value]
+    )
     with open(WISDOM_FILE, "w") as f:
-        json.dump(wisdom, f, indent=2)
+        json.dump({"bullets": bullets, "synthesized_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "finding_count": total_findings}, f, indent=2)
     log(f"Wisdom: {len(bullets)} bullet(s) written to wisdom.json")
-    synthesize_story_wisdom()
+    synthesize_story_wisdom(processed_items)
 
 
 # ── Main loop ─────────────────────────────────────────────────────────────────

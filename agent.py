@@ -29,8 +29,8 @@ VERSION_FILE = "version.json"
 TEST_SCRIPT  = "test.py"
 REPO_URL     = "https://kfox25.github.io/hello-scrum"
 RETRO_FILE         = "retrospective.json"
-CODING_CODING_WISDOM_FILE = "coding_wisdom.json"
-AC_CODING_WISDOM_FILE     = "ac_wisdom.json"
+CODING_WISDOM_FILE = "coding_wisdom.json"
+AC_WISDOM_FILE     = "ac_wisdom.json"
 
 _log_lines = []
 
@@ -549,7 +549,7 @@ def synthesize_ac_wisdom(sprint_items=None):
     """Update AC-writing directives incrementally from this sprint's outcomes, or bootstrap from history."""
     existing_bullets = []
     try:
-        with open(STORY_CODING_WISDOM_FILE, encoding="utf-8") as f:
+        with open(AC_WISDOM_FILE, encoding="utf-8") as f:
             sw = json.load(f)
         existing_bullets = [b.lstrip("•").strip() for b in sw.get("bullets", []) if b.strip()]
     except Exception:
@@ -604,7 +604,7 @@ def synthesize_ac_wisdom(sprint_items=None):
     text = message.content[0].text.strip()
     bullets = [ln.strip() for ln in text.splitlines() if ln.strip().startswith("•")]
 
-    with open(STORY_CODING_WISDOM_FILE, "w", encoding="utf-8") as f:
+    with open(AC_WISDOM_FILE, "w", encoding="utf-8") as f:
         json.dump({"bullets": bullets, "synthesized_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "item_count": total_count}, f, indent=2)
     log(f"AC wisdom: {len(bullets)} bullet(s) written to ac_wisdom.json")
 
@@ -710,7 +710,7 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
 
     log(f"Timestamp : {timestamp}")
     if retro_context:
-        log("=== RETRO CONTEXT ===")
+        log("=== SPRINT WISDOM ===")
         for line in retro_context.splitlines():
             log(f"  {line}")
         log("")

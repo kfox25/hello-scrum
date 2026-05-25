@@ -542,7 +542,7 @@ Analyze this sprint and return findings JSON."""
     log(f"\nRetro: {retro.get('summary', '')}")
     log(f"Findings: {len(retro.get('findings', []))} item(s) written to retrospective.json")
 
-    synthesize_wisdom(processed_items)
+    synthesize_system_wisdom(processed_items)
 
 
 def synthesize_story_wisdom(sprint_items=None):
@@ -609,7 +609,7 @@ def synthesize_story_wisdom(sprint_items=None):
     log(f"Story wisdom: {len(bullets)} bullet(s) written to story_wisdom.json")
 
 
-def synthesize_wisdom(processed_items=None):
+def synthesize_system_wisdom(processed_items=None):
     """Update coding directives incrementally from this sprint's findings, or bootstrap from history."""
     existing_bullets = []
     try:
@@ -899,7 +899,7 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
 
 def main():
     if "--synthesize" in sys.argv:
-        synthesize_wisdom()
+        synthesize_system_wisdom()
         return
 
     sprint_mode = "--sprint" in sys.argv

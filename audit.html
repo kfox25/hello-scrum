@@ -397,7 +397,7 @@
         </div>`;
     }
 
-    fetch("backlog.json?t=" + Date.now())
+    fetch("sdlc_pipeline.json?t=" + Date.now())
       .then(r => r.json())
       .then(data => {
         const items = data.items
@@ -417,7 +417,7 @@
         document.getElementById("log").innerHTML = items.map(renderItem).join("");
       })
       .catch(err => {
-        document.getElementById("log").innerHTML = `<div class="error">Failed to load backlog.json<br>${err}</div>`;
+        document.getElementById("log").innerHTML = `<div class="error">Failed to load sdlc_pipeline.json<br>${err}</div>`;
       });
   </script>
 </body>

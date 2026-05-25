@@ -23,7 +23,7 @@ from flask import Flask, Response, jsonify, request, send_file
 
 app = Flask(__name__)
 BASE = os.path.dirname(os.path.abspath(__file__))
-BACKLOG_FILE = os.path.join(BASE, "backlog.json")
+SDLC_PIPELINE_FILE = os.path.join(BASE, "sdlc_pipeline.json")
 ACTIVE_FILE  = os.path.join(BASE, "active.json")
 
 agent_running = False
@@ -64,9 +64,9 @@ def audit():
     return send_file(os.path.join(BASE, "audit.html"))
 
 
-@app.route("/backlog.json")
-def backlog_json():
-    return send_file(BACKLOG_FILE)
+@app.route("/sdlc_pipeline.json")
+def sdlc_pipeline_json():
+    return send_file(SDLC_PIPELINE_FILE)
 
 
 @app.route("/version.json")
@@ -179,7 +179,7 @@ def health_diagnostics():
     # ── 3. Data flow ──────────────────────────────────────────────────────────
     data_flow = {}
     try:
-        with open(os.path.join(BASE, "backlog.json"), encoding="utf-8") as f:
+        with open(os.path.join(BASE, "sdlc_pipeline.json"), encoding="utf-8") as f:
             backlog = json.load(f)
         items = backlog.get("items", [])
         started = [i["started"] for i in items if i.get("started")]
@@ -393,7 +393,7 @@ def messenger_choose():
         if not story:
             return jsonify({"reply": "No story provided."})
 
-        with open(BACKLOG_FILE, encoding="utf-8") as f:
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
             backlog = json.load(f)
         new_item = {
             "id": str(int(time.time() * 1000)),
@@ -403,7 +403,7 @@ def messenger_choose():
             "opportunity": True,
         }
         backlog.setdefault("items", []).insert(0, new_item)
-        with open(BACKLOG_FILE, "w", encoding="utf-8") as f:
+        with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
             json.dump(backlog, f, indent=2)
         return jsonify({"reply": f"Added to opportunity backlog: <em>{story}</em>"})
 
@@ -486,14 +486,14 @@ def clear_active():
 
 @app.route("/backlog", methods=["GET"])
 def get_backlog():
-    with open(BACKLOG_FILE, encoding="utf-8") as f:
+    with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
         return jsonify(json.load(f))
 
 
 @app.route("/backlog", methods=["POST"])
 def save_backlog():
     data = request.get_json()
-    with open(BACKLOG_FILE, "w", encoding="utf-8") as f:
+    with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
     return jsonify({"ok": True})
 

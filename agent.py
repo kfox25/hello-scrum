@@ -21,7 +21,7 @@ import anthropic
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-BACKLOG_FILE = "backlog.json"
+SDLC_PIPELINE_FILE = "sdlc_pipeline.json"
 ACTIVE_FILE  = "active.json"
 LOG_FILE     = "agent_log.json"
 INDEX_FILE   = "index.html"
@@ -186,12 +186,12 @@ def clear_active():
 # ── Backlog ───────────────────────────────────────────────────────────────────
 
 def load_backlog():
-    with open(BACKLOG_FILE, encoding="utf-8") as f:
+    with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
         return json.load(f)
 
 
 def save_backlog(data):
-    with open(BACKLOG_FILE, "w", encoding="utf-8") as f:
+    with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
 
@@ -447,7 +447,7 @@ def capture_diff():
 
 
 def git_push(summary):
-    subprocess.run(["git", "add", INDEX_FILE, VERSION_FILE, BACKLOG_FILE], check=True)
+    subprocess.run(["git", "add", INDEX_FILE, VERSION_FILE, SDLC_PIPELINE_FILE], check=True)
     subprocess.run(["git", "commit", "-m", summary], check=True)
     subprocess.run(["git", "push"], check=True)
 
@@ -556,7 +556,7 @@ def synthesize_ac_wisdom(sprint_items=None):
         pass
 
     try:
-        with open(BACKLOG_FILE, encoding="utf-8") as f:
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
             backlog = json.load(f)
     except Exception:
         return

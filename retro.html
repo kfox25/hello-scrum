@@ -64,7 +64,7 @@
       font-size: 0.75rem;
     }
     .btn-sm:hover { border-color: #00ff9940; color: #00ff99; }
-    .wisdom-meta { font-size: 0.7rem; color: #2a2a2a; margin-left: auto; }
+    .wisdom-meta { font-size: 0.7rem; color: #2a2a2a; }
 
     .retro-card {
       background: #1a1a1a;
@@ -255,69 +255,46 @@
       </div>`;
     }
 
-    const WISDOM_KEY = 'hello-scrum-wisdom';
-    const WISDOM_TTL = 60 * 60 * 1000; // 1 hour
+    let wisdomBullets = [];
 
-    function renderWisdom(bullets, ts) {
-      if (!bullets.length) return '<div class="empty">No findings yet — run a sprint first.</div>';
+    function renderWisdom(bullets, synthesizedAt) {
+      if (!bullets.length) return '<div class="empty">No wisdom yet — run a sprint to generate findings.</div>';
       const rows = bullets.map(b => {
         const text = b.replace(/^•\s*/, '');
         return `<div class="wisdom-bullet"><span class="wisdom-dot">•</span><span class="wisdom-text">${escHtml(text)}</span></div>`;
       }).join('');
-      const age = ts ? new Date(ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
       return `
         <div class="wisdom-toolbar">
-          <button class="btn-sm" onclick="synthesize(true)">Refresh</button>
           <button class="btn-sm" onclick="copyWisdom()">Copy</button>
-          <span class="wisdom-meta">${age ? 'synthesized ' + age : ''}</span>
+          <span class="wisdom-meta">${synthesizedAt ? 'synthesized ' + escHtml(synthesizedAt) : ''}</span>
         </div>
         <div class="wisdom-bullets">${rows}</div>`;
     }
 
     function copyWisdom() {
-      const cached = JSON.parse(localStorage.getItem(WISDOM_KEY) || 'null');
-      if (!cached) return;
-      const text = cached.bullets.map(b => b.startsWith('•') ? b : '• ' + b).join('\n');
+      const text = wisdomBullets.map(b => b.startsWith('•') ? b : '• ' + b).join('\n');
       navigator.clipboard.writeText(text);
-    }
-
-    function synthesize(force) {
-      const cached = JSON.parse(localStorage.getItem(WISDOM_KEY) || 'null');
-      if (!force && cached && (Date.now() - cached.ts) < WISDOM_TTL) {
-        document.getElementById('system-retro').innerHTML = renderWisdom(cached.bullets, cached.ts);
-        return;
-      }
-      document.getElementById('system-retro').innerHTML = '<div class="loading">Synthesizing...</div>';
-      fetch('/retro/synthesize', { method: 'POST' })
-        .then(r => r.json())
-        .then(data => {
-          const entry = { bullets: data.bullets || [], ts: Date.now() };
-          localStorage.setItem(WISDOM_KEY, JSON.stringify(entry));
-          document.getElementById('system-retro').innerHTML = renderWisdom(entry.bullets, entry.ts);
-        })
-        .catch(err => {
-          document.getElementById('system-retro').innerHTML = `<div class="error">Synthesis failed<br>${err}</div>`;
-        });
     }
 
     Promise.all([
       fetch('/retrospective.json?t=' + Date.now()).then(r => r.json()),
       fetch('/backlog.json?t=' + Date.now()).then(r => r.json()),
-    ]).then(([retroData, backlogData]) => {
+      fetch('/wisdom.json?t=' + Date.now()).then(r => r.json()),
+    ]).then(([retroData, backlogData, wisdomData]) => {
         const retros = retroData.retros || [];
         if (!retros.length) {
           document.getElementById('retros').innerHTML = '<div class="empty">No retrospectives yet — run a sprint to generate findings.</div>';
-          document.getElementById('system-retro').innerHTML = '<div class="empty">No sprint data yet — run a sprint first.</div>';
-          return;
+        } else {
+          const sprintItems = (backlogData.items || []).filter(i => i.in_sprint);
+          const html = retros.map(r => {
+            const key = contextKey(r);
+            const recipients = sprintItems.filter(i => i.retro_context === key);
+            return renderRetro(r, recipients);
+          }).join('');
+          document.getElementById('retros').innerHTML = html;
         }
-        const sprintItems = (backlogData.items || []).filter(i => i.in_sprint);
-        const html = retros.map(r => {
-          const key = contextKey(r);
-          const recipients = sprintItems.filter(i => i.retro_context === key);
-          return renderRetro(r, recipients);
-        }).join('');
-        document.getElementById('retros').innerHTML = html;
-        synthesize(false);
+        wisdomBullets = wisdomData.bullets || [];
+        document.getElementById('system-retro').innerHTML = renderWisdom(wisdomBullets, wisdomData.synthesized_at);
       })
       .catch(err => {
         document.getElementById('retros').innerHTML = `<div class="error">Failed to load data<br>${err}</div>`;

@@ -185,9 +185,9 @@ def retrospective_json():
     return jsonify({"retros": []})
 
 
-@app.route("/wisdom.json")
-def wisdom_json():
-    path = os.path.join(BASE, "wisdom.json")
+@app.route("/system_wisdom.json")
+def system_wisdom_json():
+    path = os.path.join(BASE, "system_wisdom.json")
     if os.path.exists(path):
         return send_file(path)
     return jsonify({"bullets": [], "synthesized_at": None, "finding_count": 0})
@@ -210,9 +210,9 @@ def save_notes():
     return jsonify({"ok": True})
 
 
-@app.route("/story_wisdom.json")
+@app.route("/story_system_wisdom.json")
 def story_wisdom_json():
-    path = os.path.join(BASE, "story_wisdom.json")
+    path = os.path.join(BASE, "story_system_wisdom.json")
     if os.path.exists(path):
         return send_file(path)
     return jsonify({"bullets": [], "synthesized_at": None, "item_count": 0})
@@ -276,13 +276,13 @@ def elaborate_story():
         story_wisdom_bullets = []
         system_wisdom_bullets = []
         try:
-            with open(os.path.join(BASE, "story_wisdom.json")) as f:
+            with open(os.path.join(BASE, "story_system_wisdom.json")) as f:
                 sw = json.load(f)
             story_wisdom_bullets = [b.lstrip("•").strip() for b in sw.get("bullets", []) if b.strip()]
         except Exception:
             pass
         try:
-            with open(os.path.join(BASE, "wisdom.json")) as f:
+            with open(os.path.join(BASE, "system_wisdom.json")) as f:
                 sw = json.load(f)
             system_wisdom_bullets = [b.lstrip("•").strip() for b in sw.get("bullets", []) if b.strip()]
         except Exception:

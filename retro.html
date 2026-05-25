@@ -339,7 +339,7 @@
     Promise.all([
       fetch('/retrospective.json?t=' + Date.now()).then(r => r.json()),
       fetch('/backlog.json?t=' + Date.now()).then(r => r.json()),
-      fetch('/wisdom.json?t=' + Date.now()).then(r => r.json()),
+      fetch('/system_wisdom.json?t=' + Date.now()).then(r => r.json()),
       fetch('/story_wisdom.json?t=' + Date.now()).then(r => r.json()),
     ]).then(([retroData, backlogData, wisdomData, storyWisdomData]) => {
         const retros = retroData.retros || [];

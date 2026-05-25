@@ -29,8 +29,8 @@ VERSION_FILE = "version.json"
 TEST_SCRIPT  = "test.py"
 REPO_URL     = "https://kfox25.github.io/hello-scrum"
 RETRO_FILE         = "retrospective.json"
-WISDOM_FILE        = "wisdom.json"
-STORY_WISDOM_FILE  = "story_wisdom.json"
+WISDOM_FILE        = "system_system_wisdom.json"
+STORY_WISDOM_FILE  = "story_system_wisdom.json"
 
 _log_lines = []
 
@@ -476,7 +476,7 @@ def load_latest_retro_context():
 
 
 def load_wisdom():
-    """Return list of stripped bullet strings from wisdom.json, or empty list."""
+    """Return list of stripped bullet strings from system_wisdom.json, or empty list."""
     try:
         with open(WISDOM_FILE) as f:
             data = json.load(f)
@@ -606,7 +606,7 @@ def synthesize_story_wisdom(sprint_items=None):
 
     with open(STORY_WISDOM_FILE, "w") as f:
         json.dump({"bullets": bullets, "synthesized_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "item_count": total_count}, f, indent=2)
-    log(f"Story wisdom: {len(bullets)} bullet(s) written to story_wisdom.json")
+    log(f"Story wisdom: {len(bullets)} bullet(s) written to story_system_wisdom.json")
 
 
 def synthesize_system_wisdom(processed_items=None):
@@ -678,7 +678,7 @@ def synthesize_system_wisdom(processed_items=None):
     )
     with open(WISDOM_FILE, "w") as f:
         json.dump({"bullets": bullets, "synthesized_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "finding_count": total_findings}, f, indent=2)
-    log(f"Wisdom: {len(bullets)} bullet(s) written to wisdom.json")
+    log(f"Wisdom: {len(bullets)} bullet(s) written to system_wisdom.json")
     synthesize_story_wisdom(processed_items)
 
 

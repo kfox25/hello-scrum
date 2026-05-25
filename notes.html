@@ -199,15 +199,33 @@
     .badge-ai    { background: #0d2a1a; color: #00ff99; border: 1px solid #00ff9940; }
     .badge-human { background: #1a1a00; color: #ffcc00; border: 1px solid #ffcc0040; }
     .badge-note  { background: #0a0f1f; color: #4488ff; border: 1px solid #4488ff40; }
+    .nv-step.approve .nv-num { border-color: #00ff9960; color: #00ff99; background: #0a1f12; }
+    .nv-step.reject  .nv-num { border-color: #ff444460; color: #ff4444; background: #1f0a0a; }
+    .nv-step.approve .nv-card { border-color: #00ff9930; }
+    .nv-step.reject  .nv-card { border-color: #ff444430; }
+    .badge-approve { background: #0d3320; color: #00ff99; border: 1px solid #00ff9940; }
+    .badge-reject  { background: #2a0a0a; color: #ff4444; border: 1px solid #ff444440; }
+
     .nv-sub {
-      margin-top: 0.4rem;
-      padding-left: 0.75rem;
-      border-left: 2px solid #2a2a2a;
-      font-size: 0.8rem;
-      color: #666;
+      margin-top: 0.5rem;
       display: flex;
       flex-direction: column;
-      gap: 0.2rem;
+    }
+    .nv-sub-item {
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+      padding: 0.35rem 0;
+      font-size: 0.82rem;
+      color: #888;
+      border-bottom: 1px solid #1f1f1f;
+    }
+    .nv-sub-item:last-child { border-bottom: none; }
+    .nv-sub-item.deep {
+      padding-left: 1.25rem;
+      border-left: 2px solid #2a2a2a;
+      margin-left: 0.25rem;
+      color: #666;
     }
   </style>
 </head>
@@ -347,52 +365,83 @@
       if (viewMode) renderView();
     }
 
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
     function stepType(text) {
       const t = text.toLowerCase();
-      if (/^agent|coding agent/.test(t)) return 'ai';
+      if (/^if\s+human\s+approve/.test(t)) return 'approve';
+      if (/^if\s+human\s+reject/.test(t)) return 'reject';
+      if (/^agent|^coding agent/.test(t)) return 'ai';
       if (/^human/.test(t)) return 'human';
       return 'note';
     }
 
     function badgeLabel(type) {
-      return type === 'ai' ? 'Agent' : type === 'human' ? 'Human' : 'Note';
+      return { ai: 'Agent', human: 'Human', note: 'Note', approve: 'Approve', reject: 'Reject' }[type] || type;
+    }
+
+    // Parse body into top-level steps, each with indented sub-items.
+    // Blank lines within an indented block are skipped; a non-indented line
+    // signals a new top-level step.
+    function parseWorkflow(body) {
+      const lines = body.split('\n');
+      const steps = [];
+      let i = 0;
+      while (i < lines.length) {
+        const line = lines[i];
+        const trimmed = line.trim();
+        const indent = line.search(/\S/);  // -1 if all whitespace
+        if (!trimmed || indent < 0) { i++; continue; }
+        if (indent === 0) {
+          const step = { text: trimmed, subs: [] };
+          i++;
+          while (i < lines.length) {
+            const next = lines[i];
+            const nt = next.trim();
+            const ni = next.search(/\S/);
+            if (!nt || ni < 0) { i++; continue; }  // blank inside block
+            if (ni > 0) { step.subs.push({ text: nt, deep: ni > 4 }); i++; }
+            else break;
+          }
+          steps.push(step);
+        } else { i++; }
+      }
+      return steps;
     }
 
     function renderView() {
       const body = document.getElementById('noteBody').value;
       const container = document.getElementById('noteView');
-      const chunks = body.split(/\n{2,}/).map(s => s.trim()).filter(Boolean);
+      const steps = parseWorkflow(body);
 
-      let stepNum = 0;
-      const html = chunks.map((chunk, i) => {
-        const lines = chunk.split('\n').map(s => s.trim()).filter(Boolean);
-        if (!lines.length) return '';
-        const main = lines[0];
-        const subs = lines.slice(1);
-        const type = stepType(main);
-        stepNum++;
-        const isLast = i === chunks.length - 1;
+      const html = steps.map((step, i) => {
+        const type = stepType(step.text);
+        const isLast = i === steps.length - 1;
+        const numDisplay = type === 'approve' ? '✓' : type === 'reject' ? '✗' : i + 1;
 
-        const subHtml = subs.length
-          ? `<div class="nv-sub">${subs.map(s => `<div>${escHtml(s)}</div>`).join('')}</div>`
+        const subHtml = step.subs.length
+          ? `<div class="nv-sub">${step.subs.map(s => {
+              const st = stepType(s.text);
+              return `<div class="nv-sub-item${s.deep ? ' deep' : ''}">
+                <span class="nv-badge badge-${st}">${badgeLabel(st)}</span>${escHtml(s.text)}
+              </div>`;
+            }).join('')}</div>`
           : '';
 
         return `<div class="nv-step ${type}">
           <div class="nv-left">
-            <div class="nv-num">${stepNum}</div>
+            <div class="nv-num">${numDisplay}</div>
             ${isLast ? '' : '<div class="nv-connector"></div>'}
           </div>
           <div class="nv-card">
-            <span class="nv-badge badge-${type}">${badgeLabel(type)}</span>${escHtml(main)}${subHtml}
+            <span class="nv-badge badge-${type}">${badgeLabel(type)}</span>${escHtml(step.text)}${subHtml}
           </div>
         </div>`;
       }).join('');
 
       container.innerHTML = html || '<div style="color:#333;padding:1rem">Nothing to render.</div>';
-    }
-
-    function escHtml(s) {
-      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
     async function init() {

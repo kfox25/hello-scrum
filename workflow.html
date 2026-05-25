@@ -320,10 +320,10 @@
           </div>
           <div class="step-card">
             <div class="step-name">Story + Implementation <span class="agent-badge badge-sonnet">claude-sonnet-4-6</span></div>
-            <div class="step-purpose">Sonnet receives the idea, CSS-stripped index.html, and last-1 changelog entry — plus RULES (synthesized wisdom) and THIS SPRINT (intra-sprint retro context). Writes a user story with AC, patches index.html, bumps version.</div>
+            <div class="step-purpose">Sonnet receives the story and AC written at Step 2 as its brief, plus CSS-stripped index.html, last-1 changelog entry, RULES (synthesized wisdom), and THIS SPRINT (intra-sprint retro context). Implements the story, patches index.html, bumps version.</div>
             <div class="step-io">
-              <div class="io-item"><span class="io-label">Input</span> <span>Idea, index.html, version.json, wisdom, retro context</span></div>
-              <div class="io-item"><span class="io-label">Output</span> <span>Patched files, story, AC, summary</span></div>
+              <div class="io-item"><span class="io-label">Input</span> <span>Story + AC (from Step 2), index.html, version.json, wisdom, retro context</span></div>
+              <div class="io-item"><span class="io-label">Output</span> <span>Patched files, summary</span></div>
             </div>
           </div>
         </div>
@@ -474,7 +474,7 @@
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-sonnet">b</span>
-              <span class="prose-substep-text"><strong>Sonnet implements.</strong> Receives CSS-stripped index.html and the last 1 changelog entry. Writes a user story with AC, patches the file, bumps the patch version, adds a changelog entry.</span>
+              <span class="prose-substep-text"><strong>Sonnet implements.</strong> Receives the story and AC from Step 2 as its brief, CSS-stripped index.html, and the last 1 changelog entry. Patches the file, bumps the patch version, adds a changelog entry. Hermes validates against the same AC the human reviewed at Elaborate.</span>
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-system">c</span>

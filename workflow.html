@@ -29,7 +29,7 @@
     .pipeline {
       max-width: 560px;
       position: relative;
-      padding-right: 90px;
+      padding-right: 130px;
     }
     .pipeline::before {
       content: '';
@@ -404,7 +404,7 @@
         </div>
 
         <svg id="feedback-svg"
-          style="position:absolute;right:0;top:0;width:90px;overflow:visible;pointer-events:none;"
+          style="position:absolute;right:0;top:0;width:130px;overflow:visible;pointer-events:none;"
           aria-hidden="true"></svg>
 
       </div>
@@ -592,10 +592,10 @@
       // connections: { from, to, label, color, arm }
       // arm = x in SVG space for the vertical bar (SVG right:0, width:90)
       // steps are 0-indexed in DOM order
-      const SVG_WIDTH = 90;
+      const SVG_WIDTH = 130;
       const CONNECTIONS = [
-        { from: 8, to: 1, label: 'story wisdom', color: '#4488ff75', arm: 62 },
-        { from: 8, to: 3, label: 'wisdom + retro context', color: '#00ff9975', arm: 35 },
+        { from: 8, to: 1, label: 'story wisdom', color: '#4488ff75', arm: 90 },
+        { from: 8, to: 3, label: 'wisdom + retro context', color: '#00ff9975', arm: 36 },
       ];
 
       function relativeTop(el, ancestor) {

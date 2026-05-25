@@ -395,10 +395,10 @@
           </div>
           <div class="step-card">
             <div class="step-name">Retro + Wisdom <span class="agent-badge badge-haiku">claude-haiku-4-5</span></div>
-            <div class="step-purpose">Runs after every item. Haiku analyzes all items processed so far this sprint and writes findings to retrospective.json. Then synthesize_wisdom() re-distills all findings from all sprints into fresh bullet directives, overwriting wisdom.json. The next story gets the updated context.</div>
+            <div class="step-purpose">Runs after every item. Haiku analyzes all sprint items so far and writes findings to retrospective.json. Then synthesize_wisdom() re-distills all findings from all sprints into coding directives (wisdom.json → Step 4). Then synthesize_story_wisdom() mines all story outcomes into AC-writing directives (story_wisdom.json → Step 2).</div>
             <div class="step-io">
-              <div class="io-item"><span class="io-label">Input</span> <span>All processed items this sprint</span></div>
-              <div class="io-item"><span class="io-label">Output</span> <span>retrospective.json + wisdom.json updated</span></div>
+              <div class="io-item"><span class="io-label">Input</span> <span>All processed items this sprint + full backlog history</span></div>
+              <div class="io-item"><span class="io-label">Output</span> <span>retrospective.json + wisdom.json + story_wisdom.json</span></div>
             </div>
           </div>
         </div>

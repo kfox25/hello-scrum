@@ -250,6 +250,51 @@ def retrospective_json():
     return jsonify({"retros": []})
 
 
+@app.route("/retro/synthesize", methods=["POST"])
+def retro_synthesize():
+    path = os.path.join(BASE, "retrospective.json")
+    if not os.path.exists(path):
+        return jsonify({"bullets": []})
+    with open(path) as f:
+        data = json.load(f)
+    retros = data.get("retros", [])
+    if not retros:
+        return jsonify({"bullets": []})
+
+    seen = set()
+    findings = []
+    for r in retros:
+        for fnd in r.get("findings", []):
+            key = f"{fnd['type']}:{fnd['text']}"
+            if key not in seen:
+                seen.add(key)
+                findings.append(f"[{fnd['type']}] {fnd['text']}")
+
+    if not findings:
+        return jsonify({"bullets": []})
+
+    client = anthropic.Anthropic()
+    resp = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=600,
+        messages=[{"role": "user", "content": (
+            "You are distilling sprint retrospective findings into a concise injection prompt "
+            "for an AI coding agent.\n\n"
+            "The agent (Claude Sonnet) implements user stories as patches to an HTML/CSS/JS app. "
+            "A reviewer (Claude Haiku) checks each change for code quality and AC compliance. "
+            "Rejection triggers automatic rollback.\n\n"
+            "Sprint findings:\n" + "\n".join(findings) + "\n\n"
+            "Write 5-8 tight, actionable bullet points the agent should follow to maximize story "
+            "success rate. Focus on patterns that prevent failures or reinforce what works. "
+            "Each bullet must be concrete and specific — something the agent can directly apply "
+            "when writing HTML/CSS/JS. Start each line with •"
+        )}]
+    )
+    text = resp.content[0].text.strip()
+    bullets = [ln.strip() for ln in text.splitlines() if ln.strip().startswith("•")]
+    return jsonify({"bullets": bullets})
+
+
 @app.route("/active/clear", methods=["POST"])
 def clear_active():
     with open(ACTIVE_FILE, "w") as f:

@@ -24,39 +24,47 @@
     h2 { color: #00ff99; font-size: 1.4rem; }
     .subtitle { color: #555; font-size: 0.85rem; margin-top: 0.25rem; }
 
-    .sys-group { margin-bottom: 1.75rem; }
-    .sys-group-label {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 0.5rem;
-      padding-bottom: 0.4rem;
-      border-bottom: 1px solid #1a1a1a;
+    .wisdom-bullets {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
     }
-    .sys-group-label.lbl-failure    { color: #ff444480; }
-    .sys-group-label.lbl-improve    { color: #4488ff80; }
-    .sys-group-label.lbl-success    { color: #00ff9980; }
-    .sys-group-label.lbl-observe    { color: #ffcc0080; }
-    .sys-finding {
+    .wisdom-bullet {
       display: flex;
       gap: 0.6rem;
-      padding: 0.45rem 0;
-      border-bottom: 1px solid #141414;
+      align-items: flex-start;
+      font-size: 0.85rem;
+      color: #ccc;
+      line-height: 1.5;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid #222;
     }
-    .sys-finding:last-child { border-bottom: none; }
-    .sys-dot {
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      margin-top: 0.6rem;
-      flex-shrink: 0;
+    .wisdom-bullet:last-child { border-bottom: none; }
+    .wisdom-dot { color: #00ff99; flex-shrink: 0; margin-top: 0.05rem; }
+    .wisdom-text { flex: 1; }
+
+    .wisdom-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
     }
-    .dot-failure { background: #ff4444; }
-    .dot-improve { background: #4488ff; }
-    .dot-success { background: #00ff99; }
-    .dot-observe { background: #ffcc00; }
-    .sys-body { flex: 1; }
-    .sys-text { font-size: 0.85rem; color: #ccc; line-height: 1.5; }
-    .sys-origin { font-size: 0.7rem; color: #2a2a2a; margin-top: 0.1rem; }
+    .btn-sm {
+      background: #111;
+      color: #555;
+      border: 1px solid #222;
+      padding: 0.3rem 0.7rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 0.75rem;
+    }
+    .btn-sm:hover { border-color: #00ff9940; color: #00ff99; }
+    .wisdom-meta { font-size: 0.7rem; color: #2a2a2a; margin-left: auto; }
 
     .retro-card {
       background: #1a1a1a;
@@ -247,42 +255,49 @@
       </div>`;
     }
 
-    const SYS_GROUPS = [
-      { type: 'failure_pattern', label: 'Avoid — failure patterns',  lbl: 'lbl-failure', dot: 'dot-failure' },
-      { type: 'improvement',     label: 'Apply — improvements',       lbl: 'lbl-improve', dot: 'dot-improve' },
-      { type: 'success_pattern', label: 'Keep — success patterns',    lbl: 'lbl-success', dot: 'dot-success' },
-      { type: 'observation',     label: 'Note — observations',        lbl: 'lbl-observe', dot: 'dot-observe' },
-    ];
+    const WISDOM_KEY = 'hello-scrum-wisdom';
+    const WISDOM_TTL = 60 * 60 * 1000; // 1 hour
 
-    function renderSystemRetro(retros) {
-      if (!retros.length) {
-        return '<div class="empty">No sprint data yet — run a sprint to populate learnings.</div>';
-      }
-      return SYS_GROUPS.map(g => {
-        const seen = new Set();
-        const findings = [];
-        retros.forEach(r => {
-          (r.findings || []).filter(f => f.type === g.type).forEach(f => {
-            if (!seen.has(f.text)) {
-              seen.add(f.text);
-              findings.push({ text: f.text, date: r.sprint_date || '' });
-            }
-          });
-        });
-        if (!findings.length) return '';
-        const rows = findings.map(f => `
-          <div class="sys-finding">
-            <div class="sys-dot ${g.dot}"></div>
-            <div class="sys-body">
-              <div class="sys-text">${escHtml(f.text)}</div>
-              ${f.date ? `<div class="sys-origin">${escHtml(f.date)}</div>` : ''}
-            </div>
-          </div>`).join('');
-        return `<div class="sys-group">
-          <div class="sys-group-label ${g.lbl}">${g.label}</div>
-          ${rows}
-        </div>`;
+    function renderWisdom(bullets, ts) {
+      if (!bullets.length) return '<div class="empty">No findings yet — run a sprint first.</div>';
+      const rows = bullets.map(b => {
+        const text = b.replace(/^•\s*/, '');
+        return `<div class="wisdom-bullet"><span class="wisdom-dot">•</span><span class="wisdom-text">${escHtml(text)}</span></div>`;
       }).join('');
+      const age = ts ? new Date(ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
+      return `
+        <div class="wisdom-toolbar">
+          <button class="btn-sm" onclick="synthesize(true)">Refresh</button>
+          <button class="btn-sm" onclick="copyWisdom()">Copy</button>
+          <span class="wisdom-meta">${age ? 'synthesized ' + age : ''}</span>
+        </div>
+        <div class="wisdom-bullets">${rows}</div>`;
+    }
+
+    function copyWisdom() {
+      const cached = JSON.parse(localStorage.getItem(WISDOM_KEY) || 'null');
+      if (!cached) return;
+      const text = cached.bullets.map(b => b.startsWith('•') ? b : '• ' + b).join('\n');
+      navigator.clipboard.writeText(text);
+    }
+
+    function synthesize(force) {
+      const cached = JSON.parse(localStorage.getItem(WISDOM_KEY) || 'null');
+      if (!force && cached && (Date.now() - cached.ts) < WISDOM_TTL) {
+        document.getElementById('system-retro').innerHTML = renderWisdom(cached.bullets, cached.ts);
+        return;
+      }
+      document.getElementById('system-retro').innerHTML = '<div class="loading">Synthesizing...</div>';
+      fetch('/retro/synthesize', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+          const entry = { bullets: data.bullets || [], ts: Date.now() };
+          localStorage.setItem(WISDOM_KEY, JSON.stringify(entry));
+          document.getElementById('system-retro').innerHTML = renderWisdom(entry.bullets, entry.ts);
+        })
+        .catch(err => {
+          document.getElementById('system-retro').innerHTML = `<div class="error">Synthesis failed<br>${err}</div>`;
+        });
     }
 
     Promise.all([
@@ -292,16 +307,17 @@
         const retros = retroData.retros || [];
         if (!retros.length) {
           document.getElementById('retros').innerHTML = '<div class="empty">No retrospectives yet — run a sprint to generate findings.</div>';
-        } else {
-          const sprintItems = (backlogData.items || []).filter(i => i.in_sprint);
-          const html = retros.map(r => {
-            const key = contextKey(r);
-            const recipients = sprintItems.filter(i => i.retro_context === key);
-            return renderRetro(r, recipients);
-          }).join('');
-          document.getElementById('retros').innerHTML = html;
+          document.getElementById('system-retro').innerHTML = '<div class="empty">No sprint data yet — run a sprint first.</div>';
+          return;
         }
-        document.getElementById('system-retro').innerHTML = renderSystemRetro(retros);
+        const sprintItems = (backlogData.items || []).filter(i => i.in_sprint);
+        const html = retros.map(r => {
+          const key = contextKey(r);
+          const recipients = sprintItems.filter(i => i.retro_context === key);
+          return renderRetro(r, recipients);
+        }).join('');
+        document.getElementById('retros').innerHTML = html;
+        synthesize(false);
       })
       .catch(err => {
         document.getElementById('retros').innerHTML = `<div class="error">Failed to load data<br>${err}</div>`;

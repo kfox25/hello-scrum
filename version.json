@@ -1,6 +1,6 @@
 {
-  "version": "0.1.51",
-  "deployed": "2026-05-25 12:11:51 CT",
+  "version": "0.1.52",
+  "deployed": "2026-05-25 16:24:21 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -263,6 +263,11 @@
       "version": "0.1.51",
       "date": "2026-05-25",
       "change": "Index page h1 title color changed to red (#FF0000) for visual emphasis"
+    },
+    {
+      "version": "0.1.52",
+      "date": "2026-05-25",
+      "change": "Index page h1 title color changed to green (#00aa00) for visual emphasis"
     }
   ]
 }

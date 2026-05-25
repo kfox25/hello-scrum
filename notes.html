@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google" content="notranslate" />
+  <title>Notes — Hello Scrum</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { padding: 4rem 2rem 2rem; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+    header { margin-bottom: 1.5rem; flex-shrink: 0; }
+    h1 { color: #00ff99; font-size: 1.8rem; }
+    .subtitle { color: #555; font-size: 0.85rem; margin-top: 0.25rem; }
+
+    .notes-layout { display: flex; gap: 1.5rem; flex: 1; min-height: 0; }
+
+    .notes-sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .btn-new {
+      background: #0a1f12;
+      color: #00ff99;
+      border: 1px solid #00ff9940;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+    .btn-new:hover { border-color: #00ff99; background: #0d2a1a; }
+
+    .notes-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .note-item {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: #888;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .note-item:hover { border-color: #00ff9940; color: #ccc; }
+    .note-item.active { border-color: #00ff9960; color: #00ff99; background: #0a1f12; }
+
+    .notes-editor { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
+    .editor-header { display: flex; align-items: center; gap: 0.5rem; }
+    .note-title {
+      flex: 1;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      padding: 0.5rem 0.75rem;
+      color: #e0e0e0;
+      font-family: monospace;
+      font-size: 1rem;
+    }
+    .note-title:focus { outline: none; border-color: #00ff9940; }
+
+    .btn-delete {
+      background: #1a0a0a;
+      color: #ff4444;
+      border: 1px solid #ff444430;
+      padding: 0.5rem 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 0.8rem;
+    }
+    .btn-delete:hover { border-color: #ff4444; }
+
+    textarea {
+      flex: 1;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      padding: 1rem;
+      color: #e0e0e0;
+      font-family: monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      resize: none;
+    }
+    textarea:focus { outline: none; border-color: #00ff9940; }
+    textarea::placeholder { color: #333; }
+
+    .empty-state {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      font-size: 0.9rem;
+    }
+
+    .save-indicator { font-size: 0.75rem; color: #333; text-align: right; flex-shrink: 0; }
+    .save-indicator.saved { color: #00ff9960; }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="messenger.html">Messenger</a>
+    <a href="index.html">App</a>
+    <a href="/">Backlog</a>
+    <a href="active.html">Live Work</a>
+    <a href="audit.html">Audit</a>
+    <a href="retro.html">Retro</a>
+    <a href="workflow.html">Workflow</a>
+    <a href="notes.html">Notes</a>
+  </nav>
+
+  <header>
+    <h1>Notes</h1>
+    <div class="subtitle">Scratch pad — saved locally in your browser</div>
+  </header>
+
+  <div class="notes-layout">
+    <div class="notes-sidebar">
+      <button class="btn-new" onclick="newNote()">+ New Note</button>
+      <div class="notes-list" id="notesList"></div>
+    </div>
+
+    <div class="notes-editor" id="editor" style="display:none;">
+      <div class="editor-header">
+        <input class="note-title" type="text" id="noteTitle" placeholder="Untitled" oninput="saveNote()">
+        <button class="btn-delete" onclick="deleteNote()">Delete</button>
+      </div>
+      <textarea id="noteBody" placeholder="Start writing..." oninput="saveNote()"></textarea>
+      <div class="save-indicator" id="saveIndicator">auto-saved</div>
+    </div>
+
+    <div class="empty-state" id="emptyState">
+      Select a note or create a new one
+    </div>
+  </div>
+
+  <script>
+    let notes = JSON.parse(localStorage.getItem('hello-scrum-notes') || '[]');
+    let activeId = null;
+
+    function persist() {
+      localStorage.setItem('hello-scrum-notes', JSON.stringify(notes));
+    }
+
+    function render() {
+      const list = document.getElementById('notesList');
+      list.innerHTML = '';
+      notes.forEach(n => {
+        const el = document.createElement('div');
+        el.className = 'note-item' + (n.id === activeId ? ' active' : '');
+        el.textContent = n.title || 'Untitled';
+        el.onclick = () => openNote(n.id);
+        list.appendChild(el);
+      });
+    }
+
+    function openNote(id) {
+      activeId = id;
+      const note = notes.find(n => n.id === id);
+      document.getElementById('noteTitle').value = note.title || '';
+      document.getElementById('noteBody').value = note.body || '';
+      document.getElementById('editor').style.display = 'flex';
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('saveIndicator').textContent = 'auto-saved';
+      document.getElementById('saveIndicator').className = 'save-indicator';
+      render();
+    }
+
+    function newNote() {
+      const id = Date.now();
+      notes.unshift({ id, title: '', body: '', created: new Date().toISOString() });
+      persist();
+      openNote(id);
+    }
+
+    function saveNote() {
+      const note = notes.find(n => n.id === activeId);
+      if (!note) return;
+      note.title = document.getElementById('noteTitle').value;
+      note.body = document.getElementById('noteBody').value;
+      note.updated = new Date().toISOString();
+      persist();
+      render();
+      const ind = document.getElementById('saveIndicator');
+      ind.textContent = 'saved';
+      ind.className = 'save-indicator saved';
+      clearTimeout(ind._t);
+      ind._t = setTimeout(() => { ind.textContent = 'auto-saved'; ind.className = 'save-indicator'; }, 1500);
+    }
+
+    function deleteNote() {
+      if (!activeId) return;
+      notes = notes.filter(n => n.id !== activeId);
+      activeId = null;
+      persist();
+      document.getElementById('editor').style.display = 'none';
+      document.getElementById('emptyState').style.display = 'flex';
+      render();
+    }
+
+    render();
+    if (notes.length > 0) openNote(notes[0].id);
+  </script>
+</body>
+</html>

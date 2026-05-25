@@ -100,6 +100,11 @@ def messenger_page():
     return send_file(os.path.join(BASE, "messenger.html"))
 
 
+@app.route("/notes.html")
+def notes_page():
+    return send_file(os.path.join(BASE, "notes.html"))
+
+
 @app.route("/messenger/send", methods=["POST"])
 def messenger_send():
     try:

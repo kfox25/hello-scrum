@@ -910,7 +910,7 @@ def main():
 
     if sprint_mode or loop_mode:
         processed = []
-        retro_context = load_latest_retro_context()  # carry forward wisdom from previous sprints
+        retro_context = None  # story 1 relies on CODING WISDOM only; THIS SPRINT loads after first item
         while True:
             prev_len = len(processed)
             success = run_one(sprint_only=sprint_mode, processed=processed, retro_context=retro_context)

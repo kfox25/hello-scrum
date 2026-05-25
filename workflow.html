@@ -337,7 +337,7 @@
           </div>
           <div class="step-card">
             <div class="step-name">Start Sprint → Implementation <span class="agent-badge badge-sonnet">claude-sonnet-4-6</span> <span class="agent-badge badge-system">Automated</span></div>
-            <div class="step-purpose">Triggered automatically by Start Sprint — no human gate. Sonnet receives the story and AC written at Step 2 as its brief, plus full index.html, last-1 changelog entry, CODING WISDOM, and THIS SPRINT (retro context — previous sprint on story 1, current sprint on story 2+). Implements the story, patches index.html, bumps version.</div>
+            <div class="step-purpose">Triggered automatically by Start Sprint — no human gate. Sonnet receives the story and AC written at Step 2 as its brief, plus full index.html, last-1 changelog entry, CODING WISDOM, and THIS SPRINT (retro context — absent on story 1, current sprint findings on story 2+). Implements the story, patches index.html, bumps version.</div>
             <div class="step-io">
               <div class="io-item"><span class="io-label">Input</span> <span>Story + AC (from Step 2), index.html, version.json, wisdom, retro context</span></div>
               <div class="io-item"><span class="io-label">Output</span> <span>Patched files, summary</span></div>
@@ -526,7 +526,7 @@
           <div class="prose-substeps">
             <div class="prose-substep">
               <span class="prose-substep-label lbl-system">a</span>
-              <span class="prose-substep-text"><strong>Wisdom + context injection.</strong> Before calling Sonnet, the prompt is built with two stacked sections: <strong>CODING WISDOM</strong> (synthesized cross-sprint bullet directives from coding_wisdom.json) and <strong>THIS SPRINT</strong> (retro findings — loaded from the previous sprint at sprint start, then refreshed after each item so story 2+ sees the current sprint's outcomes). Only the changelog is trimmed — full index.html and wisdom bullets are sent as-is.</span>
+              <span class="prose-substep-text"><strong>Wisdom + context injection.</strong> Before calling Sonnet, the prompt is built with two stacked sections: <strong>CODING WISDOM</strong> (synthesized cross-sprint bullet directives from coding_wisdom.json) and <strong>THIS SPRINT</strong> (absent on story 1 — story 1 relies on CODING WISDOM only; refreshed after each item so story 2+ sees the current sprint's raw findings). Only the changelog is trimmed — full index.html and wisdom bullets are sent as-is.</span>
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-sonnet">b</span>
@@ -613,7 +613,7 @@
                   <td>retro_context THIS SPRINT</td>
                   <td>Haiku (after each item)</td>
                   <td>Sonnet (next story)</td>
-                  <td>Previous sprint → refreshed each item</td>
+                  <td>Absent story 1 → current sprint story 2+</td>
                 </tr>
                 <tr>
                   <td>Hermes code review</td>

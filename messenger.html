@@ -151,6 +151,13 @@
     .story-choice:hover { background: #0d3320; border-color: #00ff99; color: #e0e0e0; }
     .story-choice.selected { background: #0d3320; border-color: #00ff99; color: #00ff99; cursor: default; }
     .story-choice.dimmed  { opacity: 0.3; cursor: default; pointer-events: none; }
+    .story-choice.promote-as-is {
+      background: #111;
+      border-color: #2a2a2a;
+      border-style: dashed;
+      color: #666;
+    }
+    .story-choice.promote-as-is:hover { background: #1a1a1a; border-color: #555; color: #aaa; }
   </style>
 </head>
 <body>
@@ -184,7 +191,7 @@
               <span class="msg-author bot">hello-scrum</span>
               <span class="msg-time">today</span>
             </div>
-            <div class="msg-text">Ready. Type a message or a command like <code>/add &lt;story&gt;</code> to queue a backlog item.</div>
+            <div class="msg-text">Ready. Describe a feature idea and I'll suggest two versions plus the option to promote it as-is.</div>
           </div>
         </div>
       </div>
@@ -220,7 +227,7 @@
         stored.forEach(m => renderMessage(m.author, m.text, m.isBot, m.time));
       } catch {}
       if (!messagesEl.children.length) {
-        renderMessage('hello-scrum', 'Ready. Type a requirement or ask about a story status.', true, now());
+        renderMessage('hello-scrum', 'Ready. Describe a feature idea and I\'ll suggest two versions plus the option to promote it as-is.', true, now());
       }
       setTimeout(() => { messagesEl.scrollTop = messagesEl.scrollHeight; }, 150);
     }
@@ -285,10 +292,12 @@
         const data = await res.json();
         document.getElementById('thinking-msg')?.remove();
         if (data.stories && data.stories.length) {
-          const choicesHtml = data.stories.map((s, i) =>
+          const suggestions = data.stories.map((s, i) =>
             `<div class="story-choice" data-story="${s.replace(/"/g, '&quot;')}">${i + 1}. ${s}</div>`
           ).join('');
-          appendMessage('hello-scrum', `${data.reply || 'Here are 3 story options:'}<div class="story-choices">${choicesHtml}</div>`, true);
+          const original = (data.original || '').replace(/"/g, '&quot;');
+          const promoteBtn = `<div class="story-choice promote-as-is" data-story="${original}">Promote as is: ${data.original || ''}</div>`;
+          appendMessage('hello-scrum', `${data.reply || 'Pick a version to add to the opportunity backlog:'}<div class="story-choices">${suggestions}${promoteBtn}</div>`, true);
         } else {
           appendMessage('hello-scrum', data.reply || '', true);
         }

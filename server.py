@@ -116,20 +116,14 @@ def messenger_send():
         client = anthropic.Anthropic()
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
-            max_tokens=400,
-            system="""You are a scrum assistant for a sprint board.
+            max_tokens=200,
+            system="""You are a scrum assistant. Determine if this message describes a story idea — something a developer could build as a feature or improvement.
 
-Classify the message into exactly one of three types and respond with JSON only (no markdown):
+If YES: generate 2 distinct alternative phrasings as concise backlog titles (≤10 words each, action-oriented). Respond with JSON only (no markdown):
+{"is_idea": true, "suggestions": ["<title 1>", "<title 2>"], "reply": "<one sentence acknowledging the idea>"}
 
-1. REQUIREMENT — describes a feature, user need, or problem to solve:
-   {"type": "requirement", "stories": ["<title 1>", "<title 2>", "<title 3>"], "reply": "<one sentence intro>"}
-   Generate 3 distinct backlog titles varying in scope or approach. Keep each short and actionable.
-
-2. INQUIRY — asks about the status or existence of a specific story or feature:
-   {"type": "inquiry", "query": "<2-4 keyword search terms>", "reply": null}
-
-3. OTHER — greetings, chitchat, commands, anything else:
-   {"type": "other", "reply": "<brief helpful response>"}""",
+If NO: respond with JSON only (no markdown):
+{"is_idea": false, "reply": "<brief helpful response>"}""",
             messages=[{"role": "user", "content": message}],
         )
 
@@ -144,71 +138,12 @@ Classify the message into exactly one of three types and respond with JSON only 
             print(f"[messenger] JSON parse error: {parse_err}", flush=True)
             return jsonify({"reply": text, "stories": None})
 
-        msg_type = result.get("type")
-
-        if msg_type == "requirement" and result.get("stories"):
-            return jsonify({"reply": result.get("reply", "Here are 3 story options:"), "stories": result["stories"]})
-
-        if msg_type == "inquiry" and result.get("query"):
-            with open(BACKLOG_FILE) as f:
-                backlog = json.load(f)
-            raw_query = result["query"]
-            if isinstance(raw_query, list):
-                keywords = [str(k).lower() for k in raw_query]
-                query_str = " ".join(keywords)
-            else:
-                query_str = str(raw_query)
-                keywords = query_str.lower().split()
-            stop_words = {"a","an","the","is","are","was","were","has","have","been","be","to","of","in","on","at","for","with","this","that","it","its","by","as","from","and","or","but","not","what","whats","status","story","did","does","get","about"}
-            search_terms = [kw for kw in keywords if kw not in stop_words] or keywords
-            matches = [
-                i for i in backlog.get("items", [])
-                if all(kw in (i.get("idea") or i.get("title") or "").lower() for kw in search_terms)
-            ]
-            if not matches:
-                return jsonify({"reply": f"No stories found matching <em>{query_str}</em>.", "stories": None})
-            lines = []
-            for item in matches:
-                title = item.get("idea") or item.get("title") or "(untitled)"
-                status = item.get("status", "pending")
-                in_sprint = item.get("in_sprint", False)
-
-                if status == "done":
-                    parts = [f'<span style="color:#00ff99">✓ completed</span> — <strong>{title}</strong>']
-                    if item.get("summary"):
-                        parts.append(f'<span style="color:#aaa">{item["summary"]}</span>')
-                    if item.get("story"):
-                        parts.append(f'<span style="color:#666;font-style:italic">{item["story"]}</span>')
-                    if item.get("acceptance_criteria"):
-                        criteria = "".join(f'<br>&nbsp;&nbsp;· {c}' for c in item["acceptance_criteria"])
-                        parts.append(f'<span style="color:#555">Acceptance criteria:{criteria}</span>')
-                    verdict = item.get("hermes_verdict", "")
-                    hermes_color = "#00ff99" if verdict == "approve" else "#ff4444"
-                    if verdict:
-                        parts.append(f'<span style="color:{hermes_color}">Hermes: {verdict}</span>'
-                                     + (f' — <span style="color:#777">{item["hermes_reason"]}</span>' if item.get("hermes_reason") else ""))
-                    if item.get("test_results"):
-                        passed = sum(1 for t in item["test_results"] if t.get("status") == "pass")
-                        total  = len(item["test_results"])
-                        parts.append(f'<span style="color:#555">Tests: {passed}/{total} passed</span>')
-                    if item.get("deployed"):
-                        parts.append(f'<span style="color:#444">Deployed: {item["deployed"]}</span>')
-                    tok_in  = item.get("tokens_in", 0)
-                    tok_out = item.get("tokens_out", 0)
-                    if tok_in or tok_out:
-                        parts.append(f'<span style="color:#333">Tokens: {tok_in} in / {tok_out} out</span>')
-                    lines.append("<br>".join(parts))
-
-                elif status in ("failed", "rejected"):
-                    color = "#ff4444"
-                    label = "✗ " + status
-                    lines.append(f'<span style="color:{color}">{label}</span> — {title}')
-                elif in_sprint:
-                    lines.append(f'<span style="color:#ffcc00">⟳ in sprint</span> — {title}')
-                else:
-                    lines.append(f'<span style="color:#888">· in backlog</span> — {title}')
-
-            return jsonify({"reply": "<br><br>".join(lines), "stories": None})
+        if result.get("is_idea") and result.get("suggestions"):
+            return jsonify({
+                "reply": result.get("reply", "Looks like a story idea."),
+                "stories": result["suggestions"],
+                "original": message,
+            })
 
         return jsonify({"reply": result.get("reply", ""), "stories": None})
 

@@ -298,7 +298,7 @@
             <div class="step-name">Elaborate <span class="agent-badge badge-haiku">claude-haiku-4-5</span></div>
             <div class="step-purpose">Drag from Opportunity → Story Backlog. Haiku auto-generates a user story and 3–4 testable acceptance criteria — informed by STORY RULES (AC patterns from past story outcomes) and CODING RULES (synthesized wisdom). Card pulses while generating, then shows a ▼ arrow at the bottom to expand AC.</div>
             <div class="step-io">
-              <div class="io-item"><span class="io-label">Input</span> <span>Raw idea + story wisdom + coding rules</span></div>
+              <div class="io-item"><span class="io-label">Input</span> <span>Raw idea + STORY RULES + RULES</span></div>
               <div class="io-item"><span class="io-label">Output</span> <span>User story + acceptance criteria</span></div>
             </div>
           </div>
@@ -491,7 +491,7 @@
           </div>
           <div class="prose-body">
             <p>You drag an item from <strong>Opportunity Backlog</strong> → <strong>Story Backlog</strong>. On drop, Haiku auto-generates a full user story (<em>As a user, I want...</em>) with 3–4 short, testable acceptance criteria.</p>
-            <p>The prompt is augmented with two wisdom layers: <strong>STORY RULES</strong> (AC-writing directives from story_wisdom.json, distilled from all past story outcomes) and <strong>CODING RULES</strong> (coding directives from system_wisdom.json, distilled from all previous sprint retrospectives). Both inform how the AC are written before any code is run.</p>
+            <p>The prompt is augmented with two wisdom layers: <strong>STORY RULES</strong> (AC-writing directives from story_wisdom.json, distilled from all past story outcomes) and <strong>RULES</strong> (coding directives from system_wisdom.json, distilled from all previous sprint retrospectives). Both inform how the AC are written before any code is run.</p>
             <p>The card pulses with a "generating story..." animation while in flight. When done, a ▼ arrow appears at the bottom of the card — clicking it expands to show the AC and rotates the arrow to ▲. Expansion state persists across re-renders.</p>
           </div>
         </div>

@@ -302,12 +302,6 @@
           : 'not found in agent.py';
         cfgHtml += checkRow(key, pass, detail);
       }
-      const stripOff = cfg.strip_styles_active === false;
-      cfgHtml += checkRow(
-        'strip_styles_for_prompt disabled',
-        stripOff,
-        stripOff ? 'Agent sees full CSS' : 'WARNING: strip_styles still active — agent is blinded to existing CSS'
-      );
       document.getElementById('config-checks').innerHTML = cfgHtml;
 
       // ── CSS Quality ────────────────────────────────────────────────────────

@@ -136,9 +136,6 @@ def health_diagnostics():
             val = m.group(1) if m else None
             exists = os.path.exists(os.path.join(BASE, val)) if val else False
             config[const] = {"value": val, "exists": exists}
-        config["strip_styles_active"] = bool(
-            re.search(r'index_html\s*=\s*strip_styles_for_prompt', src)
-        )
     except Exception as e:
         config["error"] = str(e)
     out["config"] = config
@@ -529,7 +526,7 @@ def elaborate_story():
         if story_wisdom_bullets:
             wisdom_parts.append("STORY RULES:\n" + "\n".join(f"- {b}" for b in story_wisdom_bullets))
         if system_wisdom_bullets:
-            wisdom_parts.append("CODING RULES:\n" + "\n".join(f"- {b}" for b in system_wisdom_bullets))
+            wisdom_parts.append("RULES:\n" + "\n".join(f"- {b}" for b in system_wisdom_bullets))
         wisdom_section = ("\n\n" + "\n\n".join(wisdom_parts)) if wisdom_parts else ""
 
         system_prompt = (

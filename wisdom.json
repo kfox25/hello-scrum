@@ -1,13 +1,14 @@
 {
   "bullets": [
-    "\u2022 **Pre-submission syntax validation**: Before any submission, validate that all HTML/CSS is well-formed\u2014specifically check for unclosed comment tags (`/* ... */`), malformed closing tags, and orphaned CSS rules. Run a linter pass on style blocks and script sections to catch syntax errors before Hermes review, not after.",
-    "\u2022 **CSS maintenance: remove old rules, don't layer new ones**: When modifying existing element styles, explicitly audit the stylesheet for the old rule and delete it rather than adding a conflicting override. Duplicate selectors with conflicting values will be rejected. Example: if changing `.title-wrap h1` from red to blue, remove the old red rule entirely instead of adding a blue rule below it.",
-    "\u2022 **Validate metric definitions before implementation**: For stat cards or data-driven features, explicitly document the data source (e.g., `log.length`, `changelog` dates) and ensure each metric is semantically distinct from existing ones. Do not reuse the same data source for multiple metrics (e.g., don't assign `log.length` to both \"Features Shipped\" and \"Stories Shipped\"). This prevents redundant metrics and Hermes rejections on business logic grounds.",
-    "\u2022 **Handle zero/missing data with numeric defaults, not dashes**: When displaying numeric stats, default to `'0'` (string zero) for missing or zero-value data, never `'\u2013'` or `'\u2014'` or null. Explicitly code conditional checks: `value !== undefined && value !== null ? value : '0'`. This must be in both UI display logic and acceptance criteria before coding starts.",
-    "\u2022 **Match changelog entries to actual code changes**: Before marking work complete, verify that every file you modified (HTML, CSS, JS) has a corresponding changelog entry, and verify that every changelog entry reflects an actual code change in the diff. Do not document changes in the changelog that aren't reflected in the HTML/CSS/JS. This catches documentation-implementation gaps before test failures.",
-    "\u2022 **CSS insertion points must use exact anchor matching or fallback to semantic markers**: When patching CSS into a `<style>` tag, first scan the target file to confirm the exact formatting of your insertion point (whitespace, comment text, line endings). If using a comment anchor (e.g., `/* add new CSS before */`), verify it exists in the file. If the exact string doesn't match, use a semantic fallback like patching before the closing `</style>` tag instead.",
-    "\u2022 **Hardcoded placeholder values require corresponding JavaScript logic**: If you add an HTML element with a data class"
+    "\u2022 Validate CSS selectors for duplicates and conflicts before Hermes submission using linting tools.",
+    "\u2022 Remove orphaned CSS rules when overriding values; never layer new rules atop outdated declarations.",
+    "\u2022 Require UTF-8 encoding for changelog entries; validate special characters and emoji support upfront.",
+    "\u2022 Verify patch target anchors exist in actual files before applying diffs; use semantic markers over exact strings.",
+    "\u2022 Close all CSS comments properly: use `*/` not incomplete `/*` syntax in HTML style tags.",
+    "\u2022 Implement pre-submission checklist: changelog entries must exactly match actual code modifications applied.",
+    "\u2022 Define distinct data sources for each stat metric; prevent duplicate logic assignments to different UI elements.",
+    "\u2022 Handle missing data with numeric zero `0`, not dashes; explicit edge-case defaults in all stats cards."
   ],
-  "synthesized_at": "2026-05-24 19:18:09",
+  "synthesized_at": "2026-05-24 19:30:59",
   "finding_count": 183
 }

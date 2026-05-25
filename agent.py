@@ -236,24 +236,27 @@ def get_ct_timestamp():
 # ── Worker agent ──────────────────────────────────────────────────────────────
 
 def call_agent(idea, index_html, version_json, timestamp, retro_context=None):
-    retro_section = ""
+    context_parts = []
+    wisdom = load_wisdom()
+    if wisdom:
+        context_parts.append("RULES:\n" + "\n".join(f"- {b}" for b in wisdom))
     if retro_context:
-        retro_section = f"\n\nLearnings from earlier in this sprint (apply to this implementation):\n{retro_context}"
+        context_parts.append("THIS SPRINT:\n" + retro_context)
+    context_section = ("\n\n" + "\n\n".join(context_parts)) if context_parts else ""
 
     index_html = strip_styles_for_prompt(index_html)
     version_json = strip_changelog_for_prompt(version_json)
 
-    prompt = f"""Deploy timestamp to use (exact): {timestamp}
+    prompt = f"""Deploy timestamp: {timestamp}
+Idea: {idea}
 
-Raw backlog idea: {idea}
-
-Current index.html:
+index.html:
 {index_html}
 
-Current version.json:
-{version_json}{retro_section}
+version.json:
+{version_json}{context_section}
 
-Implement this idea. Return JSON only."""
+Implement. Return JSON only."""
 
     full_text = ""
     line_buffer = ""
@@ -461,9 +464,20 @@ def load_latest_retro_context():
         findings = retros[0].get("findings", [])
         if not findings:
             return None
-        return "\n".join(f"[{f['type']}] {f['text']}" for f in findings)
+        short = {"failure_pattern": "fail", "success_pattern": "ok", "improvement": "do", "observation": "note"}
+        return "\n".join(f"[{short.get(f['type'], f['type'])}] {f['text']}" for f in findings)
     except Exception:
         return None
+
+
+def load_wisdom():
+    """Return list of stripped bullet strings from wisdom.json, or empty list."""
+    try:
+        with open(WISDOM_FILE) as f:
+            data = json.load(f)
+        return [b.lstrip("•").strip() for b in data.get("bullets", []) if b.strip()]
+    except Exception:
+        return []
 
 
 def run_retro(processed_items):
@@ -553,18 +567,12 @@ def synthesize_wisdom():
     log("Synthesizing wisdom...")
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
-        max_tokens=600,
+        max_tokens=400,
         messages=[{"role": "user", "content": (
-            "You are distilling sprint retrospective findings into a concise injection prompt "
-            "for an AI coding agent.\n\n"
-            "The agent (Claude Sonnet) implements user stories as patches to an HTML/CSS/JS app. "
-            "A reviewer (Claude Haiku) checks each change for code quality and AC compliance. "
-            "Rejection triggers automatic rollback.\n\n"
-            "Sprint findings:\n" + "\n".join(findings) + "\n\n"
-            "Write 5-8 tight, actionable bullet points the agent should follow to maximize story "
-            "success rate. Focus on patterns that prevent failures or reinforce what works. "
-            "Each bullet must be concrete and specific — something the agent can directly apply "
-            "when writing HTML/CSS/JS. Start each line with •"
+            "Distill these sprint findings into 6-8 coding directives for an AI agent.\n"
+            "Requirements: ≤12 words each, plain text (no markdown/bold), imperative voice, "
+            "specific to HTML/CSS/JS patching. Start each line with •\n\n"
+            "Findings:\n" + "\n".join(findings)
         )}],
     )
     text = message.content[0].text.strip()

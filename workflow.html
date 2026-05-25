@@ -29,7 +29,7 @@
     .pipeline {
       max-width: 560px;
       position: relative;
-      padding-right: 64px;
+      padding-right: 90px;
     }
     .pipeline::before {
       content: '';
@@ -404,7 +404,7 @@
         </div>
 
         <svg id="feedback-svg"
-          style="position:absolute;right:0;top:0;width:64px;overflow:visible;pointer-events:none;"
+          style="position:absolute;right:0;top:0;width:90px;overflow:visible;pointer-events:none;"
           aria-hidden="true"></svg>
 
       </div>
@@ -658,25 +658,47 @@
             'marker-end': `url(#m${ci})`,
           }));
 
-          // Label rotated along the vertical bar
-          if (label) {
-            const midY = (fy + ty) / 2;
-            const txt = svg.appendChild(makeSvgEl('text', {
-              x: ARM + 5, y: midY,
-              fill: color,
-              'font-size': 18,
-              'font-family': 'monospace',
-              'dominant-baseline': 'middle',
-              'text-anchor': 'middle',
-              transform: `rotate(-90 ${ARM + 5} ${midY})`,
-            }));
-            txt.textContent = label;
-          }
         });
       }
 
-      document.addEventListener('DOMContentLoaded', draw);
-      window.addEventListener('resize', draw);
+      function drawLabels() {
+        // Remove any previously created label divs
+        pipeline.querySelectorAll('.feedback-label').forEach(el => el.remove());
+
+        const steps = [...pipeline.querySelectorAll('.step')];
+
+        CONNECTIONS.forEach(({ from, to, label, color }, ci) => {
+          if (!label) return;
+          const fromCard = steps[from]?.querySelector('.step-card');
+          const toCard   = steps[to]?.querySelector('.step-card');
+          if (!fromCard || !toCard) return;
+
+          const fy = relativeTop(fromCard, pipeline) + fromCard.offsetHeight / 2;
+          const ty = relativeTop(toCard,   pipeline) + toCard.offsetHeight   / 2;
+          const midY = (fy + ty) / 2;
+
+          const div = document.createElement('div');
+          div.className = 'feedback-label';
+          div.textContent = label;
+          Object.assign(div.style, {
+            position:        'absolute',
+            right:           '0',
+            top:             `${midY}px`,
+            transform:       'translateY(-50%) rotate(-90deg)',
+            transformOrigin: 'center center',
+            color:           color,
+            fontSize:        '14px',
+            fontFamily:      'monospace',
+            whiteSpace:      'nowrap',
+            pointerEvents:   'none',
+            zIndex:          '2',
+          });
+          pipeline.appendChild(div);
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', () => { draw(); drawLabels(); });
+      window.addEventListener('resize', () => { draw(); drawLabels(); });
     })();
   </script>
 </body>

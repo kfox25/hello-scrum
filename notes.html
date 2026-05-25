@@ -121,6 +121,94 @@
 
     .save-indicator { font-size: 0.75rem; color: #333; text-align: right; flex-shrink: 0; }
     .save-indicator.saved { color: #00ff9960; }
+
+    .btn-view {
+      background: #0a0f1f;
+      color: #4488ff;
+      border: 1px solid #4488ff40;
+      padding: 0.5rem 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 0.8rem;
+    }
+    .btn-view:hover { border-color: #4488ff; background: #0d1530; }
+
+    .note-view {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      padding: 0.5rem 0;
+    }
+    .nv-step {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 0.25rem;
+      position: relative;
+    }
+    .nv-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      width: 2.5rem;
+    }
+    .nv-num {
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 50%;
+      background: #1a1a1a;
+      border: 2px solid #2a2a2a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: #555;
+      flex-shrink: 0;
+    }
+    .nv-step.ai   .nv-num { border-color: #00ff9960; color: #00ff99; background: #0a1f12; }
+    .nv-step.human .nv-num { border-color: #ffcc0060; color: #ffcc00; background: #1a1a00; }
+    .nv-step.note  .nv-num { border-color: #4488ff60; color: #4488ff; background: #0a0f1f; }
+    .nv-connector { width: 2px; flex: 1; min-height: 0.75rem; background: #1a1a1a; margin: 0 auto; }
+    .nv-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      padding: 0.65rem 1rem;
+      flex: 1;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+      color: #ccc;
+      line-height: 1.55;
+    }
+    .nv-step.ai    .nv-card { border-color: #00ff9920; }
+    .nv-step.human .nv-card { border-color: #ffcc0020; }
+    .nv-step.note  .nv-card { border-color: #4488ff20; }
+    .nv-badge {
+      display: inline-block;
+      font-size: 0.6rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-right: 0.4rem;
+      vertical-align: middle;
+    }
+    .badge-ai    { background: #0d2a1a; color: #00ff99; border: 1px solid #00ff9940; }
+    .badge-human { background: #1a1a00; color: #ffcc00; border: 1px solid #ffcc0040; }
+    .badge-note  { background: #0a0f1f; color: #4488ff; border: 1px solid #4488ff40; }
+    .nv-sub {
+      margin-top: 0.4rem;
+      padding-left: 0.75rem;
+      border-left: 2px solid #2a2a2a;
+      font-size: 0.8rem;
+      color: #666;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
   </style>
 </head>
 <body>
@@ -149,10 +237,12 @@
     <div class="notes-editor" id="editor" style="display:none;">
       <div class="editor-header">
         <input class="note-title" type="text" id="noteTitle" placeholder="Untitled" oninput="saveNote()">
+        <button class="btn-view" id="viewToggle" onclick="toggleView()">View</button>
         <button class="btn-save" onclick="saveToServer()">Save</button>
         <button class="btn-delete" onclick="deleteNote()">Delete</button>
       </div>
       <textarea id="noteBody" placeholder="Start writing..." oninput="saveNote()"></textarea>
+      <div class="note-view" id="noteView" style="display:none;"></div>
       <div class="save-indicator" id="saveIndicator">auto-saved</div>
     </div>
 
@@ -245,6 +335,64 @@
       document.getElementById('editor').style.display = 'none';
       document.getElementById('emptyState').style.display = 'flex';
       render();
+    }
+
+    let viewMode = false;
+
+    function toggleView() {
+      viewMode = !viewMode;
+      document.getElementById('noteBody').style.display = viewMode ? 'none' : '';
+      document.getElementById('noteView').style.display = viewMode ? 'flex' : 'none';
+      document.getElementById('viewToggle').textContent = viewMode ? 'Edit' : 'View';
+      if (viewMode) renderView();
+    }
+
+    function stepType(text) {
+      const t = text.toLowerCase();
+      if (/^agent|coding agent/.test(t)) return 'ai';
+      if (/^human/.test(t)) return 'human';
+      return 'note';
+    }
+
+    function badgeLabel(type) {
+      return type === 'ai' ? 'Agent' : type === 'human' ? 'Human' : 'Note';
+    }
+
+    function renderView() {
+      const body = document.getElementById('noteBody').value;
+      const container = document.getElementById('noteView');
+      const chunks = body.split(/\n{2,}/).map(s => s.trim()).filter(Boolean);
+
+      let stepNum = 0;
+      const html = chunks.map((chunk, i) => {
+        const lines = chunk.split('\n').map(s => s.trim()).filter(Boolean);
+        if (!lines.length) return '';
+        const main = lines[0];
+        const subs = lines.slice(1);
+        const type = stepType(main);
+        stepNum++;
+        const isLast = i === chunks.length - 1;
+
+        const subHtml = subs.length
+          ? `<div class="nv-sub">${subs.map(s => `<div>${escHtml(s)}</div>`).join('')}</div>`
+          : '';
+
+        return `<div class="nv-step ${type}">
+          <div class="nv-left">
+            <div class="nv-num">${stepNum}</div>
+            ${isLast ? '' : '<div class="nv-connector"></div>'}
+          </div>
+          <div class="nv-card">
+            <span class="nv-badge badge-${type}">${badgeLabel(type)}</span>${escHtml(main)}${subHtml}
+          </div>
+        </div>`;
+      }).join('');
+
+      container.innerHTML = html || '<div style="color:#333;padding:1rem">Nothing to render.</div>';
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
     async function init() {

@@ -175,21 +175,31 @@
     .outcome-failed { color: #ff444480; }
     .impact-none { font-size: 0.8rem; color: #2a2a2a; font-style: italic; }
 
+    .wisdom-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      overflow: hidden;
+    }
     .wisdom-panel {
       background: #1a1a1a;
       border: 1px solid #2a2a2a;
       border-radius: 8px;
       overflow: hidden;
-      margin-bottom: 1.5rem;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
     }
     .wisdom-panel-header {
       padding: 0.85rem 1.25rem;
       border-bottom: 1px solid #2a2a2a;
       background: #141414;
+      flex-shrink: 0;
     }
     .wisdom-panel-title { color: #00ff99; font-size: 1rem; margin-bottom: 0.2rem; }
     .wisdom-panel-subtitle { color: #444; font-size: 0.75rem; }
-    .wisdom-panel-body { padding: 1rem 1.25rem; }
+    .wisdom-panel-body { padding: 1rem 1.25rem; overflow-y: auto; flex: 1; min-height: 0; }
   </style>
 </head>
 <body>
@@ -214,7 +224,7 @@
       <div id="retros"><div class="loading">Loading...</div></div>
     </div>
 
-    <div class="col">
+    <div class="col wisdom-col">
       <div class="wisdom-panel">
         <div class="wisdom-panel-header">
           <div class="wisdom-panel-title">System Wisdom</div>

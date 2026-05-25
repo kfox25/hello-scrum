@@ -290,9 +290,9 @@
           </div>
           <div class="step-card">
             <div class="step-name">Elaborate <span class="agent-badge badge-haiku">claude-haiku-4-5</span></div>
-            <div class="step-purpose">Drag from Opportunity → Story Backlog. Haiku auto-generates a user story and 3–4 testable acceptance criteria. Card pulses while generating, then shows a ▸ chevron to expand AC.</div>
+            <div class="step-purpose">Drag from Opportunity → Story Backlog. Haiku auto-generates a user story and 3–4 testable acceptance criteria — informed by STORY RULES (AC patterns from past story outcomes) and CODING RULES (synthesized wisdom). Card pulses while generating, then shows a ▸ chevron to expand AC.</div>
             <div class="step-io">
-              <div class="io-item"><span class="io-label">Input</span> <span>Raw idea</span></div>
+              <div class="io-item"><span class="io-label">Input</span> <span>Raw idea + story wisdom + coding rules</span></div>
               <div class="io-item"><span class="io-label">Output</span> <span>User story + acceptance criteria</span></div>
             </div>
           </div>
@@ -589,10 +589,13 @@
     (function () {
       const NS = 'http://www.w3.org/2000/svg';
 
-      // connections: { from: stepIndex, to: stepIndex, label, color }
+      // connections: { from, to, label, color, arm }
+      // arm = x in SVG space for the vertical bar (SVG right:0, width:90)
       // steps are 0-indexed in DOM order
+      const SVG_WIDTH = 90;
       const CONNECTIONS = [
-        { from: 8, to: 3, label: 'wisdom + retro context', color: '#00ff9975' },
+        { from: 8, to: 1, label: 'story wisdom', color: '#4488ff75', arm: 62 },
+        { from: 8, to: 3, label: 'wisdom + retro context', color: '#00ff9975', arm: 35 },
       ];
 
       function relativeTop(el, ancestor) {
@@ -616,10 +619,10 @@
         svg.setAttribute('height', pipeline.offsetHeight);
         svg.innerHTML = '';
 
-        const ARM = 40;  // horizontal arm from pipeline right edge to vertical bar
-        const R   = 6;   // corner radius
+        const R = 6;  // corner radius
 
-        CONNECTIONS.forEach(({ from, to, label, color }, ci) => {
+        CONNECTIONS.forEach(({ from, to, label, color, arm }, ci) => {
+          const ARM = arm ?? 40;
           const fromCard = steps[from]?.querySelector('.step-card');
           const toCard   = steps[to]?.querySelector('.step-card');
           if (!fromCard || !toCard) return;
@@ -669,7 +672,7 @@
 
         const steps = [...pipeline.querySelectorAll('.step')];
 
-        CONNECTIONS.forEach(({ from, to, label, color }, ci) => {
+        CONNECTIONS.forEach(({ from, to, label, color, arm }, ci) => {
           if (!label) return;
           const fromCard = steps[from]?.querySelector('.step-card');
           const toCard   = steps[to]?.querySelector('.step-card');
@@ -679,17 +682,22 @@
           const ty = relativeTop(toCard,   pipeline) + toCard.offsetHeight   / 2;
           const midY = (fy + ty) / 2;
 
+          // Center label between this arm's bar and the card edge
+          const ARM = arm ?? 40;
+          const barFromRight = SVG_WIDTH - ARM;
+          const labelRight   = Math.round((barFromRight + SVG_WIDTH) / 2);
+
           const div = document.createElement('div');
           div.className = 'feedback-label';
           div.textContent = label;
           Object.assign(div.style, {
             position:        'absolute',
-            right:           '0',
+            right:           `${labelRight}px`,
             top:             `${midY}px`,
-            transform:       'translateY(-50%) rotate(-90deg)',
-            transformOrigin: 'center center',
+            transform:       'rotate(-90deg)',
+            transformOrigin: 'right center',
             color:           color,
-            fontSize:        '14px',
+            fontSize:        '28px',
             fontFamily:      'monospace',
             whiteSpace:      'nowrap',
             pointerEvents:   'none',

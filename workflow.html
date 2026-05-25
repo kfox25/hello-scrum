@@ -326,7 +326,7 @@
           </div>
           <div class="step-card">
             <div class="step-name">Start Sprint → Implementation <span class="agent-badge badge-sonnet">claude-sonnet-4-6</span> <span class="agent-badge badge-system">Automated</span></div>
-            <div class="step-purpose">Triggered automatically by Start Sprint — no human gate. Sonnet receives the story and AC written at Step 2 as its brief, plus CSS-stripped index.html, last-1 changelog entry, RULES (synthesized wisdom), and THIS SPRINT (intra-sprint retro context). Implements the story, patches index.html, bumps version.</div>
+            <div class="step-purpose">Triggered automatically by Start Sprint — no human gate. Sonnet receives the story and AC written at Step 2 as its brief, plus full index.html, last-1 changelog entry, RULES (synthesized wisdom), and THIS SPRINT (intra-sprint retro context). Implements the story, patches index.html, bumps version.</div>
             <div class="step-io">
               <div class="io-item"><span class="io-label">Input</span> <span>Story + AC (from Step 2), index.html, version.json, wisdom, retro context</span></div>
               <div class="io-item"><span class="io-label">Output</span> <span>Patched files, summary</span></div>
@@ -519,7 +519,7 @@
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-sonnet">b</span>
-              <span class="prose-substep-text"><strong>Sonnet implements.</strong> Receives the story and AC from Step 2 as its brief, CSS-stripped index.html, and the last 1 changelog entry. Patches the file, bumps the patch version, adds a changelog entry. Hermes validates against the same AC the human reviewed at Elaborate.</span>
+              <span class="prose-substep-text"><strong>Sonnet implements.</strong> Receives the story and AC from Step 2 as its brief, full index.html, and the last 1 changelog entry. Patches the file, bumps the patch version, adds a changelog entry. Hermes validates against the same AC the human reviewed at Elaborate.</span>
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-system">c</span>

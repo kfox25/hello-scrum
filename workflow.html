@@ -450,6 +450,7 @@
           </div>
           <div class="prose-body">
             <p>You drag an item from <strong>Opportunity Backlog</strong> → <strong>Story Backlog</strong>. On drop, Haiku auto-generates a full user story (<em>As a user, I want...</em>) with 3–4 short, testable acceptance criteria.</p>
+            <p>The prompt is augmented with two wisdom layers: <strong>STORY RULES</strong> (AC-writing directives from story_wisdom.json, distilled from all past story outcomes) and <strong>CODING RULES</strong> (coding directives from wisdom.json, distilled from all sprint retrospectives). Both inform how the AC are written before any code is run.</p>
             <p>The card pulses with a "generating story..." animation while in flight. When done, a ▸ chevron appears — clicking the card body expands to show the AC. Expansion state persists across re-renders.</p>
           </div>
         </div>
@@ -513,6 +514,10 @@
               <span class="prose-substep-text">synthesize_wisdom() re-reads all findings from all sprints ever, asks Haiku to distill them into 6–8 terse directive bullets (≤12 words each), and overwrites wisdom.json. The next story gets the freshly updated RULES block.</span>
             </div>
             <div class="prose-substep">
+              <span class="prose-substep-label lbl-haiku">Wisdom</span>
+              <span class="prose-substep-text">synthesize_story_wisdom() reads the last 50 completed/failed/rejected stories from backlog.json, asks Haiku to distill 6–8 AC-writing directives, and overwrites story_wisdom.json. The next Elaborate call gets freshly updated STORY RULES.</span>
+            </div>
+            <div class="prose-substep">
               <span class="prose-substep-label lbl-system">Context</span>
               <span class="prose-substep-text">retro_context is reloaded from retrospective.json so the next story's THIS SPRINT block reflects what just happened — including whether the previous item passed or failed and why.</span>
             </div>
@@ -569,6 +574,12 @@
                   <td>Haiku</td>
                   <td>Pipeline (rollback/pass)</td>
                   <td>Current story</td>
+                </tr>
+                <tr>
+                  <td>story_wisdom.json STORY RULES</td>
+                  <td>Haiku (after each item)</td>
+                  <td>Haiku (Elaborate, Step 2)</td>
+                  <td>All stories, all time</td>
                 </tr>
                 <tr>
                   <td>retrospective.json</td>

@@ -30,7 +30,7 @@ TEST_SCRIPT  = "test.py"
 REPO_URL     = "https://kfox25.github.io/hello-scrum"
 RETRO_FILE         = "retrospective.json"
 WISDOM_FILE        = "system_system_wisdom.json"
-STORY_WISDOM_FILE  = "story_system_wisdom.json"
+STORY_WISDOM_FILE  = "story_wisdom.json"
 
 _log_lines = []
 
@@ -606,7 +606,7 @@ def synthesize_story_wisdom(sprint_items=None):
 
     with open(STORY_WISDOM_FILE, "w") as f:
         json.dump({"bullets": bullets, "synthesized_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "item_count": total_count}, f, indent=2)
-    log(f"Story wisdom: {len(bullets)} bullet(s) written to story_system_wisdom.json")
+    log(f"Story wisdom: {len(bullets)} bullet(s) written to story_wisdom.json")
 
 
 def synthesize_system_wisdom(processed_items=None):

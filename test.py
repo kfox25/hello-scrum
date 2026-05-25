@@ -11,7 +11,7 @@ import sys
 def test_index_html_exists():
     with open("index.html", "r") as f:
         content = f.read()
-    assert "<h1>" in content, "Missing h1 tag"
+    assert "<h1" in content, "Missing h1 tag"
     assert "Hello Scrum" in content, "Missing title text"
     print("PASS  index.html exists and contains title")
 

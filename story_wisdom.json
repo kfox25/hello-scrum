@@ -1,14 +1,12 @@
 {
   "bullets": [
-    "\u2022 Name the exact data source field and JSON structure to read from.",
-    "\u2022 Specify numeric display format, color values, and font sizes with precision.",
-    "\u2022 State fallback explicitly\u2014e.g., display zero or em-dash, never conditional logic.",
-    "\u2022 Reference existing styled components instead of describing visual style from scratch.",
-    "\u2022 Avoid subjective descriptors like sexier, spicier, cooler without concrete visual examples.",
-    "\u2022 Separate conflicting style goals into separate stories, never bundle contradictory aesthetics.",
-    "\u2022 Include calculation formulas in plain text, not abstract descriptions of math.",
-    "\u2022 Describe user-facing text exactly as it should appear, including capitalization and punctuation."
+    "\u2022 Only write AC verifiable by reading HTML, CSS, or JS files directly; no external tools.",
+    "\u2022 Name the exact selector and file (e.g. 'h1 in index.html') rather than describing visual output.",
+    "\u2022 Specify exact hex color values; never describe colors by name or appearance.",
+    "\u2022 When changing a CSS property, include an AC that confirms no duplicate rules for that property exist.",
+    "\u2022 When changing a color, include an AC that -webkit-text-fill-color and background-clip:text are absent or overridden.",
+    "\u2022 Keep AC to 3-4 items; each must be a single testable fact about the file contents."
   ],
-  "synthesized_at": "2026-05-24 21:17:00",
-  "item_count": 56
+  "synthesized_at": "2026-05-25 12:12:10",
+  "item_count": 61
 }

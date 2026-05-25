@@ -11,9 +11,11 @@ Usage:
 import json
 import os
 import queue
+import re
 import subprocess
 import threading
 import time
+from datetime import datetime
 
 import anthropic
 
@@ -32,13 +34,13 @@ AGENT_LOG_FILE = os.path.join(BASE, "agent_log.json")
 # a stale pulsing dot — but preserve done/failed/rejected so the panel persists.
 _KEEP_STAGES = {"done", "failed", "rejected"}
 try:
-    with open(ACTIVE_FILE) as _f:
+    with open(ACTIVE_FILE, encoding="utf-8") as _f:
         _s = json.load(_f).get("stage")
     if _s not in _KEEP_STAGES:
-        with open(ACTIVE_FILE, "w") as _f:
+        with open(ACTIVE_FILE, "w", encoding="utf-8") as _f:
             json.dump({"item_id": None, "stage": None}, _f)
 except Exception:
-    with open(ACTIVE_FILE, "w") as _f:
+    with open(ACTIVE_FILE, "w", encoding="utf-8") as _f:
         json.dump({"item_id": None, "stage": None}, _f)
 
 
@@ -115,6 +117,231 @@ def chad_page():
     return send_file(os.path.join(BASE, "chad.html"))
 
 
+@app.route("/health.html")
+def health_page():
+    return send_file(os.path.join(BASE, "health.html"))
+
+
+@app.route("/health/diagnostics")
+def health_diagnostics():
+    out = {}
+
+    # ── 1. Configuration integrity ────────────────────────────────────────────
+    config = {}
+    try:
+        with open(os.path.join(BASE, "agent.py"), encoding="utf-8") as f:
+            src = f.read()
+        for const in ["WISDOM_FILE", "STORY_WISDOM_FILE", "RETRO_FILE"]:
+            m = re.search(rf'{const}\s*=\s*"([^"]+)"', src)
+            val = m.group(1) if m else None
+            exists = os.path.exists(os.path.join(BASE, val)) if val else False
+            config[const] = {"value": val, "exists": exists}
+        config["strip_styles_active"] = bool(
+            re.search(r'index_html\s*=\s*strip_styles_for_prompt', src)
+        )
+    except Exception as e:
+        config["error"] = str(e)
+    out["config"] = config
+
+    # ── 2. CSS checks on index.html ───────────────────────────────────────────
+    css_checks = []
+    try:
+        with open(os.path.join(BASE, "index.html"), encoding="utf-8") as f:
+            html = f.read()
+        sm = re.search(r'<style>([\s\S]*?)</style>', html)
+        style = sm.group(1) if sm else ""
+        after = html[html.find('</style>') + 8:] if '</style>' in html else ""
+
+        def chk(name, ok, detail=None):
+            css_checks.append({"name": name, "pass": ok, "detail": detail})
+
+        css_after = bool(re.search(r'[a-zA-Z.#][^<{]*\{[^}]*\}', after))
+        chk("No CSS outside style block", not css_after,
+            "CSS found after </style>" if css_after else None)
+
+        dup_h1 = len(re.findall(r'(?<![.\-\w])h1\s*[,{]', style))
+        chk("No duplicate h1 rules", dup_h1 <= 1,
+            f"{dup_h1} h1 rules found" if dup_h1 > 1 else None)
+
+        dup_body = len(re.findall(r'\bbody\s*\{', style))
+        chk("No duplicate body rules", dup_body <= 1,
+            f"{dup_body} body rules found" if dup_body > 1 else None)
+
+        has_webkit = '-webkit-text-fill-color' in style
+        chk("-webkit-text-fill-color absent", not has_webkit,
+            "Found -webkit-text-fill-color" if has_webkit else None)
+
+        has_rgb   = bool(re.search(r'color:\s*rgb', style))
+        has_hex   = bool(re.search(r'color:\s*#', style))
+        chk("Single color format (hex only)", not (has_rgb and has_hex),
+            "Mixed rgb() and hex found" if (has_rgb and has_hex) else None)
+    except Exception as e:
+        css_checks.append({"name": "CSS parse error", "pass": False, "detail": str(e)})
+    out["css_checks"] = css_checks
+
+    # ── 3. Data flow ──────────────────────────────────────────────────────────
+    data_flow = {}
+    try:
+        with open(os.path.join(BASE, "backlog.json"), encoding="utf-8") as f:
+            backlog = json.load(f)
+        items = backlog.get("items", [])
+        started = [i["started"] for i in items if i.get("started")]
+        last_sprint_ts = max(started) if started else None
+
+        with open(os.path.join(BASE, "retrospective.json"), encoding="utf-8") as f:
+            retro_data = json.load(f)
+        retros = retro_data.get("retros", [])
+        last_retro_str = retros[0]["sprint_date"] if retros else None
+
+        with open(os.path.join(BASE, "system_wisdom.json"), encoding="utf-8") as f:
+            sys_w = json.load(f)
+        with open(os.path.join(BASE, "story_wisdom.json"), encoding="utf-8") as f:
+            story_w = json.load(f)
+
+        sys_at   = sys_w.get("synthesized_at")
+        story_at = story_w.get("synthesized_at")
+
+        wisdom_stale = False
+        if last_retro_str and sys_at:
+            try:
+                wisdom_stale = (
+                    datetime.strptime(sys_at, "%Y-%m-%d %H:%M:%S") <
+                    datetime.strptime(last_retro_str, "%Y-%m-%d %H:%M:%S")
+                )
+            except Exception:
+                pass
+
+        # Sprints processed since last retro
+        sprints_since_retro = 0
+        if last_retro_str:
+            try:
+                retro_ts = datetime.strptime(last_retro_str, "%Y-%m-%d %H:%M:%S").timestamp()
+                sprints_since_retro = sum(
+                    1 for i in items
+                    if i.get("started", 0) > retro_ts
+                    and i.get("status") in ("done", "failed")
+                )
+            except Exception:
+                pass
+
+        data_flow = {
+            "last_sprint_ts":     last_sprint_ts,
+            "last_retro_date":    last_retro_str,
+            "system_wisdom_at":   sys_at,
+            "story_wisdom_at":    story_at,
+            "wisdom_stale":       wisdom_stale,
+            "retro_count":        len(retros),
+            "sprints_since_retro": sprints_since_retro,
+        }
+    except Exception as e:
+        data_flow["error"] = str(e)
+    out["data_flow"] = data_flow
+
+    # ── 4. Wisdom quality ─────────────────────────────────────────────────────
+    hex_re     = re.compile(r'#[0-9a-fA-F]{3,6}\b')
+    ver_re     = re.compile(r'v\d+\.\d+')
+    specific   = ['index.html', '.hero', '.tagline', 'hello scrum', 'board.html']
+    wisdom_q   = {}
+    for key, fname in [("system", "system_wisdom.json"), ("story", "story_wisdom.json")]:
+        try:
+            with open(os.path.join(BASE, fname), encoding="utf-8") as f:
+                wd = json.load(f)
+            bullets = wd.get("bullets", [])
+            flagged = []
+            for b in bullets:
+                reasons = []
+                if hex_re.search(b):      reasons.append("hex code")
+                if ver_re.search(b):      reasons.append("version number")
+                if len(b.split()) < 5:    reasons.append("too short")
+                if any(s in b.lower() for s in specific): reasons.append("story-specific")
+                if reasons:
+                    flagged.append({"bullet": b, "reasons": reasons})
+            wisdom_q[key] = {
+                "bullets": bullets,
+                "count": len(bullets),
+                "flagged": flagged,
+                "synthesized_at": wd.get("synthesized_at"),
+                "finding_count": wd.get("finding_count") or wd.get("item_count"),
+            }
+        except Exception as e:
+            wisdom_q[key] = {"error": str(e)}
+    out["wisdom_quality"] = wisdom_q
+
+    # ── 5. Rejection patterns ─────────────────────────────────────────────────
+    pattern_map = {
+        "CSS placement":      ["outside style", "style block", "style tag", "closing brace", "outside the style"],
+        "Duplicate rules":    ["duplicate", "redundant", "conflicting rule", "layering"],
+        "Selector issues":    ["selector", "webkit-text-fill", "specificity", "not target"],
+        "Scope creep":        ["unrelated", "scope", "refactor", "restructur", "extensive"],
+        "WCAG/accessibility": ["wcag", "contrast", "accessibility", "viewport", "layout shift"],
+        "Encoding issues":    ["encoding", "unicode", "charmap", "codec"],
+        "Version/timestamp":  ["version", "timestamp", "deployment", "separate commit"],
+    }
+    try:
+        failure_texts = [
+            f["text"].lower()
+            for r in retro_data.get("retros", [])
+            for f in r.get("findings", [])
+            if f["type"] == "failure_pattern"
+        ]
+        rejection_patterns = {}
+        for label, kws in pattern_map.items():
+            count = sum(1 for t in failure_texts if any(kw in t for kw in kws))
+            if count:
+                rejection_patterns[label] = count
+        out["rejection_patterns"] = dict(
+            sorted(rejection_patterns.items(), key=lambda x: x[1], reverse=True)
+        )
+    except Exception as e:
+        out["rejection_patterns"] = {"error": str(e)}
+
+    # ── 6. Hermes consistency ─────────────────────────────────────────────────
+    try:
+        reviewed = [i for i in items if i.get("hermes_verdict")]
+        approved = [i for i in reviewed if i["hermes_verdict"] == "approve"]
+        rejected = [i for i in reviewed if i["hermes_verdict"] == "reject"]
+
+        # Group rejection reasons by keyword bucket
+        reason_buckets = {}
+        for i in rejected:
+            reason = (i.get("hermes_reason") or "").lower()
+            for label, kws in pattern_map.items():
+                if any(kw in reason for kw in kws):
+                    reason_buckets[label] = reason_buckets.get(label, 0) + 1
+                    break
+
+        # Find ideas rejected more than once (recurring failures on same topic)
+        idea_failures = {}
+        for i in rejected:
+            key = i.get("idea", "")[:40].lower()
+            idea_failures[key] = idea_failures.get(key, 0) + 1
+        recurring = {k: v for k, v in idea_failures.items() if v > 1}
+
+        out["hermes"] = {
+            "total_reviewed": len(reviewed),
+            "approved": len(approved),
+            "rejected": len(rejected),
+            "approve_rate": round(len(approved) / len(reviewed) * 100) if reviewed else 0,
+            "rejection_buckets": reason_buckets,
+            "recurring_failures": recurring,
+        }
+    except Exception as e:
+        out["hermes"] = {"error": str(e)}
+
+    # ── 7. Sprint trend (last 20) ─────────────────────────────────────────────
+    try:
+        processed = [i for i in items if i.get("started") and i.get("status") in ("done", "failed")]
+        processed.sort(key=lambda x: x["started"])
+        out["sprint_trend"] = [
+            {"idea": i.get("idea", "")[:45], "status": i["status"], "started": i["started"]}
+            for i in processed[-20:]
+        ]
+    except Exception:
+        out["sprint_trend"] = []
+
+    return jsonify(out)
+
+
 @app.route("/messenger/send", methods=["POST"])
 def messenger_send():
     try:
@@ -169,7 +396,7 @@ def messenger_choose():
         if not story:
             return jsonify({"reply": "No story provided."})
 
-        with open(BACKLOG_FILE) as f:
+        with open(BACKLOG_FILE, encoding="utf-8") as f:
             backlog = json.load(f)
         new_item = {
             "id": str(int(time.time() * 1000)),
@@ -179,7 +406,7 @@ def messenger_choose():
             "opportunity": True,
         }
         backlog.setdefault("items", []).insert(0, new_item)
-        with open(BACKLOG_FILE, "w") as f:
+        with open(BACKLOG_FILE, "w", encoding="utf-8") as f:
             json.dump(backlog, f, indent=2)
         return jsonify({"reply": f"Added to opportunity backlog: <em>{story}</em>"})
 
@@ -215,7 +442,7 @@ def notes_json():
 def save_notes():
     data = request.get_json()
     path = os.path.join(BASE, "notes.json")
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
     return jsonify({"ok": True})
 
@@ -255,21 +482,21 @@ def health():
 
 @app.route("/active/clear", methods=["POST"])
 def clear_active():
-    with open(ACTIVE_FILE, "w") as f:
+    with open(ACTIVE_FILE, "w", encoding="utf-8") as f:
         json.dump({"item_id": None, "stage": None}, f)
     return jsonify({"ok": True})
 
 
 @app.route("/backlog", methods=["GET"])
 def get_backlog():
-    with open(BACKLOG_FILE) as f:
+    with open(BACKLOG_FILE, encoding="utf-8") as f:
         return jsonify(json.load(f))
 
 
 @app.route("/backlog", methods=["POST"])
 def save_backlog():
     data = request.get_json()
-    with open(BACKLOG_FILE, "w") as f:
+    with open(BACKLOG_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
     return jsonify({"ok": True})
 
@@ -286,13 +513,13 @@ def elaborate_story():
         story_wisdom_bullets = []
         system_wisdom_bullets = []
         try:
-            with open(os.path.join(BASE, "story_wisdom.json")) as f:
+            with open(os.path.join(BASE, "story_wisdom.json"), encoding="utf-8") as f:
                 sw = json.load(f)
             story_wisdom_bullets = [b.lstrip("•").strip() for b in sw.get("bullets", []) if b.strip()]
         except Exception:
             pass
         try:
-            with open(os.path.join(BASE, "system_wisdom.json")) as f:
+            with open(os.path.join(BASE, "system_wisdom.json"), encoding="utf-8") as f:
                 sw = json.load(f)
             system_wisdom_bullets = [b.lstrip("•").strip() for b in sw.get("bullets", []) if b.strip()]
         except Exception:
@@ -333,7 +560,7 @@ def elaborate_story():
 @app.route("/agent-log")
 def get_agent_log():
     try:
-        with open(AGENT_LOG_FILE) as f:
+        with open(AGENT_LOG_FILE, encoding="utf-8") as f:
             return jsonify({"lines": json.load(f)})
     except Exception:
         return jsonify({"lines": []})
@@ -358,7 +585,7 @@ def start_sprint():
     def _reader():
         global agent_running
         try:
-            with open(AGENT_LOG_FILE, "w") as f:
+            with open(AGENT_LOG_FILE, "w", encoding="utf-8") as f:
                 json.dump([], f)
         except Exception:
             pass

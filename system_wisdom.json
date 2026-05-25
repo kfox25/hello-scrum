@@ -1,14 +1,14 @@
 {
   "bullets": [
-    "\u2022 Remove duplicate CSS selectors and conflicting rules; never layer new styles atop old ones.",
-    "\u2022 Validate CSS syntax before submission: ensure all comment tags properly close with */.",
-    "\u2022 Implement pre-commit linting to detect duplicate selectors, unclosed comments, and specificity conflicts.",
-    "\u2022 For dynamic UI elements, verify JavaScript update logic exists; never hardcode placeholder values.",
-    "\u2022 Audit stylesheets for orphaned rules when modifying existing element styles; delete conflicting rules.",
-    "\u2022 Define distinct data sources and business logic for each new metric before implementation begins.",
-    "\u2022 Handle zero and missing data consistently: display \"0\" not dashes; implement fallback logic explicitly.",
-    "\u2022 Verify that changelog entries match actual code changes in HTML/CSS/JS files before submission."
+    "\u2022 Validate HTML/CSS syntax with linter before submission; catch malformed markup early.",
+    "\u2022 Verify all `<style>` tags properly closed; never nest or leave unclosed blocks.",
+    "\u2022 Confirm HTML selectors exist in markup before writing CSS rules; read target file.",
+    "\u2022 Remove duplicate CSS selectors and conflicting rules; patch property values in place.",
+    "\u2022 Check `-webkit-text-fill-color` and `background-clip:text` conflicts; remove or override before setting color.",
+    "\u2022 Use hex color format exclusively; never mix rgb() and hex for identical colors.",
+    "\u2022 Update deployment metadata (version, timestamp, changelog) for every patch submission.",
+    "\u2022 Maintain test coverage; verify all changes pass linting and automated tests before merge."
   ],
-  "synthesized_at": "2026-05-24 21:16:49",
-  "finding_count": 183
+  "synthesized_at": "2026-05-25 12:12:09",
+  "finding_count": 229
 }

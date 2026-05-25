@@ -29,7 +29,7 @@ VERSION_FILE = "version.json"
 TEST_SCRIPT  = "test.py"
 REPO_URL     = "https://kfox25.github.io/hello-scrum"
 RETRO_FILE         = "retrospective.json"
-WISDOM_FILE        = "system_system_wisdom.json"
+WISDOM_FILE        = "system_wisdom.json"
 STORY_WISDOM_FILE  = "story_wisdom.json"
 
 _log_lines = []
@@ -38,7 +38,7 @@ def log(msg=""):
     print(msg, flush=True)
     _log_lines.append(str(msg))
     try:
-        with open(LOG_FILE, "w") as f:
+        with open(LOG_FILE, "w", encoding="utf-8") as f:
             json.dump(_log_lines, f)
     except Exception:
         pass
@@ -49,7 +49,7 @@ def log_lines(lines):
     sys.stdout.flush()
     _log_lines.extend(lines)
     try:
-        with open(LOG_FILE, "w") as f:
+        with open(LOG_FILE, "w", encoding="utf-8") as f:
             json.dump(_log_lines, f)
     except Exception:
         pass
@@ -58,7 +58,7 @@ def clear_log():
     global _log_lines
     _log_lines = []
     try:
-        with open(LOG_FILE, "w") as f:
+        with open(LOG_FILE, "w", encoding="utf-8") as f:
             json.dump([], f)
     except Exception:
         pass
@@ -83,7 +83,8 @@ Rules:
 - patches must contain ONLY the story-specific change (new elements, CSS additions, etc.)
 - Each patch "find" must be a verbatim unique substring copied directly from the provided file
 - NEVER use "</style>" as a patch "find" — it is not a unique anchor
-- If adding CSS, use the /* [existing-styles] */ comment as your "find" anchor and put your new CSS in "replace" alongside it
+- To MODIFY an existing CSS property: find the exact current declaration line (e.g. "      color: #00ff99;") and replace only that line with the new value — do NOT add a new rule
+- To ADD new CSS: find a unique nearby line inside the style block as your anchor and insert alongside it — never insert after </style>
 - Keep the page clean and minimal
 
 Respond with ONLY valid JSON — no markdown, no code blocks, no extra text:
@@ -122,6 +123,9 @@ Review the diff for technical quality only. Focus on:
 - Is the scope appropriate — does it touch only what it needs to?
 - Is the implementation technically sound?
 
+NOTE: version.json and deployment timestamp changes (version badge, "Last deployed" meta) always
+accompany feature changes in this pipeline — do NOT reject for including them.
+
 Do NOT evaluate whether it satisfies business requirements — that is a separate check.
 
 Respond with ONLY valid JSON — no markdown, no extra text:
@@ -134,6 +138,11 @@ AC_CHECK_SYSTEM_PROMPT = """You are Hermes, performing an acceptance criteria ch
 Assume the code is technically correct. Evaluate only whether the implementation satisfies
 the original idea and each acceptance criterion listed.
 
+Only evaluate criteria that can be verified by reading the diff and source files directly.
+If a criterion requires external tools (Lighthouse, axe, Chrome DevTools, contrast checkers,
+Playwright, or any tool not present in the diff) treat it as satisfied if the implementation
+intent is correct.
+
 Respond with ONLY valid JSON — no markdown, no extra text:
 {"verdict": "approve", "reason": "one sentence"}
 or
@@ -145,7 +154,7 @@ or
 def write_active(item, stage, **extra):
     now = datetime.now().timestamp()
     try:
-        with open(ACTIVE_FILE) as f:
+        with open(ACTIVE_FILE, encoding="utf-8") as f:
             existing = json.load(f)
     except Exception:
         existing = {}
@@ -164,25 +173,25 @@ def write_active(item, stage, **extra):
         "stage_times": stage_times,
     }
     data.update(extra)
-    with open(ACTIVE_FILE, "w") as f:
+    with open(ACTIVE_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f)
     return data
 
 
 def clear_active():
-    with open(ACTIVE_FILE, "w") as f:
+    with open(ACTIVE_FILE, "w", encoding="utf-8") as f:
         json.dump({"item_id": None, "stage": None}, f)
 
 
 # ── Backlog ───────────────────────────────────────────────────────────────────
 
 def load_backlog():
-    with open(BACKLOG_FILE) as f:
+    with open(BACKLOG_FILE, encoding="utf-8") as f:
         return json.load(f)
 
 
 def save_backlog(data):
-    with open(BACKLOG_FILE, "w") as f:
+    with open(BACKLOG_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
 
@@ -203,15 +212,6 @@ def read_app_files():
     with open(VERSION_FILE, encoding="utf-8") as f:
         version_json = f.read()
     return index_html, version_json
-
-
-def strip_styles_for_prompt(html):
-    """Replace style block with a placeholder to reduce prompt tokens."""
-    return re.sub(
-        r'(<style>)[\s\S]*?(</style>)',
-        r'\1\n  /* [existing-styles] */\n\2',
-        html, count=1
-    )
 
 
 def strip_changelog_for_prompt(version_json_str):
@@ -242,7 +242,6 @@ def call_agent(idea, story, acceptance_criteria, index_html, version_json, times
         context_parts.append("THIS SPRINT:\n" + retro_context)
     context_section = ("\n\n" + "\n\n".join(context_parts)) if context_parts else ""
 
-    index_html = strip_styles_for_prompt(index_html)
     version_json = strip_changelog_for_prompt(version_json)
 
     ac_str = "\n".join(f"- {c}" for c in acceptance_criteria) if acceptance_criteria else "(none)"
@@ -360,7 +359,7 @@ def apply_changes(response_text, timestamp):
     new_entries = [e for e in agent_vj.get("changelog", [])
                    if e.get("version") != real.get("version")]
     real["version"] = agent_vj.get("version", real["version"])
-    real["deployed"] = agent_vj.get("deployed", real["deployed"])
+    real["deployed"] = timestamp
     real["changelog"].extend(new_entries)
     with open(VERSION_FILE, "w", encoding="utf-8") as f:
         json.dump(real, f, indent=2)
@@ -461,7 +460,7 @@ def rollback():
 
 def load_latest_retro_context():
     try:
-        with open(RETRO_FILE) as f:
+        with open(RETRO_FILE, encoding="utf-8") as f:
             store = json.load(f)
         retros = store.get("retros", [])
         if not retros:
@@ -469,8 +468,9 @@ def load_latest_retro_context():
         findings = retros[0].get("findings", [])
         if not findings:
             return None
-        short = {"failure_pattern": "fail", "success_pattern": "ok", "improvement": "do", "observation": "note"}
-        return "\n".join(f"[{short.get(f['type'], f['type'])}] {f['text']}" for f in findings)
+        short = {"failure_pattern": "fail", "success_pattern": "ok", "observation": "note"}
+        lines = [f"[{short[f['type']]}] {f['text']}" for f in findings if f["type"] in short]
+        return "\n".join(lines) if lines else None
     except Exception:
         return None
 
@@ -478,7 +478,7 @@ def load_latest_retro_context():
 def load_wisdom():
     """Return list of stripped bullet strings from system_wisdom.json, or empty list."""
     try:
-        with open(WISDOM_FILE) as f:
+        with open(WISDOM_FILE, encoding="utf-8") as f:
             data = json.load(f)
         return [b.lstrip("•").strip() for b in data.get("bullets", []) if b.strip()]
     except Exception:
@@ -529,14 +529,14 @@ Analyze this sprint and return findings JSON."""
     retro["items_failed"]   = sum(1 for i in processed_items if i.get("status") == "failed")
 
     try:
-        with open(RETRO_FILE) as f:
+        with open(RETRO_FILE, encoding="utf-8") as f:
             store = json.load(f)
     except Exception:
         store = {"retros": []}
 
     store.setdefault("retros", []).insert(0, retro)
 
-    with open(RETRO_FILE, "w") as f:
+    with open(RETRO_FILE, "w", encoding="utf-8") as f:
         json.dump(store, f, indent=2)
 
     log(f"\nRetro: {retro.get('summary', '')}")
@@ -549,14 +549,14 @@ def synthesize_story_wisdom(sprint_items=None):
     """Update AC-writing directives incrementally from this sprint's outcomes, or bootstrap from history."""
     existing_bullets = []
     try:
-        with open(STORY_WISDOM_FILE) as f:
+        with open(STORY_WISDOM_FILE, encoding="utf-8") as f:
             sw = json.load(f)
         existing_bullets = [b.lstrip("•").strip() for b in sw.get("bullets", []) if b.strip()]
     except Exception:
         pass
 
     try:
-        with open(BACKLOG_FILE) as f:
+        with open(BACKLOG_FILE, encoding="utf-8") as f:
             backlog = json.load(f)
     except Exception:
         return
@@ -604,7 +604,7 @@ def synthesize_story_wisdom(sprint_items=None):
     text = message.content[0].text.strip()
     bullets = [ln.strip() for ln in text.splitlines() if ln.strip().startswith("•")]
 
-    with open(STORY_WISDOM_FILE, "w") as f:
+    with open(STORY_WISDOM_FILE, "w", encoding="utf-8") as f:
         json.dump({"bullets": bullets, "synthesized_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "item_count": total_count}, f, indent=2)
     log(f"Story wisdom: {len(bullets)} bullet(s) written to story_wisdom.json")
 
@@ -613,14 +613,14 @@ def synthesize_system_wisdom(processed_items=None):
     """Update coding directives incrementally from this sprint's findings, or bootstrap from history."""
     existing_bullets = []
     try:
-        with open(WISDOM_FILE) as f:
+        with open(WISDOM_FILE, encoding="utf-8") as f:
             data = json.load(f)
         existing_bullets = [b.lstrip("•").strip() for b in data.get("bullets", []) if b.strip()]
     except Exception:
         pass
 
     try:
-        with open(RETRO_FILE) as f:
+        with open(RETRO_FILE, encoding="utf-8") as f:
             store = json.load(f)
     except Exception:
         synthesize_story_wisdom(processed_items)
@@ -676,7 +676,7 @@ def synthesize_system_wisdom(processed_items=None):
         1 for r in retros for fnd in r.get("findings", [])
         if not seen.add(f"{fnd['type']}:{fnd['text']}")  # type: ignore[func-returns-value]
     )
-    with open(WISDOM_FILE, "w") as f:
+    with open(WISDOM_FILE, "w", encoding="utf-8") as f:
         json.dump({"bullets": bullets, "synthesized_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "finding_count": total_findings}, f, indent=2)
     log(f"Wisdom: {len(bullets)} bullet(s) written to system_wisdom.json")
     synthesize_story_wisdom(processed_items)

@@ -107,6 +107,7 @@
     .card.pending:hover .drag-handle { color: #00ff9980; }
 
     .card-content { flex: 1; display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+    .card-id   { font-size: 0.62rem; color: #333; font-family: monospace; }
     .card-idea { font-size: 0.9rem; color: #ccc; }
     .card-story { font-size: 0.78rem; color: #888; line-height: 1.4; }
     .card-story.elaborating { color: #444; font-style: italic; animation: pulse 1.5s ease-in-out infinite; }
@@ -270,6 +271,7 @@
     <a href="retro.html">Retro</a>
     <a href="workflow.html">Workflow</a>
     <a href="notes.html">Notes</a>
+    <a href="health.html">Health</a>
   </nav>
   <header>
     <h1>Product Backlog</h1>
@@ -463,6 +465,7 @@
         ${handle}
         <div class="card-content">
           <div class="card-idea">${escHtml(item.idea)}</div>
+          <div class="card-id">#${item.id}</div>
           ${storyLine}
           ${acHtml}
           ${expandBtn}
@@ -592,8 +595,6 @@
       if (!item) return;
       item.status = 'pending';
       item.in_sprint = true;
-      delete item.story;
-      delete item.acceptance_criteria;
       delete item.summary;
       delete item.diff;
       delete item.test_results;

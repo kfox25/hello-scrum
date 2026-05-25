@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Health — Hello Scrum</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { padding: 4.5rem 2rem 3rem; }
+
+    .section { margin-bottom: 2.5rem; }
+    h2 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #444;
+      margin: 0 0 0.75rem;
+    }
+
+    /* ── stat cards ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.6rem;
+    }
+    .card {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+    }
+    .card-label { font-size: 0.62rem; color: #444; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.3rem; }
+    .card-value { font-size: 1.5rem; font-family: monospace; color: #ccc; }
+    .card-value.green  { color: #00ff99; }
+    .card-value.yellow { color: #ffcc00; }
+    .card-value.red    { color: #ff4444; }
+    .card-sub { font-size: 0.68rem; color: #444; margin-top: 0.2rem; }
+    .bar-wrap { height: 4px; background: #1a1a1a; border-radius: 2px; overflow: hidden; margin-top: 0.6rem; }
+    .bar { height: 100%; border-radius: 2px; background: #00ff99; transition: width 0.4s; }
+    .bar.yellow { background: #ffcc00; }
+    .bar.red    { background: #ff4444; }
+
+    /* ── check rows ── */
+    .check-list {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 1rem;
+      border-top: 1px solid #1a1a1a;
+      font-size: 0.8rem;
+    }
+    .check-row:first-child { border-top: none; }
+    .check-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .check-dot.pass  { background: #00ff99; }
+    .check-dot.fail  { background: #ff4444; }
+    .check-dot.warn  { background: #ffcc00; }
+    .check-name { color: #999; flex: 1; }
+    .check-detail { font-size: 0.72rem; color: #555; }
+
+    /* ── sprint trend dots ── */
+    .trend-wrap {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+    }
+    .trend-dots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 0.5rem;
+    }
+    .dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      cursor: default;
+      position: relative;
+    }
+    .dot.done   { background: #00ff99; }
+    .dot.failed { background: #ff4444; }
+    .dot:hover::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 3px 7px;
+      font-size: 0.65rem;
+      color: #aaa;
+      white-space: nowrap;
+      z-index: 10;
+    }
+    .trend-legend { font-size: 0.65rem; color: #333; }
+
+    /* ── wisdom bullets ── */
+    .bullet-list {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+    }
+    .bullet-item {
+      font-size: 0.78rem;
+      color: #888;
+      line-height: 1.6;
+      padding: 0.3rem 0;
+      border-top: 1px solid #1c1c1c;
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+    .bullet-item:first-child { border-top: none; }
+    .bullet-flag {
+      font-size: 0.62rem;
+      background: #2a1a1a;
+      color: #ff6666;
+      border: 1px solid #3a1a1a;
+      border-radius: 3px;
+      padding: 1px 5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── rejection bars ── */
+    .pattern-list {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+    }
+    .pattern-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.35rem 0;
+      border-top: 1px solid #1a1a1a;
+    }
+    .pattern-row:first-child { border-top: none; }
+    .pattern-label { font-size: 0.75rem; color: #777; min-width: 150px; }
+    .pattern-bar-bg { flex: 1; height: 5px; background: #1a1a1a; border-radius: 3px; overflow: hidden; }
+    .pattern-bar-fill { height: 100%; background: #ff4444; border-radius: 3px; }
+    .pattern-count { font-size: 0.72rem; color: #444; font-family: monospace; min-width: 20px; text-align: right; }
+
+    /* ── recurring failures table ── */
+    .recur-list {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+    }
+    .recur-row {
+      font-size: 0.76rem;
+      color: #777;
+      padding: 0.3rem 0;
+      border-top: 1px solid #1a1a1a;
+      display: flex;
+      justify-content: space-between;
+    }
+    .recur-row:first-child { border-top: none; }
+    .recur-count { color: #ff4444; font-family: monospace; }
+
+    .empty-note { font-size: 0.75rem; color: #333; padding: 0.5rem 0; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="messenger.html">Messenger</a>
+    <a href="index.html">App</a>
+    <a href="/">Backlog</a>
+    <a href="active.html">Live Work</a>
+    <a href="audit.html">Audit</a>
+    <a href="retro.html">Retro</a>
+    <a href="workflow.html">Workflow</a>
+    <a href="notes.html">Notes</a>
+    <a href="health.html">Health</a>
+  </nav>
+
+  <div class="section">
+    <h2>Configuration</h2>
+    <div class="check-list" id="config-checks"></div>
+  </div>
+
+  <div class="section">
+    <h2>CSS Quality — index.html</h2>
+    <div class="two-col">
+      <div class="check-list" id="css-checks"></div>
+      <div class="cards" id="file-cards"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Pipeline Data Flow</h2>
+    <div class="cards" id="flow-cards"></div>
+  </div>
+
+  <div class="section">
+    <h2>Sprint Trend</h2>
+    <div class="trend-wrap">
+      <div class="trend-dots" id="trend-dots"></div>
+      <div class="trend-legend" id="trend-legend"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Hermes Consistency</h2>
+    <div class="cards" id="hermes-cards"></div>
+  </div>
+
+  <div class="section">
+    <h2>Rejection Patterns</h2>
+    <div class="pattern-list" id="rejection-patterns"></div>
+  </div>
+
+  <div class="section">
+    <h2>Recurring Failures</h2>
+    <div class="recur-list" id="recurring-failures"></div>
+  </div>
+
+  <div class="section">
+    <h2>System Wisdom Quality</h2>
+    <div class="bullet-list" id="system-wisdom-bullets"></div>
+  </div>
+
+  <div class="section">
+    <h2>Story Wisdom Quality</h2>
+    <div class="bullet-list" id="story-wisdom-bullets"></div>
+  </div>
+
+  <script>
+    function esc(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function card(label, value, cls, sub, barPct, barCls) {
+      const bar = barPct != null
+        ? `<div class="bar-wrap"><div class="bar ${barCls||''}" style="width:${barPct}%"></div></div>`
+        : '';
+      return `<div class="card">
+        <div class="card-label">${esc(label)}</div>
+        <div class="card-value ${cls||''}">${esc(String(value))}</div>
+        ${sub ? `<div class="card-sub">${esc(sub)}</div>` : ''}
+        ${bar}
+      </div>`;
+    }
+
+    function checkRow(name, pass, detail, warn) {
+      const dotCls = warn ? 'warn' : pass ? 'pass' : 'fail';
+      return `<div class="check-row">
+        <div class="check-dot ${dotCls}"></div>
+        <div class="check-name">${esc(name)}</div>
+        ${detail ? `<div class="check-detail">${esc(detail)}</div>` : ''}
+      </div>`;
+    }
+
+    function relTime(ts) {
+      if (!ts) return '—';
+      const ago = (Date.now() / 1000) - ts;
+      if (ago < 60)    return Math.round(ago) + 's ago';
+      if (ago < 3600)  return Math.round(ago / 60) + 'm ago';
+      if (ago < 86400) return Math.round(ago / 3600) + 'h ago';
+      return Math.round(ago / 86400) + 'd ago';
+    }
+
+    function fmtDate(s) {
+      if (!s) return '—';
+      return s.slice(0, 10);
+    }
+
+    async function load() {
+      const [diagRes, healthRes] = await Promise.all([
+        fetch('/health/diagnostics'),
+        fetch('/health'),
+      ]);
+      const d = await diagRes.json();
+      const h = await healthRes.json();
+
+      // ── Configuration ──────────────────────────────────────────────────────
+      const cfg = d.config || {};
+      let cfgHtml = '';
+      for (const key of ['WISDOM_FILE', 'STORY_WISDOM_FILE', 'RETRO_FILE']) {
+        const c = cfg[key] || {};
+        const pass = c.exists;
+        const detail = c.value
+          ? (pass ? c.value : `${c.value} — FILE NOT FOUND`)
+          : 'not found in agent.py';
+        cfgHtml += checkRow(key, pass, detail);
+      }
+      const stripOff = cfg.strip_styles_active === false;
+      cfgHtml += checkRow(
+        'strip_styles_for_prompt disabled',
+        stripOff,
+        stripOff ? 'Agent sees full CSS' : 'WARNING: strip_styles still active — agent is blinded to existing CSS'
+      );
+      document.getElementById('config-checks').innerHTML = cfgHtml;
+
+      // ── CSS Quality ────────────────────────────────────────────────────────
+      const css = d.css_checks || [];
+      document.getElementById('css-checks').innerHTML =
+        css.map(c => checkRow(c.name, c.pass, c.detail)).join('') ||
+        '<div class="check-row"><div class="check-name" style="color:#333">No data</div></div>';
+
+      // file size cards
+      const pct = Math.min(100, Math.round((h.kb / 24) * 100));
+      const hCol = h.status === 'healthy' ? 'green' : h.status === 'warning' ? 'yellow' : 'red';
+      const bCol = h.status === 'healthy' ? '' : h.status === 'warning' ? 'yellow' : 'red';
+      document.getElementById('file-cards').innerHTML =
+        card('File Size', h.kb + ' KB', hCol, `${pct}% of 24 KB budget`, pct, bCol) +
+        card('Est. Tokens', '~' + (h.tokens_est || 0).toLocaleString(), hCol) +
+        card('Lines', h.lines || 0, '');
+
+      // ── Data Flow ──────────────────────────────────────────────────────────
+      const df = d.data_flow || {};
+      const staleCol = df.wisdom_stale ? 'yellow' : 'green';
+      const staleVal = df.wisdom_stale ? 'Stale' : 'Fresh';
+      const sprintsSince = df.sprints_since_retro ?? '—';
+      const sprintsCol = sprintsSince >= 5 ? 'yellow' : sprintsSince >= 10 ? 'red' : 'green';
+      document.getElementById('flow-cards').innerHTML =
+        card('Last Sprint', df.last_sprint_ts ? relTime(df.last_sprint_ts) : '—', '') +
+        card('Last Retro', fmtDate(df.last_retro_date), '') +
+        card('Retro Count', df.retro_count ?? '—', '') +
+        card('Wisdom Sync', staleVal, staleCol,
+          df.system_wisdom_at ? 'Synced ' + fmtDate(df.system_wisdom_at) : 'Never synthesized') +
+        card('Sprints Since Retro', sprintsSince, typeof sprintsSince === 'number' ? sprintsCol : '');
+
+      // ── Sprint Trend ───────────────────────────────────────────────────────
+      const trend = d.sprint_trend || [];
+      let dotsHtml = '';
+      let doneN = 0, failN = 0;
+      for (const s of trend) {
+        const label = s.idea ? esc(s.idea) : s.status;
+        dotsHtml += `<div class="dot ${s.status}" data-tip="${label}"></div>`;
+        if (s.status === 'done') doneN++;
+        else failN++;
+      }
+      if (!trend.length) dotsHtml = '<div style="font-size:0.75rem;color:#333">No sprint history yet</div>';
+      document.getElementById('trend-dots').innerHTML = dotsHtml;
+      document.getElementById('trend-legend').textContent =
+        trend.length
+          ? `Last ${trend.length} sprints — ${doneN} done · ${failN} failed`
+          : '';
+
+      // ── Hermes ─────────────────────────────────────────────────────────────
+      const hm = d.hermes || {};
+      const approveCol = (hm.approve_rate >= 70) ? 'green' : (hm.approve_rate >= 40) ? 'yellow' : 'red';
+      const barColH = (hm.approve_rate >= 70) ? '' : (hm.approve_rate >= 40) ? 'yellow' : 'red';
+      document.getElementById('hermes-cards').innerHTML =
+        card('Approve Rate', (hm.approve_rate ?? 0) + '%', approveCol,
+          `${hm.approved ?? 0} / ${hm.total_reviewed ?? 0} reviewed`,
+          hm.approve_rate ?? 0, barColH) +
+        card('Approved', hm.approved ?? 0, 'green') +
+        card('Rejected', hm.rejected ?? 0, hm.rejected > 0 ? 'red' : 'green') +
+        card('Reviewed', hm.total_reviewed ?? 0, '');
+
+      // ── Rejection Patterns ─────────────────────────────────────────────────
+      const rp = d.rejection_patterns || {};
+      const rpEntries = Object.entries(rp).filter(([k]) => k !== 'error');
+      const rpMax = rpEntries.reduce((m, [, v]) => Math.max(m, v), 1);
+      let rpHtml = rpEntries.length
+        ? rpEntries.map(([label, count]) => `
+            <div class="pattern-row">
+              <div class="pattern-label">${esc(label)}</div>
+              <div class="pattern-bar-bg">
+                <div class="pattern-bar-fill" style="width:${Math.round((count / rpMax) * 100)}%"></div>
+              </div>
+              <div class="pattern-count">${count}</div>
+            </div>`).join('')
+        : `<div class="empty-note">No rejection patterns recorded yet</div>`;
+      document.getElementById('rejection-patterns').innerHTML = rpHtml;
+
+      // ── Recurring Failures ─────────────────────────────────────────────────
+      const rf = hm.recurring_failures || {};
+      const rfEntries = Object.entries(rf).sort(([, a], [, b]) => b - a);
+      let rfHtml = rfEntries.length
+        ? rfEntries.map(([idea, count]) => `
+            <div class="recur-row">
+              <span>${esc(idea)}</span>
+              <span class="recur-count">${count}×</span>
+            </div>`).join('')
+        : `<div class="empty-note" style="padding:0.3rem 0">No recurring failures — each story failed at most once</div>`;
+      document.getElementById('recurring-failures').innerHTML = rfHtml;
+
+      // ── Wisdom Quality ─────────────────────────────────────────────────────
+      function renderWisdomBullets(containerId, wq) {
+        if (!wq || wq.error) {
+          document.getElementById(containerId).innerHTML =
+            `<div class="bullet-item" style="color:#444">${wq?.error || 'Unavailable'}</div>`;
+          return;
+        }
+        const flagMap = {};
+        for (const f of wq.flagged || []) flagMap[f.bullet] = f.reasons;
+        const html = (wq.bullets || []).map(b => {
+          const reasons = flagMap[b];
+          const flag = reasons
+            ? `<span class="bullet-flag">${esc(reasons.join(', '))}</span>`
+            : '';
+          return `<div class="bullet-item">${flag}<span>${esc(b.replace(/^[•\-]\s*/, ''))}</span></div>`;
+        }).join('') || '<div class="bullet-item" style="color:#333">No bullets</div>';
+        const meta = `<div class="bullet-item" style="border-top:1px solid #1c1c1c;margin-top:0.2rem">
+          <span style="font-size:0.65rem;color:#333">
+            ${wq.count} bullets · synthesized ${fmtDate(wq.synthesized_at)} · ${wq.finding_count ?? '?'} findings processed
+          </span>
+        </div>`;
+        document.getElementById(containerId).innerHTML = html + meta;
+      }
+
+      const wq = d.wisdom_quality || {};
+      renderWisdomBullets('system-wisdom-bullets', wq.system);
+      renderWisdomBullets('story-wisdom-bullets', wq.story);
+    }
+
+    load();
+  </script>
+</body>
+</html>

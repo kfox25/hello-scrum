@@ -7,18 +7,27 @@
   <title>System Workflow — Hello Scrum</title>
   <link rel="stylesheet" href="shared.css">
   <style>
-    body { padding: 4rem 2rem 2rem; }
+    body { padding: 4rem 2rem 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-    header {
-      margin-bottom: 2.5rem;
+    .page-layout {
+      display: flex;
+      gap: 2rem;
+      flex: 1;
+      min-height: 0;
+    }
+    .col { flex: 1; min-width: 0; overflow-y: auto; padding-bottom: 2rem; }
+
+    .col-header {
+      margin-bottom: 1.5rem;
       padding-bottom: 1rem;
       border-bottom: 1px solid #222;
     }
-    h1 { color: #00ff99; font-size: 1.8rem; }
+    h2 { color: #00ff99; font-size: 1.4rem; }
     .subtitle { color: #555; font-size: 0.85rem; margin-top: 0.25rem; }
 
+    /* ── Left column: pipeline ── */
     .pipeline {
-      max-width: 680px;
+      max-width: 560px;
       position: relative;
     }
     .pipeline::before {
@@ -58,21 +67,9 @@
       position: relative;
       z-index: 1;
     }
-    .step.ai .step-num {
-      border-color: #00ff9960;
-      color: #00ff99;
-      background: #0a1f12;
-    }
-    .step.human .step-num {
-      border-color: #ffcc0060;
-      color: #ffcc00;
-      background: #1a1a00;
-    }
-    .step.system .step-num {
-      border-color: #4488ff60;
-      color: #4488ff;
-      background: #0a0f1f;
-    }
+    .step.ai .step-num     { border-color: #00ff9960; color: #00ff99; background: #0a1f12; }
+    .step.human .step-num  { border-color: #ffcc0060; color: #ffcc00; background: #1a1a00; }
+    .step.system .step-num { border-color: #4488ff60; color: #4488ff; background: #0a0f1f; }
 
     .connector {
       width: 2px;
@@ -130,13 +127,8 @@
       padding-top: 0.5rem;
       border-top: 1px solid #222;
     }
-    .io-item {
-      font-size: 0.75rem;
-      color: #444;
-    }
-    .io-item span {
-      color: #666;
-    }
+    .io-item { font-size: 0.75rem; color: #444; }
+    .io-item span { color: #666; }
     .io-label {
       color: #333;
       text-transform: uppercase;
@@ -158,15 +150,92 @@
       font-size: 0.75rem;
       color: #555;
     }
-    .legend-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      border: 2px solid;
-    }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid; }
     .dot-ai     { border-color: #00ff99; background: #0a1f12; }
     .dot-human  { border-color: #ffcc00; background: #1a1a00; }
     .dot-system { border-color: #4488ff; background: #0a0f1f; }
+
+    /* ── Right column: prose workflow ── */
+    .prose { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .prose-section {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .prose-section-header {
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid #222;
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+    .prose-num {
+      font-size: 0.7rem;
+      color: #333;
+      flex-shrink: 0;
+    }
+    .prose-title { font-size: 0.95rem; color: #e0e0e0; }
+    .prose-body { padding: 0.75rem 1.25rem; font-size: 0.85rem; color: #888; line-height: 1.65; }
+    .prose-body p { margin-bottom: 0.6rem; }
+    .prose-body p:last-child { margin-bottom: 0; }
+
+    .prose-substeps { display: flex; flex-direction: column; gap: 0; }
+    .prose-substep {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.55rem 1.25rem;
+      border-bottom: 1px solid #161616;
+      align-items: flex-start;
+    }
+    .prose-substep:last-child { border-bottom: none; }
+    .prose-substep-label {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 3px;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .lbl-sonnet { background: #0d2a1a; color: #00ff99; border: 1px solid #00ff9940; }
+    .lbl-haiku  { background: #1a1000; color: #ffaa00; border: 1px solid #ffaa0040; }
+    .lbl-system { background: #0a0f1f; color: #4488ff; border: 1px solid #4488ff40; }
+    .lbl-you    { background: #1a1a00; color: #ffcc00; border: 1px solid #ffcc0040; }
+    .prose-substep-text { font-size: 0.85rem; color: #888; line-height: 1.55; }
+    .prose-substep-text strong { color: #aaa; font-weight: 600; }
+
+    .prose-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-top: 0.25rem;
+    }
+    .prose-table th {
+      text-align: left;
+      color: #444;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.4rem 0.75rem;
+      border-bottom: 1px solid #222;
+    }
+    .prose-table td {
+      padding: 0.45rem 0.75rem;
+      color: #777;
+      border-bottom: 1px solid #161616;
+      vertical-align: top;
+    }
+    .prose-table tr:last-child td { border-bottom: none; }
+    .prose-table td:first-child { color: #00ff99; font-size: 0.8rem; white-space: nowrap; }
+
+    .prose-note {
+      font-size: 0.75rem;
+      color: #333;
+      font-style: italic;
+      margin-top: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -181,191 +250,332 @@
     <a href="notes.html">Notes</a>
   </nav>
 
-  <header>
-    <h1>System Workflow</h1>
-    <div class="subtitle">How raw ideas become deployed features</div>
-  </header>
+  <div class="page-layout">
 
-  <div class="legend">
-    <div class="legend-item"><div class="legend-dot dot-human"></div> You</div>
-    <div class="legend-item"><div class="legend-dot dot-ai"></div> AI Agent</div>
-    <div class="legend-item"><div class="legend-dot dot-system"></div> System</div>
-  </div>
-
-  <div class="pipeline">
-
-    <div class="step human">
-      <div class="step-left">
-        <div class="step-num">1</div>
-        <div class="connector"></div>
+    <!-- Left: pipeline diagram -->
+    <div class="col">
+      <div class="col-header">
+        <h2>Pipeline Steps</h2>
+        <div class="subtitle">Stage-by-stage breakdown with agents and I/O</div>
       </div>
-      <div class="step-card">
-        <div class="step-name">
-          Backlog
-          <span class="agent-badge badge-human">You</span>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot dot-human"></div> You</div>
+        <div class="legend-item"><div class="legend-dot dot-ai"></div> AI Agent</div>
+        <div class="legend-item"><div class="legend-dot dot-system"></div> System</div>
+      </div>
+
+      <div class="pipeline">
+
+        <div class="step human">
+          <div class="step-left">
+            <div class="step-num">1</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Capture <span class="agent-badge badge-human">You</span></div>
+            <div class="step-purpose">Type an idea in Messenger. Haiku classifies it as a requirement, inquiry, or other. Requirements produce 3 story title options — click one to add it to the Opportunity Backlog.</div>
+            <div class="step-io">
+              <div class="io-item"><span class="io-label">Input</span> <span>Plain-language message</span></div>
+              <div class="io-item"><span class="io-label">Output</span> <span>Item in Opportunity Backlog</span></div>
+            </div>
+          </div>
         </div>
-        <div class="step-purpose">
-          Capture raw ideas in plain language. No structure needed — a vague description is enough.
-          Ideas sit here until you decide to act on them.
+
+        <div class="step ai">
+          <div class="step-left">
+            <div class="step-num">2</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Elaborate <span class="agent-badge badge-haiku">claude-haiku-4-5</span></div>
+            <div class="step-purpose">Drag from Opportunity → Story Backlog. Haiku auto-generates a user story and 3–4 testable acceptance criteria. Card pulses while generating, then shows a ▸ chevron to expand AC.</div>
+            <div class="step-io">
+              <div class="io-item"><span class="io-label">Input</span> <span>Raw idea</span></div>
+              <div class="io-item"><span class="io-label">Output</span> <span>User story + acceptance criteria</span></div>
+            </div>
+          </div>
         </div>
-        <div class="step-io">
-          <div class="io-item"><span class="io-label">Input</span> <span>A rough idea</span></div>
-          <div class="io-item"><span class="io-label">Output</span> <span>Pending item in backlog.json</span></div>
+
+        <div class="step human">
+          <div class="step-left">
+            <div class="step-num">3</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Sprint Planning <span class="agent-badge badge-human">You</span></div>
+            <div class="step-purpose">Drag stories from Story Backlog → Sprint Backlog. Set an optional Sprint Goal. Order determines execution sequence. Click Start Sprint when ready.</div>
+            <div class="step-io">
+              <div class="io-item"><span class="io-label">Input</span> <span>Elaborated stories</span></div>
+              <div class="io-item"><span class="io-label">Output</span> <span>Ordered sprint queue</span></div>
+            </div>
+          </div>
         </div>
+
+        <div class="step ai">
+          <div class="step-left">
+            <div class="step-num">4</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Story + Implementation <span class="agent-badge badge-sonnet">claude-sonnet-4-6</span></div>
+            <div class="step-purpose">Sonnet receives the idea, CSS-stripped index.html, and last-1 changelog entry — plus RULES (synthesized wisdom) and THIS SPRINT (intra-sprint retro context). Writes a user story with AC, patches index.html, bumps version.</div>
+            <div class="step-io">
+              <div class="io-item"><span class="io-label">Input</span> <span>Idea, index.html, version.json, wisdom, retro context</span></div>
+              <div class="io-item"><span class="io-label">Output</span> <span>Patched files, story, AC, summary</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step system">
+          <div class="step-left">
+            <div class="step-num">5</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Automated Tests <span style="color:#555;font-size:0.75rem;font-weight:400">(DoD)</span> <span class="agent-badge badge-system">test.py</span></div>
+            <div class="step-purpose">Four checks: index.html exists, title present, version numbers match, changelog entry exists for new version. Failure triggers automatic rollback.</div>
+            <div class="step-io">
+              <div class="io-item"><span class="io-label">Input</span> <span>index.html, version.json</span></div>
+              <div class="io-item"><span class="io-label">Output</span> <span>Pass / Fail + rollback on failure</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left">
+            <div class="step-num">6</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Code Review <span class="agent-badge badge-haiku">claude-haiku-4-5</span></div>
+            <div class="step-purpose">Hermes reviews the diff for technical quality only — bugs, broken HTML/CSS, scope creep. Business requirements not evaluated here. Rejection triggers rollback.</div>
+            <div class="step-io">
+              <div class="io-item"><span class="io-label">Input</span> <span>Idea, story, diff</span></div>
+              <div class="io-item"><span class="io-label">Output</span> <span>Approve / Reject + reason</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left">
+            <div class="step-num">7</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">AC Check <span class="agent-badge badge-haiku">claude-haiku-4-5</span></div>
+            <div class="step-purpose">Hermes checks whether the implementation satisfies the original idea and each acceptance criterion. Code quality assumed correct. Rejection triggers rollback.</div>
+            <div class="step-io">
+              <div class="io-item"><span class="io-label">Input</span> <span>Idea, story, AC, diff, test results</span></div>
+              <div class="io-item"><span class="io-label">Output</span> <span>Approve / Reject + reason</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step system">
+          <div class="step-left">
+            <div class="step-num">8</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Deploy <span class="agent-badge badge-system">git + GitHub Pages</span></div>
+            <div class="step-purpose">Changes committed and pushed to GitHub. GitHub Pages auto-deploys within ~30 seconds. Full audit trail saved to backlog.json in the same commit.</div>
+            <div class="step-io">
+              <div class="io-item"><span class="io-label">Input</span> <span>index.html, version.json, backlog.json</span></div>
+              <div class="io-item"><span class="io-label">Output</span> <span>Live at kfox25.github.io/hello-scrum</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left">
+            <div class="step-num">9</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Retro + Wisdom <span class="agent-badge badge-haiku">claude-haiku-4-5</span></div>
+            <div class="step-purpose">Runs after every item. Haiku analyzes all items processed so far this sprint and writes findings to retrospective.json. Then synthesize_wisdom() re-distills all findings from all sprints into fresh bullet directives, overwriting wisdom.json. The next story gets the updated context.</div>
+            <div class="step-io">
+              <div class="io-item"><span class="io-label">Input</span> <span>All processed items this sprint</span></div>
+              <div class="io-item"><span class="io-label">Output</span> <span>retrospective.json + wisdom.json updated</span></div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
-    <div class="step human">
-      <div class="step-left">
-        <div class="step-num">2</div>
-        <div class="connector"></div>
+    <!-- Right: prose workflow -->
+    <div class="col">
+      <div class="col-header">
+        <h2>Full Workflow</h2>
+        <div class="subtitle">From Messenger idea to deployed feature</div>
       </div>
-      <div class="step-card">
-        <div class="step-name">
-          Sprint Planning
-          <span class="agent-badge badge-human">You</span>
-        </div>
-        <div class="step-purpose">
-          Drag items from the backlog into the sprint on the board. Reorder to set priority.
-          Only items in the sprint are picked up when you start a sprint.
-        </div>
-        <div class="step-io">
-          <div class="io-item"><span class="io-label">Input</span> <span>Pending backlog items</span></div>
-          <div class="io-item"><span class="io-label">Output</span> <span>Ordered sprint queue</span></div>
-        </div>
-      </div>
-    </div>
 
-    <div class="step ai">
-      <div class="step-left">
-        <div class="step-num">3</div>
-        <div class="connector"></div>
-      </div>
-      <div class="step-card">
-        <div class="step-name">
-          Story + Implementation
-          <span class="agent-badge badge-sonnet">claude-sonnet-4-6</span>
-        </div>
-        <div class="step-purpose">
-          The worker agent reads the raw idea and does two things in one pass: writes a user story
-          with acceptance criteria, then implements the change in index.html and version.json.
-          Bumps the patch version and adds a changelog entry.
-        </div>
-        <div class="step-io">
-          <div class="io-item"><span class="io-label">Input</span> <span>Idea, current index.html, version.json</span></div>
-          <div class="io-item"><span class="io-label">Output</span> <span>Updated files, user story, AC, summary</span></div>
-        </div>
-      </div>
-    </div>
+      <div class="prose">
 
-    <div class="step system">
-      <div class="step-left">
-        <div class="step-num">4</div>
-        <div class="connector"></div>
-      </div>
-      <div class="step-card">
-        <div class="step-name">
-          Automated Tests <span style="color:#555;font-size:0.75rem;font-weight:400">(DoD check)</span>
-          <span class="agent-badge badge-system">test.py</span>
+        <div class="prose-section">
+          <div class="prose-section-header">
+            <span class="prose-num">1</span>
+            <span class="prose-title">Capture — Messenger</span>
+          </div>
+          <div class="prose-body">
+            <p>You type a message in Messenger. Haiku classifies it instantly into one of three types:</p>
+          </div>
+          <div class="prose-substeps">
+            <div class="prose-substep">
+              <span class="prose-substep-label lbl-haiku">Req</span>
+              <span class="prose-substep-text"><strong>Requirement</strong> — Haiku generates 3 story title options varying in scope or approach. You click one and it lands in the Opportunity Backlog with <code>opportunity: true</code>.</span>
+            </div>
+            <div class="prose-substep">
+              <span class="prose-substep-label lbl-haiku">Inq</span>
+              <span class="prose-substep-text"><strong>Inquiry</strong> — Haiku extracts keywords, searches backlog.json with stop-word filtering, and returns rich status for matching items: done, failed, in sprint, or pending.</span>
+            </div>
+            <div class="prose-substep">
+              <span class="prose-substep-label lbl-haiku">Other</span>
+              <span class="prose-substep-text"><strong>Other</strong> — Haiku replies conversationally. Nothing is added to the backlog.</span>
+            </div>
+          </div>
         </div>
-        <div class="step-purpose">
-          Four checks run against the updated files: index.html exists and contains the title,
-          version numbers match between files, deploy timestamp is present, and a changelog
-          entry exists for the new version. Failure triggers an automatic rollback.
-        </div>
-        <div class="step-io">
-          <div class="io-item"><span class="io-label">Input</span> <span>index.html, version.json</span></div>
-          <div class="io-item"><span class="io-label">Output</span> <span>Pass / Fail + rollback on failure</span></div>
-        </div>
-      </div>
-    </div>
 
-    <div class="step ai">
-      <div class="step-left">
-        <div class="step-num">5</div>
-        <div class="connector"></div>
-      </div>
-      <div class="step-card">
-        <div class="step-name">
-          Code Review
-          <span class="agent-badge badge-haiku">claude-haiku-4-5</span>
+        <div class="prose-section">
+          <div class="prose-section-header">
+            <span class="prose-num">2</span>
+            <span class="prose-title">Elaborate — Backlog Board</span>
+          </div>
+          <div class="prose-body">
+            <p>You drag an item from <strong>Opportunity Backlog</strong> → <strong>Story Backlog</strong>. On drop, Haiku auto-generates a full user story (<em>As a user, I want...</em>) with 3–4 short, testable acceptance criteria.</p>
+            <p>The card pulses with a "generating story..." animation while in flight. When done, a ▸ chevron appears — clicking the card body expands to show the AC. Expansion state persists across re-renders.</p>
+          </div>
         </div>
-        <div class="step-purpose">
-          Hermes reviews the diff for technical quality only — bugs, broken HTML/CSS, scope creep,
-          and implementation soundness. Business requirements are not evaluated here.
-          Rejection triggers rollback; the item is marked failed.
-        </div>
-        <div class="step-io">
-          <div class="io-item"><span class="io-label">Input</span> <span>Idea, story, diff</span></div>
-          <div class="io-item"><span class="io-label">Output</span> <span>Approve / Reject + reason</span></div>
-        </div>
-      </div>
-    </div>
 
-    <div class="step ai">
-      <div class="step-left">
-        <div class="step-num">6</div>
-        <div class="connector"></div>
-      </div>
-      <div class="step-card">
-        <div class="step-name">
-          AC Check
-          <span class="agent-badge badge-haiku">claude-haiku-4-5</span>
+        <div class="prose-section">
+          <div class="prose-section-header">
+            <span class="prose-num">3</span>
+            <span class="prose-title">Sprint Planning — Backlog Board</span>
+          </div>
+          <div class="prose-body">
+            <p>You drag stories from <strong>Story Backlog</strong> → <strong>Sprint Backlog</strong>. Set an optional Sprint Goal in the field at the top of the sprint column. Order determines execution sequence — reorder to reprioritize.</p>
+            <p>When ready, click <strong>Start Sprint</strong>. The server spawns <code>agent.py --sprint</code> as a background subprocess and the pipeline takes over.</p>
+          </div>
         </div>
-        <div class="step-purpose">
-          Hermes checks whether the implementation satisfies the original idea and each acceptance
-          criterion. Code quality is assumed correct at this point — this is purely a requirements
-          validation. Rejection triggers rollback; the item is marked failed.
-        </div>
-        <div class="step-io">
-          <div class="io-item"><span class="io-label">Input</span> <span>Idea, story, AC, diff, test results</span></div>
-          <div class="io-item"><span class="io-label">Output</span> <span>Approve / Reject + reason</span></div>
-        </div>
-      </div>
-    </div>
 
-    <div class="step system">
-      <div class="step-left">
-        <div class="step-num">7</div>
-        <div class="connector"></div>
-      </div>
-      <div class="step-card">
-        <div class="step-name">
-          Deploy
-          <span class="agent-badge badge-system">git + GitHub Pages</span>
+        <div class="prose-section">
+          <div class="prose-section-header">
+            <span class="prose-num">4</span>
+            <span class="prose-title">Per-Story Pipeline — fully automated</span>
+          </div>
+          <div class="prose-substeps">
+            <div class="prose-substep">
+              <span class="prose-substep-label lbl-system">a</span>
+              <span class="prose-substep-text"><strong>Wisdom + context injection.</strong> Before calling Sonnet, the prompt is built with two stacked sections: <strong>RULES</strong> (synthesized cross-sprint bullet directives from wisdom.json) and <strong>THIS SPRINT</strong> (intra-sprint retro findings from the item just before this one). Both are token-compressed.</span>
+            </div>
+            <div class="prose-substep">
+              <span class="prose-substep-label lbl-sonnet">b</span>
+              <span class="prose-substep-text"><strong>Sonnet implements.</strong> Receives CSS-stripped index.html and the last 1 changelog entry. Writes a user story with AC, patches the file, bumps the patch version, adds a changelog entry.</span>
+            </div>
+            <div class="prose-substep">
+              <span class="prose-substep-label lbl-system">c</span>
+              <span class="prose-substep-text"><strong>Automated tests (DoD).</strong> Four checks run: index.html exists, title present, version numbers match between files, changelog entry exists for new version. Fail → rollback, item marked failed.</span>
+            </div>
+            <div class="prose-substep">
+              <span class="prose-substep-label lbl-haiku">d</span>
+              <span class="prose-substep-text"><strong>Haiku code review.</strong> Hermes reviews the diff for technical quality only — bugs, broken HTML/CSS, scope creep. Business requirements not evaluated here. Reject → rollback.</span>
+            </div>
+            <div class="prose-substep">
+              <span class="prose-substep-label lbl-haiku">e</span>
+              <span class="prose-substep-text"><strong>Haiku AC check.</strong> Hermes checks whether the implementation satisfies the original idea and each acceptance criterion. Code quality assumed correct — purely requirements validation. Reject → rollback.</span>
+            </div>
+            <div class="prose-substep">
+              <span class="prose-substep-label lbl-system">f</span>
+              <span class="prose-substep-text"><strong>Deploy.</strong> Git commit + push to GitHub. GitHub Pages goes live in ~30 seconds. Full audit trail (story, diff, test results, Hermes verdicts, timestamps, tokens) saved to backlog.json in the same commit.</span>
+            </div>
+          </div>
         </div>
-        <div class="step-purpose">
-          Changes are committed and pushed to GitHub. GitHub Pages auto-deploys within ~30 seconds.
-          The audit trail (story, diff, test results, Hermes verdict, timestamp) is saved to
-          backlog.json and included in the same commit.
-        </div>
-        <div class="step-io">
-          <div class="io-item"><span class="io-label">Input</span> <span>index.html, version.json, backlog.json</span></div>
-          <div class="io-item"><span class="io-label">Output</span> <span>Live at kfox25.github.io/hello-scrum</span></div>
-        </div>
-      </div>
-    </div>
 
-    <div class="step ai">
-      <div class="step-left">
-        <div class="step-num">7</div>
-        <div class="connector"></div>
-      </div>
-      <div class="step-card">
-        <div class="step-name">
-          Sprint Retrospective
-          <span class="agent-badge badge-haiku">claude-haiku-4-5</span>
+        <div class="prose-section">
+          <div class="prose-section-header">
+            <span class="prose-num">5</span>
+            <span class="prose-title">Per-Story Retro — runs after every item</span>
+          </div>
+          <div class="prose-substeps">
+            <div class="prose-substep">
+              <span class="prose-substep-label lbl-haiku">Retro</span>
+              <span class="prose-substep-text">Haiku analyzes all items processed so far this sprint. Writes findings to retrospective.json categorized as: <strong>fail</strong> (recurring failure patterns), <strong>ok</strong> (what worked), <strong>do</strong> (improvements), <strong>note</strong> (observations).</span>
+            </div>
+            <div class="prose-substep">
+              <span class="prose-substep-label lbl-haiku">Wisdom</span>
+              <span class="prose-substep-text">synthesize_wisdom() re-reads all findings from all sprints ever, asks Haiku to distill them into 6–8 terse directive bullets (≤12 words each), and overwrites wisdom.json. The next story gets the freshly updated RULES block.</span>
+            </div>
+            <div class="prose-substep">
+              <span class="prose-substep-label lbl-system">Context</span>
+              <span class="prose-substep-text">retro_context is reloaded from retrospective.json so the next story's THIS SPRINT block reflects what just happened — including whether the previous item passed or failed and why.</span>
+            </div>
+          </div>
         </div>
-        <div class="step-purpose">
-          After all sprint items are processed, a retrospective agent reviews the full sprint:
-          what failed and why, what worked, and what could improve. Findings are written to
-          retrospective.json and categorized as failure patterns, success patterns, improvements,
-          or observations. Runs once per sprint — not per item.
+
+        <div class="prose-section">
+          <div class="prose-section-header">
+            <span class="prose-num">6</span>
+            <span class="prose-title">Repeat Until Sprint Empty</span>
+          </div>
+          <div class="prose-body">
+            <p>Steps 4–5 repeat for each story in the sprint queue. By story 3, the agent has seen what failed in stories 1 and 2 of this sprint (THIS SPRINT) plus the freshly updated all-time wisdom (RULES). The feedback loops compound within the sprint.</p>
+            <p>When the queue is empty, the sprint ends. The Retro page shows all findings. The System Retro column shows the current synthesized wisdom ready for the next sprint.</p>
+          </div>
         </div>
-        <div class="step-io">
-          <div class="io-item"><span class="io-label">Input</span> <span>All sprint item results (status, errors, verdicts, test results)</span></div>
-          <div class="io-item"><span class="io-label">Output</span> <span>Findings + summary in retrospective.json</span></div>
+
+        <div class="prose-section">
+          <div class="prose-section-header">
+            <span class="prose-num">7</span>
+            <span class="prose-title">Feedback Loops</span>
+          </div>
+          <div class="prose-body">
+            <table class="prose-table">
+              <thead>
+                <tr>
+                  <th>Signal</th>
+                  <th>Written by</th>
+                  <th>Read by</th>
+                  <th>Scope</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>wisdom.json RULES</td>
+                  <td>Haiku (after each item)</td>
+                  <td>Sonnet (every story)</td>
+                  <td>All sprints, all time</td>
+                </tr>
+                <tr>
+                  <td>retro_context THIS SPRINT</td>
+                  <td>Haiku (after each item)</td>
+                  <td>Sonnet (next story)</td>
+                  <td>Current sprint only</td>
+                </tr>
+                <tr>
+                  <td>Hermes code review</td>
+                  <td>Haiku</td>
+                  <td>Pipeline (rollback/pass)</td>
+                  <td>Current diff</td>
+                </tr>
+                <tr>
+                  <td>Hermes AC check</td>
+                  <td>Haiku</td>
+                  <td>Pipeline (rollback/pass)</td>
+                  <td>Current story</td>
+                </tr>
+                <tr>
+                  <td>retrospective.json</td>
+                  <td>Haiku</td>
+                  <td>Retro page, synthesis</td>
+                  <td>Permanent record</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
+
       </div>
     </div>
 

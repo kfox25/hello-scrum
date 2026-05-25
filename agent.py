@@ -29,8 +29,8 @@ VERSION_FILE = "version.json"
 TEST_SCRIPT  = "test.py"
 REPO_URL     = "https://kfox25.github.io/hello-scrum"
 RETRO_FILE         = "retrospective.json"
-WISDOM_FILE        = "coding_wisdom.json"
-STORY_WISDOM_FILE  = "ac_wisdom.json"
+CODING_CODING_WISDOM_FILE = "coding_wisdom.json"
+AC_CODING_WISDOM_FILE     = "ac_wisdom.json"
 
 _log_lines = []
 
@@ -478,7 +478,7 @@ def load_latest_retro_context():
 def load_wisdom():
     """Return list of stripped bullet strings from coding_wisdom.json, or empty list."""
     try:
-        with open(WISDOM_FILE, encoding="utf-8") as f:
+        with open(CODING_WISDOM_FILE, encoding="utf-8") as f:
             data = json.load(f)
         return [b.lstrip("•").strip() for b in data.get("bullets", []) if b.strip()]
     except Exception:
@@ -549,7 +549,7 @@ def synthesize_ac_wisdom(sprint_items=None):
     """Update AC-writing directives incrementally from this sprint's outcomes, or bootstrap from history."""
     existing_bullets = []
     try:
-        with open(STORY_WISDOM_FILE, encoding="utf-8") as f:
+        with open(STORY_CODING_WISDOM_FILE, encoding="utf-8") as f:
             sw = json.load(f)
         existing_bullets = [b.lstrip("•").strip() for b in sw.get("bullets", []) if b.strip()]
     except Exception:
@@ -595,7 +595,7 @@ def synthesize_ac_wisdom(sprint_items=None):
             "Story outcomes:\n" + json.dumps(data, indent=2)
         )
 
-    log("Synthesizing story wisdom...")
+    log("Synthesizing AC wisdom...")
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
         max_tokens=400,
@@ -604,7 +604,7 @@ def synthesize_ac_wisdom(sprint_items=None):
     text = message.content[0].text.strip()
     bullets = [ln.strip() for ln in text.splitlines() if ln.strip().startswith("•")]
 
-    with open(STORY_WISDOM_FILE, "w", encoding="utf-8") as f:
+    with open(STORY_CODING_WISDOM_FILE, "w", encoding="utf-8") as f:
         json.dump({"bullets": bullets, "synthesized_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "item_count": total_count}, f, indent=2)
     log(f"AC wisdom: {len(bullets)} bullet(s) written to ac_wisdom.json")
 
@@ -613,7 +613,7 @@ def synthesize_coding_wisdom(processed_items=None):
     """Update coding directives incrementally from this sprint's findings, or bootstrap from history."""
     existing_bullets = []
     try:
-        with open(WISDOM_FILE, encoding="utf-8") as f:
+        with open(CODING_WISDOM_FILE, encoding="utf-8") as f:
             data = json.load(f)
         existing_bullets = [b.lstrip("•").strip() for b in data.get("bullets", []) if b.strip()]
     except Exception:
@@ -676,7 +676,7 @@ def synthesize_coding_wisdom(processed_items=None):
         1 for r in retros for fnd in r.get("findings", [])
         if not seen.add(f"{fnd['type']}:{fnd['text']}")  # type: ignore[func-returns-value]
     )
-    with open(WISDOM_FILE, "w", encoding="utf-8") as f:
+    with open(CODING_WISDOM_FILE, "w", encoding="utf-8") as f:
         json.dump({"bullets": bullets, "synthesized_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "finding_count": total_findings}, f, indent=2)
     log(f"Coding wisdom: {len(bullets)} bullet(s) written to coding_wisdom.json")
     synthesize_ac_wisdom(processed_items)

@@ -131,7 +131,7 @@ def health_diagnostics():
     try:
         with open(os.path.join(BASE, "agent.py"), encoding="utf-8") as f:
             src = f.read()
-        for const in ["WISDOM_FILE", "STORY_WISDOM_FILE", "RETRO_FILE"]:
+        for const in ["CODING_WISDOM_FILE", "AC_WISDOM_FILE", "RETRO_FILE"]:
             m = re.search(rf'{const}\s*=\s*"([^"]+)"', src)
             val = m.group(1) if m else None
             exists = os.path.exists(os.path.join(BASE, val)) if val else False

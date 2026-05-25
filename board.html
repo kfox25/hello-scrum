@@ -111,12 +111,25 @@
     .card-story { font-size: 0.78rem; color: #888; line-height: 1.4; }
     .card-story.elaborating { color: #444; font-style: italic; animation: pulse 1.5s ease-in-out infinite; }
     @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-    .expand-chevron { color: #555; font-size: 0.65rem; margin-right: 0.3rem; display: inline-block; transition: transform 0.15s; }
-    .card.expanded .expand-chevron { transform: rotate(90deg); }
     .card-content { cursor: default; }
-    .card-content.has-ac { cursor: pointer; }
     .card-ac { display: none; margin-top: 0.45rem; padding-top: 0.45rem; border-top: 1px solid #1e1e1e; }
     .card.expanded .card-ac { display: block; }
+    .card-expand-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.25rem;
+      margin-top: 0.4rem;
+      border-top: 1px solid #1e1e1e;
+      cursor: pointer;
+      color: #333;
+      font-size: 0.6rem;
+      transition: color 0.15s;
+      user-select: none;
+    }
+    .card-expand-btn:hover { color: #666; }
+    .card-expand-btn .expand-arrow { display: inline-block; transition: transform 0.15s; }
+    .card.expanded .card-expand-btn .expand-arrow { transform: rotate(180deg); }
     .ac-item { font-size: 0.73rem; color: #666; line-height: 1.6; }
 
     .badge {
@@ -437,7 +450,9 @@
         ? `<div class="card-ac">${item.acceptance_criteria.map(c => `<div class="ac-item">· ${escHtml(c)}</div>`).join('')}</div>`
         : '';
 
-      const chevron = hasAC ? '<span class="expand-chevron">&#9658;</span>' : '';
+      const expandBtn = hasAC
+        ? `<div class="card-expand-btn" onclick="toggleCard('${item.id}', event)"><span class="expand-arrow">&#9660;</span></div>`
+        : '';
 
       return `<div class="card ${item.status}${isExpanded ? ' expanded' : ''}" data-id="${item.id}" ${draggable}
                    ondragstart="onDragStart(event)"
@@ -446,8 +461,8 @@
                    ondragleave="onCardDragLeave(event)"
                    ondrop="onCardDrop(event)">
         ${handle}
-        <div class="card-content${hasAC ? ' has-ac' : ''}"${hasAC ? ` onclick="toggleCard('${item.id}', event)"` : ''}>
-          <div class="card-idea">${chevron}${escHtml(item.idea)}</div>
+        <div class="card-content">
+          <div class="card-idea">${escHtml(item.idea)}</div>
           ${storyLine}
           ${acHtml}
         </div>
@@ -455,6 +470,7 @@
         <span class="badge badge-${item.status}">${item.status}</span>
         ${retryBtn}
         ${deleteBtn}
+        ${expandBtn}
       </div>`;
     }
 

@@ -320,6 +320,7 @@
       document.getElementById('saveIndicator').textContent = 'auto-saved';
       document.getElementById('saveIndicator').className = 'save-indicator';
       render();
+      applyViewMode();
     }
 
     function newNote() {
@@ -354,14 +355,19 @@
       render();
     }
 
-    let viewMode = false;
+    let viewMode = localStorage.getItem('notes-view-mode') === 'true';
 
-    function toggleView() {
-      viewMode = !viewMode;
+    function applyViewMode() {
       document.getElementById('noteBody').style.display = viewMode ? 'none' : '';
       document.getElementById('noteView').style.display = viewMode ? 'flex' : 'none';
       document.getElementById('viewToggle').textContent = viewMode ? 'Edit' : 'View';
       if (viewMode) renderView();
+    }
+
+    function toggleView() {
+      viewMode = !viewMode;
+      localStorage.setItem('notes-view-mode', viewMode);
+      applyViewMode();
     }
 
     function escHtml(s) {

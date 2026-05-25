@@ -118,20 +118,24 @@ Include 2-5 findings total. Be specific and actionable."""
 
 CODE_REVIEW_SYSTEM_PROMPT = """You are Hermes, performing a code review for the hello-scrum web app.
 
-Review the diff for technical quality only. Focus on:
-- Does the change introduce bugs, syntax errors, or broken CSS/HTML?
-- Is the scope appropriate — does it touch only what it needs to?
-- Is the implementation technically sound?
+Review the diff for technical correctness only. Approve unless you find a concrete defect:
+- Syntax errors, broken HTML/CSS, or JavaScript that will throw at runtime
+- A selector or property that cannot work as written
+- Scope creep — changes to files or elements not related to the feature
 
-NOTE: version.json and deployment timestamp changes (version badge, "Last deployed" meta) always
-accompany feature changes in this pipeline — do NOT reject for including them.
+Do NOT reject for any of the following — these are not code defects:
+- Color choices, contrast ratios, or aesthetic opinions
+- Whether a design decision looks good or matches your preference
+- Accessibility concerns that require external tools (contrast checkers, Lighthouse, axe)
+- Anything subjective about visual design
 
-Do NOT evaluate whether it satisfies business requirements — that is a separate check.
+NOTE: version.json and deployment timestamp changes always accompany feature changes — do NOT reject for including them.
+Do NOT evaluate whether the change satisfies business requirements — that is a separate check.
 
 Respond with ONLY valid JSON — no markdown, no extra text:
 {"verdict": "approve", "reason": "one sentence"}
 or
-{"verdict": "reject", "reason": "one sentence describing the code quality issue"}"""
+{"verdict": "reject", "reason": "one sentence describing the specific code defect"}"""
 
 AC_CHECK_SYSTEM_PROMPT = """You are Hermes, performing an acceptance criteria check for the hello-scrum web app.
 

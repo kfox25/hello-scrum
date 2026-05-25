@@ -177,6 +177,30 @@
       line-height: 1;
     }
     .delete-btn:hover { color: #ff4444; border-color: #ff444460; }
+    .edit-btn {
+      font-family: monospace;
+      font-size: 0.8rem;
+      background: none;
+      border: 1px solid #22334440;
+      color: #224433;
+      border-radius: 3px;
+      padding: 0.1rem 0.35rem;
+      cursor: pointer;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .edit-btn:hover { color: #00ff99; border-color: #00ff9960; }
+    .card-idea-input {
+      background: #111;
+      border: 1px solid #00ff9940;
+      color: #ccc;
+      font-size: 0.9rem;
+      font-family: inherit;
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      width: 100%;
+      outline: none;
+    }
 
     .empty-hint {
       color: #555;
@@ -438,6 +462,10 @@
         ? `<button class="delete-btn" onclick="deleteItem('${item.id}', event)" title="Delete">✕</button>`
         : '';
 
+      const editBtn = isPending && !item.in_sprint
+        ? `<button class="edit-btn" onclick="editIdea('${item.id}', event)" title="Edit">✎</button>`
+        : '';
+
       const hasAC = !!(item.acceptance_criteria && item.acceptance_criteria.length);
       const isExpanded = expandedIds.has(String(item.id));
 
@@ -475,6 +503,7 @@
         ${hermesTag}
         <span class="badge badge-${item.status}">${item.status}</span>
         ${retryBtn}
+        ${editBtn}
         ${deleteBtn}
       </div>`;
     }
@@ -692,6 +721,34 @@
       backlogData.items = backlogData.items.filter(i => String(i.id) !== String(id));
       renderBoard();
       persistBacklog();
+    }
+
+    function editIdea(id, e) {
+      e.stopPropagation();
+      const item = backlogData.items.find(i => String(i.id) === String(id));
+      if (!item) return;
+      const card = document.querySelector(`.card[data-id="${id}"]`);
+      const ideaEl = card.querySelector('.card-idea');
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = item.idea;
+      input.className = 'card-idea-input';
+      ideaEl.replaceWith(input);
+      input.focus();
+      input.select();
+      function save() {
+        const val = input.value.trim();
+        if (val && val !== item.idea) {
+          item.idea = val;
+          persistBacklog();
+        }
+        renderBoard();
+      }
+      input.addEventListener('blur', save);
+      input.addEventListener('keydown', ev => {
+        if (ev.key === 'Enter') input.blur();
+        if (ev.key === 'Escape') renderBoard();
+      });
     }
 
     function addItem(position) {

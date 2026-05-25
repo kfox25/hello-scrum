@@ -29,6 +29,7 @@
     .pipeline {
       max-width: 560px;
       position: relative;
+      padding-right: 64px;
     }
     .pipeline::before {
       content: '';
@@ -402,6 +403,10 @@
           </div>
         </div>
 
+        <svg id="feedback-svg"
+          style="position:absolute;right:0;top:0;width:64px;overflow:visible;pointer-events:none;"
+          aria-hidden="true"></svg>
+
       </div>
     </div>
 
@@ -580,5 +585,95 @@
     </div>
 
   </div>
+  <script>
+    (function () {
+      const NS = 'http://www.w3.org/2000/svg';
+
+      // connections: { from: stepIndex, to: stepIndex, label, color }
+      // steps are 0-indexed in DOM order
+      const CONNECTIONS = [
+        { from: 8, to: 3, label: 'wisdom + retro context', color: '#00ff9975' },
+      ];
+
+      function relativeTop(el, ancestor) {
+        let top = 0, cur = el;
+        while (cur && cur !== ancestor) { top += cur.offsetTop; cur = cur.offsetParent; }
+        return top;
+      }
+
+      function makeSvgEl(tag, attrs) {
+        const el = document.createElementNS(NS, tag);
+        for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+        return el;
+      }
+
+      function draw() {
+        const pipeline = document.querySelector('.pipeline');
+        const svg = document.getElementById('feedback-svg');
+        if (!pipeline || !svg) return;
+
+        const steps = [...pipeline.querySelectorAll('.step')];
+        svg.setAttribute('height', pipeline.offsetHeight);
+        svg.innerHTML = '';
+
+        const ARM = 40;  // horizontal arm from pipeline right edge to vertical bar
+        const R   = 6;   // corner radius
+
+        CONNECTIONS.forEach(({ from, to, label, color }, ci) => {
+          const fromCard = steps[from]?.querySelector('.step-card');
+          const toCard   = steps[to]?.querySelector('.step-card');
+          if (!fromCard || !toCard) return;
+
+          const fy = relativeTop(fromCard, pipeline) + fromCard.offsetHeight / 2;
+          const ty = relativeTop(toCard,   pipeline) + toCard.offsetHeight   / 2;
+
+          // Arrowhead marker (pointing left, toward the destination step)
+          const defs = svg.appendChild(makeSvgEl('defs', {}));
+          const marker = defs.appendChild(makeSvgEl('marker', {
+            id: `m${ci}`, markerWidth: 8, markerHeight: 8,
+            refX: 1, refY: 4, orient: 'auto',
+          }));
+          marker.appendChild(makeSvgEl('path', {
+            d: 'M8,1 L1,4 L8,7',
+            fill: 'none', stroke: color,
+            'stroke-width': 1.5, 'stroke-linecap': 'round',
+          }));
+
+          // Rounded-corner bracket path: out from from-step → up → in to to-step
+          svg.appendChild(makeSvgEl('path', {
+            d: [
+              `M 0 ${fy}`,
+              `H ${ARM - R}`,
+              `Q ${ARM} ${fy} ${ARM} ${fy - R}`,
+              `V ${ty + R}`,
+              `Q ${ARM} ${ty} ${ARM - R} ${ty}`,
+              `H 8`,
+            ].join(' '),
+            fill: 'none', stroke: color,
+            'stroke-width': 1.5,
+            'marker-end': `url(#m${ci})`,
+          }));
+
+          // Label rotated along the vertical bar
+          if (label) {
+            const midY = (fy + ty) / 2;
+            const txt = svg.appendChild(makeSvgEl('text', {
+              x: ARM + 5, y: midY,
+              fill: color,
+              'font-size': 9,
+              'font-family': 'monospace',
+              'dominant-baseline': 'middle',
+              'text-anchor': 'middle',
+              transform: `rotate(-90 ${ARM + 5} ${midY})`,
+            }));
+            txt.textContent = label;
+          }
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', draw);
+      window.addEventListener('resize', draw);
+    })();
+  </script>
 </body>
 </html>

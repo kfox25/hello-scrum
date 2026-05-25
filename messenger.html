@@ -152,12 +152,11 @@
     .story-choice.selected { background: #0d3320; border-color: #00ff99; color: #00ff99; cursor: default; }
     .story-choice.dimmed  { opacity: 0.3; cursor: default; pointer-events: none; }
     .story-choice.promote-as-is {
-      background: #111;
-      border-color: #2a2a2a;
-      border-style: dashed;
-      color: #666;
+      background: #0a0f1f;
+      border-color: #4488ff30;
+      color: #4488ff99;
     }
-    .story-choice.promote-as-is:hover { background: #1a1a1a; border-color: #555; color: #aaa; }
+    .story-choice.promote-as-is:hover { background: #0d1530; border-color: #4488ff; color: #4488ff; }
   </style>
 </head>
 <body>
@@ -296,7 +295,7 @@
             `<div class="story-choice" data-story="${s.replace(/"/g, '&quot;')}">${i + 1}. ${s}</div>`
           ).join('');
           const original = (data.original || '').replace(/"/g, '&quot;');
-          const promoteBtn = `<div class="story-choice promote-as-is" data-story="${original}">Promote as is: ${data.original || ''}</div>`;
+          const promoteBtn = `<div class="story-choice promote-as-is" data-story="${original}">${data.original || ''}</div>`;
           appendMessage('hello-scrum', `${data.reply || 'Pick a version to add to the opportunity backlog:'}<div class="story-choices">${suggestions}${promoteBtn}</div>`, true);
         } else {
           appendMessage('hello-scrum', data.reply || '', true);

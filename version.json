@@ -1,6 +1,6 @@
 {
-  "version": "0.1.54",
-  "deployed": "2026-05-25 17:28:52 CT",
+  "version": "0.1.55",
+  "deployed": "2026-05-25 17:37:07 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -278,6 +278,11 @@
       "version": "0.1.54",
       "date": "2026-05-25",
       "change": "Changed h1 title color to #00ff99 to match the primary neon green accent color of the page theme"
+    },
+    {
+      "version": "0.1.55",
+      "date": "2026-05-25",
+      "change": "Added line count metric to app health monitor, displaying lines from /health response with .health-lines style after tokens"
     }
   ]
 }

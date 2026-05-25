@@ -90,6 +90,7 @@
     .health-file { font-size: 0.8rem; color: #555; font-family: monospace; }
     .health-size { font-size: 1rem; font-family: monospace; color: #ccc; }
     .health-tokens { font-size: 0.78rem; color: #444; }
+    .health-lines { font-size: 0.78rem; color: #444; font-family: monospace; }
     .health-bar-wrap {
       margin-top: 0.5rem;
       height: 4px;
@@ -132,8 +133,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.54</div>
-  <div class="meta">Last deployed: 2026-05-25 17:28:52 CT</div>
+  <div class="version" id="version-badge">v0.1.55</div>
+  <div class="meta">Last deployed: 2026-05-25 17:37:07 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -148,6 +149,7 @@
       <span class="health-file">index.html</span>
       <span class="health-size" id="hSize">—</span>
       <span class="health-tokens" id="hTokens"></span>
+      <span class="health-lines" id="hLines">—</span>
     </div>
     <div class="health-bar-wrap"><div class="health-bar" id="hBar"></div></div>
     <div class="health-label" id="hLabel">loading…</div>
@@ -188,6 +190,7 @@
           document.getElementById('hDot').className   = `health-dot ${d.status}`;
           document.getElementById('hSize').textContent = `${d.kb} KB`;
           document.getElementById('hTokens').textContent = `~${d.tokens_est.toLocaleString()} tokens`;
+          document.getElementById('hLines').textContent = d.lines != null ? `~${Number(d.lines).toLocaleString()} lines` : '—';
           const bar = document.getElementById('hBar');
           bar.style.width = pct + '%';
           bar.className = `health-bar ${d.status}`;

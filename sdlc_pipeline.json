@@ -1,6 +1,48 @@
 {
   "items": [
     {
+      "id": "1779748552465",
+      "idea": "Display line count metric in app health monitor",
+      "in_sprint": true,
+      "status": "done",
+      "story": "As a developer, I want to see the line count metric in the app health monitor so that I can track code size and complexity alongside file size and token usage.",
+      "acceptance_criteria": [
+        "Health monitor displays line count (e.g., '~2,847 lines') after tokens_est in the health-row div, fetched from /health endpoint response.lines field",
+        "Line count text renders with class 'health-lines', font-size 0.78rem, color #444, font-family monospace, positioned after .health-tokens element",
+        "CSS selector .health-lines exists in index.html <style> block with no duplicate selectors or conflicting property rules",
+        "Line count renders immediately after tokens when /health response includes lines field; displays '\u2014' as fallback if field missing"
+      ],
+      "summary": "Add line count metric to health monitor display after tokens_est",
+      "diff": "diff --git a/index.html b/index.html\nindex 3ef1efd..51200d8 100644\n--- a/index.html\n+++ b/index.html\n@@ -90,6 +90,7 @@\n     .health-file { font-size: 0.8rem; color: #555; font-family: monospace; }\n     .health-size { font-size: 1rem; font-family: monospace; color: #ccc; }\n     .health-tokens { font-size: 0.78rem; color: #444; }\n+    .health-lines { font-size: 0.78rem; color: #444; font-family: monospace; }\n     .health-bar-wrap {\n       margin-top: 0.5rem;\n       height: 4px;\n@@ -132,8 +133,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.54</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 17:28:52 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.55</div>\n+  <div class=\"meta\">Last deployed: 2026-05-25 17:37:07 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -148,6 +149,7 @@\n       <span class=\"health-file\">index.html</span>\n       <span class=\"health-size\" id=\"hSize\">\u00e2\u20ac\u201d</span>\n       <span class=\"health-tokens\" id=\"hTokens\"></span>\n+      <span class=\"health-lines\" id=\"hLines\">\u00e2\u20ac\u201d</span>\n     </div>\n     <div class=\"health-bar-wrap\"><div class=\"health-bar\" id=\"hBar\"></div></div>\n     <div class=\"health-label\" id=\"hLabel\">loading\u00e2\u20ac\u00a6</div>\n@@ -188,6 +190,7 @@\n           document.getElementById('hDot').className   = `health-dot ${d.status}`;\n           document.getElementById('hSize').textContent = `${d.kb} KB`;\n           document.getElementById('hTokens').textContent = `~${d.tokens_est.toLocaleString()} tokens`;\n+          document.getElementById('hLines').textContent = d.lines != null ? `~${Number(d.lines).toLocaleString()} lines` : '\u00e2\u20ac\u201d';\n           const bar = document.getElementById('hBar');\n           bar.style.width = pct + '%';\n           bar.className = `health-bar ${d.status}`;\ndiff --git a/version.json b/version.json\nindex 4ff6962..0c405d6 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.54\",\n-  \"deployed\": \"2026-05-25 17:28:52 CT\",\n+  \"version\": \"0.1.55\",\n+  \"deployed\": \"2026-05-25 17:37:07 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -278,6 +278,11 @@\n       \"version\": \"0.1.54\",\n       \"date\": \"2026-05-25\",\n       \"change\": \"Changed h1 title color to #00ff99 to match the primary neon green accent color of the page theme\"\n+    },\n+    {\n+      \"version\": \"0.1.55\",\n+      \"date\": \"2026-05-25\",\n+      \"change\": \"Added line count metric to app health monitor, displaying lines from /health response with .health-lines style after tokens\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.55 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-25 17:37:07 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.55: Added line count metric to app health monitor, displaying lines from /health response with .health-lines style after tokens"
+        }
+      ],
+      "deployed": "2026-05-25 17:37:07 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "All code changes are syntactically correct: CSS class added with valid properties, HTML span element properly created with unique id, JavaScript getElementById calls target existing elements, null-coercion and toLocaleString() usage is valid, and version/deployment metadata updates are expected.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All acceptance criteria are satisfied: line count element with id 'hLines' is positioned after tokens in the health-row div, .health-lines CSS class exists with correct font-size 0.78rem, color #444, and font-family monospace, JavaScript fetches d.lines from /health response and displays formatted line count or fallback '\u2014' when missing.",
+      "hermes_verdict": "approve",
+      "hermes_reason": "Code review: All code changes are syntactically correct: CSS class added with valid properties, HTML span element properly created with unique id, JavaScript getElementById calls target existing elements, null-coercion and toLocaleString() usage is valid, and version/deployment metadata updates are expected. | AC: All acceptance criteria are satisfied: line count element with id 'hLines' is positioned after tokens in the health-row div, .health-lines CSS class exists with correct font-size 0.78rem, color #444, and font-family monospace, JavaScript fetches d.lines from /health response and displays formatted line count or fallback '\u2014' when missing."
+    },
+    {
+      "ac_check_reason": "The h1 selector color has been changed to #00ff99, no conflicting CSS rules exist, the change matches the green theme accent color, and CSS syntax is valid with properly closed style tags.",
+      "ac_check_verdict": "approve",
       "acceptance_criteria": [
         "The h1 selector in index.html <style> block contains color: #00ff99 property",
         "No conflicting text-fill, background-clip, or duplicate color rules exist on the h1 selector",
@@ -9,47 +51,48 @@
       ],
       "code_review_reason": "All changes are syntactically correct: the h1 color property uses a valid hex code (#00ff99), version.json and deployment timestamps are appropriately updated, and the changelog entry is properly formatted with no scope creep.",
       "code_review_verdict": "approve",
+      "deployed": "2026-05-25 17:28:52 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex 3a75dbf..3ef1efd 100644\n--- a/index.html\n+++ b/index.html\n@@ -31,7 +31,7 @@\n       letter-spacing: -0.03em;\n       margin: 0 0 0.5rem;\n       text-transform: uppercase;\n-      color: #2d8659;\n+      color: #00ff99;\n     }\n     .tagline {\n       font-size: 1.05rem;\n@@ -132,8 +132,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.53</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 16:29:02 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.54</div>\n+  <div class=\"meta\">Last deployed: 2026-05-25 17:28:52 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex b36ae2e..4ff6962 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.53\",\n-  \"deployed\": \"2026-05-25 16:29:02 CT\",\n+  \"version\": \"0.1.54\",\n+  \"deployed\": \"2026-05-25 17:28:52 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -273,6 +273,11 @@\n       \"version\": \"0.1.53\",\n       \"date\": \"2026-05-25\",\n       \"change\": \"Updated h1 title color to #2d8659 to match green theme elements for visual consistency\"\n+    },\n+    {\n+      \"version\": \"0.1.54\",\n+      \"date\": \"2026-05-25\",\n+      \"change\": \"Changed h1 title color to #00ff99 to match the primary neon green accent color of the page theme\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_reason": "Code review: All changes are syntactically correct: the h1 color property uses a valid hex code (#00ff99), version.json and deployment timestamps are appropriately updated, and the changelog entry is properly formatted with no scope creep. | AC: The h1 selector color has been changed to #00ff99, no conflicting CSS rules exist, the change matches the green theme accent color, and CSS syntax is valid with properly closed style tags.",
+      "hermes_verdict": "approve",
       "id": "1779746897306",
       "idea": "Change the h1 title color to match the green theme of the page",
-      "in_sprint": true,
+      "in_sprint": false,
       "stage_times": {
-        "code": 1779747261.970095,
-        "code_review": 1779747262.286125,
-        "pull": 1779747257.299113,
+        "ac_check": 1779748139.08485,
+        "code": 1779748137.261486,
+        "code_review": 1779748137.691443,
+        "deploy": 1779748140.389195,
+        "done": 1779748145.036005,
+        "pull": 1779748132.584015,
         "rejected": 1779747263.78646,
-        "story": 1779747257.310112,
-        "test": 1779747262.094468
+        "story": 1779748132.603517,
+        "test": 1779748137.410141
       },
       "started": 1779747257.299113,
       "status": "done",
       "story": "As a product owner, I want the h1 title color to match the green theme of the page so that the hero section visually aligns with the brand's primary accent color.",
-      "tokens_in": 4338,
-      "tokens_out": 323,
       "summary": "Change h1 color to #00ff99 to match primary neon green brand accent",
-      "diff": "diff --git a/index.html b/index.html\nindex 3a75dbf..3ef1efd 100644\n--- a/index.html\n+++ b/index.html\n@@ -31,7 +31,7 @@\n       letter-spacing: -0.03em;\n       margin: 0 0 0.5rem;\n       text-transform: uppercase;\n-      color: #2d8659;\n+      color: #00ff99;\n     }\n     .tagline {\n       font-size: 1.05rem;\n@@ -132,8 +132,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.53</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 16:29:02 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.54</div>\n+  <div class=\"meta\">Last deployed: 2026-05-25 17:28:52 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex b36ae2e..4ff6962 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.53\",\n-  \"deployed\": \"2026-05-25 16:29:02 CT\",\n+  \"version\": \"0.1.54\",\n+  \"deployed\": \"2026-05-25 17:28:52 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -273,6 +273,11 @@\n       \"version\": \"0.1.53\",\n       \"date\": \"2026-05-25\",\n       \"change\": \"Updated h1 title color to #2d8659 to match green theme elements for visual consistency\"\n+    },\n+    {\n+      \"version\": \"0.1.54\",\n+      \"date\": \"2026-05-25\",\n+      \"change\": \"Changed h1 title color to #00ff99 to match the primary neon green accent color of the page theme\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.54 matches between version.json and index.html"
+          "message": "version 0.1.54 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-25 17:28:52 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-25 17:28:52 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.54: Changed h1 title color to #00ff99 to match the primary neon green accent color of the page theme"
+          "message": "changelog has entry for v0.1.54: Changed h1 title color to #00ff99 to match the primary neon green accent color of the page theme",
+          "status": "pass"
         }
       ],
-      "deployed": "2026-05-25 17:28:52 CT",
-      "ac_check_verdict": "approve",
-      "ac_check_reason": "The h1 selector color has been changed to #00ff99, no conflicting CSS rules exist, the change matches the green theme accent color, and CSS syntax is valid with properly closed style tags.",
-      "hermes_verdict": "approve",
-      "hermes_reason": "Code review: All changes are syntactically correct: the h1 color property uses a valid hex code (#00ff99), version.json and deployment timestamps are appropriately updated, and the changelog entry is properly formatted with no scope creep. | AC: The h1 selector color has been changed to #00ff99, no conflicting CSS rules exist, the change matches the green theme accent color, and CSS syntax is valid with properly closed style tags."
+      "tokens_in": 5586,
+      "tokens_out": 393
     },
     {
       "ac_check_reason": "All acceptance criteria are satisfied: the h1 title color is updated to #2d8659 with no conflicting properties, no duplicate color declarations exist, CSS syntax is valid with proper closing tags, and the h1 element exists in the DOM matching the style rule.",

@@ -275,10 +275,10 @@
           </div>
           <div class="step-card">
             <div class="step-name">Capture <span class="agent-badge badge-human">You</span></div>
-            <div class="step-purpose">Type an idea in Messenger. Haiku classifies it as a requirement, inquiry, or other. Requirements produce 3 story title options — click one to add it to the Opportunity Backlog.</div>
+            <div class="step-purpose">Type an idea in Messenger. Haiku decides if it's a story idea. If yes, it returns 2 AI-suggested titles plus your original phrasing as a third option — click any one to add it to the Opportunity Backlog.</div>
             <div class="step-io">
               <div class="io-item"><span class="io-label">Input</span> <span>Plain-language message</span></div>
-              <div class="io-item"><span class="io-label">Output</span> <span>Item in Opportunity Backlog</span></div>
+              <div class="io-item"><span class="io-label">Output</span> <span>2 suggestions + original, or conversational reply</span></div>
             </div>
           </div>
         </div>
@@ -425,20 +425,16 @@
             <span class="prose-title">Capture — Messenger</span>
           </div>
           <div class="prose-body">
-            <p>You type a message in Messenger. Haiku classifies it instantly into one of three types:</p>
+            <p>You type a message in Messenger. Haiku asks one question: <em>is this a story idea?</em></p>
           </div>
           <div class="prose-substeps">
             <div class="prose-substep">
-              <span class="prose-substep-label lbl-haiku">Req</span>
-              <span class="prose-substep-text"><strong>Requirement</strong> — Haiku generates 3 story title options varying in scope or approach. You click one and it lands in the Opportunity Backlog with <code>opportunity: true</code>.</span>
-            </div>
-            <div class="prose-substep">
-              <span class="prose-substep-label lbl-haiku">Inq</span>
-              <span class="prose-substep-text"><strong>Inquiry</strong> — Haiku extracts keywords, searches backlog.json with stop-word filtering, and returns rich status for matching items: done, failed, in sprint, or pending.</span>
+              <span class="prose-substep-label lbl-haiku">Idea</span>
+              <span class="prose-substep-text"><strong>Story idea</strong> — Haiku generates 2 alternative backlog titles (action-oriented, ≤10 words). Your original message appears as a third option, capitalized. All three are clickable — selecting any one adds it to the Opportunity Backlog with <code>opportunity: true</code>.</span>
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-haiku">Other</span>
-              <span class="prose-substep-text"><strong>Other</strong> — Haiku replies conversationally. Nothing is added to the backlog.</span>
+              <span class="prose-substep-text"><strong>Not an idea</strong> — Haiku replies conversationally. Nothing is added to the backlog.</span>
             </div>
           </div>
         </div>

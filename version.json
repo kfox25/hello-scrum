@@ -1,6 +1,6 @@
 {
-  "version": "0.1.38",
-  "deployed": "2026-05-24 16:23:55 CT",
+  "version": "0.1.42",
+  "deployed": "2026-05-25 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -198,6 +198,26 @@
       "version": "0.1.38",
       "date": "2026-05-24",
       "change": "Modern home page layout with gradient branding, dark background, and updated hero section"
+    },
+    {
+      "version": "0.1.39",
+      "date": "2026-05-25",
+      "change": "Added index.html health monitor with token budget indicator and color-coded status"
+    },
+    {
+      "version": "0.1.40",
+      "date": "2026-05-25",
+      "change": "Replaced story card chevron with bottom expand arrow; brightened AC text"
+    },
+    {
+      "version": "0.1.41",
+      "date": "2026-05-25",
+      "change": "Simplified Messenger to story idea detection: 2 AI suggestions plus original as third option"
+    },
+    {
+      "version": "0.1.42",
+      "date": "2026-05-25",
+      "change": "Sprint agent now implements against Step 2 story/AC instead of generating its own"
     }
   ]
 }

@@ -350,7 +350,7 @@
           <div class="section-title">Hermes Review</div>
           <div class="hermes-box ${approved ? "hermes-box-approve" : "hermes-box-reject"}">
             <span class="hermes-verdict-label">${approved ? "✓ Approved" : "✗ Rejected"}</span>
-            ${escHtml(item.hermes_reason || "")}
+            ${escHtml(item.ac_check_reason || item.code_review_reason || "")}
           </div>
         </div>`;
       })() : "";
@@ -364,7 +364,7 @@
       const failureSection = item.status === "failed" ? (() => {
         let reason = "Agent or deploy error — check server logs.";
         if (item.hermes_verdict === "reject")
-          reason = `<span class="hermes-label">Hermes rejected:</span> ${escHtml(item.hermes_reason || "")}`;
+          reason = `<span class="hermes-label">Hermes rejected:</span> ${escHtml(item.code_review_reason || item.ac_check_reason || "")}`;
         else if (item.test_results && item.test_results.some(t => t.status === "fail"))
           reason = "One or more tests failed — see test results below.";
         else if (item.error)

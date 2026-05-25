@@ -301,7 +301,7 @@ def health_diagnostics():
         # Group rejection reasons by keyword bucket
         reason_buckets = {}
         for i in rejected:
-            reason = (i.get("hermes_reason") or "").lower()
+            reason = (i.get("code_review_reason") or i.get("ac_check_reason") or i.get("hermes_reason") or "").lower()
             for label, kws in pattern_map.items():
                 if any(kw in reason for kw in kws):
                     reason_buckets[label] = reason_buckets.get(label, 0) + 1

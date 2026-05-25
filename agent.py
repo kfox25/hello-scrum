@@ -500,8 +500,9 @@ def run_retro(processed_items):
             "status":          i.get("status"),
             "story":           i.get("story", ""),
             "error":           i.get("error", ""),
-            "hermes_verdict":  i.get("hermes_verdict", ""),
-            "hermes_reason":   i.get("hermes_reason", ""),
+            "hermes_verdict":      i.get("hermes_verdict", ""),
+            "code_review_reason":  i.get("code_review_reason", ""),
+            "ac_check_reason":     i.get("ac_check_reason", ""),
             "test_results":    i.get("test_results", []),
         }
         for i in processed_items
@@ -573,7 +574,7 @@ def synthesize_ac_wisdom(sprint_items=None):
 
     def to_entry(i):
         entry = {"idea": i.get("idea", "")[:80], "ac": i.get("acceptance_criteria", []), "status": i.get("status")}
-        reason = i.get("ac_check_reason") or i.get("hermes_reason") or i.get("error", "")
+        reason = i.get("ac_check_reason") or i.get("code_review_reason") or i.get("error", "")
         if reason and i.get("status") != "done":
             entry["rejected_for"] = reason[:120]
         return entry
@@ -861,10 +862,9 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
         return False
 
     hermes_verdict = "approve"
-    hermes_reason  = f"Code review: {code_review_reason} | AC: {ac_check_reason}"
 
     log("Pushing to GitHub...")
-    write_active(item, "deploy", hermes_verdict="approve", hermes_reason=hermes_reason, tokens_in=tokens_in, tokens_out=tokens_out)
+    write_active(item, "deploy", hermes_verdict="approve", tokens_in=tokens_in, tokens_out=tokens_out)
     item["status"] = "done"
     item["summary"] = result["summary"]
     item["diff"] = diff
@@ -875,7 +875,6 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
     item["ac_check_verdict"] = ac_check_verdict
     item["ac_check_reason"]  = ac_check_reason
     item["hermes_verdict"] = hermes_verdict
-    item["hermes_reason"]  = hermes_reason
     save_backlog(backlog)
 
     try:
@@ -890,7 +889,7 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
         save_backlog(backlog)
         return False
 
-    ad = write_active(item, "done", hermes_verdict=hermes_verdict, hermes_reason=hermes_reason, tokens_in=tokens_in, tokens_out=tokens_out)
+    ad = write_active(item, "done", hermes_verdict=hermes_verdict, tokens_in=tokens_in, tokens_out=tokens_out)
     item["started"]     = ad.get("started")
     item["stage_times"] = ad.get("stage_times", {})
     item["tokens_in"]   = tokens_in

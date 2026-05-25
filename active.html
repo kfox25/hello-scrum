@@ -336,7 +336,7 @@
         hermesHtml = `
           <div class="hermes-verdict ${approved ? "hermes-approve" : "hermes-reject"}">
             <span class="label">Hermes ${approved ? "✓ Approved" : "✗ Rejected"}</span>
-            ${escHtml(data.hermes_reason || "")}
+            ${escHtml(data.ac_check_reason || data.code_review_reason || "")}
           </div>`;
       }
 

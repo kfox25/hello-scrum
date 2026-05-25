@@ -274,7 +274,7 @@
         const dotClass = done ? 'dot-done' : 'dot-failed';
         const outcomeClass = done ? 'outcome-done' : 'outcome-failed';
         const outcomeLabel = done ? '✓ passed' : '✗ failed';
-        const reason = escHtml((item.ac_check_reason || item.hermes_reason || item.error || '').slice(0, 160));
+        const reason = escHtml((item.ac_check_reason || item.code_review_reason || item.error || '').slice(0, 160));
         return `<div class="impact-item">
           <div class="impact-dot ${dotClass}"></div>
           <div class="impact-body">

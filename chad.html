@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chad's Workflow</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { padding: 4rem 2rem 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+    .page-title {
+      text-align: center;
+      color: #00ff99;
+      font-size: 2rem;
+      font-family: monospace;
+      letter-spacing: 0.08em;
+      padding: 0.75rem 0 0.25rem;
+      flex-shrink: 0;
+    }
+    .page-subtitle {
+      text-align: center;
+      color: #3a7a5a;
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      flex-shrink: 0;
+    }
+
+    .page-layout {
+      display: flex;
+      gap: 2rem;
+      flex: 1;
+      min-height: 0;
+      border-top: 1px solid #222;
+      padding-top: 1rem;
+    }
+    .col { flex: 1; min-width: 0; overflow-y: auto; padding-bottom: 2rem; }
+
+    .col-header { margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #222; }
+    h2 { color: #00ff99; font-size: 1.2rem; margin: 0 0 0.2rem; }
+    .subtitle { color: #888; font-size: 0.8rem; margin-top: 0.2rem; }
+
+    /* ── Pipeline ── */
+    .pipeline-steps { position: relative; max-width: 520px; }
+    .pipeline-steps::before {
+      content: '';
+      position: absolute;
+      left: 1.6rem;
+      top: 1.5rem;
+      bottom: var(--spine-bottom, 1.5rem);
+      width: 2px;
+      background: linear-gradient(to bottom, #00ff9940, #00ff9920, #00ff9940);
+    }
+
+    .step { display: flex; gap: 1.1rem; margin-bottom: 0.5rem; position: relative; }
+    .step-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+    .step-num {
+      width: 3.2rem; height: 3.2rem; border-radius: 50%;
+      background: #1a1a1a; border: 2px solid #2a2a2a;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; color: #555; flex-shrink: 0;
+      position: relative; z-index: 1;
+    }
+    .step.ai     .step-num { border-color: #00ff9960; color: #00ff99; background: #0a1f12; }
+    .step.human  .step-num { border-color: #ffcc0060; color: #ffcc00; background: #1a1a00; }
+    .step.system .step-num { border-color: #4488ff60; color: #4488ff; background: #0a0f1f; }
+    .connector { width: 2px; flex: 1; min-height: 1.25rem; background: #1a1a1a; margin: 0 auto; }
+
+    .step-card {
+      background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px;
+      padding: 0.75rem 1rem; flex: 1;
+    }
+    .step.ai     .step-card { border-color: #00ff9920; }
+    .step.human  .step-card { border-color: #ffcc0020; }
+    .step.system .step-card { border-color: #4488ff20; }
+
+    .step-name { font-size: 0.9rem; font-weight: 600; color: #e0e0e0; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .step-desc { font-size: 0.8rem; color: #888; line-height: 1.5; }
+    .step-bullets { margin: 0.4rem 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.2rem; }
+    .step-bullets li { font-size: 0.78rem; color: #777; display: flex; gap: 0.4rem; }
+    .step-bullets li::before { content: '·'; color: #00ff9960; flex-shrink: 0; }
+
+    .agent-badge {
+      font-size: 0.65rem; padding: 0.15rem 0.45rem; border-radius: 3px;
+      font-weight: 500; letter-spacing: 0.04em;
+    }
+    .badge-ai     { background: #0a1f12; color: #00ff99; border: 1px solid #00ff9940; }
+    .badge-human  { background: #1a1a00; color: #ffcc00; border: 1px solid #ffcc0040; }
+    .badge-system { background: #0a0f1f; color: #4488ff; border: 1px solid #4488ff40; }
+
+    /* ── Branch block (approve / reject) ── */
+    .branch-block {
+      margin-left: 4.3rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      gap: 0.75rem;
+    }
+    .branch {
+      flex: 1;
+      border-radius: 8px;
+      padding: 0.65rem 0.9rem;
+    }
+    .branch.approve {
+      background: #0d2a1a;
+      border: 1px solid #00ff9930;
+    }
+    .branch.reject {
+      background: #2a0d0d;
+      border: 1px solid #ff444430;
+    }
+    .branch-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.35rem;
+    }
+    .branch.approve .branch-label { color: #00ff99; }
+    .branch.reject  .branch-label { color: #ff6666; }
+    .branch-text { font-size: 0.78rem; color: #888; line-height: 1.4; }
+    .branch-arrow {
+      font-size: 0.75rem;
+      color: #444;
+      margin-top: 0.3rem;
+    }
+
+    /* ── Right column ── */
+    .prose-section { margin-bottom: 1.75rem; }
+    .prose-section-header {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 0.75rem; padding-bottom: 0.5rem;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .prose-num {
+      width: 1.6rem; height: 1.6rem; border-radius: 50%;
+      background: #0a1f12; border: 1px solid #00ff9940;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; color: #00ff99; flex-shrink: 0;
+    }
+    .prose-title { font-size: 0.9rem; font-weight: 600; color: #ccc; }
+    .prose-body p { font-size: 0.82rem; color: #888; line-height: 1.6; margin: 0 0 0.5rem; }
+
+    .kano-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-top: 0.5rem; }
+    .kano-table th {
+      text-align: left; color: #444; font-size: 0.65rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 0.35rem 0.6rem; border-bottom: 1px solid #222;
+    }
+    .kano-table td {
+      padding: 0.45rem 0.6rem; color: #777;
+      border-bottom: 1px solid #161616; vertical-align: top; line-height: 1.4;
+    }
+    .kano-table tr:last-child td { border-bottom: none; }
+    .kano-table td:first-child { color: #00ff99; white-space: nowrap; font-weight: 600; }
+
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-top: 0.5rem; }
+    .compare-table th {
+      text-align: left; color: #444; font-size: 0.65rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 0.35rem 0.6rem; border-bottom: 1px solid #222;
+    }
+    .compare-table td {
+      padding: 0.4rem 0.6rem; color: #777;
+      border-bottom: 1px solid #161616; vertical-align: top; line-height: 1.4;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table td:first-child { color: #888; font-size: 0.75rem; }
+    .compare-table td:nth-child(2) { color: #ffcc0099; }
+    .compare-table td:nth-child(3) { color: #00ff9999; }
+    .compare-table th:nth-child(2) { color: #ffcc0066; }
+    .compare-table th:nth-child(3) { color: #00ff9966; }
+
+    .quote-block {
+      border-left: 2px solid #00ff9940; padding: 0.5rem 0.75rem;
+      margin: 0.75rem 0; font-size: 0.8rem; color: #555; font-style: italic; line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="messenger.html">Messenger</a>
+    <a href="index.html">App</a>
+    <a href="/">Backlog</a>
+    <a href="active.html">Live Work</a>
+    <a href="audit.html">Audit</a>
+    <a href="retro.html">Retro</a>
+    <a href="workflow.html">Workflow</a>
+    <a href="notes.html">Notes</a>
+  </nav>
+
+  <div class="page-title">Chad's Workflow</div>
+  <div class="page-subtitle">Reddit-sourced discovery → Kano classification → human-gated delivery</div>
+
+  <div class="page-layout">
+
+    <!-- Left: pipeline -->
+    <div class="col">
+      <div class="col-header">
+        <h2>Pipeline Steps</h2>
+        <div class="subtitle">Discovery to deployment with human review gates</div>
+      </div>
+
+      <div class="pipeline-steps" id="pipelineSteps">
+
+        <div class="step ai">
+          <div class="step-left">
+            <div class="step-num">1</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Reddit Scrape <span class="agent-badge badge-ai">Agent</span></div>
+            <div class="step-desc">Agent scrapes Reddit for user complaints. Raw signal source — unfiltered, direct from users expressing pain.</div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left">
+            <div class="step-num">2</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Kano Classification <span class="agent-badge badge-ai">Agent</span></div>
+            <div class="step-desc">Agent applies the Kano model to each complaint, classifying it as one of five feature types.</div>
+            <ul class="step-bullets">
+              <li>Basic — expected; absence causes dissatisfaction</li>
+              <li>Performance — more is better; linear satisfaction</li>
+              <li>Delighter — unexpected; creates delight when present</li>
+              <li>Indifferent — users don't care either way</li>
+              <li>Reverse — wanted by some, disliked by others</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step human">
+          <div class="step-left">
+            <div class="step-num">3</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Confirm Kano <span class="agent-badge badge-human">Human</span></div>
+            <div class="step-desc">Human reviews and confirms the agent's Kano designation. Strategic gate — ensures classification reflects product intent, not just text pattern matching.</div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left">
+            <div class="step-num">4</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Create Story <span class="agent-badge badge-ai">Agent</span></div>
+            <div class="step-desc">Agent drafts a user story from the confirmed complaint and its Kano designation. Kano type informs how the story is framed — a Basic is written as a fix, a Delighter as an enhancement.</div>
+          </div>
+        </div>
+
+        <div class="step human">
+          <div class="step-left">
+            <div class="step-num">5</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Refine Story <span class="agent-badge badge-human">Human</span></div>
+            <div class="step-desc">Human edits and refines the story before handing off to coding. Acceptance criteria, scope, and edge cases defined here.</div>
+          </div>
+        </div>
+
+        <div class="step human">
+          <div class="step-left">
+            <div class="step-num">6</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Push to Coding Agent <span class="agent-badge badge-human">Human</span></div>
+            <div class="step-desc">Human explicitly hands the refined story to the coding agent. Intentional gate — human decides when a story is ready to build.</div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left">
+            <div class="step-num">7</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Code Story <span class="agent-badge badge-ai">Coding Agent</span></div>
+            <div class="step-desc">Agent implements the story. Produces a PR with code changes.</div>
+          </div>
+        </div>
+
+        <div class="step human">
+          <div class="step-left">
+            <div class="step-num">8</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Check Staging <span class="agent-badge badge-human">Human</span></div>
+            <div class="step-desc">Human verifies the implementation in a staging environment. Visual and functional check before code review.</div>
+          </div>
+        </div>
+
+        <div class="step human">
+          <div class="step-left">
+            <div class="step-num">9</div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Review PR <span class="agent-badge badge-human">Human</span></div>
+            <div class="step-desc">Full human PR review — code quality, regression baseline, and edge case testing.</div>
+            <ul class="step-bullets">
+              <li>Code review</li>
+              <li>Baseline review</li>
+              <li>Edge case testing</li>
+            </ul>
+          </div>
+        </div>
+
+      </div><!-- end pipeline-steps -->
+
+      <div class="branch-block">
+        <div class="branch approve">
+          <div class="branch-label">✓ Approved</div>
+          <div class="branch-text">Agent deploys to production.</div>
+        </div>
+        <div class="branch reject">
+          <div class="branch-label">✗ Rejected</div>
+          <div class="branch-text">PR returned to coding agent with reviewer notes. Agent recodes and resubmits — loop repeats from step 7.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right: reference -->
+    <div class="col">
+      <div class="col-header">
+        <h2>Reference</h2>
+        <div class="subtitle">Kano model and workflow comparison</div>
+      </div>
+
+      <div class="prose">
+
+        <div class="prose-section">
+          <div class="prose-section-header">
+            <span class="prose-num">A</span>
+            <span class="prose-title">Kano Model</span>
+          </div>
+          <div class="prose-body">
+            <p>A product management framework for classifying features by how they affect customer satisfaction. Used here to prioritize which Reddit complaints become stories.</p>
+          </div>
+          <table class="kano-table">
+            <thead>
+              <tr><th>Type</th><th>If absent</th><th>If present</th><th>Priority</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Basic</td>
+                <td>Strong dissatisfaction</td>
+                <td>Neutral (expected)</td>
+                <td>Fix first</td>
+              </tr>
+              <tr>
+                <td>Performance</td>
+                <td>Dissatisfaction</td>
+                <td>Satisfaction (scales)</td>
+                <td>Invest proportionally</td>
+              </tr>
+              <tr>
+                <td>Delighter</td>
+                <td>Neutral (unknown)</td>
+                <td>Delight</td>
+                <td>Differentiate</td>
+              </tr>
+              <tr>
+                <td>Indifferent</td>
+                <td>Neutral</td>
+                <td>Neutral</td>
+                <td>Deprioritize</td>
+              </tr>
+              <tr>
+                <td>Reverse</td>
+                <td>Some prefer it absent</td>
+                <td>Some dislike it</td>
+                <td>Segment carefully</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="prose-section">
+          <div class="prose-section-header">
+            <span class="prose-num">B</span>
+            <span class="prose-title">Workflow Comparison</span>
+          </div>
+          <div class="prose-body">
+            <p>Two different operating models — different discovery sources, automation levels, and human touchpoints.</p>
+          </div>
+          <table class="compare-table">
+            <thead>
+              <tr><th>Dimension</th><th>Chad's Workflow</th><th>Hello Scrum</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Discovery</td>
+                <td>Reddit complaints (agent-scraped)</td>
+                <td>Messenger idea (human-entered)</td>
+              </tr>
+              <tr>
+                <td>Prioritization</td>
+                <td>Kano model classification</td>
+                <td>Manual backlog ordering</td>
+              </tr>
+              <tr>
+                <td>Story creation</td>
+                <td>Agent drafts, human refines</td>
+                <td>Haiku generates, human reviews at Elaborate</td>
+              </tr>
+              <tr>
+                <td>Human gates</td>
+                <td>Kano confirm, story refine, push, staging, PR review</td>
+                <td>Elaborate review, Sprint Planning, Start Sprint</td>
+              </tr>
+              <tr>
+                <td>Code review</td>
+                <td>Human reviews PR</td>
+                <td>Hermes (Haiku) automated review</td>
+              </tr>
+              <tr>
+                <td>Rejection loop</td>
+                <td>Human → coding agent with notes</td>
+                <td>Automated rollback, next sprint</td>
+              </tr>
+              <tr>
+                <td>Deploy</td>
+                <td>Agent deploys on PR approval</td>
+                <td>Automated git push on AC pass</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="prose-section">
+          <div class="prose-section-header">
+            <span class="prose-num">C</span>
+            <span class="prose-title">Human Gate Count</span>
+          </div>
+          <div class="prose-body">
+            <p>Chad's workflow has <strong style="color:#ffcc00">5 human gates</strong> — discovery, classification confirm, story refine, push, staging + PR review. Hello Scrum has <strong style="color:#00ff99">3 human gates</strong> — Elaborate, Sprint Planning, Start Sprint. Chad's model keeps humans close to every decision; Hello Scrum automates post-sprint.</p>
+          </div>
+          <div class="quote-block">Different philosophies: Chad's model trusts humans to catch problems at each stage. Hello Scrum trusts Hermes and automated tests to catch problems, with humans setting direction up front.</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      function trimSpine() {
+        const ps = document.getElementById('pipelineSteps');
+        if (!ps) return;
+        const steps = ps.querySelectorAll('.step');
+        const lastNum = steps[steps.length - 1]?.querySelector('.step-num');
+        if (!lastNum) return;
+        const psTop = ps.getBoundingClientRect().top;
+        const numRect = lastNum.getBoundingClientRect();
+        const centerFromTop = numRect.top + numRect.height / 2 - psTop;
+        ps.style.setProperty('--spine-bottom', (ps.offsetHeight - centerFromTop) + 'px');
+      }
+      document.addEventListener('DOMContentLoaded', trimSpine);
+      window.addEventListener('resize', trimSpine);
+    })();
+  </script>
+</body>
+</html>

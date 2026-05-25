@@ -13,7 +13,7 @@
       margin-top: 3.5rem;
       flex-shrink: 0;
     }
-    header h1 { color: #6fa8ff; font-size: 1.4rem; }
+    header h1 { color: #00ff99; font-size: 1.4rem; }
     header .subtitle { color: #555; font-size: 0.8rem; margin-top: 0.2rem; }
 
     .layout {
@@ -36,7 +36,7 @@
       font-size: 0.85rem;
       color: #888;
     }
-    .chat-header span { color: #6fa8ff; }
+    .chat-header span { color: #00ff99; }
     .messages {
       flex: 1;
       overflow-y: auto;
@@ -63,7 +63,7 @@
       color: #00ff99;
       flex-shrink: 0;
     }
-    .avatar.bot { background: #1a1a3a; border-color: #6fa8ff30; color: #6fa8ff; }
+    .avatar.bot { background: #0a1f12; border-color: #00ff9930; color: #00ff99; }
     .msg-body { flex: 1; }
     .msg-meta {
       display: flex;
@@ -72,7 +72,7 @@
       margin-bottom: 0.2rem;
     }
     .msg-author { font-size: 0.8rem; color: #00ff99; }
-    .msg-author.bot { color: #6fa8ff; }
+    .msg-author.bot { color: #00ff99; }
     .msg-time { font-size: 0.7rem; color: #444; }
     .msg-text { font-size: 0.85rem; color: #ccc; line-height: 1.5; }
     .msg-text code {
@@ -94,7 +94,7 @@
     /* Compose area */
     .compose {
       border-top: 1px solid #222;
-      padding: 0.75rem 1.25rem;
+      padding: 0.75rem 1.25rem 2.5rem;
       display: flex;
       gap: 0.6rem;
       align-items: flex-end;
@@ -113,21 +113,21 @@
       min-height: 2.4rem;
       max-height: 120px;
     }
-    .compose-input:focus { border-color: #6fa8ff50; }
-    .compose-input::placeholder { color: #444; }
+    .compose-input:focus { border-color: #00ff9950; }
+    .compose-input::placeholder { color: #888; }
     .send-btn {
-      background: #1a1a3a;
-      border: 1px solid #6fa8ff40;
-      color: #6fa8ff;
+      background: #0d3320;
+      border: 1px solid #00ff9960;
+      color: #00ff99;
       font-family: monospace;
-      font-size: 0.85rem;
-      padding: 0.55rem 1rem;
-      border-radius: 6px;
+      font-size: 0.8rem;
+      padding: 0.3rem 0.9rem;
+      border-radius: 4px;
       cursor: pointer;
       white-space: nowrap;
     }
-    .send-btn:hover { background: #0d1a3a; border-color: #6fa8ff; }
-    .send-btn:disabled { opacity: 0.4; cursor: default; }
+    .send-btn:hover { background: #114428; border-color: #00ff99; }
+    .send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
     .empty-state {
       flex: 1;
@@ -153,10 +153,10 @@
     .story-choice.dimmed  { opacity: 0.3; cursor: default; pointer-events: none; }
     .story-choice.promote-as-is {
       background: #0a0f1f;
-      border-color: #4488ff30;
+      border-color: #00ff9930;
       color: #aaa;
     }
-    .story-choice.promote-as-is:hover { background: #0d1530; border-color: #4488ff; color: #e0e0e0; }
+    .story-choice.promote-as-is:hover { background: #0d2a1a; border-color: #00ff99; color: #e0e0e0; }
   </style>
 </head>
 <body>
@@ -173,7 +173,7 @@
 
   <header>
     <h1>Teams Messenger</h1>
-    <div class="subtitle">Send messages to the scrum agent</div>
+    <div class="subtitle">Heard around the watercooler.</div>
   </header>
 
   <div class="layout">

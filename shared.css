@@ -25,5 +25,3 @@ body {
   text-decoration: none;
 }
 .top-nav a:hover { background: #0d3320; border-color: #00ff99; }
-.top-nav a[href="messenger.html"] { background: #1a1a2e; color: #6fa8ff; border-color: #6fa8ff40; }
-.top-nav a[href="messenger.html"]:hover { background: #0d1a3a; border-color: #6fa8ff; }

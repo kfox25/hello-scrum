@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scrum AI — Agent Operating Model</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { padding: 4rem 2rem 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+    .page-title {
+      text-align: center;
+      color: #00ff99;
+      font-size: 2rem;
+      font-family: monospace;
+      letter-spacing: 0.08em;
+      padding: 0.75rem 0 0.25rem;
+      flex-shrink: 0;
+    }
+    .page-subtitle {
+      text-align: center;
+      color: #3a7a5a;
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      flex-shrink: 0;
+    }
+
+    .page-layout {
+      display: flex;
+      gap: 2rem;
+      flex: 1;
+      min-height: 0;
+      border-top: 1px solid #222;
+      padding-top: 1rem;
+    }
+    .col { flex: 1; min-width: 0; overflow-y: auto; padding-bottom: 2rem; }
+
+    .col-header { margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #222; }
+    h2 { color: #00ff99; font-size: 1.2rem; margin: 0 0 0.2rem; }
+    .subtitle { color: #888; font-size: 0.8rem; margin-top: 0.2rem; }
+
+    /* ── Pipeline ── */
+    .pipeline { max-width: 520px; position: relative; }
+    .pipeline::before {
+      content: '';
+      position: absolute;
+      left: 1.6rem;
+      top: 1.5rem;
+      bottom: 1.5rem;
+      width: 2px;
+      background: linear-gradient(to bottom, #00ff9940, #00ff9920, #00ff9940);
+    }
+
+    .step { display: flex; gap: 1.1rem; margin-bottom: 0.5rem; position: relative; }
+    .step-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+    .step-num {
+      width: 3.2rem; height: 3.2rem; border-radius: 50%;
+      background: #1a1a1a; border: 2px solid #2a2a2a;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; color: #555; flex-shrink: 0;
+      position: relative; z-index: 1;
+    }
+    .step.ai     .step-num { border-color: #00ff9960; color: #00ff99; background: #0a1f12; }
+    .step.human  .step-num { border-color: #ffcc0060; color: #ffcc00; background: #1a1a00; }
+    .step.system .step-num { border-color: #4488ff60; color: #4488ff; background: #0a0f1f; }
+    .connector { width: 2px; flex: 1; min-height: 1.25rem; background: #1a1a1a; margin: 0 auto; }
+
+    .step-card {
+      background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px;
+      padding: 0.75rem 1rem; flex: 1; margin-bottom: 0;
+    }
+    .step.ai     .step-card { border-color: #00ff9920; }
+    .step.human  .step-card { border-color: #ffcc0020; }
+    .step.system .step-card { border-color: #4488ff20; }
+
+    .step-name { font-size: 0.9rem; font-weight: 600; color: #e0e0e0; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .step-desc { font-size: 0.8rem; color: #888; line-height: 1.5; }
+    .step-bullets { margin: 0.4rem 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.2rem; }
+    .step-bullets li { font-size: 0.78rem; color: #777; display: flex; gap: 0.4rem; }
+    .step-bullets li::before { content: '·'; color: #00ff9960; flex-shrink: 0; }
+
+    .agent-badge {
+      font-size: 0.65rem; padding: 0.15rem 0.45rem; border-radius: 3px;
+      font-weight: 500; letter-spacing: 0.04em;
+    }
+    .badge-ai     { background: #0a1f12; color: #00ff99; border: 1px solid #00ff9940; }
+    .badge-human  { background: #1a1a00; color: #ffcc00; border: 1px solid #ffcc0040; }
+    .badge-system { background: #0a0f1f; color: #4488ff; border: 1px solid #4488ff40; }
+
+    /* ── Right column ── */
+    .prose-section { margin-bottom: 1.75rem; }
+    .prose-section-header {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 0.75rem; padding-bottom: 0.5rem;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .prose-num {
+      width: 1.6rem; height: 1.6rem; border-radius: 50%;
+      background: #0a1f12; border: 1px solid #00ff9940;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; color: #00ff99; flex-shrink: 0;
+    }
+    .prose-title { font-size: 0.9rem; font-weight: 600; color: #ccc; }
+    .prose-body p { font-size: 0.82rem; color: #888; line-height: 1.6; margin: 0 0 0.5rem; }
+    .prose-body p:last-child { margin: 0; }
+
+    .ref-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-top: 0.5rem; }
+    .ref-table th {
+      text-align: left; color: #444; font-size: 0.65rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 0.35rem 0.6rem; border-bottom: 1px solid #222;
+    }
+    .ref-table td {
+      padding: 0.4rem 0.6rem; color: #777;
+      border-bottom: 1px solid #161616; vertical-align: top; line-height: 1.4;
+    }
+    .ref-table tr:last-child td { border-bottom: none; }
+    .ref-table td:first-child { color: #00ff99; white-space: nowrap; }
+
+    .checklist { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.5rem; }
+    .check-item { display: flex; gap: 0.6rem; align-items: flex-start; font-size: 0.8rem; color: #888; }
+    .check-mark { color: #00ff99; flex-shrink: 0; font-size: 0.75rem; margin-top: 0.1rem; }
+
+    .quote-block {
+      border-left: 2px solid #00ff9940; padding: 0.5rem 0.75rem;
+      margin: 0.75rem 0; font-size: 0.8rem; color: #555; font-style: italic; line-height: 1.5;
+    }
+
+    .era-row { display: flex; flex-direction: column; gap: 0.15rem; margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid #1a1a1a; }
+    .era-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .era-label { font-size: 0.7rem; color: #00ff99; font-family: monospace; letter-spacing: 0.08em; }
+    .era-text { font-size: 0.8rem; color: #888; line-height: 1.4; }
+
+    .impl-card {
+      background: #111; border: 1px solid #222; border-radius: 6px;
+      padding: 0.6rem 0.85rem; margin-bottom: 0.5rem;
+    }
+    .impl-title { font-size: 0.75rem; color: #4488ff; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.3rem; }
+    .impl-text { font-size: 0.8rem; color: #777; line-height: 1.4; }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="messenger.html">Messenger</a>
+    <a href="index.html">App</a>
+    <a href="/">Backlog</a>
+    <a href="active.html">Live Work</a>
+    <a href="audit.html">Audit</a>
+    <a href="retro.html">Retro</a>
+    <a href="workflow.html">Workflow</a>
+    <a href="notes.html">Notes</a>
+  </nav>
+
+  <div class="page-title">AI Agent Operating Model</div>
+  <div class="page-subtitle">Dr. Jeff Sutherland · When the Machine Can Think · ScrumAI.org</div>
+
+  <div class="page-layout">
+
+    <!-- Left: daily operating pipeline -->
+    <div class="col">
+      <div class="col-header">
+        <h2>Daily Operating Rhythm</h2>
+        <div class="subtitle">Morning routine + 8-step Scrum loop, run every day</div>
+      </div>
+
+      <div class="pipeline">
+
+        <div class="step system">
+          <div class="step-left">
+            <div class="step-num">1</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Upgrade <span class="agent-badge badge-system">System</span></div>
+            <div class="step-desc">Upgrade Hermes, OpenClaw, models, and gateways before any work begins.</div>
+          </div>
+        </div>
+
+        <div class="step system">
+          <div class="step-left">
+            <div class="step-num">2</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Health Check <span class="agent-badge badge-system">System</span></div>
+            <div class="step-desc">Verify every system the agents depend on.</div>
+            <ul class="step-bullets">
+              <li>Slack routes + agent connectivity</li>
+              <li>Token budgets + gateway versions</li>
+              <li>launchd daemons + Docker containers</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step system">
+          <div class="step-left">
+            <div class="step-num">3</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Repair <span class="agent-badge badge-system">System</span></div>
+            <div class="step-desc">Fix all breakages before pulling work. Agent downtime is a Scrum impediment — token mismatch, stale gateway, model regression, failed Slack routes all belong on the impediment list.</div>
+          </div>
+        </div>
+
+        <div class="step human">
+          <div class="step-left">
+            <div class="step-num">4</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Pull Work <span class="agent-badge badge-human">Human / PO</span></div>
+            <div class="step-desc">Pull top-priority item from Mission Control backlog. Enforce WIP = 1 per agent.</div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left">
+            <div class="step-num">5</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Execute <span class="agent-badge badge-ai">OpenClaw / Agent</span></div>
+            <div class="step-desc">Agent self-selects top eligible work item. WIP = 1 enforced. OpenClaw routes to the right specialized agent and bridges Slack ↔ Mission Control.</div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left">
+            <div class="step-num">6</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Deliverables + Evidence <span class="agent-badge badge-ai">Agent</span></div>
+            <div class="step-desc">Agent must produce evidence before review: tests, artifact paths, logs. Done is not declared — it is proven.</div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left">
+            <div class="step-num">7</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Review Gate <span class="agent-badge badge-ai">Hermes / Grok / PO</span></div>
+            <div class="step-desc">Grok or PO review gate before marking done. Hermes coordinates, audits outputs, and retrieves memory. Rejection returns item to backlog.</div>
+          </div>
+        </div>
+
+        <div class="step system">
+          <div class="step-left">
+            <div class="step-num">8</div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Value Report <span class="agent-badge badge-system">Mission Control</span></div>
+            <div class="step-desc">Leaderboard + value report at end of day. Counts stories completed, story points, rework recovered, and 3-day moving average. Velocity without verification is hallucination.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right: reference sections -->
+    <div class="col">
+      <div class="col-header">
+        <h2>Reference</h2>
+        <div class="subtitle">Stack, roles, checklist, and Scrum eras</div>
+      </div>
+
+      <div class="prose">
+
+        <div class="prose-section">
+          <div class="prose-section-header">
+            <span class="prose-num">A</span>
+            <span class="prose-title">Agent Operating Stack</span>
+          </div>
+          <div class="prose-body">
+            <p>Models are engines. The operating model is the car, dashboard, brakes, and pit crew.</p>
+          </div>
+          <table class="ref-table">
+            <thead>
+              <tr><th>Layer</th><th>Tool</th><th>Role</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Board</td>
+                <td>Mission Control</td>
+                <td>Scrum board for agents — backlog, WIP=1, review gates, leaderboard, audit trail</td>
+              </tr>
+              <tr>
+                <td>Coordinator</td>
+                <td>Hermes</td>
+                <td>Personal/operator agent — audits outputs, retrieves memory, patches health issues</td>
+              </tr>
+              <tr>
+                <td>Execution</td>
+                <td>OpenClaw</td>
+                <td>Multi-agent execution engine — routes work, bridges Slack ↔ Mission Control</td>
+              </tr>
+              <tr>
+                <td>Workers</td>
+                <td>Claude · GPT-5.5 · DeepSeek · Grok</td>
+                <td>Interchangeable workers and reviewers — not the operating model</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="prose-section">
+          <div class="prose-section-header">
+            <span class="prose-num">B</span>
+            <span class="prose-title">Roles Redefined</span>
+          </div>
+          <table class="ref-table">
+            <thead>
+              <tr><th>Role</th><th>What changes</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Product Owner</td>
+                <td>Still sets value and order — now human + agent-assisted</td>
+              </tr>
+              <tr>
+                <td>Scrum Master</td>
+                <td>Becomes flow debugger and system-health optimizer</td>
+              </tr>
+              <tr>
+                <td>Developers</td>
+                <td>Human developers + specialized AI agents working as one team</td>
+              </tr>
+              <tr>
+                <td>Definition of Done</td>
+                <td>Must include evidence, tests, artifact paths, logs, review gates</td>
+              </tr>
+              <tr>
+                <td>Sprint Board</td>
+                <td>Execution control system — not a status report</td>
+              </tr>
+              <tr>
+                <td>Impediments</td>
+                <td>Token mismatch, stale gateway, model regression, context loss, failed Slack routes</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="prose-section">
+          <div class="prose-section-header">
+            <span class="prose-num">C</span>
+            <span class="prose-title">AI Agent Scrum Checklist</span>
+          </div>
+          <div class="checklist">
+            <div class="check-item"><span class="check-mark">✓</span><span>Backlog ordered by value</span></div>
+            <div class="check-item"><span class="check-mark">✓</span><span>WIP limit enforced (start at 1)</span></div>
+            <div class="check-item"><span class="check-mark">✓</span><span>Agents self-select top eligible work</span></div>
+            <div class="check-item"><span class="check-mark">✓</span><span>Evidence-based Definition of Done</span></div>
+            <div class="check-item"><span class="check-mark">✓</span><span>Automated review gate (Grok / PO)</span></div>
+            <div class="check-item"><span class="check-mark">✓</span><span>Health checks and recovery scripts</span></div>
+            <div class="check-item"><span class="check-mark">✓</span><span>Daily value report</span></div>
+            <div class="check-item"><span class="check-mark">✓</span><span>Audit trail end-to-end</span></div>
+          </div>
+          <div class="quote-block">Start with one agent team and one visible board. Improve the system every morning.</div>
+        </div>
+
+        <div class="prose-section">
+          <div class="prose-section-header">
+            <span class="prose-num">D</span>
+            <span class="prose-title">Leadership Implications</span>
+          </div>
+          <div class="impl-card">
+            <div class="impl-title">Strategy</div>
+            <div class="impl-text">Strategy must be executable by agents. Vague work stalls or hallucinates. Backlog items become machine-executable contracts.</div>
+          </div>
+          <div class="impl-card">
+            <div class="impl-title">Governance</div>
+            <div class="impl-text">Governance must be real-time. Quarterly steering is too slow. Daily health, audit logs, WIP limits, and review gates are required.</div>
+          </div>
+          <div class="impl-card">
+            <div class="impl-title">Learning</div>
+            <div class="impl-text">Advantage moves to learning rate. Whoever upgrades, verifies, and redeploys fastest learns fastest. Scrum becomes the learning loop.</div>
+          </div>
+          <div class="quote-block">Executives who fund only models will be outpaced by those who fund the operating model.</div>
+        </div>
+
+        <div class="prose-section">
+          <div class="prose-section-header">
+            <span class="prose-num">E</span>
+            <span class="prose-title">Scrum's Three Eras</span>
+          </div>
+          <div class="era-row">
+            <span class="era-label">1993 · Scrum</span>
+            <span class="era-text">Self-organizing cross-functional team, user stories, empirical loop. Scaled human cooperation for the first time.</span>
+          </div>
+          <div class="era-row">
+            <span class="era-label">Mid-2010s · Scrum@Scale</span>
+            <span class="era-text">Scrum of Scrums + Executive Action Team. Scaled Scrum to whole organizations of thousands.</span>
+          </div>
+          <div class="era-row">
+            <span class="era-label">2026 · Scrum@Scale for Agents</span>
+            <span class="era-text">Same mechanics, agent participants. Each site is a team. Main agents form the Scrum of Scrums. Cycle time drops from days to seconds. Teams are ephemeral. Work items are skill invocations. The org chart shrinks to its irreducible core: Director · Adjudicator · Steward.</span>
+          </div>
+          <div class="quote-block">The bottleneck is no longer access to intelligence. The bottleneck is your work system.</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

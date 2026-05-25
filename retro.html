@@ -35,7 +35,7 @@
       border-bottom: 1px solid #222;
     }
     h2 { color: #00ff99; font-size: 1.4rem; }
-    .subtitle { color: #555; font-size: 0.85rem; margin-top: 0.25rem; }
+    .subtitle { color: #888; font-size: 0.85rem; margin-top: 0.25rem; }
 
     .wisdom-bullets {
       background: #1a1a1a;
@@ -198,7 +198,7 @@
       flex-shrink: 0;
     }
     .wisdom-panel-title { color: #00ff99; font-size: 1rem; margin-bottom: 0.2rem; }
-    .wisdom-panel-subtitle { color: #444; font-size: 0.75rem; }
+    .wisdom-panel-subtitle { color: #888; font-size: 0.75rem; line-height: 1.4; }
     .wisdom-panel-body { padding: 1rem 1.25rem; overflow-y: auto; flex: 1; min-height: 0; }
   </style>
 </head>
@@ -218,8 +218,8 @@
 
     <div class="col">
       <div class="col-header">
-        <h2>Sprint Wisdom</h2>
-        <div class="subtitle">AI agent reflections per sprint</div>
+        <h2>Sprint Retrospective</h2>
+        <div class="subtitle">Raw per-story findings from the current sprint. Short-term working memory — resets each sprint. Feeds System Wisdom synthesis and is injected directly into Step 4 Sonnet as THIS SPRINT context.</div>
       </div>
       <div id="retros"><div class="loading">Loading...</div></div>
     </div>
@@ -228,7 +228,7 @@
       <div class="wisdom-panel">
         <div class="wisdom-panel-header">
           <div class="wisdom-panel-title">System Wisdom</div>
-          <div class="wisdom-panel-subtitle">Aggregated learnings across all sprints</div>
+          <div class="wisdom-panel-subtitle">Persistent coding directives for the entire codebase. Created because the agent repeated the same technical mistakes across stories. Distilled from retrospective.json findings — injected into Step 4 Sonnet as the RULES block before every implementation.</div>
         </div>
         <div class="wisdom-panel-body">
           <div id="system-retro"><div class="loading">Loading...</div></div>
@@ -238,7 +238,7 @@
       <div class="wisdom-panel">
         <div class="wisdom-panel-header">
           <div class="wisdom-panel-title">Story Wisdom</div>
-          <div class="wisdom-panel-subtitle">AC-writing directives from story outcome patterns</div>
+          <div class="wisdom-panel-subtitle">Persistent AC-writing directives scoped to the story-writing process. Created because generated acceptance criteria were too vague for Hermes to verify. Distilled from backlog.json outcomes — injected into Step 2 Haiku as the STORY RULES block before every elaboration.</div>
         </div>
         <div class="wisdom-panel-body">
           <div id="story-wisdom"><div class="loading">Loading...</div></div>

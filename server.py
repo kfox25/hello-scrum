@@ -105,6 +105,16 @@ def notes_page():
     return send_file(os.path.join(BASE, "notes.html"))
 
 
+@app.route("/scrumai.html")
+def scrumai_page():
+    return send_file(os.path.join(BASE, "scrumai.html"))
+
+
+@app.route("/chad.html")
+def chad_page():
+    return send_file(os.path.join(BASE, "chad.html"))
+
+
 @app.route("/messenger/send", methods=["POST"])
 def messenger_send():
     try:

@@ -31,12 +31,15 @@
       position: relative;
       padding-right: 130px;
     }
-    .pipeline::before {
+    .pipeline-steps {
+      position: relative;
+    }
+    .pipeline-steps::before {
       content: '';
       position: absolute;
       left: 1.75rem;
       top: 2rem;
-      bottom: 2rem;
+      bottom: var(--spine-bottom, 2rem);
       width: 2px;
       background: linear-gradient(to bottom, #00ff9940, #00ff9920, #00ff9940);
     }
@@ -268,6 +271,8 @@
 
       <div class="pipeline">
 
+        <div class="pipeline-steps">
+
         <div class="step human">
           <div class="step-left">
             <div class="step-num">1</div>
@@ -319,8 +324,8 @@
             <div class="connector"></div>
           </div>
           <div class="step-card">
-            <div class="step-name">Story + Implementation <span class="agent-badge badge-sonnet">claude-sonnet-4-6</span></div>
-            <div class="step-purpose">Sonnet receives the story and AC written at Step 2 as its brief, plus CSS-stripped index.html, last-1 changelog entry, RULES (synthesized wisdom), and THIS SPRINT (intra-sprint retro context). Implements the story, patches index.html, bumps version.</div>
+            <div class="step-name">Start Sprint → Implementation <span class="agent-badge badge-sonnet">claude-sonnet-4-6</span> <span class="agent-badge badge-system">Automated</span></div>
+            <div class="step-purpose">Triggered automatically by Start Sprint — no human gate. Sonnet receives the story and AC written at Step 2 as its brief, plus CSS-stripped index.html, last-1 changelog entry, RULES (synthesized wisdom), and THIS SPRINT (intra-sprint retro context). Implements the story, patches index.html, bumps version.</div>
             <div class="step-io">
               <div class="io-item"><span class="io-label">Input</span> <span>Story + AC (from Step 2), index.html, version.json, wisdom, retro context</span></div>
               <div class="io-item"><span class="io-label">Output</span> <span>Patched files, summary</span></div>
@@ -391,7 +396,6 @@
         <div class="step ai">
           <div class="step-left">
             <div class="step-num">9</div>
-            <div class="connector"></div>
           </div>
           <div class="step-card">
             <div class="step-name">Retro + Wisdom <span class="agent-badge badge-haiku">claude-haiku-4-5</span></div>
@@ -400,6 +404,46 @@
               <div class="io-item"><span class="io-label">Input</span> <span>This sprint's items + existing wisdom bullets</span></div>
               <div class="io-item"><span class="io-label">Output</span> <span>retrospective.json + system_wisdom.json + story_wisdom.json</span></div>
             </div>
+          </div>
+        </div>
+
+        </div><!-- end pipeline-steps -->
+
+        <div class="step system">
+          <div class="step-left">
+            <div class="step-num">10</div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Wisdom Key <span class="agent-badge badge-system">Reference</span></div>
+            <div class="step-purpose">All feedback signals in the pipeline — what they contain, where they are synthesized, and where they are injected.</div>
+            <table class="prose-table" style="margin-top:0.75rem;width:100%;font-size:0.78rem;">
+              <thead>
+                <tr><th>Signal</th><th>File</th><th>Source</th><th>Written by</th><th>Injected into</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>System Wisdom</td>
+                  <td>system_wisdom.json</td>
+                  <td>retrospective.json findings</td>
+                  <td>synthesize_system_wisdom()</td>
+                  <td>Step 4 Sonnet — RULES block</td>
+                </tr>
+                <tr>
+                  <td>Story Wisdom</td>
+                  <td>story_wisdom.json</td>
+                  <td>backlog.json outcomes</td>
+                  <td>synthesize_story_wisdom()</td>
+                  <td>Step 2 Haiku — STORY RULES block</td>
+                </tr>
+                <tr>
+                  <td>Retrospective</td>
+                  <td>retrospective.json</td>
+                  <td>sprint items (live)</td>
+                  <td>run_retro()</td>
+                  <td>Step 4 Sonnet — THIS SPRINT block</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -465,7 +509,7 @@
         <div class="prose-section">
           <div class="prose-section-header">
             <span class="prose-num">4</span>
-            <span class="prose-title">Per-Story Pipeline — fully automated</span>
+            <span class="prose-title">Start Sprint → Per-Story Pipeline — fully automated</span>
           </div>
           <div class="prose-substeps">
             <div class="prose-substep">
@@ -503,7 +547,7 @@
           <div class="prose-substeps">
             <div class="prose-substep">
               <span class="prose-substep-label lbl-haiku">Wisdom</span>
-              <span class="prose-substep-text">Haiku analyzes all items processed so far this sprint. Writes findings to retrospective.json categorized as: <strong>fail</strong> (recurring failure patterns), <strong>ok</strong> (what worked), <strong>do</strong> (improvements), <strong>note</strong> (observations).</span>
+              <span class="prose-substep-text">Haiku analyzes all items processed so far this sprint. Writes findings to retrospective.json categorized as: <strong>Failure</strong> (recurring failure patterns), <strong>Success</strong> (what worked), <strong>Improve</strong> (suggested improvements), <strong>Observe</strong> (neutral observations).</span>
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-haiku">Wisdom</span>
@@ -527,7 +571,7 @@
           </div>
           <div class="prose-body">
             <p>Steps 4–5 repeat for each story in the sprint queue. By story 3, the agent has seen what failed in stories 1 and 2 of this sprint (THIS SPRINT) plus the freshly updated all-time wisdom (RULES). The feedback loops compound within the sprint.</p>
-            <p>When the queue is empty, the sprint ends. The Retro page shows all findings. The System Retro column shows the current synthesized wisdom ready for the next sprint.</p>
+            <p>When the queue is empty, the sprint ends. The Retro page shows all findings in the <strong>Sprint Retrospective</strong> column, and the <strong>System Wisdom</strong> and <strong>Story Wisdom</strong> panels on the right show the updated directives ready for the next sprint.</p>
           </div>
         </div>
 
@@ -714,8 +758,20 @@
         });
       }
 
-      document.addEventListener('DOMContentLoaded', () => { draw(); drawLabels(); });
-      window.addEventListener('resize', () => { draw(); drawLabels(); });
+      function trimSpine() {
+        const ps = document.querySelector('.pipeline-steps');
+        if (!ps) return;
+        const lastNum = ps.querySelectorAll('.step')[ps.querySelectorAll('.step').length - 1]?.querySelector('.step-num');
+        if (!lastNum) return;
+        const psTop  = ps.getBoundingClientRect().top;
+        const numRect = lastNum.getBoundingClientRect();
+        const centerFromTop = numRect.top + numRect.height / 2 - psTop;
+        const bottom = ps.offsetHeight - centerFromTop;
+        ps.style.setProperty('--spine-bottom', bottom + 'px');
+      }
+
+      document.addEventListener('DOMContentLoaded', () => { draw(); drawLabels(); trimSpine(); });
+      window.addEventListener('resize', () => { draw(); drawLabels(); trimSpine(); });
     })();
   </script>
 </body>

@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1779691417021,
+    "title": "Hello Scrum Workflow",
+    "body": "",
+    "created": "2026-05-25T07:00:00.000Z",
+    "updated": "2026-05-25T07:00:00.000Z"
+  },
+  {
+    "id": 1779691417020,
+    "title": "Jeff's Workflow",
+    "body": "",
+    "created": "2026-05-25T06:43:37.020Z",
+    "updated": "2026-05-25T06:43:50.961Z"
+  },
+  {
+    "id": 1779667177471,
+    "title": "Chad's Workflow",
+    "body": "agent scrapes reddit for complaints\n\nagent applies kano model to decide if complaint is basic, performance, delighter, indifferent, or reverse features.\n\nHuman confirms kano designation\n\nAgent creates story\n\nHuman refines story\n\nhuman pushes story to a coding agent\n\nagent codes story\n\nhuman checks output in staging\n\nhuman examines PR (code review, baseline review, tests edge cases)\n\nif human approves PR\n\n    agent deploys\n\nif human rejects pr\n\n    sent back to coding agent with notes (refined)\n\n        agent codes story\n",
+    "created": "2026-05-24T23:59:37.471Z",
+    "updated": "2026-05-25T03:03:37.098Z"
+  }
+]

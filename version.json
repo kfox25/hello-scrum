@@ -1,5 +1,5 @@
 {
-  "version": "0.1.44",
+  "version": "0.1.49",
   "deployed": "2026-05-25 CT",
   "status": "baseline",
   "total_tokens": 0,
@@ -228,6 +228,31 @@
       "version": "0.1.44",
       "date": "2026-05-25",
       "change": "Renamed synthesize_wisdom to synthesize_system_wisdom and wisdom.json to system_wisdom.json"
+    },
+    {
+      "version": "0.1.45",
+      "date": "2026-05-25",
+      "change": "Workflow: added Step 10 Wisdom Key reference card, Automated badge on Step 4, spine line trims at Step 9, corrected finding categories and prose references"
+    },
+    {
+      "version": "0.1.46",
+      "date": "2026-05-25",
+      "change": "Retro: renamed Sprint Wisdom to Sprint Retrospective, brightened subtitle text, added descriptive scope/purpose subtitles to all three panels"
+    },
+    {
+      "version": "0.1.47",
+      "date": "2026-05-25",
+      "change": "Added scrumai.html (Jeff Sutherland AI agent operating model) and chad.html (Kano-based Reddit workflow) as reference workflow pages"
+    },
+    {
+      "version": "0.1.48",
+      "date": "2026-05-25",
+      "change": "Notes: workflow notes load in embedded iframe with hidden nav; removed auto-open on page load"
+    },
+    {
+      "version": "0.1.49",
+      "date": "2026-05-25",
+      "change": "Messenger: green theme throughout, watercooler tagline, bottom padding, brighter placeholder, Send button matches app style"
     }
   ]
 }

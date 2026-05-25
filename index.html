@@ -115,6 +115,20 @@
     .health-label.healthy  { color: #00ff9966; }
     .health-label.warning  { color: #ffcc0080; }
     .health-label.critical { color: #ff444499; }
+    #resetBtn {
+      font-family: monospace;
+      color: #00ff99;
+      background: #1a1a1a;
+      border: 1px solid #00ff9940;
+      padding: 0.4rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+      display: block;
+      width: 100%;
+    }
+    #resetBtn:hover { background: #0b1f14; }
   </style>
 </head>
 <body>
@@ -133,8 +147,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.55</div>
-  <div class="meta">Last deployed: 2026-05-25 17:37:07 CT</div>
+  <div class="version" id="version-badge">v0.1.56</div>
+  <div class="meta">Last deployed: 2026-05-25 17:59:31 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -153,6 +167,7 @@
     </div>
     <div class="health-bar-wrap"><div class="health-bar" id="hBar"></div></div>
     <div class="health-label" id="hLabel">loading…</div>
+    <button id="resetBtn">Reset</button>
   </div>
   <script>
     function escHtml(s) {
@@ -203,6 +218,23 @@
         });
     }
     loadHealth();
+
+    document.getElementById('resetBtn').addEventListener('click', function() {
+      document.getElementById('changelog-entries').innerHTML = '';
+      const dot = document.getElementById('hDot');
+      dot.className = 'health-dot';
+      const bar = document.getElementById('hBar');
+      bar.className = 'health-bar';
+      bar.style.width = '0%';
+      const lbl = document.getElementById('hLabel');
+      lbl.className = 'health-label';
+      lbl.textContent = 'loading…';
+      document.getElementById('hSize').textContent = '—';
+      document.getElementById('hTokens').textContent = '';
+      document.getElementById('hLines').textContent = '—';
+      loadChangelog();
+      loadHealth();
+    });
   </script>
 </body>
 </html>

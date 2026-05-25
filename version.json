@@ -1,6 +1,6 @@
 {
-  "version": "0.1.55",
-  "deployed": "2026-05-25 17:37:07 CT",
+  "version": "0.1.56",
+  "deployed": "2026-05-25 17:59:31 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -283,6 +283,11 @@
       "version": "0.1.55",
       "date": "2026-05-25",
       "change": "Added line count metric to app health monitor, displaying lines from /health response with .health-lines style after tokens"
+    },
+    {
+      "version": "0.1.56",
+      "date": "2026-05-25",
+      "change": "Added Reset button to health-monitor panel that clears changelog entries, resets health indicators to baseline state, and reloads /version.json and /health endpoints"
     }
   ]
 }

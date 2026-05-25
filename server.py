@@ -283,6 +283,31 @@ def story_wisdom_json():
     return jsonify({"bullets": [], "synthesized_at": None, "item_count": 0})
 
 
+@app.route("/health")
+def health():
+    index_path = os.path.join(BASE, "index.html")
+    try:
+        size = os.path.getsize(index_path)
+        with open(index_path, encoding="utf-8") as f:
+            lines = sum(1 for _ in f)
+        tokens_est = size // 4
+        if size < 8_000:
+            status = "healthy"
+        elif size < 16_000:
+            status = "warning"
+        else:
+            status = "critical"
+        return jsonify({
+            "bytes": size,
+            "kb": round(size / 1024, 1),
+            "lines": lines,
+            "tokens_est": tokens_est,
+            "status": status,
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/active/clear", methods=["POST"])
 def clear_active():
     with open(ACTIVE_FILE, "w") as f:

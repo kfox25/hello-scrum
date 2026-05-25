@@ -51,7 +51,64 @@
     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }
     .changelog-entry .cd { color: #444; font-size: 0.73rem; }
     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }
-  
+
+    .health-monitor {
+      margin-top: 2rem;
+      width: 100%;
+      max-width: 480px;
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+    }
+    .health-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .health-title { font-size: 0.7rem; color: #444; text-transform: uppercase; letter-spacing: 0.1em; }
+    .health-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #333;
+      transition: background 0.3s;
+    }
+    .health-dot.healthy  { background: #00ff99; box-shadow: 0 0 6px #00ff9966; }
+    .health-dot.warning  { background: #ffcc00; box-shadow: 0 0 6px #ffcc0066; }
+    .health-dot.critical { background: #ff4444; box-shadow: 0 0 6px #ff444466; }
+    .health-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+    .health-file { font-size: 0.8rem; color: #555; font-family: monospace; }
+    .health-size { font-size: 1rem; font-family: monospace; color: #ccc; }
+    .health-tokens { font-size: 0.78rem; color: #444; }
+    .health-bar-wrap {
+      margin-top: 0.5rem;
+      height: 4px;
+      background: #1a1a1a;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .health-bar {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.4s, background 0.3s;
+      background: #333;
+    }
+    .health-bar.healthy  { background: #00ff99; }
+    .health-bar.warning  { background: #ffcc00; }
+    .health-bar.critical { background: #ff4444; }
+    .health-label {
+      margin-top: 0.35rem;
+      font-size: 0.7rem;
+      color: #333;
+    }
+    .health-label.healthy  { color: #00ff9966; }
+    .health-label.warning  { color: #ffcc0080; }
+    .health-label.critical { color: #ff444499; }
+
 body {
     background: #0f1117;
     color: #e8eaf0;
@@ -108,6 +165,20 @@ body {
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
   </div>
+
+  <div class="health-monitor">
+    <div class="health-header">
+      <span class="health-title">index.html health</span>
+      <span class="health-dot" id="hDot"></span>
+    </div>
+    <div class="health-row">
+      <span class="health-file">index.html</span>
+      <span class="health-size" id="hSize">—</span>
+      <span class="health-tokens" id="hTokens"></span>
+    </div>
+    <div class="health-bar-wrap"><div class="health-bar" id="hBar"></div></div>
+    <div class="health-label" id="hLabel">loading…</div>
+  </div>
   <script>
     function escHtml(s) {
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -129,6 +200,33 @@ body {
         .catch(() => {});
     }
     loadChangelog();
+
+    function loadHealth() {
+      fetch('/health')
+        .then(r => r.json())
+        .then(d => {
+          const MAX_KB = 24;
+          const pct = Math.min(100, (d.kb / MAX_KB) * 100);
+          const labels = {
+            healthy:  'healthy — well within budget',
+            warning:  'watch it — getting large',
+            critical: 'bloated — refactor before next sprint',
+          };
+          document.getElementById('hDot').className   = `health-dot ${d.status}`;
+          document.getElementById('hSize').textContent = `${d.kb} KB`;
+          document.getElementById('hTokens').textContent = `~${d.tokens_est.toLocaleString()} tokens`;
+          const bar = document.getElementById('hBar');
+          bar.style.width = pct + '%';
+          bar.className = `health-bar ${d.status}`;
+          const lbl = document.getElementById('hLabel');
+          lbl.textContent = labels[d.status] || d.status;
+          lbl.className = `health-label ${d.status}`;
+        })
+        .catch(() => {
+          document.getElementById('hLabel').textContent = 'health check unavailable (server offline)';
+        });
+    }
+    loadHealth();
   </script>
 </body>
 </html>

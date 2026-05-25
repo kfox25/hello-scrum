@@ -190,6 +190,12 @@
         <div class="subtitle">Aggregated learnings across all sprints</div>
       </div>
       <div id="system-retro"><div class="loading">Loading...</div></div>
+
+      <div class="col-header" style="margin-top: 2.5rem; border-top: 1px solid #1a1a1a; padding-top: 1.5rem;">
+        <h2>Story Wisdom</h2>
+        <div class="subtitle">AC-writing directives from story outcome patterns</div>
+      </div>
+      <div id="story-wisdom"><div class="loading">Loading...</div></div>
     </div>
 
   </div>
@@ -256,16 +262,17 @@
     }
 
     let wisdomBullets = [];
+    let storyWisdomBullets = [];
 
-    function renderWisdom(bullets, synthesizedAt) {
-      if (!bullets.length) return '<div class="empty">No wisdom yet — run a sprint to generate findings.</div>';
+    function renderWisdom(bullets, synthesizedAt, copyFn, emptyMsg) {
+      if (!bullets.length) return `<div class="empty">${emptyMsg || 'No wisdom yet — run a sprint to generate findings.'}</div>`;
       const rows = bullets.map(b => {
         const text = b.replace(/^•\s*/, '');
         return `<div class="wisdom-bullet"><span class="wisdom-dot">•</span><span class="wisdom-text">${escHtml(text)}</span></div>`;
       }).join('');
       return `
         <div class="wisdom-toolbar">
-          <button class="btn-sm" onclick="copyWisdom()">Copy</button>
+          <button class="btn-sm" onclick="${copyFn || 'copyWisdom'}()">Copy</button>
           <span class="wisdom-meta">${synthesizedAt ? 'synthesized ' + escHtml(synthesizedAt) : ''}</span>
         </div>
         <div class="wisdom-bullets">${rows}</div>`;
@@ -276,11 +283,17 @@
       navigator.clipboard.writeText(text);
     }
 
+    function copyStoryWisdom() {
+      const text = storyWisdomBullets.map(b => b.startsWith('•') ? b : '• ' + b).join('\n');
+      navigator.clipboard.writeText(text);
+    }
+
     Promise.all([
       fetch('/retrospective.json?t=' + Date.now()).then(r => r.json()),
       fetch('/backlog.json?t=' + Date.now()).then(r => r.json()),
       fetch('/wisdom.json?t=' + Date.now()).then(r => r.json()),
-    ]).then(([retroData, backlogData, wisdomData]) => {
+      fetch('/story_wisdom.json?t=' + Date.now()).then(r => r.json()),
+    ]).then(([retroData, backlogData, wisdomData, storyWisdomData]) => {
         const retros = retroData.retros || [];
         if (!retros.length) {
           document.getElementById('retros').innerHTML = '<div class="empty">No retrospectives yet — run a sprint to generate findings.</div>';
@@ -294,11 +307,18 @@
           document.getElementById('retros').innerHTML = html;
         }
         wisdomBullets = wisdomData.bullets || [];
-        document.getElementById('system-retro').innerHTML = renderWisdom(wisdomBullets, wisdomData.synthesized_at);
+        document.getElementById('system-retro').innerHTML = renderWisdom(wisdomBullets, wisdomData.synthesized_at, 'copyWisdom');
+
+        storyWisdomBullets = storyWisdomData.bullets || [];
+        document.getElementById('story-wisdom').innerHTML = renderWisdom(
+          storyWisdomBullets, storyWisdomData.synthesized_at, 'copyStoryWisdom',
+          'No story wisdom yet — process more stories to generate patterns.'
+        );
       })
       .catch(err => {
         document.getElementById('retros').innerHTML = `<div class="error">Failed to load data<br>${err}</div>`;
         document.getElementById('system-retro').innerHTML = `<div class="error">Failed to load data<br>${err}</div>`;
+        document.getElementById('story-wisdom').innerHTML = `<div class="error">Failed to load data<br>${err}</div>`;
       });
   </script>
 </body>

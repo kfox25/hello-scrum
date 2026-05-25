@@ -1,0 +1,14 @@
+{
+  "bullets": [
+    "\u2022 Name the exact data source field and JSON structure to read from.",
+    "\u2022 Specify numeric display format, color values, and font sizes with precision.",
+    "\u2022 State fallback explicitly\u2014e.g., display zero or em-dash, never conditional logic.",
+    "\u2022 Reference existing styled components instead of describing visual style from scratch.",
+    "\u2022 Avoid subjective descriptors like sexier, spicier, cooler without concrete visual examples.",
+    "\u2022 Separate conflicting style goals into separate stories, never bundle contradictory aesthetics.",
+    "\u2022 Include calculation formulas in plain text, not abstract descriptions of math.",
+    "\u2022 Describe user-facing text exactly as it should appear, including capitalization and punctuation."
+  ],
+  "synthesized_at": "2026-05-24 21:17:00",
+  "item_count": 56
+}

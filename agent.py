@@ -28,8 +28,9 @@ INDEX_FILE   = "index.html"
 VERSION_FILE = "version.json"
 TEST_SCRIPT  = "test.py"
 REPO_URL     = "https://kfox25.github.io/hello-scrum"
-RETRO_FILE   = "retrospective.json"
-WISDOM_FILE  = "wisdom.json"
+RETRO_FILE         = "retrospective.json"
+WISDOM_FILE        = "wisdom.json"
+STORY_WISDOM_FILE  = "story_wisdom.json"
 
 _log_lines = []
 
@@ -540,6 +541,58 @@ Analyze this sprint and return findings JSON."""
     synthesize_wisdom()
 
 
+def synthesize_story_wisdom():
+    """Distill AC-writing directives from all story outcomes and save to story_wisdom.json."""
+    try:
+        with open(BACKLOG_FILE) as f:
+            backlog = json.load(f)
+    except Exception:
+        return
+
+    completed = [i for i in backlog.get("items", [])
+                 if i.get("status") in ("done", "failed", "rejected")]
+    if len(completed) < 3:
+        return
+
+    # Compact dataset: idea, AC, status, failure reason
+    data = []
+    for i in completed[-50:]:  # cap at 50 items for token efficiency
+        entry = {
+            "idea":   i.get("idea", "")[:80],
+            "ac":     i.get("acceptance_criteria", []),
+            "status": i.get("status"),
+        }
+        reason = i.get("ac_check_reason") or i.get("hermes_reason") or i.get("error", "")
+        if reason and i.get("status") != "done":
+            entry["rejected_for"] = reason[:120]
+        data.append(entry)
+
+    log("Synthesizing story wisdom...")
+    message = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=400,
+        messages=[{"role": "user", "content": (
+            "Analyze these story outcomes from an AI coding agent. "
+            "Identify what acceptance criteria characteristics lead to success vs failure.\n"
+            "Distill 6-8 directives for writing better acceptance criteria.\n"
+            "Requirements: ≤12 words each, plain text (no markdown/bold), imperative voice, "
+            "specific to writing AC for AI-implemented HTML/CSS/JS stories. Start each line with •\n\n"
+            "Story outcomes:\n" + json.dumps(data, indent=2)
+        )}],
+    )
+    text = message.content[0].text.strip()
+    bullets = [ln.strip() for ln in text.splitlines() if ln.strip().startswith("•")]
+
+    story_wisdom = {
+        "bullets":        bullets,
+        "synthesized_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "item_count":     len(completed),
+    }
+    with open(STORY_WISDOM_FILE, "w") as f:
+        json.dump(story_wisdom, f, indent=2)
+    log(f"Story wisdom: {len(bullets)} bullet(s) written to story_wisdom.json")
+
+
 def synthesize_wisdom():
     """Distill all retro findings into actionable bullets and save to wisdom.json."""
     try:
@@ -586,6 +639,7 @@ def synthesize_wisdom():
     with open(WISDOM_FILE, "w") as f:
         json.dump(wisdom, f, indent=2)
     log(f"Wisdom: {len(bullets)} bullet(s) written to wisdom.json")
+    synthesize_story_wisdom()
 
 
 # ── Main loop ─────────────────────────────────────────────────────────────────

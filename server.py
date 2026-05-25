@@ -258,6 +258,14 @@ def wisdom_json():
     return jsonify({"bullets": [], "synthesized_at": None, "finding_count": 0})
 
 
+@app.route("/story_wisdom.json")
+def story_wisdom_json():
+    path = os.path.join(BASE, "story_wisdom.json")
+    if os.path.exists(path):
+        return send_file(path)
+    return jsonify({"bullets": [], "synthesized_at": None, "item_count": 0})
+
+
 @app.route("/active/clear", methods=["POST"])
 def clear_active():
     with open(ACTIVE_FILE, "w") as f:
@@ -287,15 +295,42 @@ def elaborate_story():
         if not idea:
             return jsonify({"error": "No idea provided"}), 400
 
+        # Load wisdom layers for injection
+        story_wisdom_bullets = []
+        system_wisdom_bullets = []
+        try:
+            with open(os.path.join(BASE, "story_wisdom.json")) as f:
+                sw = json.load(f)
+            story_wisdom_bullets = [b.lstrip("•").strip() for b in sw.get("bullets", []) if b.strip()]
+        except Exception:
+            pass
+        try:
+            with open(os.path.join(BASE, "wisdom.json")) as f:
+                sw = json.load(f)
+            system_wisdom_bullets = [b.lstrip("•").strip() for b in sw.get("bullets", []) if b.strip()]
+        except Exception:
+            pass
+
+        wisdom_parts = []
+        if story_wisdom_bullets:
+            wisdom_parts.append("STORY RULES:\n" + "\n".join(f"- {b}" for b in story_wisdom_bullets))
+        if system_wisdom_bullets:
+            wisdom_parts.append("CODING RULES:\n" + "\n".join(f"- {b}" for b in system_wisdom_bullets))
+        wisdom_section = ("\n\n" + "\n\n".join(wisdom_parts)) if wisdom_parts else ""
+
+        system_prompt = (
+            "You are a scrum story writer. Given a raw idea, write a user story and acceptance criteria.\n"
+            "Respond with JSON only (no markdown):\n"
+            '{"story": "As a <role>, I want <goal> so that <benefit>.", "acceptance_criteria": ["<criterion 1>", "<criterion 2>", "<criterion 3>"]}\n'
+            "Keep the story concise. Write 3-4 acceptance criteria as short, testable statements."
+        )
+
         client = anthropic.Anthropic()
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=600,
-            system="""You are a scrum story writer. Given a raw idea, write a user story and acceptance criteria.
-Respond with JSON only (no markdown):
-{"story": "As a <role>, I want <goal> so that <benefit>.", "acceptance_criteria": ["<criterion 1>", "<criterion 2>", "<criterion 3>"]}
-Keep the story concise. Write 3-4 acceptance criteria as short, testable statements.""",
-            messages=[{"role": "user", "content": idea}],
+            system=system_prompt,
+            messages=[{"role": "user", "content": idea + wisdom_section}],
         )
 
         text = response.content[0].text.strip()

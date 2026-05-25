@@ -597,6 +597,11 @@ def elaborate_story():
                     if text.startswith("```"):
                         text = text.split("\n", 1)[-1]
                         text = text.rsplit("```", 1)[0].strip()
+                    # extract JSON object even if Haiku adds surrounding text
+                    start = text.find("{")
+                    end   = text.rfind("}") + 1
+                    if start != -1 and end > start:
+                        text = text[start:end]
                     result = json.loads(text)
                     return jsonify(result)
                 break

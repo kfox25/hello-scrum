@@ -444,6 +444,8 @@
       let storyLine = '';
       if (item.elaborating) {
         storyLine = '<div class="card-story elaborating">generating story...</div>';
+      } else if (item.elaborate_error) {
+        storyLine = `<div class="card-story" style="color:#ff6666;font-style:italic;">elaboration failed: ${escHtml(item.elaborate_error.slice(0, 120))}</div>`;
       } else if (item.story) {
         storyLine = `<div class="card-story">${escHtml(item.story)}</div>`;
       }
@@ -735,10 +737,16 @@
         });
         const data = await res.json();
         delete item.elaborating;
-        if (data.story) item.story = data.story;
-        if (data.acceptance_criteria) item.acceptance_criteria = data.acceptance_criteria;
-      } catch (_) {
+        if (data.error) {
+          item.elaborate_error = data.error;
+        } else {
+          delete item.elaborate_error;
+          if (data.story) item.story = data.story;
+          if (data.acceptance_criteria) item.acceptance_criteria = data.acceptance_criteria;
+        }
+      } catch (err) {
         delete item.elaborating;
+        item.elaborate_error = String(err);
       }
       renderBoard();
       persistBacklog();

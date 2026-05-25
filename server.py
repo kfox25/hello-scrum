@@ -258,6 +258,23 @@ def wisdom_json():
     return jsonify({"bullets": [], "synthesized_at": None, "finding_count": 0})
 
 
+@app.route("/notes.json")
+def notes_json():
+    path = os.path.join(BASE, "notes.json")
+    if os.path.exists(path):
+        return send_file(path)
+    return jsonify([])
+
+
+@app.route("/notes", methods=["POST"])
+def save_notes():
+    data = request.get_json()
+    path = os.path.join(BASE, "notes.json")
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2)
+    return jsonify({"ok": True})
+
+
 @app.route("/story_wisdom.json")
 def story_wisdom_json():
     path = os.path.join(BASE, "story_wisdom.json")

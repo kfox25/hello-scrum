@@ -83,6 +83,18 @@
     }
     .btn-delete:hover { border-color: #ff4444; }
 
+    .btn-save {
+      background: #0a1f12;
+      color: #00ff99;
+      border: 1px solid #00ff9940;
+      padding: 0.5rem 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 0.8rem;
+    }
+    .btn-save:hover { border-color: #00ff99; background: #0d2a1a; }
+
     textarea {
       flex: 1;
       background: #1a1a1a;
@@ -125,7 +137,7 @@
 
   <header>
     <h1>Notes</h1>
-    <div class="subtitle">Scratch pad — saved locally in your browser</div>
+    <div class="subtitle">Auto-saved locally · Save to server to persist</div>
   </header>
 
   <div class="notes-layout">
@@ -137,6 +149,7 @@
     <div class="notes-editor" id="editor" style="display:none;">
       <div class="editor-header">
         <input class="note-title" type="text" id="noteTitle" placeholder="Untitled" oninput="saveNote()">
+        <button class="btn-save" onclick="saveToServer()">Save</button>
         <button class="btn-delete" onclick="deleteNote()">Delete</button>
       </div>
       <textarea id="noteBody" placeholder="Start writing..." oninput="saveNote()"></textarea>
@@ -149,11 +162,33 @@
   </div>
 
   <script>
-    let notes = JSON.parse(localStorage.getItem('hello-scrum-notes') || '[]');
+    let notes = [];
     let activeId = null;
 
     function persist() {
       localStorage.setItem('hello-scrum-notes', JSON.stringify(notes));
+    }
+
+    async function saveToServer() {
+      const ind = document.getElementById('saveIndicator');
+      ind.textContent = 'saving...';
+      ind.className = 'save-indicator';
+      try {
+        const res = await fetch('/notes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(notes),
+        });
+        if (res.ok) {
+          ind.textContent = 'saved to server';
+          ind.className = 'save-indicator saved';
+          clearTimeout(ind._t);
+          ind._t = setTimeout(() => { ind.textContent = 'auto-saved'; ind.className = 'save-indicator'; }, 2000);
+        }
+      } catch (e) {
+        ind.textContent = 'server save failed';
+        ind.className = 'save-indicator';
+      }
     }
 
     function render() {
@@ -212,8 +247,24 @@
       render();
     }
 
-    render();
-    if (notes.length > 0) openNote(notes[0].id);
+    async function init() {
+      try {
+        const res = await fetch('/notes.json?t=' + Date.now());
+        const serverNotes = await res.json();
+        if (Array.isArray(serverNotes) && serverNotes.length > 0) {
+          notes = serverNotes;
+          persist();
+        } else {
+          notes = JSON.parse(localStorage.getItem('hello-scrum-notes') || '[]');
+        }
+      } catch (e) {
+        notes = JSON.parse(localStorage.getItem('hello-scrum-notes') || '[]');
+      }
+      render();
+      if (notes.length > 0) openNote(notes[0].id);
+    }
+
+    init();
   </script>
 </body>
 </html>

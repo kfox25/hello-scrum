@@ -1,6 +1,6 @@
 {
-  "version": "0.1.53",
-  "deployed": "2026-05-25 16:29:02 CT",
+  "version": "0.1.54",
+  "deployed": "2026-05-25 17:28:52 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -273,6 +273,11 @@
       "version": "0.1.53",
       "date": "2026-05-25",
       "change": "Updated h1 title color to #2d8659 to match green theme elements for visual consistency"
+    },
+    {
+      "version": "0.1.54",
+      "date": "2026-05-25",
+      "change": "Changed h1 title color to #00ff99 to match the primary neon green accent color of the page theme"
     }
   ]
 }

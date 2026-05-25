@@ -118,17 +118,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0.25rem;
-      margin-top: 0.4rem;
-      border-top: 1px solid #1e1e1e;
+      padding: 0.3rem 0;
+      margin-top: 0.5rem;
+      border-top: 1px solid #2a2a2a;
       cursor: pointer;
-      color: #333;
-      font-size: 0.6rem;
+      color: #555;
+      font-size: 0.75rem;
       transition: color 0.15s;
       user-select: none;
     }
-    .card-expand-btn:hover { color: #666; }
-    .card-expand-btn .expand-arrow { display: inline-block; transition: transform 0.15s; }
+    .card-expand-btn:hover { color: #00ff9999; }
+    .card-expand-btn .expand-arrow { display: inline-block; transition: transform 0.2s; }
     .card.expanded .card-expand-btn .expand-arrow { transform: rotate(180deg); }
     .ac-item { font-size: 0.73rem; color: #666; line-height: 1.6; }
 
@@ -465,12 +465,12 @@
           <div class="card-idea">${escHtml(item.idea)}</div>
           ${storyLine}
           ${acHtml}
+          ${expandBtn}
         </div>
         ${hermesTag}
         <span class="badge badge-${item.status}">${item.status}</span>
         ${retryBtn}
         ${deleteBtn}
-        ${expandBtn}
       </div>`;
     }
 

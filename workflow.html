@@ -682,10 +682,10 @@
           const ty = relativeTop(toCard,   pipeline) + toCard.offsetHeight   / 2;
           const midY = (fy + ty) / 2;
 
-          // Center label between this arm's bar and the card edge
+          // Place label a fixed gap to the left of its bar
           const ARM = arm ?? 40;
           const barFromRight = SVG_WIDTH - ARM;
-          const labelRight   = Math.round((barFromRight + SVG_WIDTH) / 2);
+          const labelRight   = barFromRight + 14 + 4; // 14 = half font-size, 4 = gap
 
           const div = document.createElement('div');
           div.className = 'feedback-label';

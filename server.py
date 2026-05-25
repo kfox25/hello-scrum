@@ -530,26 +530,79 @@ def elaborate_story():
         wisdom_section = ("\n\n" + "\n\n".join(wisdom_parts)) if wisdom_parts else ""
 
         system_prompt = (
-            "You are a scrum story writer. Given a raw idea, write a user story and acceptance criteria.\n"
-            "Respond with JSON only (no markdown):\n"
+            "You are a scrum story writer. Given a raw idea, write a user story and acceptance criteria.\n\n"
+            "You have access to a read_file tool. Use it when the idea references existing code elements "
+            "(colors, styles, components, data structures) and you need exact values to write accurate, "
+            "testable acceptance criteria. For example: if the idea mentions matching a theme color, "
+            "read index.html to find the actual hex value before writing the AC.\n\n"
+            "After gathering any needed context, respond with JSON only (no markdown):\n"
             '{"story": "As a <role>, I want <goal> so that <benefit>.", "acceptance_criteria": ["<criterion 1>", "<criterion 2>", "<criterion 3>"]}\n'
-            "Keep the story concise. Write 3-4 acceptance criteria as short, testable statements."
+            "Keep the story concise. Write 3-4 acceptance criteria as short, testable statements. "
+            "Use exact values from the codebase when relevant."
         )
+
+        tools = [
+            {
+                "name": "read_file",
+                "description": "Read a file from the project directory to get context for writing accurate acceptance criteria.",
+                "input_schema": {
+                    "type": "object",
+                    "properties": {
+                        "filename": {
+                            "type": "string",
+                            "description": "The filename to read (e.g., 'index.html', 'version.json', 'shared.css'). Must be a file in the project root.",
+                        }
+                    },
+                    "required": ["filename"],
+                },
+            }
+        ]
 
         client = anthropic.Anthropic()
-        response = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=600,
-            system=system_prompt,
-            messages=[{"role": "user", "content": idea + wisdom_section}],
-        )
+        messages = [{"role": "user", "content": idea + wisdom_section}]
 
-        text = response.content[0].text.strip()
-        if text.startswith("```"):
-            text = text.split("\n", 1)[-1]
-            text = text.rsplit("```", 1)[0].strip()
-        result = json.loads(text)
-        return jsonify(result)
+        for _ in range(3):  # max 3 turns
+            response = client.messages.create(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=800,
+                system=system_prompt,
+                tools=tools,
+                messages=messages,
+            )
+
+            if response.stop_reason == "tool_use":
+                tool_results = []
+                for block in response.content:
+                    if block.type == "tool_use" and block.name == "read_file":
+                        filename = os.path.basename(block.input.get("filename", ""))
+                        safe_path = os.path.join(BASE, filename)
+                        if filename and os.path.isfile(safe_path):
+                            with open(safe_path, encoding="utf-8") as f:
+                                content = f.read()
+                            print(f"[elaborate] read_file: {filename} ({len(content)} chars)", flush=True)
+                        else:
+                            content = f"File not found: {filename}"
+                            print(f"[elaborate] read_file: {filename} — not found", flush=True)
+                        tool_results.append({
+                            "type": "tool_result",
+                            "tool_use_id": block.id,
+                            "content": content,
+                        })
+                messages.append({"role": "assistant", "content": response.content})
+                messages.append({"role": "user", "content": tool_results})
+            else:
+                text_block = next((b for b in response.content if hasattr(b, "text")), None)
+                if text_block:
+                    text = text_block.text.strip()
+                    if text.startswith("```"):
+                        text = text.split("\n", 1)[-1]
+                        text = text.rsplit("```", 1)[0].strip()
+                    result = json.loads(text)
+                    return jsonify(result)
+                break
+
+        return jsonify({"error": "Elaborate loop did not produce a result"}), 500
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

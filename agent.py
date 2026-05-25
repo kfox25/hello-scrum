@@ -71,10 +71,9 @@ client = anthropic.Anthropic(
 SYSTEM_PROMPT = """You are an AI developer working on the hello-scrum web app.
 
 Your job:
-1. Read the raw backlog idea
-2. Write a user story with acceptance criteria
-3. Implement ONLY the story-specific visual change using patches to index.html
-4. Return an updated version_json — the boilerplate (version badge, popover, meta, counters, changelog HTML) is auto-updated by the deploy pipeline, NOT by you
+1. Read the provided idea, user story, and acceptance criteria
+2. Implement the story using patches to index.html
+3. Return an updated version_json — the boilerplate (version badge, popover, meta, counters, changelog HTML) is auto-updated by the deploy pipeline, NOT by you
 
 Rules:
 - Only modify index.html and version.json
@@ -89,8 +88,6 @@ Rules:
 
 Respond with ONLY valid JSON — no markdown, no code blocks, no extra text:
 {
-  "story": "As a user, I want...",
-  "acceptance_criteria": ["criterion 1", "criterion 2"],
   "patches": [
     {"find": "exact unique text copied from index.html", "replace": "replacement text"}
   ],
@@ -236,7 +233,7 @@ def get_ct_timestamp():
 
 # ── Worker agent ──────────────────────────────────────────────────────────────
 
-def call_agent(idea, index_html, version_json, timestamp, retro_context=None):
+def call_agent(idea, story, acceptance_criteria, index_html, version_json, timestamp, retro_context=None):
     context_parts = []
     wisdom = load_wisdom()
     if wisdom:
@@ -248,8 +245,15 @@ def call_agent(idea, index_html, version_json, timestamp, retro_context=None):
     index_html = strip_styles_for_prompt(index_html)
     version_json = strip_changelog_for_prompt(version_json)
 
+    ac_str = "\n".join(f"- {c}" for c in acceptance_criteria) if acceptance_criteria else "(none)"
+
     prompt = f"""Deploy timestamp: {timestamp}
 Idea: {idea}
+
+Story: {story or '(none)'}
+
+Acceptance criteria:
+{ac_str}
 
 index.html:
 {index_html}
@@ -681,7 +685,13 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
         item["retro_context"] = retro_context
 
     try:
-        response, t_in, t_out = call_agent(item["idea"], index_html, version_json, timestamp, retro_context=retro_context)
+        response, t_in, t_out = call_agent(
+            item["idea"],
+            item.get("story", ""),
+            item.get("acceptance_criteria", []),
+            index_html, version_json, timestamp,
+            retro_context=retro_context,
+        )
         tokens_in += t_in
         tokens_out += t_out
     except Exception as e:
@@ -709,10 +719,10 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
         return False
 
     log("=== USER STORY ===")
-    log(result['story'])
+    log(item.get('story', ''))
     log("")
     log("Acceptance Criteria:")
-    for i, ac in enumerate(result.get("acceptance_criteria", []), 1):
+    for i, ac in enumerate(item.get("acceptance_criteria", []), 1):
         log(f"  {i}. {ac}")
     log("")
     log(f"Summary : {result['summary']}")
@@ -733,8 +743,6 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
             log(stderr.strip())
         rollback()
         item["status"] = "failed"
-        item["story"] = result.get("story", "")
-        item["acceptance_criteria"] = result.get("acceptance_criteria", [])
         item["diff"] = diff
         item["test_results"] = test_results
         ad = write_active(item, "failed", failed_at="test", error="Tests failed — see activity stream", tokens_in=tokens_in, tokens_out=tokens_out)
@@ -746,7 +754,7 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
     log("Hermes — code review...")
     write_active(item, "code_review", tokens_in=tokens_in, tokens_out=tokens_out)
     try:
-        cr_verdict, t_in, t_out = call_code_review(item["idea"], result["story"], diff)
+        cr_verdict, t_in, t_out = call_code_review(item["idea"], item.get("story", ""), diff)
         tokens_in += t_in
         tokens_out += t_out
         code_review_verdict = cr_verdict.get("verdict", "approve")
@@ -761,8 +769,6 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
     if code_review_verdict == "reject":
         rollback()
         item["status"] = "failed"
-        item["story"] = result.get("story", "")
-        item["acceptance_criteria"] = result.get("acceptance_criteria", [])
         item["diff"] = diff
         item["test_results"] = test_results
         item["code_review_verdict"] = code_review_verdict
@@ -780,8 +786,8 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
     try:
         ac_verdict, t_in, t_out = call_ac_check(
             item["idea"],
-            result["story"],
-            result.get("acceptance_criteria", []),
+            item.get("story", ""),
+            item.get("acceptance_criteria", []),
             diff,
             test_results,
         )
@@ -800,8 +806,6 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
     if ac_check_verdict == "reject":
         rollback()
         item["status"] = "failed"
-        item["story"] = result.get("story", "")
-        item["acceptance_criteria"] = result.get("acceptance_criteria", [])
         item["diff"] = diff
         item["test_results"] = test_results
         item["code_review_verdict"] = code_review_verdict
@@ -822,8 +826,6 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
     log("Pushing to GitHub...")
     write_active(item, "deploy", hermes_verdict="approve", hermes_reason=hermes_reason, tokens_in=tokens_in, tokens_out=tokens_out)
     item["status"] = "done"
-    item["story"] = result["story"]
-    item["acceptance_criteria"] = result.get("acceptance_criteria", [])
     item["summary"] = result["summary"]
     item["diff"] = diff
     item["test_results"] = test_results

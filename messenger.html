@@ -295,7 +295,9 @@
             `<div class="story-choice" data-story="${s.replace(/"/g, '&quot;')}">${i + 1}. ${s}</div>`
           ).join('');
           const original = (data.original || '').replace(/"/g, '&quot;');
-          const promoteBtn = `<div class="story-choice promote-as-is" data-story="${original}">3. ${data.original || ''}</div>`;
+          const orig = data.original || '';
+          const origCapped = orig.charAt(0).toUpperCase() + orig.slice(1);
+          const promoteBtn = `<div class="story-choice promote-as-is" data-story="${original}">3. ${origCapped}</div>`;
           appendMessage('hello-scrum', `${data.reply || 'Pick a version to add to the opportunity backlog:'}<div class="story-choices">${suggestions}${promoteBtn}</div>`, true);
         } else {
           appendMessage('hello-scrum', data.reply || '', true);

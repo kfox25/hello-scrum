@@ -627,16 +627,20 @@
           const fy = relativeTop(fromCard, pipeline) + fromCard.offsetHeight / 2;
           const ty = relativeTop(toCard,   pipeline) + toCard.offsetHeight   / 2;
 
-          // Arrowhead marker (pointing left, toward the destination step)
+          // Filled triangle arrowhead.
+          // Polygon points right in marker space (tip at x=8).
+          // orient=auto rotates it 180° for a leftward path → tip points left.
+          // refX=8 places the tip at the path endpoint.
+          // markerUnits=userSpaceOnUse gives pixel-exact sizing.
           const defs = svg.appendChild(makeSvgEl('defs', {}));
           const marker = defs.appendChild(makeSvgEl('marker', {
-            id: `m${ci}`, markerWidth: 8, markerHeight: 8,
-            refX: 1, refY: 4, orient: 'auto',
+            id: `m${ci}`, markerWidth: 9, markerHeight: 7,
+            refX: 8, refY: 3.5, orient: 'auto',
+            markerUnits: 'userSpaceOnUse',
           }));
-          marker.appendChild(makeSvgEl('path', {
-            d: 'M8,1 L1,4 L8,7',
-            fill: 'none', stroke: color,
-            'stroke-width': 1.5, 'stroke-linecap': 'round',
+          marker.appendChild(makeSvgEl('polygon', {
+            points: '0 0, 9 3.5, 0 7',
+            fill: color,
           }));
 
           // Rounded-corner bracket path: out from from-step → up → in to to-step
@@ -647,7 +651,7 @@
               `Q ${ARM} ${fy} ${ARM} ${fy - R}`,
               `V ${ty + R}`,
               `Q ${ARM} ${ty} ${ARM - R} ${ty}`,
-              `H 8`,
+              `H 0`,
             ].join(' '),
             fill: 'none', stroke: color,
             'stroke-width': 1.5,

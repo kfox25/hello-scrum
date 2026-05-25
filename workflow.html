@@ -395,10 +395,10 @@
           </div>
           <div class="step-card">
             <div class="step-name">Retro + Wisdom <span class="agent-badge badge-haiku">claude-haiku-4-5</span></div>
-            <div class="step-purpose">Runs after every item. Haiku analyzes all sprint items so far and writes findings to retrospective.json. Then synthesize_system_wisdom() updates system_wisdom.json by merging the existing directives with only this sprint's new findings. Then synthesize_story_wisdom() updates story_system_wisdom.json by merging existing directives with only this sprint's story outcomes. Both functions bootstrap from full history on first run.</div>
+            <div class="step-purpose">Runs after every item. Haiku analyzes all sprint items so far and writes findings to retrospective.json. Then synthesize_system_wisdom() updates system_wisdom.json by merging the existing directives with only this sprint's new findings. Then synthesize_story_wisdom() updates story_wisdom.json by merging existing directives with only this sprint's story outcomes. Both functions bootstrap from full history on first run.</div>
             <div class="step-io">
               <div class="io-item"><span class="io-label">Input</span> <span>This sprint's items + existing wisdom bullets</span></div>
-              <div class="io-item"><span class="io-label">Output</span> <span>retrospective.json + system_wisdom.json + story_system_wisdom.json</span></div>
+              <div class="io-item"><span class="io-label">Output</span> <span>retrospective.json + system_wisdom.json + story_wisdom.json</span></div>
             </div>
           </div>
         </div>
@@ -446,7 +446,7 @@
           </div>
           <div class="prose-body">
             <p>You drag an item from <strong>Opportunity Backlog</strong> → <strong>Story Backlog</strong>. On drop, Haiku auto-generates a full user story (<em>As a user, I want...</em>) with 3–4 short, testable acceptance criteria.</p>
-            <p>The prompt is augmented with two wisdom layers: <strong>STORY RULES</strong> (AC-writing directives from story_system_wisdom.json, distilled from all past story outcomes) and <strong>CODING RULES</strong> (coding directives from system_wisdom.json, distilled from all previous sprint retrospectives). Both inform how the AC are written before any code is run.</p>
+            <p>The prompt is augmented with two wisdom layers: <strong>STORY RULES</strong> (AC-writing directives from story_wisdom.json, distilled from all past story outcomes) and <strong>CODING RULES</strong> (coding directives from system_wisdom.json, distilled from all previous sprint retrospectives). Both inform how the AC are written before any code is run.</p>
             <p>The card pulses with a "generating story..." animation while in flight. When done, a ▼ arrow appears at the bottom of the card — clicking it expands to show the AC and rotates the arrow to ▲. Expansion state persists across re-renders.</p>
           </div>
         </div>
@@ -511,7 +511,7 @@
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-haiku">Wisdom</span>
-              <span class="prose-substep-text">synthesize_story_wisdom() passes the existing story_system_wisdom.json bullets plus only this sprint's story outcomes to Haiku, which merges them and rewrites story_system_wisdom.json. First run bootstraps from the last 50 story outcomes.</span>
+              <span class="prose-substep-text">synthesize_story_wisdom() passes the existing story_wisdom.json bullets plus only this sprint's story outcomes to Haiku, which merges them and rewrites story_wisdom.json. First run bootstraps from the last 50 story outcomes.</span>
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-system">Context</span>
@@ -572,7 +572,7 @@
                   <td>Current story</td>
                 </tr>
                 <tr>
-                  <td>story_system_wisdom.json STORY RULES</td>
+                  <td>story_wisdom.json STORY RULES</td>
                   <td>Haiku (after each item)</td>
                   <td>Haiku (Elaborate, Step 2)</td>
                   <td>All stories, all time</td>

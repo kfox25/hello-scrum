@@ -1,6 +1,6 @@
 {
-  "version": "0.1.69",
-  "deployed": "2026-05-26 01:47:39 CT",
+  "version": "0.1.70",
+  "deployed": "2026-05-26 01:47:55 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -353,6 +353,11 @@
       "version": "0.1.69",
       "date": "2026-05-26",
       "change": "Changed .version badge padding from 0.3rem 0.9rem to 0.3rem 1rem for slightly wider horizontal spacing"
+    },
+    {
+      "version": "0.1.70",
+      "date": "2026-05-26",
+      "change": "Changed .changelog h2 color from #555 to #4a4a4a for a slightly warmer dark tone consistent with meta text color"
     }
   ]
 }

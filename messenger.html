@@ -541,6 +541,12 @@
       }
     });
 
+    const TRANSCRIPT_KEY = 'hs-watercooler-transcript';
+    transcriptEl.value = localStorage.getItem(TRANSCRIPT_KEY) || '';
+    transcriptEl.addEventListener('input', () => {
+      localStorage.setItem(TRANSCRIPT_KEY, transcriptEl.value);
+    });
+
     extractBtn.addEventListener('click', extractStories);
   </script>
 </body>

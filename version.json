@@ -1,6 +1,6 @@
 {
-  "version": "0.1.70",
-  "deployed": "2026-05-26 01:47:55 CT",
+  "version": "0.1.71",
+  "deployed": "2026-05-26 01:52:30 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -358,6 +358,11 @@
       "version": "0.1.70",
       "date": "2026-05-26",
       "change": "Changed .changelog h2 color from #555 to #4a4a4a for a slightly warmer dark tone consistent with meta text color"
+    },
+    {
+      "version": "0.1.71",
+      "date": "2026-05-26",
+      "change": "Changed h1 title color from #00ff99 to red for baseline restore testing"
     }
   ]
 }

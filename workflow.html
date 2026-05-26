@@ -411,10 +411,10 @@
           </div>
           <div class="step-card">
             <div class="step-name">Retro + Wisdom <span class="agent-badge badge-haiku">claude-haiku-4-5</span></div>
-            <div class="step-purpose">Runs after every item. Haiku analyzes all sprint items so far and writes findings to retrospective.json. Then synthesize_coding_wisdom() updates coding_wisdom.json by merging the existing directives with only this sprint's new findings. Then synthesize_ac_wisdom() updates ac_wisdom.json by merging existing directives with only this sprint's story outcomes. Both functions bootstrap from full history on first run.</div>
+            <div class="step-purpose">Two phases. Mid-sprint (after each non-final item): Haiku generates in-memory sprint wisdom — findings are distilled into a SPRINT WISDOM string and injected into the next story's prompt. Nothing is written to file. End of sprint: after the sprint subprocess exits, a separate clean subprocess runs the final retro — writes findings to retrospective.json, then synthesizes coding_wisdom.json and ac_wisdom.json from the new findings merged with existing directives.</div>
             <div class="step-io">
-              <div class="io-item"><span class="io-label">Input</span> <span>This sprint's items + existing wisdom bullets</span></div>
-              <div class="io-item"><span class="io-label">Output</span> <span>retrospective.json + coding_wisdom.json + ac_wisdom.json</span></div>
+              <div class="io-item"><span class="io-label">Mid-sprint</span> <span>In-memory sprint wisdom → SPRINT WISDOM block (next story)</span></div>
+              <div class="io-item"><span class="io-label">End of sprint</span> <span>retrospective.json + coding_wisdom.json + ac_wisdom.json</span></div>
             </div>
           </div>
         </div>
@@ -450,9 +450,9 @@
                 <tr>
                   <td>Retrospective</td>
                   <td>retrospective.json</td>
-                  <td>sprint items (live)</td>
-                  <td>run_retro()</td>
-                  <td>Step 4 Sonnet — SPRINT WISDOM block</td>
+                  <td>sprint items (final only)</td>
+                  <td>run_retro() — separate subprocess after sprint exits</td>
+                  <td>synthesize_coding_wisdom() → coding_wisdom.json → Step 4</td>
                 </tr>
               </tbody>
             </table>
@@ -554,24 +554,24 @@
         <div class="prose-section">
           <div class="prose-section-header">
             <span class="prose-num ai">5</span>
-            <span class="prose-title">Per-Story Retro — runs after every item</span>
+            <span class="prose-title">Retro + Wisdom — two phases</span>
           </div>
           <div class="prose-substeps">
             <div class="prose-substep">
-              <span class="prose-substep-label lbl-haiku">Wisdom</span>
-              <span class="prose-substep-text">Haiku analyzes all items processed so far this sprint. Writes findings to retrospective.json categorized as: <strong>Failure</strong> (recurring failure patterns), <strong>Success</strong> (what worked), <strong>Improve</strong> (suggested improvements), <strong>Observe</strong> (neutral observations).</span>
+              <span class="prose-substep-label lbl-haiku">Mid-sprint</span>
+              <span class="prose-substep-text"><strong>After each non-final item</strong>, Haiku generates an in-memory retro — findings are distilled into a SPRINT WISDOM string (e.g. <em>[fail] agent updated changelog but skipped CSS change</em>). This string is injected directly into the next story's prompt. Nothing is written to retrospective.json — intermediate retros are ephemeral.</span>
+            </div>
+            <div class="prose-substep">
+              <span class="prose-substep-label lbl-system">End of sprint</span>
+              <span class="prose-substep-text"><strong>After the last item</strong>, the sprint subprocess writes processed item IDs to sprint_result.json and exits. The server spawns a separate clean subprocess (<code>agent.py --run-retro</code>) that reads sprint_result.json, loads those items from the backlog, and calls run_retro() — writing one final entry to retrospective.json.</span>
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-haiku">Wisdom</span>
-              <span class="prose-substep-text">synthesize_coding_wisdom() passes the existing coding_wisdom.json bullets plus only this sprint's new findings to Haiku, which merges them — incorporating new patterns and dropping outdated ones — and rewrites coding_wisdom.json. First run bootstraps from full history.</span>
+              <span class="prose-substep-text">synthesize_coding_wisdom() passes the existing coding_wisdom.json bullets plus only this sprint's new findings to Haiku, which merges them — incorporating new patterns, dropping outdated ones — and rewrites coding_wisdom.json. First run bootstraps from full history.</span>
             </div>
             <div class="prose-substep">
               <span class="prose-substep-label lbl-haiku">Wisdom</span>
               <span class="prose-substep-text">synthesize_ac_wisdom() passes the existing ac_wisdom.json bullets plus only this sprint's story outcomes to Haiku, which merges them and rewrites ac_wisdom.json. First run bootstraps from the last 50 story outcomes.</span>
-            </div>
-            <div class="prose-substep">
-              <span class="prose-substep-label lbl-system">Context</span>
-              <span class="prose-substep-text">retro_context is reloaded from retrospective.json so the next story's SPRINT WISDOM block reflects what just happened — including whether the previous item passed or failed and why.</span>
             </div>
           </div>
         </div>
@@ -610,10 +610,10 @@
                   <td>All sprints, all time</td>
                 </tr>
                 <tr>
-                  <td>retro_context SPRINT WISDOM</td>
-                  <td>Haiku (after each item)</td>
+                  <td>Sprint Wisdom (in-memory)</td>
+                  <td>Haiku (after each non-final item)</td>
                   <td>Sonnet (next story)</td>
-                  <td>Absent story 1 → current sprint story 2+</td>
+                  <td>Absent story 1 → current sprint story 2+; never written to file</td>
                 </tr>
                 <tr>
                   <td>Hermes code review</td>

@@ -128,7 +128,20 @@
       "code_review_reason": "The diff changes only the .changelog max-width value from 480px to 500px, updates version and deployment timestamps correctly, and adds a corresponding changelog entry\u2014all syntactically valid with no scope creep or runtime errors.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "All three acceptance criteria are satisfied: max-width changed from 480px to 500px, margin-top and width remain unchanged, and the CSS change is in the style block.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779766780.820355,
+      "stage_times": {
+        "pull": 1779766780.820355,
+        "story": 1779766780.829948,
+        "code": 1779766784.664061,
+        "test": 1779766784.805067,
+        "code_review": 1779766785.028335,
+        "ac_check": 1779766786.246259,
+        "deploy": 1779766787.659514,
+        "done": 1779766791.314344
+      },
+      "tokens_in": 6613,
+      "tokens_out": 342
     },
     {
       "ac_check_reason": "The .tagline font-weight property was changed from 400 to 300, all other tagline styles remain unchanged, and the CSS modification is present in the style block with supporting version and changelog updates.",

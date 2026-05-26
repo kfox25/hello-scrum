@@ -1,10 +1,14 @@
 {
   "bullets": [
-    "• Confirm HTML selectors exist in markup before writing CSS rules; read target file.",
-    "• Remove duplicate CSS selectors and conflicting rules; patch property values in place.",
-    "• Verify all `<style>` tags properly closed; never nest or leave unclosed blocks.",
-    "• Write valid HTML/CSS syntax — no unclosed tags, no malformed selectors."
+    "\u2022 Scope CSS patches to single property modifications per submission when possible.",
+    "\u2022 Validate version.json updates correspond to stylesheet changes in unified diffs.",
+    "\u2022 Extract actual CSS values from diffs; reject metadata-only or changelog-only patches.",
+    "\u2022 Assert modified property values in tests against parsed style block source.",
+    "\u2022 Document CSS property changes with before/after values in patch descriptions.",
+    "\u2022 Expand test coverage beyond CSS constraints to validate multi-file interactions.",
+    "\u2022 Prioritize well-defined acceptance criteria; escalate ambiguous requirements before coding.",
+    "\u2022 Prepare multi-file refactors and feature-scope tasks for upcoming sprint validation."
   ],
-  "synthesized_at": "2026-05-25 17:59:54",
-  "finding_count": 248
+  "synthesized_at": "2026-05-25 22:40:00",
+  "finding_count": 280
 }

@@ -1,10 +1,14 @@
 {
   "bullets": [
-    "• Specify exact element IDs and CSS class names from the actual markup.",
-    "• Include fallback state for missing or empty data (e.g. em-dash).",
-    "• Reference specific endpoint field names when AC involves data fetching.",
-    "• Each criterion must be verifiable by reading the diff alone — no external tools."
+    "\u2022 Name exact CSS selector and property; specify old and new numeric values with units.",
+    "\u2022 Confirm all other properties in that selector remain unchanged post-commit.",
+    "\u2022 Require CSS modification in style block diff; reject version or changelog-only changes.",
+    "\u2022 State conditions verifiable by inspecting file diffs alone, no tool execution needed.",
+    "\u2022 Ground AC in observable property values; omit why the change was made.",
+    "\u2022 Use before-and-after notation for numeric comparisons; include units consistently.",
+    "\u2022 Write AC as testable assertions, not implementation steps or rationale.",
+    "\u2022 Exclude non-stylesheet files, external dependencies, and accessibility requirements from scope."
   ],
-  "synthesized_at": "2026-05-25 17:59:56",
-  "item_count": 66
+  "synthesized_at": "2026-05-25 22:40:02",
+  "item_count": 76
 }

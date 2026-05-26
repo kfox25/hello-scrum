@@ -462,52 +462,21 @@ def rollback():
 
 # ── Retrospective ─────────────────────────────────────────────────────────────
 
-def load_latest_retro_context():
-    try:
-        with open(RETRO_FILE, encoding="utf-8") as f:
-            store = json.load(f)
-        retros = store.get("retros", [])
-        if not retros:
-            return None
-        findings = retros[0].get("findings", [])
-        if not findings:
-            return None
-        short = {"failure_pattern": "fail", "success_pattern": "ok", "observation": "note"}
-        lines = [f"[{short[f['type']]}] {f['text']}" for f in findings if f["type"] in short]
-        return "\n".join(lines) if lines else None
-    except Exception:
-        return None
-
-
-def load_wisdom():
-    """Return list of stripped bullet strings from coding_wisdom.json, or empty list."""
-    try:
-        with open(CODING_WISDOM_FILE, encoding="utf-8") as f:
-            data = json.load(f)
-        return [b.lstrip("•").strip() for b in data.get("bullets", []) if b.strip()]
-    except Exception:
-        return []
-
-
-def run_retro(processed_items):
-    """Analyze sprint results with Haiku and append findings to retrospective.json."""
-    if not processed_items:
-        return
-
+def _call_retro_api(processed_items):
+    """Call Haiku and return retro dict. No file I/O."""
     sprint_data = [
         {
-            "idea":            i.get("idea"),
-            "status":          i.get("status"),
-            "story":           i.get("story", ""),
-            "error":           i.get("error", ""),
-            "hermes_verdict":      i.get("hermes_verdict", ""),
-            "code_review_reason":  i.get("code_review_reason", ""),
-            "ac_check_reason":     i.get("ac_check_reason", ""),
-            "test_results":    i.get("test_results", []),
+            "idea":               i.get("idea"),
+            "status":             i.get("status"),
+            "story":              i.get("story", ""),
+            "error":              i.get("error", ""),
+            "hermes_verdict":     i.get("hermes_verdict", ""),
+            "code_review_reason": i.get("code_review_reason", ""),
+            "ac_check_reason":    i.get("ac_check_reason", ""),
+            "test_results":       i.get("test_results", []),
         }
         for i in processed_items
     ]
-
     prompt = f"""Sprint items processed: {len(processed_items)}
 Items done:   {sum(1 for i in processed_items if i.get('status') == 'done')}
 Items failed: {sum(1 for i in processed_items if i.get('status') == 'failed')}
@@ -526,12 +495,51 @@ Analyze this sprint and return findings JSON."""
     text = message.content[0].text.strip()
     if text.startswith("```"):
         text = "\n".join(text.split("\n")[1:-1])
-
     retro = json.loads(text)
     retro["sprint_date"]    = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     retro["items_analyzed"] = len(processed_items)
     retro["items_done"]     = sum(1 for i in processed_items if i.get("status") == "done")
     retro["items_failed"]   = sum(1 for i in processed_items if i.get("status") == "failed")
+    return retro
+
+
+def _retro_to_sprint_wisdom(retro):
+    """Extract sprint wisdom string from a retro dict."""
+    findings = retro.get("findings", [])
+    if not findings:
+        return None
+    short = {"failure_pattern": "fail", "success_pattern": "ok", "observation": "note"}
+    lines = [f"[{short[f['type']]}] {f['text']}" for f in findings if f["type"] in short]
+    return "\n".join(lines) if lines else None
+
+
+def generate_sprint_wisdom(processed_items):
+    """Generate in-memory retro for mid-sprint feedback. Returns (wisdom_str, retro_dict).
+    No file I/O, no wisdom synthesis."""
+    if not processed_items:
+        return None, None
+    retro = _call_retro_api(processed_items)
+    log(f"Sprint wisdom: {retro.get('summary', '')}")
+    return _retro_to_sprint_wisdom(retro), retro
+
+
+def load_wisdom():
+    """Return list of stripped bullet strings from coding_wisdom.json, or empty list."""
+    try:
+        with open(CODING_WISDOM_FILE, encoding="utf-8") as f:
+            data = json.load(f)
+        return [b.lstrip("•").strip() for b in data.get("bullets", []) if b.strip()]
+    except Exception:
+        return []
+
+
+def run_retro(processed_items, retro=None):
+    """Persist retro to retrospective.json and synthesize wisdom.
+    Accepts a pre-generated retro dict to avoid a redundant API call."""
+    if not processed_items:
+        return
+    if retro is None:
+        retro = _call_retro_api(processed_items)
 
     try:
         with open(RETRO_FILE, encoding="utf-8") as f:
@@ -703,7 +711,7 @@ def synthesize_coding_wisdom(processed_items=None):
 
 # ── Main loop ─────────────────────────────────────────────────────────────────
 
-def run_one(sprint_only=False, processed=None, retro_context=None):
+def run_one(sprint_only=False, processed=None, sprint_wisdom=None):
     backlog = load_backlog()
     item = get_next_item(backlog, sprint_only=sprint_only)
 
@@ -728,16 +736,16 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
     timestamp = get_ct_timestamp()
 
     log(f"Timestamp : {timestamp}")
-    if retro_context:
+    if sprint_wisdom:
         log("=== SPRINT WISDOM ===")
-        for line in retro_context.splitlines():
+        for line in sprint_wisdom.splitlines():
             log(f"  {line}")
         log("")
     log("Calling agent...")
-    write_active(item, "story", retro_context=retro_context)
+    write_active(item, "story", retro_context=sprint_wisdom)
 
-    if retro_context:
-        item["retro_context"] = retro_context
+    if sprint_wisdom:
+        item["retro_context"] = sprint_wisdom
 
     try:
         response, t_in, t_out = call_agent(
@@ -745,7 +753,7 @@ def run_one(sprint_only=False, processed=None, retro_context=None):
             item.get("story", ""),
             item.get("acceptance_criteria", []),
             index_html, version_json, timestamp,
-            retro_context=retro_context,
+            retro_context=sprint_wisdom,
         )
         tokens_in += t_in
         tokens_out += t_out
@@ -927,20 +935,28 @@ def main():
 
     if sprint_mode or loop_mode:
         processed = []
-        retro_context = None  # story 1 relies on CODING WISDOM only; SPRINT WISDOM loads after first item
+        sprint_wisdom = None  # story 1: CODING WISDOM only; SPRINT WISDOM loads after first item
+        last_retro = None
         while True:
             prev_len = len(processed)
-            success = run_one(sprint_only=sprint_mode, processed=processed, retro_context=retro_context)
+            success = run_one(sprint_only=sprint_mode, processed=processed, sprint_wisdom=sprint_wisdom)
             item_was_processed = len(processed) > prev_len
             if item_was_processed:
-                log("\nRunning retrospective...")
+                log("\nGenerating sprint wisdom...")
                 try:
-                    run_retro(processed)
-                    retro_context = load_latest_retro_context()
+                    sprint_wisdom, last_retro = generate_sprint_wisdom(processed)
                 except Exception as e:
-                    log(f"Retro error: {e}")
+                    log(f"Sprint wisdom error: {e}")
+                    last_retro = None
             if not item_was_processed:
                 break
+        # Final retro: persist the last generated retro and synthesize wisdom
+        if last_retro:
+            log("\nRunning final retrospective...")
+            try:
+                run_retro(processed, retro=last_retro)
+            except Exception as e:
+                log(f"Retro error: {e}")
     else:
         run_one()
 

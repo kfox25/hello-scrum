@@ -460,6 +460,61 @@ def serve_html(filename):
     return "Not found", 404
 
 
+@app.route("/health/readiness")
+def health_readiness():
+    import urllib.request as _url
+    checks = []
+
+    # 1. API key
+    key = os.environ.get("ANTHROPIC_API_KEY", "")
+    key_ok = bool(key and key.startswith("sk-ant-"))
+    checks.append({
+        "name": "Anthropic API key",
+        "pass": key_ok,
+        "detail": "Set" if key_ok else ("Set but unexpected format" if key else "Not set — ANTHROPIC_API_KEY missing"),
+    })
+
+    # 2. Required files
+    required = ["agent.py", "index.html", "sdlc_pipeline.json", "version.json", "test.py"]
+    missing = [f for f in required if not os.path.exists(os.path.join(BASE, f))]
+    checks.append({
+        "name": "Required files",
+        "pass": not missing,
+        "detail": "All present" if not missing else f"Missing: {', '.join(missing)}",
+    })
+
+    # 3. Git remote reachable
+    try:
+        result = subprocess.run(
+            ["git", "ls-remote", "--exit-code", "origin", "HEAD"],
+            capture_output=True, text=True, timeout=10, cwd=BASE,
+        )
+        git_ok = result.returncode == 0
+        checks.append({
+            "name": "Git remote (GitHub)",
+            "pass": git_ok,
+            "detail": "Reachable" if git_ok else (result.stderr.strip()[:80] or "Unreachable"),
+        })
+    except subprocess.TimeoutExpired:
+        checks.append({"name": "Git remote (GitHub)", "pass": False, "detail": "Timeout after 10s"})
+    except Exception as e:
+        checks.append({"name": "Git remote (GitHub)", "pass": False, "detail": str(e)[:80]})
+
+    # 4. GitHub Pages live
+    try:
+        resp = _url.urlopen("https://kfox25.github.io/hello-scrum", timeout=8)
+        pages_ok = resp.status == 200
+        checks.append({
+            "name": "GitHub Pages live",
+            "pass": pages_ok,
+            "detail": f"HTTP {resp.status}" if pages_ok else f"HTTP {resp.status} — not live",
+        })
+    except Exception as e:
+        checks.append({"name": "GitHub Pages live", "pass": False, "detail": str(e)[:80]})
+
+    return jsonify({"checks": checks, "ready": all(c["pass"] for c in checks)})
+
+
 @app.route("/health")
 def health():
     index_path = os.path.join(BASE, "index.html")

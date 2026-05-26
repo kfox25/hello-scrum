@@ -252,6 +252,28 @@
     }
     #baselineStatus.ok  { color: #00ff9988; }
     #baselineStatus.err { color: #ff444488; }
+
+    /* ── readiness banner ── */
+    .readiness-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .readiness-status { font-family: monospace; font-size: 1rem; letter-spacing: 0.08em; }
+    .readiness-status.ready     { color: #00ff99; }
+    .readiness-status.not-ready { color: #ff4444; }
+    .readiness-status.checking  { color: #444; }
+    .readiness-refresh {
+      font-size: 0.72rem; color: #444; background: none;
+      border: 1px solid #222; border-radius: 4px;
+      padding: 0.2rem 0.6rem; cursor: pointer;
+    }
+    .readiness-refresh:hover { color: #888; border-color: #333; }
   </style>
 </head>
 <body>
@@ -266,6 +288,15 @@
     <a href="notes.html">Notes</a>
     <a href="health.html">Health</a>
   </nav>
+
+  <div class="section">
+    <h2>System Readiness</h2>
+    <div class="readiness-banner">
+      <span class="readiness-status checking" id="readiness-status">Checking…</span>
+      <button class="readiness-refresh" id="readiness-refresh">↺ Refresh</button>
+    </div>
+    <div class="check-list" id="readiness-checks"></div>
+  </div>
 
   <div class="section">
     <h2>App Baseline</h2>
@@ -376,6 +407,25 @@
     function fmtDate(s) {
       if (!s) return '—';
       return s.slice(0, 10);
+    }
+
+    async function loadReadiness() {
+      const statusEl = document.getElementById('readiness-status');
+      const checksEl = document.getElementById('readiness-checks');
+      statusEl.textContent = 'Checking…';
+      statusEl.className = 'readiness-status checking';
+      checksEl.innerHTML = '';
+      try {
+        const r = await fetch('/health/readiness');
+        const d = await r.json();
+        statusEl.textContent = d.ready ? '● SYSTEM READY' : '● NOT READY';
+        statusEl.className = 'readiness-status ' + (d.ready ? 'ready' : 'not-ready');
+        checksEl.innerHTML = (d.checks || []).map(c => checkRow(c.name, c.pass, c.detail)).join('');
+      } catch (e) {
+        statusEl.textContent = '● CHECK FAILED';
+        statusEl.className = 'readiness-status not-ready';
+        checksEl.innerHTML = checkRow('Server error', false, e.message);
+      }
     }
 
     async function load() {
@@ -553,6 +603,8 @@
       baselineAction('/baseline/save', 'current index.html saved as baseline');
     });
 
+    document.getElementById('readiness-refresh').addEventListener('click', loadReadiness);
+    loadReadiness();
     load();
   </script>
 </body>

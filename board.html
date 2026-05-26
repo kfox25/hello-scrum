@@ -467,7 +467,7 @@
         : '';
 
       const editBtn = isPending && !item.in_sprint
-        ? `<button class="edit-btn" onclick="editIdea('${item.id}', event)" title="Edit">✎</button>`
+        ? `<button class="ac-edit-btn" onclick="editIdea('${item.id}', event)" title="Edit">✎</button>`
         : '';
 
       const hasAC = !!(item.acceptance_criteria && item.acceptance_criteria.length);

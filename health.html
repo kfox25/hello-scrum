@@ -155,24 +155,6 @@
     .pattern-bar-fill { height: 100%; background: #ff4444; border-radius: 3px; }
     .pattern-count { font-size: 0.72rem; color: #999; font-family: monospace; min-width: 20px; text-align: right; }
 
-    /* ── recurring failures table ── */
-    .recur-list {
-      background: #111;
-      border: 1px solid #222;
-      border-radius: 8px;
-      padding: 0.75rem 1rem;
-    }
-    .recur-row {
-      font-size: 0.76rem;
-      color: #999;
-      padding: 0.3rem 0;
-      border-top: 1px solid #1a1a1a;
-      display: flex;
-      justify-content: space-between;
-    }
-    .recur-row:first-child { border-top: none; }
-    .recur-count { color: #ff4444; font-family: monospace; }
-
     .empty-note { font-size: 0.75rem; color: #999; padding: 0.5rem 0; }
 
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
@@ -449,11 +431,6 @@
   </div>
 
   <div class="section">
-    <h2>Recurring Failures</h2>
-    <div class="recur-list" id="recurring-failures"></div>
-  </div>
-
-  <div class="section">
     <h2>Coding Wisdom Quality</h2>
     <div class="bullet-list" id="system-wisdom-bullets"></div>
   </div>
@@ -671,18 +648,6 @@
             </div>`).join('')
         : `<div class="empty-note">No rejection patterns recorded yet</div>`;
       document.getElementById('rejection-patterns').innerHTML = rpHtml;
-
-      // ── Recurring Failures ─────────────────────────────────────────────────
-      const rf = hm.recurring_failures || {};
-      const rfEntries = Object.entries(rf).sort(([, a], [, b]) => b - a);
-      let rfHtml = rfEntries.length
-        ? rfEntries.map(([idea, count]) => `
-            <div class="recur-row">
-              <span>${esc(idea)}</span>
-              <span class="recur-count">${count}×</span>
-            </div>`).join('')
-        : `<div class="empty-note" style="padding:0.3rem 0">No recurring failures — each story failed at most once</div>`;
-      document.getElementById('recurring-failures').innerHTML = rfHtml;
 
       // ── Wisdom Quality ─────────────────────────────────────────────────────
       function renderWisdomBullets(containerId, wq) {

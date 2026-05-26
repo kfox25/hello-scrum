@@ -1,6 +1,6 @@
 {
-  "version": "0.1.66",
-  "deployed": "2026-05-25 22:39:40 CT",
+  "version": "0.1.67",
+  "deployed": "2026-05-26 01:40:08 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -338,6 +338,11 @@
       "version": "0.1.66",
       "date": "2026-05-25",
       "change": "Increased .changelog max-width from 480px to 500px for more room on longer change descriptions"
+    },
+    {
+      "version": "0.1.67",
+      "date": "2026-05-26",
+      "change": "Changed .tagline letter-spacing from 0.12em to 0.10em for a more polished, refined feel"
     }
   ]
 }

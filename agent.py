@@ -35,7 +35,10 @@ AC_WISDOM_FILE     = "ac_wisdom.json"
 _log_lines = []
 
 def log(msg=""):
-    print(msg, flush=True)
+    try:
+        print(msg, flush=True)
+    except OSError:
+        pass  # stdout pipe closed (e.g. SSE client disconnected) — continue silently
     _log_lines.append(str(msg))
     try:
         with open(LOG_FILE, "w", encoding="utf-8") as f:

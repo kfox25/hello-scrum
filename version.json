@@ -1,6 +1,6 @@
 {
-  "version": "0.1.58",
-  "deployed": "2026-05-25 20:40:26 CT",
+  "version": "0.1.59",
+  "deployed": "2026-05-25 20:40:42 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -298,6 +298,11 @@
       "version": "0.1.58",
       "date": "2026-05-25",
       "change": "Changed tagline font-size from 1.05rem to 1.2rem for improved visual hierarchy"
+    },
+    {
+      "version": "0.1.59",
+      "date": "2026-05-25",
+      "change": "Added horizontal rule separator between changelog and health monitor sections"
     }
   ]
 }

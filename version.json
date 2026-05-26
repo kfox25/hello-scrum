@@ -1,6 +1,6 @@
 {
-  "version": "0.1.57",
-  "deployed": "2026-05-25 20:40:03 CT",
+  "version": "0.1.58",
+  "deployed": "2026-05-25 20:40:26 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -293,6 +293,11 @@
       "version": "0.1.57",
       "date": "2026-05-25",
       "change": "Added last-updated element below version badge that fetches deployed field from /version.json on load and on Reset"
+    },
+    {
+      "version": "0.1.58",
+      "date": "2026-05-25",
+      "change": "Changed tagline font-size from 1.05rem to 1.2rem for improved visual hierarchy"
     }
   ]
 }

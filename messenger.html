@@ -159,9 +159,9 @@
       padding: 0.75rem 0.9rem; display: flex; flex-direction: column; gap: 0.4rem;
     }
     .update-idea { font-size: 0.82rem; color: #ccc; font-weight: 500; }
-    .update-changes { font-size: 0.75rem; color: #777; line-height: 1.4; }
+    .update-changes { font-size: 0.75rem; color: #aaa; line-height: 1.4; }
     .update-ac {
-      font-size: 0.74rem; color: #555; line-height: 1.5;
+      font-size: 0.74rem; color: #888; line-height: 1.5;
       border-top: 1px solid #1c1c1c; padding-top: 0.4rem; margin-top: 0.1rem;
     }
     .update-actions { display: flex; gap: 0.5rem; margin-top: 0.2rem; }
@@ -192,7 +192,7 @@
       background: #0d3320; border: 1px solid #00ff9960; border-radius: 3px;
       padding: 0.1rem 0.45rem; letter-spacing: 0.05em; margin-bottom: 0.15rem;
     }
-    .covered-label { font-size: 0.7rem; color: #444; font-style: italic; }
+    .covered-label { font-size: 0.7rem; color: #666; font-style: italic; }
   </style>
 </head>
 <body>
@@ -435,7 +435,7 @@
           for (const a of actionable) {
             const titleChanged = a.proposed_idea && a.proposed_idea !== a.idea;
             const titleHtml = titleChanged
-              ? `<div class="update-idea"><span style="color:#555;text-decoration:line-through">${esc(a.idea)}</span> → ${esc(a.proposed_idea)}</div>`
+              ? `<div class="update-idea"><span style="color:#777;text-decoration:line-through">${esc(a.idea)}</span> → ${esc(a.proposed_idea)}</div>`
               : `<div class="update-idea">${esc(a.idea)}</div>`;
             const acLines = (a.proposed_ac || []).map(c => `<div>· ${esc(c)}</div>`).join('');
             alignHtml += `<div class="alignment-card" data-id="${esc(a.id)}">
@@ -460,7 +460,7 @@
           for (const a of done) {
             alignHtml += `<div class="alignment-card alignment-done" data-id="${esc(a.id)}">
               <div class="update-idea">${esc(a.idea)}</div>
-              <div class="update-changes" style="color:#555">Already shipped.</div>
+              <div class="update-changes" style="color:#777">Already shipped.</div>
             </div>`;
           }
 

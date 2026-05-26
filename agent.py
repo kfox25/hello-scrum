@@ -255,6 +255,7 @@ def call_agent(idea, story, acceptance_criteria, index_html, version_json, times
     ac_str = "\n".join(f"- {c}" for c in acceptance_criteria) if acceptance_criteria else "(none)"
 
     prompt = f"""Deploy timestamp: {timestamp}
+Live URL: {REPO_URL}
 Idea: {idea}
 
 Story: {story or '(none)'}

@@ -56,7 +56,20 @@
       "code_review_reason": "The diff changes only the h1 color property from #00ff99 to red, updates version and deployment timestamps consistently across index.html and version.json, and adds an appropriate changelog entry\u2014all changes are syntactically valid with no code defects.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "The h1 color property was changed from #00ff99 to red, no other h1 styles were modified, and all test results confirm the implementation is correct.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779778350.542167,
+      "stage_times": {
+        "pull": 1779778350.542167,
+        "story": 1779778350.566149,
+        "code": 1779778355.72423,
+        "test": 1779778355.824781,
+        "code_review": 1779778356.045471,
+        "ac_check": 1779778357.177514,
+        "deploy": 1779778358.373045,
+        "done": 1779778361.861509
+      },
+      "tokens_in": 4317,
+      "tokens_out": 398
     },
     {
       "id": "1779777985511",

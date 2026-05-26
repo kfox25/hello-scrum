@@ -1,14 +1,14 @@
 {
   "bullets": [
-    "\u2022 Name the selector and property being changed explicitly.",
-    "\u2022 State exact before and after values with units.",
-    "\u2022 Verify only the stylesheet; reject out-of-scope changes.",
-    "\u2022 Assert sibling properties in the selector remain unchanged.",
-    "\u2022 Write AC as testable facts, not implementation steps.",
-    "\u2022 Ground assertions in observable computed CSS values.",
-    "\u2022 Use consistent units across all numeric comparisons.",
-    "\u2022 Exclude build steps, external tools, and file dependencies."
+    "\u2022 Name the CSS property and its exact before/after values.",
+    "\u2022 Specify the selector receiving the change without implementation detail.",
+    "\u2022 Assert unchanged properties remain unmodified in that selector.",
+    "\u2022 Describe the observable visual outcome users will see.",
+    "\u2022 Write assertions as testable facts, not procedural steps.",
+    "\u2022 Use consistent notation for all color and numeric values.",
+    "\u2022 Verify computed styles match assertions; reject scope creep.",
+    "\u2022 Avoid build processes, tooling requirements, and file structure specifics."
   ],
-  "synthesized_at": "2026-05-26 01:48:17",
-  "item_count": 76
+  "synthesized_at": "2026-05-26 01:52:52",
+  "item_count": 77
 }

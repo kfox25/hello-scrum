@@ -1,12 +1,11 @@
 {
   "bullets": [
-    "\u2022 Scope CSS patches to single property modifications per submission when possible.",
-    "\u2022 Assert modified property values in tests against parsed style block source.",
+    "\u2022 Validate color values against design system before submitting styling changes.",
     "\u2022 Document CSS property changes with before/after values in patch descriptions.",
-    "\u2022 Expand test coverage beyond CSS constraints to validate multi-file interactions.",
-    "\u2022 Maintain documented color palette reference for consistency across UI patches.",
-    "\u2022 Validate color values against design system before submitting styling changes."
+    "\u2022 Assert modified property values in tests against parsed style block source.",
+    "\u2022 Include version, timestamp, and changelog updates with every patch submission.",
+    "\u2022 Scope CSS patches to single property modifications per submission when possible."
   ],
-  "synthesized_at": "2026-05-26 01:48:15",
-  "finding_count": 288
+  "synthesized_at": "2026-05-26 01:52:50",
+  "finding_count": 291
 }

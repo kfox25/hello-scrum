@@ -108,7 +108,7 @@
 
     .card-content { flex: 1; display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
     .card-id   { font-size: 0.62rem; color: #333; font-family: monospace; }
-    .card-idea { font-size: 0.9rem; color: #ccc; }
+    .card-idea { font-size: 0.9rem; color: #ccc; display: flex; align-items: baseline; gap: 0.4rem; }
     .card-story { font-size: 0.78rem; color: #888; line-height: 1.4; }
     .card-story.elaborating { color: #444; font-style: italic; animation: pulse 1.5s ease-in-out infinite; }
     @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
@@ -502,7 +502,7 @@
                    ondrop="onCardDrop(event)">
         ${handle}
         <div class="card-content">
-          <div class="card-idea">${escHtml(item.idea)}</div>
+          <div class="card-idea"><span>${escHtml(item.idea)}</span>${editBtn}</div>
           <div class="card-id">#${item.id}</div>
           ${storyLine}
           ${acHtml}
@@ -511,7 +511,6 @@
         ${hermesTag}
         <span class="badge badge-${item.status}">${item.status}</span>
         ${retryBtn}
-        ${editBtn}
         ${deleteBtn}
       </div>`;
     }
@@ -741,7 +740,7 @@
       input.type = 'text';
       input.value = item.idea;
       input.className = 'card-idea-input';
-      ideaEl.replaceWith(input);
+      ideaEl.querySelector('span').replaceWith(input);
       input.focus();
       input.select();
       function save() {

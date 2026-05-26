@@ -1,6 +1,6 @@
 {
-  "version": "0.1.72",
-  "deployed": "2026-05-26 10:54:10 CT",
+  "version": "0.1.73",
+  "deployed": "2026-05-26 10:54:34 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -368,6 +368,11 @@
       "version": "0.1.72",
       "date": "2026-05-26",
       "change": "Added fixed footer with GitHub Pages link matching design system colors and hover state"
+    },
+    {
+      "version": "0.1.73",
+      "date": "2026-05-26",
+      "change": "Added subtle pulsing glow animation to version badge oscillating between no glow and rgba(0,255,153,0.5) over 2 seconds"
     }
   ]
 }

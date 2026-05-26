@@ -1,6 +1,6 @@
 {
-  "version": "0.1.64",
-  "deployed": "2026-05-25 22:31:24 CT",
+  "version": "0.1.65",
+  "deployed": "2026-05-25 22:39:26 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -328,6 +328,11 @@
       "version": "0.1.64",
       "date": "2026-05-25",
       "change": "Reduced h1 font-size from 3.2rem to 3rem for better balance with the tagline"
+    },
+    {
+      "version": "0.1.65",
+      "date": "2026-05-25",
+      "change": "Changed .health-title letter-spacing from 0.1em to 0.08em for a more compact feel"
     }
   ]
 }

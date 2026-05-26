@@ -396,40 +396,70 @@ def messenger_meeting():
         with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
             backlog = json.load(f)
         items = backlog.get("items", [])
-        pre_sprint = [
-            i for i in items
-            if i.get("status") == "pending" and not i.get("in_sprint")
-        ]
+
+        all_stories = [i for i in items if not i.get("opportunity")]
         stories_context = "\n".join(
             f"- [{i['id']}] {i.get('idea', '')}"
+            + (" [IN SPRINT]" if i.get("in_sprint") else "")
+            + (" [DONE]"      if i.get("status") == "done"   else "")
+            + (" [FAILED]"    if i.get("status") == "failed" else "")
             + (f" (AC: {'; '.join(i['acceptance_criteria'][:2])})" if i.get("acceptance_criteria") else "")
-            for i in pre_sprint[:20]
+            for i in all_stories[:40]
         ) or "(none)"
 
         client = anthropic.Anthropic()
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
-            max_tokens=900,
-            system="""You are a scrum assistant analyzing a meeting transcript.
+            max_tokens=1000,
+            system="""You are a scrum assistant analyzing a meeting transcript against a product backlog.
 
-Given a transcript and a list of existing pre-sprint stories, identify:
-1. NEW feature ideas not already covered by existing stories
-2. UPDATES to existing stories where the meeting clearly changed or added requirements
+For each topic discussed in the transcript:
+1. Find the closest matching story in the backlog (if one exists)
+2. Report what from the discussion relates to that story
+3. Determine if the story needs updating based on new or changed requirements
+4. Flag topics with no matching story as potential new stories
 
 Respond with JSON only (no markdown):
-{"new_stories": ["<title ≤10 words>"], "updates": [{"id": "<id>", "idea": "<original idea>", "proposed_idea": "<new title if it should change, else same as idea>", "changes": "<what changed and why>", "proposed_ac": ["<criterion>"]}]}
+{
+  "alignments": [
+    {"id": "<id>", "idea": "<story title>", "summary": "<what from discussion relates to this story>", "needs_update": false},
+    {"id": "<id>", "idea": "<story title>", "summary": "<what changed>", "needs_update": true, "proposed_idea": "<new title if changed, else omit>", "proposed_ac": ["<criterion>"]}
+  ],
+  "new_stories": ["<concise title ≤10 words>"]
+}
 
 Rules:
-- Only propose updates when the meeting explicitly changes requirements, not just mentions the topic
-- Update proposed_idea only if the title meaningfully changed; otherwise repeat the original
-- new_stories and updates arrays may be empty""",
-            messages=[{"role": "user", "content": f"TRANSCRIPT:\n{transcript}\n\nEXISTING PRE-SPRINT STORIES:\n{stories_context}"}],
+- Only include an alignment when there is a genuine topical match
+- Only set needs_update: true when the discussion clearly changes or adds to requirements
+- Only add to new_stories when NO existing story covers the topic
+- Both arrays may be empty""",
+            messages=[{"role": "user", "content": f"TRANSCRIPT:\n{transcript}\n\nFULL BACKLOG:\n{stories_context}"}],
         )
 
         text = response.content[0].text.strip()
         if text.startswith("```"):
             text = text.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
-        return jsonify(json.loads(text))
+        result = json.loads(text)
+
+        # Normalize: model sometimes returns 'updates' key instead of 'alignments'
+        if "alignments" not in result and "updates" in result:
+            result["alignments"] = result.pop("updates")
+
+        # Normalize each alignment: 'summary' → 'changes', ensure needs_update bool
+        for a in result.get("alignments", []):
+            if "changes" not in a and "summary" in a:
+                a["changes"] = a.pop("summary")
+            a.setdefault("needs_update", False)
+
+        # Enrich alignments with live status/in_sprint from backlog
+        item_map = {str(i["id"]): i for i in items}
+        for a in result.get("alignments", []):
+            live = item_map.get(str(a.get("id", "")))
+            if live:
+                a["status"]    = live.get("status", "pending")
+                a["in_sprint"] = live.get("in_sprint", False)
+
+        return jsonify(result)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

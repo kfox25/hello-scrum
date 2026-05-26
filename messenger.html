@@ -177,6 +177,22 @@
       background: #111; border: 1px solid #222; color: #555;
     }
     .dismiss-btn:hover { color: #999; border-color: #333; }
+
+    /* ── alignment cards ── */
+    .alignment-card {
+      background: #111; border: 1px solid #222; border-radius: 6px;
+      padding: 0.75rem 0.9rem; display: flex; flex-direction: column; gap: 0.4rem;
+      margin-bottom: 0.35rem;
+    }
+    .alignment-in-sprint { border-color: #00ff9960; background: #0b1f14; }
+    .alignment-done      { opacity: 0.4; }
+    .alignment-covered   { opacity: 0.55; }
+    .in-sprint-badge {
+      display: inline-block; font-size: 0.68rem; font-weight: 600; color: #00ff99;
+      background: #0d3320; border: 1px solid #00ff9960; border-radius: 3px;
+      padding: 0.1rem 0.45rem; letter-spacing: 0.05em; margin-bottom: 0.15rem;
+    }
+    .covered-label { font-size: 0.7rem; color: #444; font-style: italic; }
   </style>
 </head>
 <body>
@@ -394,9 +410,67 @@
         }
 
         const newStories = data.new_stories || [];
-        const updates    = data.updates    || [];
+        const alignments = data.alignments  || [];
         let html = '';
 
+        // ── Alignments (grouped by urgency) ──────────────────────────────
+        if (alignments.length) {
+          const inSprint   = alignments.filter(a => a.in_sprint);
+          const done       = alignments.filter(a => !a.in_sprint && a.status === 'done');
+          const actionable = alignments.filter(a => !a.in_sprint && a.status !== 'done' && a.needs_update);
+          const covered    = alignments.filter(a => !a.in_sprint && a.status !== 'done' && !a.needs_update);
+
+          for (const a of actionable) pendingUpdates[String(a.id)] = a;
+
+          let alignHtml = '';
+
+          for (const a of inSprint) {
+            alignHtml += `<div class="alignment-card alignment-in-sprint" data-id="${esc(a.id)}">
+              <span class="in-sprint-badge">● In Sprint</span>
+              <div class="update-idea">${esc(a.idea)}</div>
+              <div class="update-changes" style="color:#00ff9980">${esc(a.changes || 'Already queued for next sprint.')}</div>
+            </div>`;
+          }
+
+          for (const a of actionable) {
+            const titleChanged = a.proposed_idea && a.proposed_idea !== a.idea;
+            const titleHtml = titleChanged
+              ? `<div class="update-idea"><span style="color:#555;text-decoration:line-through">${esc(a.idea)}</span> → ${esc(a.proposed_idea)}</div>`
+              : `<div class="update-idea">${esc(a.idea)}</div>`;
+            const acLines = (a.proposed_ac || []).map(c => `<div>· ${esc(c)}</div>`).join('');
+            alignHtml += `<div class="alignment-card" data-id="${esc(a.id)}">
+              ${titleHtml}
+              <div class="update-changes">${esc(a.changes)}</div>
+              ${acLines ? `<div class="update-ac">${acLines}</div>` : ''}
+              <div class="update-actions">
+                <button class="apply-btn" data-id="${esc(a.id)}">Apply</button>
+                <button class="dismiss-btn">Dismiss</button>
+              </div>
+            </div>`;
+          }
+
+          for (const a of covered) {
+            alignHtml += `<div class="alignment-card alignment-covered" data-id="${esc(a.id)}">
+              <div class="update-idea">${esc(a.idea)}</div>
+              <div class="update-changes">${esc(a.changes || 'Already covered.')}</div>
+              <div class="covered-label">No changes needed</div>
+            </div>`;
+          }
+
+          for (const a of done) {
+            alignHtml += `<div class="alignment-card alignment-done" data-id="${esc(a.id)}">
+              <div class="update-idea">${esc(a.idea)}</div>
+              <div class="update-changes" style="color:#555">Already shipped.</div>
+            </div>`;
+          }
+
+          html += `<div>
+            <div class="extract-section-title">${alignments.length} alignment${alignments.length === 1 ? '' : 's'} found</div>
+            ${alignHtml}
+          </div>`;
+        }
+
+        // ── New stories ───────────────────────────────────────────────────
         if (newStories.length) {
           const cards = newStories.map(s =>
             `<div class="extract-story" data-story="${s.replace(/"/g,'&quot;')}">${esc(s)}</div>`
@@ -407,32 +481,8 @@
           </div>`;
         }
 
-        if (updates.length) {
-          for (const u of updates) pendingUpdates[u.id] = u;
-          const cards = updates.map(u => {
-            const titleChanged = u.proposed_idea && u.proposed_idea !== u.idea;
-            const titleHtml = titleChanged
-              ? `<div class="update-idea"><span style="color:#555;text-decoration:line-through">${esc(u.idea)}</span> → ${esc(u.proposed_idea)}</div>`
-              : `<div class="update-idea">${esc(u.idea)}</div>`;
-            const acLines = (u.proposed_ac || []).map(a => `<div>· ${esc(a)}</div>`).join('');
-            return `<div class="update-card" data-id="${esc(u.id)}">
-              ${titleHtml}
-              <div class="update-changes">${esc(u.changes)}</div>
-              ${acLines ? `<div class="update-ac">${acLines}</div>` : ''}
-              <div class="update-actions">
-                <button class="apply-btn" data-id="${esc(u.id)}">Apply</button>
-                <button class="dismiss-btn">Dismiss</button>
-              </div>
-            </div>`;
-          }).join('');
-          html += `<div>
-            <div class="extract-section-title">${updates.length} proposed update${updates.length === 1 ? '' : 's'}</div>
-            ${cards}
-          </div>`;
-        }
-
-        if (!newStories.length && !updates.length) {
-          html = '<div style="font-size:0.8rem;color:#555">No new stories or updates found in this transcript.</div>';
+        if (!newStories.length && !alignments.length) {
+          html = '<div style="font-size:0.8rem;color:#555">No matches or new stories found in this transcript.</div>';
         }
 
         resultsEl.innerHTML = html;
@@ -468,7 +518,7 @@
         const id     = applyBtn.dataset.id;
         const update = pendingUpdates[id];
         if (!update) return;
-        const card   = applyBtn.closest('.update-card');
+        const card   = applyBtn.closest('.alignment-card');
         try {
           await fetch('/messenger/apply-update', {
             method: 'POST',
@@ -485,7 +535,7 @@
       // Dismiss proposed update
       const dismissBtn = e.target.closest('.dismiss-btn');
       if (dismissBtn) {
-        const card = dismissBtn.closest('.update-card');
+        const card = dismissBtn.closest('.alignment-card');
         card.style.opacity = '0.25';
         card.style.pointerEvents = 'none';
       }

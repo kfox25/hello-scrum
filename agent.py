@@ -643,8 +643,10 @@ def synthesize_coding_wisdom(processed_items=None):
         prompt = (
             "Update these coding directives for an AI agent using new sprint findings. "
             "Incorporate new patterns, drop outdated ones. "
-            "Keep 6-8 bullets, ≤12 words each, plain text, imperative voice, "
-            "specific to HTML/CSS/JS patching. Start each with •\n\n"
+            "Output only directives warranted by the findings — up to 8 bullets, ≤12 words each, "
+            "plain text, imperative voice, specific to HTML/CSS/JS patching. Start each with •\n\n"
+            "Exclude: accessibility/WCAG concerns, sprint process advice, steps enforced by the pipeline "
+            "(tests, code review, deploy). Only include actionable coding mechanics.\n\n"
             "Current directives:\n" + "\n".join(f"• {b}" for b in existing_bullets) + "\n\n"
             "New findings:\n" + new_text
         )
@@ -661,9 +663,12 @@ def synthesize_coding_wisdom(processed_items=None):
             synthesize_ac_wisdom(processed_items)
             return
         prompt = (
-            "Distill these sprint findings into 6-8 coding directives for an AI agent.\n"
-            "Requirements: ≤12 words each, plain text (no markdown/bold), imperative voice, "
-            "specific to HTML/CSS/JS patching. Start each line with •\n\n"
+            "Distill these sprint findings into coding directives for an AI agent. "
+            "Output only directives warranted by the findings — up to 8 bullets, ≤12 words each, "
+            "plain text (no markdown/bold), imperative voice, specific to HTML/CSS/JS patching. "
+            "Start each line with •\n\n"
+            "Exclude: accessibility/WCAG concerns, sprint process advice, steps enforced by the pipeline "
+            "(tests, code review, deploy). Only include actionable coding mechanics.\n\n"
             "Findings:\n" + "\n".join(all_findings)
         )
 

@@ -1,14 +1,10 @@
 {
   "bullets": [
-    "\u2022 Validate HTML/CSS syntax with linter before submission; catch malformed markup early.",
-    "\u2022 Verify all `<style>` tags properly closed; never nest or leave unclosed blocks.",
-    "\u2022 Confirm HTML selectors exist in markup before writing CSS rules; read target file.",
-    "\u2022 Remove duplicate CSS selectors and conflicting rules; patch property values in place.",
-    "\u2022 Check `-webkit-text-fill-color` and `background-clip:text` conflicts; remove or override before setting color.",
-    "\u2022 Use hex color format exclusively; never mix rgb() and hex for identical colors.",
-    "\u2022 Update deployment metadata (version, timestamp, changelog) for every patch submission.",
-    "\u2022 Maintain test coverage; verify all changes pass linting and automated tests before merge."
+    "• Confirm HTML selectors exist in markup before writing CSS rules; read target file.",
+    "• Remove duplicate CSS selectors and conflicting rules; patch property values in place.",
+    "• Verify all `<style>` tags properly closed; never nest or leave unclosed blocks.",
+    "• Write valid HTML/CSS syntax — no unclosed tags, no malformed selectors."
   ],
-  "synthesized_at": "2026-05-25 12:12:09",
-  "finding_count": 229
+  "synthesized_at": "2026-05-25 17:59:54",
+  "finding_count": 248
 }

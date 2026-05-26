@@ -463,6 +463,43 @@ Rules:
                 a["status"]    = live.get("status", "pending")
                 a["in_sprint"] = live.get("in_sprint", False)
 
+        # Safety net: rescue any new_story that actually matches a backlog story
+        stop_words = {"a","an","the","in","on","at","to","for","of","and","or","is","it","be","that","this","with","as","from"}
+        aligned_ids = {str(a.get("id","")) for a in result.get("alignments", [])}
+
+        def kw(text):
+            return {w.lower() for w in re.findall(r'\w+', text) if w.lower() not in stop_words}
+
+        rescued, remaining = [], []
+        for ns in result.get("new_stories", []):
+            ns_kw = kw(ns)
+            best_score, best_item = 0.0, None
+            for i in all_stories:
+                story_kw = kw(i.get("idea", ""))
+                union = ns_kw | story_kw
+                if not union:
+                    continue
+                score = len(ns_kw & story_kw) / len(union)
+                if score > best_score:
+                    best_score, best_item = score, i
+            if best_item and str(best_item["id"]) in aligned_ids:
+                continue  # already aligned — drop duplicate from new_stories silently
+            if best_score >= 0.25 and best_item:
+                rescued.append({
+                    "id": best_item["id"],
+                    "idea": best_item.get("idea", ""),
+                    "changes": f'Mentioned as potential new story: "{ns}"',
+                    "needs_update": False,
+                    "status": best_item.get("status", "pending"),
+                    "in_sprint": best_item.get("in_sprint", False),
+                })
+                aligned_ids.add(str(best_item["id"]))
+            else:
+                remaining.append(ns)
+
+        result["alignments"] = result.get("alignments", []) + rescued
+        result["new_stories"] = remaining
+
         return jsonify(result)
 
     except Exception as e:

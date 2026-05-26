@@ -814,6 +814,7 @@
       input.value = '';
       renderBoard();
       persistBacklog();
+      if (position === 'top') elaborateStory(newItem.id);
     }
 
     // ── Story elaboration ─────────────────────────────────────────────────────

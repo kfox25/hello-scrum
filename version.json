@@ -1,6 +1,6 @@
 {
-  "version": "0.1.61",
-  "deployed": "2026-05-25 21:10:10 CT",
+  "version": "0.1.62",
+  "deployed": "2026-05-25 21:10:27 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -313,6 +313,11 @@
       "version": "0.1.61",
       "date": "2026-05-25",
       "change": "Reduced .meta font-size from 0.85rem to 0.8rem for less visual weight than version badge"
+    },
+    {
+      "version": "0.1.62",
+      "date": "2026-05-25",
+      "change": "Increased .changelog h2 letter-spacing from 0.1em to 0.15em for improved label readability"
     }
   ]
 }

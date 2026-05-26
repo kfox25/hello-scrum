@@ -1,6 +1,6 @@
 {
-  "version": "0.1.63",
-  "deployed": "2026-05-25 22:31:08 CT",
+  "version": "0.1.64",
+  "deployed": "2026-05-25 22:31:24 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -323,6 +323,11 @@
       "version": "0.1.63",
       "date": "2026-05-25",
       "change": "Changed .tagline font-weight from 400 to 300 for a lighter, more refined appearance"
+    },
+    {
+      "version": "0.1.64",
+      "date": "2026-05-25",
+      "change": "Reduced h1 font-size from 3.2rem to 3rem for better balance with the tagline"
     }
   ]
 }

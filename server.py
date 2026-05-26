@@ -385,6 +385,83 @@ If NO: respond with JSON only (no markdown):
         return jsonify({"reply": f"Server error: {e}", "stories": None}), 500
 
 
+@app.route("/messenger/meeting", methods=["POST"])
+def messenger_meeting():
+    try:
+        data = request.get_json()
+        transcript = (data or {}).get("transcript", "").strip()
+        if not transcript:
+            return jsonify({"error": "No transcript provided"}), 400
+
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+            backlog = json.load(f)
+        items = backlog.get("items", [])
+        pre_sprint = [
+            i for i in items
+            if i.get("status") == "pending" and not i.get("in_sprint")
+        ]
+        stories_context = "\n".join(
+            f"- [{i['id']}] {i.get('idea', '')}"
+            + (f" (AC: {'; '.join(i['acceptance_criteria'][:2])})" if i.get("acceptance_criteria") else "")
+            for i in pre_sprint[:20]
+        ) or "(none)"
+
+        client = anthropic.Anthropic()
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=900,
+            system="""You are a scrum assistant analyzing a meeting transcript.
+
+Given a transcript and a list of existing pre-sprint stories, identify:
+1. NEW feature ideas not already covered by existing stories
+2. UPDATES to existing stories where the meeting clearly changed or added requirements
+
+Respond with JSON only (no markdown):
+{"new_stories": ["<title ≤10 words>"], "updates": [{"id": "<id>", "idea": "<original idea>", "changes": "<what changed and why>", "proposed_ac": ["<criterion>"]}]}
+
+Rules:
+- Only propose updates when the meeting explicitly changes requirements, not just mentions the topic
+- new_stories and updates arrays may be empty""",
+            messages=[{"role": "user", "content": f"TRANSCRIPT:\n{transcript}\n\nEXISTING PRE-SPRINT STORIES:\n{stories_context}"}],
+        )
+
+        text = response.content[0].text.strip()
+        if text.startswith("```"):
+            text = text.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+        return jsonify(json.loads(text))
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/messenger/apply-update", methods=["POST"])
+def apply_story_update():
+    try:
+        data = request.get_json()
+        story_id    = (data or {}).get("id", "").strip()
+        proposed_ac = (data or {}).get("proposed_ac", [])
+        changes     = (data or {}).get("changes", "")
+
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+            backlog = json.load(f)
+        item = next((i for i in backlog.get("items", []) if i["id"] == story_id), None)
+        if not item:
+            return jsonify({"error": "Story not found"}), 404
+        if item.get("in_sprint") or item.get("status") != "pending":
+            return jsonify({"error": "Story is in sprint or already processed"}), 400
+
+        if proposed_ac:
+            item["acceptance_criteria"] = proposed_ac
+        if changes:
+            item["meeting_update"] = changes
+        with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
+            json.dump(backlog, f, indent=2)
+        return jsonify({"ok": True})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/messenger/choose", methods=["POST"])
 def messenger_choose():
     try:

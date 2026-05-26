@@ -1,14 +1,14 @@
 {
   "bullets": [
-    "\u2022 Name exact CSS selector and property; specify old and new numeric values with units.",
-    "\u2022 Confirm all other properties in that selector remain unchanged post-commit.",
-    "\u2022 Require CSS modification in style block diff; reject version or changelog-only changes.",
-    "\u2022 State conditions verifiable by inspecting file diffs alone, no tool execution needed.",
-    "\u2022 Ground AC in observable property values; omit why the change was made.",
-    "\u2022 Use before-and-after notation for numeric comparisons; include units consistently.",
-    "\u2022 Write AC as testable assertions, not implementation steps or rationale.",
-    "\u2022 Exclude non-stylesheet files, external dependencies, and accessibility requirements from scope."
+    "\u2022 Name the selector and property being changed explicitly.",
+    "\u2022 State exact before and after values with units.",
+    "\u2022 Verify only the stylesheet; reject out-of-scope changes.",
+    "\u2022 Assert sibling properties in the selector remain unchanged.",
+    "\u2022 Write AC as testable facts, not implementation steps.",
+    "\u2022 Ground assertions in observable computed CSS values.",
+    "\u2022 Use consistent units across all numeric comparisons.",
+    "\u2022 Exclude build steps, external tools, and file dependencies."
   ],
-  "synthesized_at": "2026-05-25 22:40:02",
+  "synthesized_at": "2026-05-26 01:48:17",
   "item_count": 76
 }

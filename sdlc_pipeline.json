@@ -128,7 +128,20 @@
       "code_review_reason": "The diff changes only the .changelog h2 color value from #555 to #4a4a4a, updates version and deployment timestamps consistently across index.html and version.json, and adds a corresponding changelog entry\u2014all syntactically valid with no code defects.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "The .changelog h2 color property is changed from #555 to #4a4a4a, all other styles remain unchanged, and exactly one color value is modified in the style block, satisfying all acceptance criteria.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779778075.524023,
+      "stage_times": {
+        "pull": 1779778075.524023,
+        "story": 1779778075.540134,
+        "code": 1779778079.803511,
+        "test": 1779778079.878138,
+        "code_review": 1779778080.078871,
+        "ac_check": 1779778082.341634,
+        "deploy": 1779778083.716264,
+        "done": 1779778086.956914
+      },
+      "tokens_in": 4933,
+      "tokens_out": 509
     },
     {
       "ac_check_reason": "The .tagline font-weight property was changed from 400 to 300, all other tagline styles remain unchanged, and the CSS modification is present in the style block with supporting version and changelog updates.",

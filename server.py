@@ -460,6 +460,107 @@ def serve_html(filename):
     return "Not found", 404
 
 
+@app.route("/health/impediments")
+def health_impediments():
+    impediments = []
+    try:
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+            backlog = json.load(f)
+        items = backlog.get("items", [])
+
+        # 1. Hermes reject rate
+        reviewed = [i for i in items if i.get("hermes_verdict")]
+        if len(reviewed) >= 5:
+            approved = sum(1 for i in reviewed if i["hermes_verdict"] == "approve")
+            rate = round(approved / len(reviewed) * 100)
+            if rate < 70:
+                pattern_map = {
+                    "CSS placement":   ["outside style", "style block", "style tag"],
+                    "Duplicate rules": ["duplicate", "redundant", "conflicting"],
+                    "Scope creep":     ["unrelated", "scope", "refactor"],
+                    "WCAG":            ["wcag", "contrast", "accessibility"],
+                    "Version/timestamp": ["version", "timestamp"],
+                }
+                rejected = [i for i in reviewed if i["hermes_verdict"] == "reject"]
+                buckets = {}
+                for i in rejected:
+                    reason = (i.get("code_review_reason") or i.get("ac_check_reason") or "").lower()
+                    for label, kws in pattern_map.items():
+                        if any(kw in reason for kw in kws):
+                            buckets[label] = buckets.get(label, 0) + 1
+                            break
+                top = max(buckets, key=buckets.get) if buckets else None
+                detail = f"{rate}% approve rate ({approved}/{len(reviewed)} reviewed)"
+                if top:
+                    detail += f" — {top} is the leading cause"
+                impediments.append({
+                    "severity": "critical" if rate < 50 else "warning",
+                    "label": "High rejection rate",
+                    "detail": detail,
+                })
+
+        # 2. Recurring failures
+        failed_items = [i for i in items if i.get("status") in ("failed",) or i.get("hermes_verdict") == "reject"]
+        idea_fails = {}
+        for i in failed_items:
+            key = i.get("idea", "")[:45].lower()
+            idea_fails[key] = idea_fails.get(key, 0) + 1
+        for idea, count in sorted(((k, v) for k, v in idea_fails.items() if v > 1), key=lambda x: x[1], reverse=True)[:3]:
+            impediments.append({
+                "severity": "warning",
+                "label": "Recurring failure",
+                "detail": f'"{idea}" failed {count}× — rewrite the story or AC',
+            })
+
+        # 3. Wisdom stale + sprints since retro
+        try:
+            with open(os.path.join(BASE, "retrospective.json"), encoding="utf-8") as f:
+                retro_data = json.load(f)
+            retros = retro_data.get("retros", [])
+            last_retro_str = retros[0]["sprint_date"] if retros else None
+
+            with open(os.path.join(BASE, "coding_wisdom.json"), encoding="utf-8") as f:
+                cw = json.load(f)
+            wisdom_at = cw.get("synthesized_at")
+
+            if last_retro_str and wisdom_at:
+                from datetime import datetime as _dt
+                if _dt.strptime(wisdom_at, "%Y-%m-%d %H:%M:%S") < _dt.strptime(last_retro_str, "%Y-%m-%d %H:%M:%S"):
+                    impediments.append({
+                        "severity": "warning",
+                        "label": "Wisdom stale",
+                        "detail": f"Coding wisdom last updated {wisdom_at[:10]} — run retro to refresh agent directives",
+                    })
+
+            if last_retro_str:
+                import time as _time
+                from datetime import datetime as _dt
+                retro_ts = _dt.strptime(last_retro_str, "%Y-%m-%d %H:%M:%S").timestamp()
+                since = sum(1 for i in items if i.get("started", 0) > retro_ts and i.get("status") in ("done", "failed"))
+                if since >= 10:
+                    impediments.append({"severity": "critical", "label": "Retro overdue", "detail": f"{since} stories since last retro — wisdom synthesis lagging"})
+                elif since >= 5:
+                    impediments.append({"severity": "warning", "label": "Retro overdue", "detail": f"{since} stories since last retro"})
+        except Exception:
+            pass
+
+        # 4. File size
+        try:
+            kb = round(os.path.getsize(os.path.join(BASE, "index.html")) / 1024, 1)
+            if kb >= 16:
+                impediments.append({"severity": "critical", "label": "File size critical", "detail": f"index.html is {kb}KB — consider baseline restore before next sprint"})
+            elif kb >= 8:
+                impediments.append({"severity": "warning", "label": "File size warning", "detail": f"index.html is {kb}KB — approaching 24KB budget"})
+        except Exception:
+            pass
+
+    except Exception as e:
+        impediments.append({"severity": "critical", "label": "Data error", "detail": str(e)[:100]})
+
+    impediments.sort(key=lambda x: {"critical": 0, "warning": 1}.get(x["severity"], 2))
+    return jsonify({"impediments": impediments, "clear": len(impediments) == 0})
+
+
 @app.route("/health/velocity")
 def health_velocity():
     try:

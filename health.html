@@ -284,6 +284,47 @@
     .vel-warn { color: #ffcc00; }
     .vel-fail { color: #ff4444; }
 
+    /* ── impediment list ── */
+    .imp-list {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .imp-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.65rem 1rem;
+      border-top: 1px solid #1a1a1a;
+    }
+    .imp-row:first-child { border-top: none; }
+    .imp-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+    .imp-dot.critical { background: #ff4444; }
+    .imp-dot.warning  { background: #ffcc00; }
+    .imp-label {
+      font-size: 0.8rem;
+      color: #ccc;
+      font-weight: 500;
+      min-width: 130px;
+    }
+    .imp-detail {
+      font-size: 0.75rem;
+      color: #999;
+      flex: 1;
+      line-height: 1.4;
+    }
+    .imp-clear {
+      font-size: 0.8rem;
+      color: #00ff99;
+      padding: 0.75rem 1rem;
+    }
+
     /* ── readiness banner ── */
     .readiness-banner {
       display: flex;
@@ -328,6 +369,13 @@
         <button class="readiness-refresh" id="readiness-refresh">↺ Refresh</button>
       </div>
       <div class="check-list" id="readiness-checks"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Impediment Radar</h2>
+    <div style="max-width:480px">
+      <div class="imp-list" id="imp-list"></div>
     </div>
   </div>
 
@@ -488,6 +536,26 @@
         document.getElementById('velocity-rows').innerHTML =
           rows || '<tr><td colspan="5" style="color:#999">No sprint history</td></tr>';
       } catch (e) {}
+    }
+
+    async function loadImpediments() {
+      const el = document.getElementById('imp-list');
+      try {
+        const r = await fetch('/health/impediments');
+        const d = await r.json();
+        if (d.clear) {
+          el.innerHTML = '<div class="imp-clear">● No impediments detected</div>';
+          return;
+        }
+        el.innerHTML = (d.impediments || []).map(i => `
+          <div class="imp-row">
+            <div class="imp-dot ${esc(i.severity)}"></div>
+            <div class="imp-label">${esc(i.label)}</div>
+            <div class="imp-detail">${esc(i.detail)}</div>
+          </div>`).join('');
+      } catch(e) {
+        el.innerHTML = '<div class="imp-clear" style="color:#999">Could not load</div>';
+      }
     }
 
     async function loadReadiness() {
@@ -686,6 +754,7 @@
 
     document.getElementById('readiness-refresh').addEventListener('click', loadReadiness);
     loadReadiness();
+    loadImpediments();
     loadVelocity();
     load();
   </script>

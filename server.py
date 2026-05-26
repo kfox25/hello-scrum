@@ -512,35 +512,18 @@ def health_impediments():
                 "detail": f'"{idea}" failed {count}× — rewrite the story or AC',
             })
 
-        # 3. Wisdom stale + sprints since retro
+        # 3. Retro never run (no entries at all)
         try:
             with open(os.path.join(BASE, "retrospective.json"), encoding="utf-8") as f:
                 retro_data = json.load(f)
             retros = retro_data.get("retros", [])
-            last_retro_str = retros[0]["sprint_date"] if retros else None
-
-            with open(os.path.join(BASE, "coding_wisdom.json"), encoding="utf-8") as f:
-                cw = json.load(f)
-            wisdom_at = cw.get("synthesized_at")
-
-            if last_retro_str and wisdom_at:
-                from datetime import datetime as _dt
-                if _dt.strptime(wisdom_at, "%Y-%m-%d %H:%M:%S") < _dt.strptime(last_retro_str, "%Y-%m-%d %H:%M:%S"):
-                    impediments.append({
-                        "severity": "warning",
-                        "label": "Wisdom stale",
-                        "detail": f"Coding wisdom last updated {wisdom_at[:10]} — run retro to refresh agent directives",
-                    })
-
-            if last_retro_str:
-                import time as _time
-                from datetime import datetime as _dt
-                retro_ts = _dt.strptime(last_retro_str, "%Y-%m-%d %H:%M:%S").timestamp()
-                since = sum(1 for i in items if i.get("started", 0) > retro_ts and i.get("status") in ("done", "failed"))
-                if since >= 10:
-                    impediments.append({"severity": "critical", "label": "Retro overdue", "detail": f"{since} stories since last retro — wisdom synthesis lagging"})
-                elif since >= 5:
-                    impediments.append({"severity": "warning", "label": "Retro overdue", "detail": f"{since} stories since last retro"})
+            processed_count = sum(1 for i in items if i.get("status") in ("done", "failed"))
+            if not retros and processed_count >= 3:
+                impediments.append({
+                    "severity": "warning",
+                    "label": "No retro data",
+                    "detail": f"{processed_count} stories processed but no retrospective findings recorded",
+                })
         except Exception:
             pass
 

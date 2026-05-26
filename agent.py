@@ -936,27 +936,29 @@ def main():
     if sprint_mode or loop_mode:
         processed = []
         sprint_wisdom = None  # story 1: CODING WISDOM only; SPRINT WISDOM loads after first item
-        last_retro = None
         while True:
             prev_len = len(processed)
             success = run_one(sprint_only=sprint_mode, processed=processed, sprint_wisdom=sprint_wisdom)
             item_was_processed = len(processed) > prev_len
             if item_was_processed:
-                log("\nGenerating sprint wisdom...")
-                try:
-                    sprint_wisdom, last_retro = generate_sprint_wisdom(processed)
-                except Exception as e:
-                    log(f"Sprint wisdom error: {e}")
-                    last_retro = None
+                backlog = load_backlog()
+                more_items = get_next_item(backlog, sprint_only=sprint_mode) is not None
+                if more_items:
+                    log("\nGenerating sprint wisdom...")
+                    try:
+                        sprint_wisdom, _ = generate_sprint_wisdom(processed)
+                    except Exception as e:
+                        log(f"Sprint wisdom error: {e}")
+                        sprint_wisdom = None
+                else:
+                    log("\nRunning final retrospective...")
+                    try:
+                        run_retro(processed)
+                    except Exception as e:
+                        log(f"Retro error: {e}")
+                    break
             if not item_was_processed:
                 break
-        # Final retro: persist the last generated retro and synthesize wisdom
-        if last_retro:
-            log("\nRunning final retrospective...")
-            try:
-                run_retro(processed, retro=last_retro)
-            except Exception as e:
-                log(f"Retro error: {e}")
     else:
         run_one()
 

@@ -352,7 +352,7 @@
           </div>
           <div class="step-card">
             <div class="step-name">Automated Tests <span style="color:#555;font-size:0.75rem;font-weight:400">(DoD)</span> <span class="agent-badge badge-system">test.py</span></div>
-            <div class="step-purpose">Four checks: index.html exists, title present, version numbers match, changelog entry exists for new version. Failure triggers automatic rollback.</div>
+            <div class="step-purpose">Seven DoD checks: deploy consistency (exists, version, timestamp, changelog) + CSS integrity (no rules outside style block, no duplicate h1, no -webkit-text-fill-color). Failure triggers automatic rollback.</div>
             <div class="step-io">
               <div class="io-item"><span class="io-label">Input</span> <span>index.html, version.json</span></div>
               <div class="io-item"><span class="io-label">Output</span> <span>Pass / Fail + rollback on failure</span></div>

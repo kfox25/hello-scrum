@@ -411,9 +411,13 @@
         if (updates.length) {
           for (const u of updates) pendingUpdates[u.id] = u;
           const cards = updates.map(u => {
+            const titleChanged = u.proposed_idea && u.proposed_idea !== u.idea;
+            const titleHtml = titleChanged
+              ? `<div class="update-idea"><span style="color:#555;text-decoration:line-through">${esc(u.idea)}</span> → ${esc(u.proposed_idea)}</div>`
+              : `<div class="update-idea">${esc(u.idea)}</div>`;
             const acLines = (u.proposed_ac || []).map(a => `<div>· ${esc(a)}</div>`).join('');
             return `<div class="update-card" data-id="${esc(u.id)}">
-              <div class="update-idea">${esc(u.idea)}</div>
+              ${titleHtml}
               <div class="update-changes">${esc(u.changes)}</div>
               ${acLines ? `<div class="update-ac">${acLines}</div>` : ''}
               <div class="update-actions">
@@ -470,7 +474,7 @@
           await fetch('/messenger/apply-update', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, proposed_ac: update.proposed_ac || [], changes: update.changes }),
+            body: JSON.stringify({ id, proposed_idea: update.proposed_idea || '', proposed_ac: update.proposed_ac || [], changes: update.changes }),
           });
           card.innerHTML = '<div style="font-size:0.78rem;color:#00ff99">✓ Update applied</div>';
         } catch (err) {

@@ -417,10 +417,11 @@ Given a transcript and a list of existing pre-sprint stories, identify:
 2. UPDATES to existing stories where the meeting clearly changed or added requirements
 
 Respond with JSON only (no markdown):
-{"new_stories": ["<title ≤10 words>"], "updates": [{"id": "<id>", "idea": "<original idea>", "changes": "<what changed and why>", "proposed_ac": ["<criterion>"]}]}
+{"new_stories": ["<title ≤10 words>"], "updates": [{"id": "<id>", "idea": "<original idea>", "proposed_idea": "<new title if it should change, else same as idea>", "changes": "<what changed and why>", "proposed_ac": ["<criterion>"]}]}
 
 Rules:
 - Only propose updates when the meeting explicitly changes requirements, not just mentions the topic
+- Update proposed_idea only if the title meaningfully changed; otherwise repeat the original
 - new_stories and updates arrays may be empty""",
             messages=[{"role": "user", "content": f"TRANSCRIPT:\n{transcript}\n\nEXISTING PRE-SPRINT STORIES:\n{stories_context}"}],
         )
@@ -438,9 +439,10 @@ Rules:
 def apply_story_update():
     try:
         data = request.get_json()
-        story_id    = (data or {}).get("id", "").strip()
-        proposed_ac = (data or {}).get("proposed_ac", [])
-        changes     = (data or {}).get("changes", "")
+        story_id      = (data or {}).get("id", "").strip()
+        proposed_ac   = (data or {}).get("proposed_ac", [])
+        proposed_idea = (data or {}).get("proposed_idea", "").strip()
+        changes       = (data or {}).get("changes", "")
 
         with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
             backlog = json.load(f)
@@ -450,6 +452,8 @@ def apply_story_update():
         if item.get("in_sprint") or item.get("status") != "pending":
             return jsonify({"error": "Story is in sprint or already processed"}), 400
 
+        if proposed_idea and proposed_idea != item.get("idea"):
+            item["idea"] = proposed_idea
         if proposed_ac:
             item["acceptance_criteria"] = proposed_ac
         if changes:

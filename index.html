@@ -107,8 +107,9 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.73</div>
-  <div class="meta">Last deployed: 2026-05-26 10:54:34 CT</div>
+  <div class="version" id="version-badge">v0.1.74</div>
+  <div class="meta" id="story-count"></div>
+  <div class="meta">Last deployed: 2026-05-26 14:36:46 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -133,6 +134,17 @@
         })
         .catch(() => {});
     }
+    function loadStoryCount() {
+      fetch('/version.json')
+        .then(r => r.json())
+        .then(data => {
+          const count = (data.changelog || []).length;
+          const el = document.getElementById('story-count');
+          if (el) el.textContent = count + ' stor' + (count === 1 ? 'y' : 'ies') + ' shipped';
+        })
+        .catch(() => {});
+    }
+    loadStoryCount();
     loadChangelog();
   </script>
   <footer class="site-footer">

@@ -525,7 +525,9 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, proposed_idea: update.proposed_idea || '', proposed_ac: update.proposed_ac || [], changes: update.changes }),
           });
-          card.innerHTML = '<div style="font-size:0.78rem;color:#00ff99">✓ Update applied</div>';
+          card.style.borderColor = '#00ff9960';
+          card.querySelector('.update-actions').innerHTML =
+            '<span style="font-size:0.75rem;color:#00ff99">✓ Applied</span>';
         } catch (err) {
           card.querySelector('.update-changes').textContent = 'Error: ' + err.message;
         }

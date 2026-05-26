@@ -177,6 +177,58 @@
 
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
     @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── baseline panel ── */
+    .baseline-panel {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .baseline-desc {
+      flex: 1;
+      font-size: 0.76rem;
+      color: #555;
+      line-height: 1.5;
+      min-width: 180px;
+    }
+    .baseline-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+    .btn-baseline {
+      font-family: monospace;
+      font-size: 0.82rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid;
+    }
+    .btn-restore {
+      color: #00ff99;
+      background: #0b1f14;
+      border-color: #00ff9940;
+    }
+    .btn-restore:hover { background: #0d2a1a; }
+    .btn-save {
+      color: #555;
+      background: #111;
+      border-color: #222;
+    }
+    .btn-save:hover { color: #aaa; border-color: #333; }
+    #baselineStatus {
+      font-size: 0.72rem;
+      margin-top: 0.4rem;
+      width: 100%;
+      color: #444;
+    }
+    #baselineStatus.ok  { color: #00ff9988; }
+    #baselineStatus.err { color: #ff444488; }
   </style>
 </head>
 <body>
@@ -191,6 +243,21 @@
     <a href="notes.html">Notes</a>
     <a href="health.html">Health</a>
   </nav>
+
+  <div class="section">
+    <h2>App Baseline</h2>
+    <div class="baseline-panel">
+      <div class="baseline-desc">
+        Restore index.html to the last saved baseline — a clean, streamlined state free of agent drift.
+        Use <em>Save as Baseline</em> to lock in the current app as the new clean state.
+      </div>
+      <div class="baseline-actions">
+        <button class="btn-baseline btn-restore" id="restoreBtn">Return to Baseline</button>
+        <button class="btn-baseline btn-save" id="saveBtn">Save as Baseline</button>
+      </div>
+      <div id="baselineStatus"></div>
+    </div>
+  </div>
 
   <div class="section">
     <h2>Configuration</h2>
@@ -418,6 +485,33 @@
       renderWisdomBullets('system-wisdom-bullets', wq.coding);
       renderWisdomBullets('story-wisdom-bullets', wq.ac);
     }
+
+    async function baselineAction(url, successMsg) {
+      const status = document.getElementById('baselineStatus');
+      status.textContent = 'working…';
+      status.className = '';
+      try {
+        const r = await fetch(url, { method: 'POST' });
+        const d = await r.json();
+        if (d.ok) {
+          status.textContent = successMsg;
+          status.className = 'ok';
+        } else {
+          status.textContent = d.error || 'failed';
+          status.className = 'err';
+        }
+      } catch (e) {
+        status.textContent = 'server error';
+        status.className = 'err';
+      }
+    }
+
+    document.getElementById('restoreBtn').addEventListener('click', () =>
+      baselineAction('/baseline/restore', 'index.html restored from baseline')
+    );
+    document.getElementById('saveBtn').addEventListener('click', () =>
+      baselineAction('/baseline/save', 'current index.html saved as baseline')
+    );
 
     load();
   </script>

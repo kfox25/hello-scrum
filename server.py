@@ -452,6 +452,14 @@ def ac_wisdom_json():
     return jsonify({"bullets": [], "synthesized_at": None, "item_count": 0})
 
 
+@app.route("/<path:filename>.html")
+def serve_html(filename):
+    safe = os.path.join(BASE, filename + ".html")
+    if os.path.isfile(safe):
+        return send_file(safe)
+    return "Not found", 404
+
+
 @app.route("/health")
 def health():
     index_path = os.path.join(BASE, "index.html")
@@ -475,6 +483,28 @@ def health():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/baseline/restore", methods=["POST"])
+def baseline_restore():
+    baseline_path = os.path.join(BASE, "index_baseline.html")
+    index_path = os.path.join(BASE, "index.html")
+    if not os.path.exists(baseline_path):
+        return jsonify({"error": "index_baseline.html not found"}), 404
+    import shutil
+    shutil.copy2(baseline_path, index_path)
+    return jsonify({"ok": True})
+
+
+@app.route("/baseline/save", methods=["POST"])
+def baseline_save():
+    baseline_path = os.path.join(BASE, "index_baseline.html")
+    index_path = os.path.join(BASE, "index.html")
+    if not os.path.exists(index_path):
+        return jsonify({"error": "index.html not found"}), 404
+    import shutil
+    shutil.copy2(index_path, baseline_path)
+    return jsonify({"ok": True})
 
 
 @app.route("/active/clear", methods=["POST"])

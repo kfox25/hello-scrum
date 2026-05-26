@@ -221,6 +221,29 @@
       border-color: #222;
     }
     .btn-save:hover { color: #aaa; border-color: #333; }
+    .btn-confirm {
+      color: #ffcc00;
+      background: #1a1500;
+      border-color: #ffcc0040;
+    }
+    .btn-confirm:hover { background: #221c00; }
+    .btn-cancel {
+      color: #555;
+      background: #111;
+      border-color: #222;
+    }
+    .btn-cancel:hover { color: #aaa; border-color: #333; }
+    #saveConfirm {
+      display: none;
+      align-items: center;
+      gap: 0.6rem;
+      flex-shrink: 0;
+    }
+    #saveConfirm.visible { display: flex; }
+    #saveConfirmLabel {
+      font-size: 0.76rem;
+      color: #888;
+    }
     #baselineStatus {
       font-size: 0.72rem;
       margin-top: 0.4rem;
@@ -254,6 +277,11 @@
       <div class="baseline-actions">
         <button class="btn-baseline btn-restore" id="restoreBtn">Return to Baseline</button>
         <button class="btn-baseline btn-save" id="saveBtn">Save as Baseline</button>
+        <div id="saveConfirm">
+          <span id="saveConfirmLabel">overwrite baseline?</span>
+          <button class="btn-baseline btn-confirm" id="saveConfirmYes">Yes, save it</button>
+          <button class="btn-baseline btn-cancel" id="saveConfirmNo">Cancel</button>
+        </div>
       </div>
       <div id="baselineStatus"></div>
     </div>
@@ -509,9 +537,21 @@
     document.getElementById('restoreBtn').addEventListener('click', () =>
       baselineAction('/baseline/restore', 'index.html restored from baseline')
     );
-    document.getElementById('saveBtn').addEventListener('click', () =>
-      baselineAction('/baseline/save', 'current index.html saved as baseline')
-    );
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      document.getElementById('saveBtn').style.display = 'none';
+      document.getElementById('saveConfirm').classList.add('visible');
+      document.getElementById('baselineStatus').textContent = '';
+      document.getElementById('baselineStatus').className = '';
+    });
+    document.getElementById('saveConfirmNo').addEventListener('click', () => {
+      document.getElementById('saveConfirm').classList.remove('visible');
+      document.getElementById('saveBtn').style.display = '';
+    });
+    document.getElementById('saveConfirmYes').addEventListener('click', () => {
+      document.getElementById('saveConfirm').classList.remove('visible');
+      document.getElementById('saveBtn').style.display = '';
+      baselineAction('/baseline/save', 'current index.html saved as baseline');
+    });
 
     load();
   </script>

@@ -147,8 +147,9 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.56</div>
-  <div class="meta">Last deployed: 2026-05-25 17:59:31 CT</div>
+  <div class="version" id="version-badge">v0.1.57</div>
+  <div class="meta">Last deployed: 2026-05-25 20:40:03 CT</div>
+  <div class="meta" id="last-updated">Last updated: —</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -170,6 +171,18 @@
     <button id="resetBtn">Reset</button>
   </div>
   <script>
+    function loadLastUpdated() {
+      fetch('/version.json')
+        .then(r => r.json())
+        .then(data => {
+          const deployed = data.deployed && String(data.deployed).trim();
+          document.getElementById('last-updated').textContent =
+            deployed ? 'Last updated: ' + deployed : 'Last updated: —';
+        })
+        .catch(() => {
+          document.getElementById('last-updated').textContent = 'Last updated: —';
+        });
+    }
     function escHtml(s) {
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
@@ -190,6 +203,7 @@
         .catch(() => {});
     }
     loadChangelog();
+    loadLastUpdated();
 
     function loadHealth() {
       fetch('/health')
@@ -233,6 +247,7 @@
       document.getElementById('hTokens').textContent = '';
       document.getElementById('hLines').textContent = '—';
       loadChangelog();
+      loadLastUpdated();
       loadHealth();
     });
   </script>

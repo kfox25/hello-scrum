@@ -324,7 +324,7 @@
       const staleCol = df.wisdom_stale ? 'yellow' : 'green';
       const staleVal = df.wisdom_stale ? 'Stale' : 'Fresh';
       const sprintsSince = df.sprints_since_retro ?? '—';
-      const sprintsCol = sprintsSince >= 5 ? 'yellow' : sprintsSince >= 10 ? 'red' : 'green';
+      const sprintsCol = sprintsSince >= 10 ? 'red' : sprintsSince >= 5 ? 'yellow' : 'green';
       document.getElementById('flow-cards').innerHTML =
         card('Last Sprint', df.last_sprint_ts ? relTime(df.last_sprint_ts) : '—', '') +
         card('Last Retro', fmtDate(df.last_retro_date), '') +

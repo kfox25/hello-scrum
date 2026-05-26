@@ -460,6 +460,75 @@ def serve_html(filename):
     return "Not found", 404
 
 
+@app.route("/health/velocity")
+def health_velocity():
+    try:
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+            backlog = json.load(f)
+        items = backlog.get("items", [])
+
+        processed = sorted(
+            [i for i in items if i.get("status") in ("done", "failed")
+             and i.get("started") and i.get("stage_times")],
+            key=lambda x: x["started"],
+        )
+
+        cycle_times, tokens_list = [], []
+        for i in processed:
+            if i["status"] == "done":
+                end = i["stage_times"].get("done") or i["stage_times"].get("deploy")
+                if end and end > i["started"]:
+                    cycle_times.append(end - i["started"])
+                t = (i.get("tokens_in") or 0) + (i.get("tokens_out") or 0)
+                if t:
+                    tokens_list.append(t)
+
+        avg_cycle  = round(sum(cycle_times[-10:])  / len(cycle_times[-10:]))  if cycle_times  else None
+        avg_tokens = round(sum(tokens_list[-10:]) / len(tokens_list[-10:])) if tokens_list else None
+
+        # Group into sprint runs — gap > 10 min = new sprint
+        GAP, sprints, current = 600, [], []
+        for i in processed:
+            if current and i["started"] - current[-1]["started"] > GAP:
+                sprints.append(current)
+                current = []
+            current.append(i)
+        if current:
+            sprints.append(current)
+
+        sprint_summaries = []
+        for run in sprints[-5:]:
+            done_items = [i for i in run if i["status"] == "done"]
+            run_cycles = []
+            for i in done_items:
+                end = i["stage_times"].get("done") or i["stage_times"].get("deploy")
+                if end and end > i["started"]:
+                    run_cycles.append(end - i["started"])
+            sprint_summaries.append({
+                "date":        datetime.fromtimestamp(run[0]["started"]).strftime("%m/%d"),
+                "stories":     len(run),
+                "done":        len(done_items),
+                "pass_rate":   round(len(done_items) / len(run) * 100) if run else 0,
+                "avg_cycle_s": round(sum(run_cycles) / len(run_cycles)) if run_cycles else None,
+            })
+
+        cutoff = time.time() - 30 * 86400
+        recent = [i for i in processed if i["started"] >= cutoff]
+        recent_done = sum(1 for i in recent if i["status"] == "done")
+
+        return jsonify({
+            "avg_cycle_s":    avg_cycle,
+            "avg_tokens":     avg_tokens,
+            "total_done":     sum(1 for i in processed if i["status"] == "done"),
+            "total_processed": len(processed),
+            "pass_rate_30d":  round(recent_done / len(recent) * 100) if recent else None,
+            "sprint_count":   len(sprints),
+            "recent_sprints": sprint_summaries,
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/health/readiness")
 def health_readiness():
     import urllib.request as _url

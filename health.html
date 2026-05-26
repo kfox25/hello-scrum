@@ -253,6 +253,37 @@
     #baselineStatus.ok  { color: #00ff9988; }
     #baselineStatus.err { color: #ff444488; }
 
+    /* ── velocity table ── */
+    .vel-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 0.6rem;
+    }
+    .vel-table th {
+      text-align: left;
+      color: #444;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.4rem 0.75rem;
+      border-bottom: 1px solid #222;
+    }
+    .vel-table td {
+      padding: 0.4rem 0.75rem;
+      color: #777;
+      border-bottom: 1px solid #161616;
+    }
+    .vel-table tr:last-child td { border-bottom: none; }
+    .vel-table td:first-child { color: #555; }
+    .vel-pass { color: #00ff99; }
+    .vel-warn { color: #ffcc00; }
+    .vel-fail { color: #ff4444; }
+
     /* ── readiness banner ── */
     .readiness-banner {
       display: flex;
@@ -339,6 +370,17 @@
   </div>
 
   <div class="section">
+    <h2>Velocity &amp; Cycle Time</h2>
+    <div class="cards" id="velocity-cards"></div>
+    <table class="vel-table" id="velocity-table">
+      <thead>
+        <tr><th>Date</th><th>Stories</th><th>Done</th><th>Pass %</th><th>Avg Cycle</th></tr>
+      </thead>
+      <tbody id="velocity-rows"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
     <h2>Sprint Trend</h2>
     <div class="trend-wrap">
       <div class="trend-dots" id="trend-dots"></div>
@@ -409,6 +451,41 @@
     function fmtDate(s) {
       if (!s) return '—';
       return s.slice(0, 10);
+    }
+
+    function fmtCycle(s) {
+      if (s == null) return '—';
+      if (s < 60) return s + 's';
+      return Math.floor(s / 60) + 'm ' + (s % 60) + 's';
+    }
+
+    async function loadVelocity() {
+      try {
+        const r = await fetch('/health/velocity');
+        const d = await r.json();
+        if (d.error) return;
+
+        const passCol = d.pass_rate_30d >= 80 ? 'green' : d.pass_rate_30d >= 50 ? 'yellow' : 'red';
+        document.getElementById('velocity-cards').innerHTML =
+          card('Avg Cycle Time', fmtCycle(d.avg_cycle_s), '', 'last 10 stories') +
+          card('Avg Tokens / Story', d.avg_tokens ? '~' + d.avg_tokens.toLocaleString() : '—', '', 'last 10 stories') +
+          card('Pass Rate (30d)', d.pass_rate_30d != null ? d.pass_rate_30d + '%' : '—', passCol,
+            `${d.total_done} shipped of ${d.total_processed} total`) +
+          card('Sprint Runs', d.sprint_count ?? '—', '');
+
+        const rows = (d.recent_sprints || []).reverse().map(s => {
+          const pCol = s.pass_rate >= 80 ? 'vel-pass' : s.pass_rate >= 50 ? 'vel-warn' : 'vel-fail';
+          return `<tr>
+            <td>${esc(s.date)}</td>
+            <td>${s.stories}</td>
+            <td>${s.done}</td>
+            <td class="${pCol}">${s.pass_rate}%</td>
+            <td>${fmtCycle(s.avg_cycle_s)}</td>
+          </tr>`;
+        }).join('');
+        document.getElementById('velocity-rows').innerHTML =
+          rows || '<tr><td colspan="5" style="color:#333">No sprint history</td></tr>';
+      } catch (e) {}
     }
 
     async function loadReadiness() {
@@ -607,6 +684,7 @@
 
     document.getElementById('readiness-refresh').addEventListener('click', loadReadiness);
     loadReadiness();
+    loadVelocity();
     load();
   </script>
 </body>

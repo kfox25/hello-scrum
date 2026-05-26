@@ -1,6 +1,6 @@
 {
-  "version": "0.1.71",
-  "deployed": "2026-05-26 01:52:30 CT",
+  "version": "0.1.72",
+  "deployed": "2026-05-26 10:54:10 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -363,6 +363,11 @@
       "version": "0.1.71",
       "date": "2026-05-26",
       "change": "Changed h1 title color from #00ff99 to red for baseline restore testing"
+    },
+    {
+      "version": "0.1.72",
+      "date": "2026-05-26",
+      "change": "Added fixed footer with GitHub Pages link matching design system colors and hover state"
     }
   ]
 }

@@ -417,25 +417,25 @@ def messenger_meeting():
             max_tokens=1000,
             system="""You are a scrum assistant analyzing a meeting transcript against a product backlog.
 
-For each topic discussed in the transcript:
-1. Find the closest matching story in the backlog (if one exists)
-2. Report what from the discussion relates to that story
-3. Determine if the story needs updating based on new or changed requirements
-4. Flag topics with no matching story as potential new stories
+Step 1 — Extract every distinct topic, feature, bug, or idea mentioned in the transcript.
+Step 2 — For EACH extracted topic, scan the ENTIRE backlog list for any story that covers it, even loosely. Done and failed stories count — a [DONE] story means the feature already shipped.
+Step 3 — Report results.
 
 Respond with JSON only (no markdown):
 {
   "alignments": [
-    {"id": "<id>", "idea": "<story title>", "summary": "<what from discussion relates to this story>", "needs_update": false},
-    {"id": "<id>", "idea": "<story title>", "summary": "<what changed>", "needs_update": true, "proposed_idea": "<new title if changed, else omit>", "proposed_ac": ["<criterion>"]}
+    {"id": "<id>", "idea": "<story title>", "changes": "<what from discussion relates>", "needs_update": false},
+    {"id": "<id>", "idea": "<story title>", "changes": "<what changed>", "needs_update": true, "proposed_idea": "<new title if changed, else omit>", "proposed_ac": ["<criterion>"]}
   ],
   "new_stories": ["<concise title ≤10 words>"]
 }
 
 Rules:
-- Only include an alignment when there is a genuine topical match
-- Only set needs_update: true when the discussion clearly changes or adds to requirements
-- Only add to new_stories when NO existing story covers the topic
+- Scan ALL backlog stories for each topic before declaring it a new story
+- [DONE] stories are valid alignments — they show a feature is already shipped
+- Only add to new_stories when NO existing story (including done ones) covers the topic
+- Never put the same topic in both alignments and new_stories — if it matched a story, it goes in alignments only
+- Only set needs_update: true when discussion clearly changes or adds requirements
 - Both arrays may be empty""",
             messages=[{"role": "user", "content": f"TRANSCRIPT:\n{transcript}\n\nFULL BACKLOG:\n{stories_context}"}],
         )

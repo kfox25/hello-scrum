@@ -135,7 +135,7 @@
     .ac-item-text { flex: 1; }
     .ac-edit-btn { font-size: 0.65rem; background: none; border: none; color: #333; cursor: pointer; padding: 0; flex-shrink: 0; line-height: 1; }
     .ac-edit-btn:hover { color: #00ff99; }
-    .ac-item-input { background: #111; border: 1px solid #00ff9940; color: #ccc; font-size: 0.73rem; font-family: inherit; padding: 0.1rem 0.3rem; border-radius: 3px; width: 100%; outline: none; }
+    .ac-item-input { background: #111; border: 1px solid #00ff9940; color: #ccc; font-size: 0.73rem; font-family: inherit; padding: 0.1rem 0.3rem; border-radius: 3px; width: 100%; outline: none; resize: vertical; min-height: 3rem; line-height: 1.5; }
 
     .badge {
       font-size: 0.7rem;
@@ -767,8 +767,7 @@
       const acItems = card.querySelectorAll('.ac-item');
       const acItem = acItems[idx];
       const textEl = acItem.querySelector('.ac-item-text');
-      const input = document.createElement('input');
-      input.type = 'text';
+      const input = document.createElement('textarea');
       input.value = item.acceptance_criteria[idx];
       input.className = 'ac-item-input';
       acItem.replaceWith(input);
@@ -787,8 +786,7 @@
       }
       input.addEventListener('blur', save);
       input.addEventListener('keydown', ev => {
-        if (ev.key === 'Enter') input.blur();
-        if (ev.key === 'Escape') { renderBoard(); }
+        if (ev.key === 'Escape') renderBoard();
       });
     }
 

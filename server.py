@@ -475,7 +475,10 @@ def health_readiness():
     })
 
     # 2. Required files
-    required = ["agent.py", "index.html", "sdlc_pipeline.json", "version.json", "test.py"]
+    required = [
+        "agent.py", "index.html", "sdlc_pipeline.json", "version.json", "test.py",
+        "shared.css", "coding_wisdom.json", "ac_wisdom.json", "index_baseline.html",
+    ]
     missing = [f for f in required if not os.path.exists(os.path.join(BASE, f))]
     checks.append({
         "name": "Required files",

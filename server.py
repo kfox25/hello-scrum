@@ -554,6 +554,86 @@ def health_impediments():
         except Exception:
             pass
 
+        # 5. Sprint backlog empty
+        sprint_pending = [i for i in items if i.get("in_sprint") and i.get("status") == "pending"]
+        if not sprint_pending:
+            impediments.append({
+                "severity": "warning",
+                "label": "Sprint backlog empty",
+                "detail": "No stories queued — move items to sprint to enable pipeline runs",
+            })
+
+        # 6. Opportunity pipeline dry
+        opp_items = [i for i in items if i.get("opportunity")]
+        if not opp_items:
+            impediments.append({
+                "severity": "warning",
+                "label": "Opportunity pipeline dry",
+                "detail": "No ideas in opportunity backlog — nothing feeding the pipeline",
+            })
+
+        # 7. Wisdom quality degraded
+        try:
+            _hex_re = re.compile(r'#[0-9a-fA-F]{3,6}\b')
+            _ver_re = re.compile(r'v\d+\.\d+')
+            _specific = ['index.html', '.hero', '.tagline', 'hello scrum', 'board.html']
+            with open(os.path.join(BASE, "coding_wisdom.json"), encoding="utf-8") as f:
+                _cw = json.load(f)
+            _bullets = _cw.get("bullets", [])
+            if _bullets:
+                _flagged = sum(
+                    1 for b in _bullets
+                    if _hex_re.search(b) or _ver_re.search(b) or any(s in b.lower() for s in _specific)
+                )
+                if _flagged >= 3 or _flagged / len(_bullets) > 0.5:
+                    impediments.append({
+                        "severity": "warning",
+                        "label": "Wisdom quality degraded",
+                        "detail": f"{_flagged}/{len(_bullets)} coding wisdom bullets contain story-specific or version-locked content",
+                    })
+        except Exception:
+            pass
+
+        # 8. Patch / pipeline failure rate (failures not caused by Hermes rejection)
+        processed_all = [i for i in items if i.get("status") in ("done", "failed")]
+        if len(processed_all) >= 5:
+            pipeline_fails = [
+                i for i in processed_all
+                if i.get("status") == "failed" and i.get("hermes_verdict") != "reject"
+            ]
+            pfail_rate = round(len(pipeline_fails) / len(processed_all) * 100)
+            if pfail_rate >= 20:
+                impediments.append({
+                    "severity": "critical" if pfail_rate >= 40 else "warning",
+                    "label": "Pipeline failure rate",
+                    "detail": f"{pfail_rate}% of stories failed in code/test/deploy stages — likely patch or test errors",
+                })
+
+        # 9. Cycle time regression (recent 5 vs prior 5 done stories)
+        try:
+            done_sorted = sorted(
+                [i for i in items if i.get("status") == "done" and i.get("started") and i.get("stage_times")],
+                key=lambda x: x["started"],
+            )
+            if len(done_sorted) >= 10:
+                def _cycle(i):
+                    end = i["stage_times"].get("done") or i["stage_times"].get("deploy")
+                    return (end - i["started"]) if end and end > i["started"] else None
+                recent_c = [c for c in (_cycle(i) for i in done_sorted[-5:]) if c]
+                prior_c  = [c for c in (_cycle(i) for i in done_sorted[-10:-5]) if c]
+                if recent_c and prior_c:
+                    recent_avg = sum(recent_c) / len(recent_c)
+                    prior_avg  = sum(prior_c)  / len(prior_c)
+                    if prior_avg > 0 and recent_avg > prior_avg * 1.5:
+                        pct = round((recent_avg / prior_avg - 1) * 100)
+                        impediments.append({
+                            "severity": "warning",
+                            "label": "Cycle time regression",
+                            "detail": f"Recent 5 stories avg {round(recent_avg)}s vs prior 5 avg {round(prior_avg)}s ({pct}% slower)",
+                        })
+        except Exception:
+            pass
+
     except Exception as e:
         impediments.append({"severity": "critical", "label": "Data error", "detail": str(e)[:100]})
 

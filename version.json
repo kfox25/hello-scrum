@@ -1,6 +1,6 @@
 {
-  "version": "0.1.59",
-  "deployed": "2026-05-25 20:40:42 CT",
+  "version": "0.1.60",
+  "deployed": "2026-05-25 21:09:55 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -303,6 +303,11 @@
       "version": "0.1.59",
       "date": "2026-05-25",
       "change": "Added horizontal rule separator between changelog and health monitor sections"
+    },
+    {
+      "version": "0.1.60",
+      "date": "2026-05-25",
+      "change": "Increased version badge border opacity from #00ff9933 to #00ff9966 for better visibility"
     }
   ]
 }

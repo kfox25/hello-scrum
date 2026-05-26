@@ -586,17 +586,26 @@ def synthesize_ac_wisdom(sprint_items=None):
             return
         prompt = (
             "Update these AC-writing directives for a scrum story writer using new outcomes. "
-            "Incorporate new patterns, drop outdated ones. "
-            "Keep 6-8 bullets, ≤12 words each, plain text, imperative voice. Start each with •\n\n"
+            "Extract principles about WHAT MAKES AC GOOD — specificity, testability, verifiability. "
+            "Do NOT copy AC content as directives. Incorporate new patterns, drop outdated ones. "
+            "Output only directives warranted by the outcomes — up to 8 bullets, ≤12 words each, "
+            "plain text, imperative voice. Start each with •\n\n"
+            "Exclude: story-specific implementation details, WCAG/accessibility concerns, "
+            "anything requiring external tools to verify.\n\n"
             "Current directives:\n" + "\n".join(f"• {b}" for b in existing_bullets) + "\n\n"
             "New story outcomes:\n" + json.dumps(new_outcomes, indent=2)
         )
     else:
         data = [to_entry(i) for i in all_completed[-50:]]
         prompt = (
-            "Distill 6-8 AC-writing directives for a scrum story writer from these outcomes.\n"
-            "Requirements: ≤12 words each, plain text, imperative voice, "
-            "specific to AI-implemented HTML/CSS/JS stories. Start each with •\n\n"
+            "Distill AC-writing directives for a scrum story writer from these outcomes. "
+            "Extract principles about WHAT MAKES AC GOOD — specificity, testability, verifiability. "
+            "Do NOT copy AC content as directives. "
+            "Output only directives warranted by the outcomes — up to 8 bullets, ≤12 words each, "
+            "plain text, imperative voice, specific to AI-implemented HTML/CSS/JS stories. "
+            "Start each with •\n\n"
+            "Exclude: story-specific implementation details, WCAG/accessibility concerns, "
+            "anything requiring external tools to verify.\n\n"
             "Story outcomes:\n" + json.dumps(data, indent=2)
         )
 

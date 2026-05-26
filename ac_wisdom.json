@@ -1,12 +1,10 @@
 {
   "bullets": [
-    "\u2022 Only write AC verifiable by reading HTML, CSS, or JS files directly; no external tools.",
-    "\u2022 Name the exact selector and file (e.g. 'h1 in index.html') rather than describing visual output.",
-    "\u2022 Specify exact hex color values; never describe colors by name or appearance.",
-    "\u2022 When changing a CSS property, include an AC that confirms no duplicate rules for that property exist.",
-    "\u2022 When changing a color, include an AC that -webkit-text-fill-color and background-clip:text are absent or overridden.",
-    "\u2022 Keep AC to 3-4 items; each must be a single testable fact about the file contents."
+    "• Specify exact element IDs and CSS class names from the actual markup.",
+    "• Include fallback state for missing or empty data (e.g. em-dash).",
+    "• Reference specific endpoint field names when AC involves data fetching.",
+    "• Each criterion must be verifiable by reading the diff alone — no external tools."
   ],
-  "synthesized_at": "2026-05-25 12:12:10",
-  "item_count": 61
+  "synthesized_at": "2026-05-25 17:59:56",
+  "item_count": 66
 }

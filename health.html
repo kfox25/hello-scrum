@@ -8,7 +8,7 @@
   <style>
     body { padding: 4.5rem 2rem 3rem; }
 
-    .section { margin-bottom: 2.5rem; }
+    .section { margin-bottom: 2rem; }
     h2 {
       font-size: 0.7rem;
       text-transform: uppercase;
@@ -17,10 +17,32 @@
       margin: 0 0 0.75rem;
     }
 
+    /* ── status row ── */
+    .status-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .status-row .section { margin-bottom: 0; }
+
+    /* ── detail rows ── */
+    .detail-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .detail-row .section { margin-bottom: 0; }
+
+    @media (max-width: 640px) {
+      .status-row, .detail-row { grid-template-columns: 1fr; }
+    }
+
     /* ── stat cards ── */
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 0.6rem;
     }
     .card {
@@ -56,52 +78,32 @@
       font-size: 0.8rem;
     }
     .check-row:first-child { border-top: none; }
-    .check-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
+    .check-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .check-dot.pass  { background: #00ff99; }
     .check-dot.fail  { background: #ff4444; }
     .check-dot.warn  { background: #ffcc00; }
     .check-name { color: #999; flex: 1; }
     .check-detail { font-size: 0.72rem; color: #999; }
 
-    /* ── sprint trend dots ── */
+    /* ── sprint trend ── */
     .trend-wrap {
       background: #111;
       border: 1px solid #222;
       border-radius: 8px;
       padding: 1rem 1.2rem;
     }
-    .trend-dots {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 0.5rem;
-    }
-    .dot {
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      cursor: default;
-      position: relative;
-    }
+    .trend-dots { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 0.5rem; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; cursor: default; position: relative; }
     .dot.done   { background: #00ff99; }
     .dot.failed { background: #ff4444; }
     .dot:hover::after {
       content: attr(data-tip);
       position: absolute;
-      bottom: 16px;
-      left: 50%;
+      bottom: 16px; left: 50%;
       transform: translateX(-50%);
-      background: #222;
-      border: 1px solid #333;
-      border-radius: 4px;
-      padding: 3px 7px;
-      font-size: 0.65rem;
-      color: #999;
-      white-space: nowrap;
-      z-index: 10;
+      background: #222; border: 1px solid #333; border-radius: 4px;
+      padding: 3px 7px; font-size: 0.65rem; color: #999;
+      white-space: nowrap; z-index: 10;
     }
     .trend-legend { font-size: 0.65rem; color: #999; }
 
@@ -113,26 +115,15 @@
       padding: 0.75rem 1rem;
     }
     .bullet-item {
-      font-size: 0.78rem;
-      color: #999;
-      line-height: 1.6;
-      padding: 0.3rem 0;
-      border-top: 1px solid #1c1c1c;
-      display: flex;
-      gap: 0.5rem;
-      align-items: flex-start;
+      font-size: 0.78rem; color: #999; line-height: 1.6;
+      padding: 0.3rem 0; border-top: 1px solid #1c1c1c;
+      display: flex; gap: 0.5rem; align-items: flex-start;
     }
     .bullet-item:first-child { border-top: none; }
     .bullet-flag {
-      font-size: 0.62rem;
-      background: #2a1a1a;
-      color: #ff6666;
-      border: 1px solid #3a1a1a;
-      border-radius: 3px;
-      padding: 1px 5px;
-      white-space: nowrap;
-      flex-shrink: 0;
-      margin-top: 2px;
+      font-size: 0.62rem; background: #2a1a1a; color: #ff6666;
+      border: 1px solid #3a1a1a; border-radius: 3px;
+      padding: 1px 5px; white-space: nowrap; flex-shrink: 0; margin-top: 2px;
     }
 
     /* ── rejection bars ── */
@@ -143,11 +134,8 @@
       padding: 0.75rem 1rem;
     }
     .pattern-row {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.35rem 0;
-      border-top: 1px solid #1a1a1a;
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.35rem 0; border-top: 1px solid #1a1a1a;
     }
     .pattern-row:first-child { border-top: none; }
     .pattern-label { font-size: 0.75rem; color: #999; min-width: 150px; }
@@ -157,167 +145,53 @@
 
     .empty-note { font-size: 0.75rem; color: #999; padding: 0.5rem 0; }
 
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 2.5rem; }
-    .two-col .section { margin-bottom: 0; }
-    @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
-
-    /* ── baseline panel ── */
-    .baseline-panel {
-      background: #111;
-      border: 1px solid #222;
-      border-radius: 8px;
-      padding: 0.9rem 1rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .baseline-desc {
-      flex: 1;
-      font-size: 0.76rem;
-      color: #999;
-      line-height: 1.5;
-      min-width: 180px;
-    }
-    .baseline-actions {
-      display: flex;
-      gap: 0.5rem;
-      flex-shrink: 0;
-    }
-    .btn-baseline {
-      font-family: monospace;
-      font-size: 0.82rem;
-      padding: 0.4rem 0.9rem;
-      border-radius: 4px;
-      cursor: pointer;
-      border: 1px solid;
-    }
-    .btn-restore {
-      color: #00ff99;
-      background: #0b1f14;
-      border-color: #00ff9940;
-    }
-    .btn-restore:hover { background: #0d2a1a; }
-    .btn-save {
-      color: #999;
-      background: #111;
-      border-color: #222;
-    }
-    .btn-save:hover { color: #ccc; border-color: #333; }
-    .btn-confirm {
-      color: #ffcc00;
-      background: #1a1500;
-      border-color: #ffcc0040;
-    }
-    .btn-confirm:hover { background: #221c00; }
-    .btn-cancel {
-      color: #999;
-      background: #111;
-      border-color: #222;
-    }
-    .btn-cancel:hover { color: #ccc; border-color: #333; }
-    #saveConfirm {
-      display: none;
-      align-items: center;
-      gap: 0.6rem;
-      flex-shrink: 0;
-    }
-    #saveConfirm.visible { display: flex; }
-    #saveConfirmLabel {
-      font-size: 0.76rem;
-      color: #999;
-    }
-    #baselineStatus {
-      font-size: 0.72rem;
-      margin-top: 0.4rem;
-      width: 100%;
-      color: #999;
-    }
-    #baselineStatus.ok  { color: #00ff9988; }
-    #baselineStatus.err { color: #ff444488; }
-
     /* ── velocity table ── */
     .vel-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.78rem;
-      background: #111;
-      border: 1px solid #222;
-      border-radius: 8px;
-      overflow: hidden;
-      margin-top: 0.6rem;
+      width: 100%; border-collapse: collapse; font-size: 0.78rem;
+      background: #111; border: 1px solid #222; border-radius: 8px; overflow: hidden;
     }
     .vel-table th {
-      text-align: left;
-      color: #999;
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      padding: 0.4rem 0.75rem;
-      border-bottom: 1px solid #222;
+      text-align: left; color: #999; font-size: 0.65rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 0.4rem 0.75rem; border-bottom: 1px solid #222;
     }
     .vel-table td {
-      padding: 0.4rem 0.75rem;
-      color: #999;
-      border-bottom: 1px solid #161616;
+      padding: 0.4rem 0.75rem; color: #999; border-bottom: 1px solid #161616;
     }
     .vel-table tr:last-child td { border-bottom: none; }
-    .vel-table td:first-child { color: #999; }
     .vel-pass { color: #00ff99; }
     .vel-warn { color: #ffcc00; }
     .vel-fail { color: #ff4444; }
 
-    /* ── impediment list ── */
-    .imp-list {
-      background: #111;
-      border: 1px solid #222;
-      border-radius: 8px;
-      overflow: hidden;
+    /* ── baseline panel ── */
+    .baseline-panel {
+      background: #111; border: 1px solid #222; border-radius: 8px;
+      padding: 0.9rem 1rem; display: flex; align-items: center;
+      gap: 1rem; flex-wrap: wrap;
     }
-    .imp-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
-      padding: 0.65rem 1rem;
-      border-top: 1px solid #1a1a1a;
-    }
-    .imp-row:first-child { border-top: none; }
-    .imp-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      margin-top: 5px;
-    }
-    .imp-dot.critical { background: #ff4444; }
-    .imp-dot.warning  { background: #ffcc00; }
-    .imp-label {
-      font-size: 0.8rem;
-      color: #ccc;
-      font-weight: 500;
-      min-width: 130px;
-    }
-    .imp-detail {
-      font-size: 0.75rem;
-      color: #999;
-      flex: 1;
-      line-height: 1.4;
-    }
-    .imp-clear {
-      font-size: 0.8rem;
-      color: #00ff99;
-      padding: 0.75rem 1rem;
-    }
+    .baseline-desc { flex: 1; font-size: 0.76rem; color: #999; line-height: 1.5; min-width: 180px; }
+    .baseline-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+    .btn-baseline { font-family: monospace; font-size: 0.82rem; padding: 0.4rem 0.9rem; border-radius: 4px; cursor: pointer; border: 1px solid; }
+    .btn-restore { color: #00ff99; background: #0b1f14; border-color: #00ff9940; }
+    .btn-restore:hover { background: #0d2a1a; }
+    .btn-save { color: #999; background: #111; border-color: #222; }
+    .btn-save:hover { color: #ccc; border-color: #333; }
+    .btn-confirm { color: #ffcc00; background: #1a1500; border-color: #ffcc0040; }
+    .btn-confirm:hover { background: #221c00; }
+    .btn-cancel { color: #999; background: #111; border-color: #222; }
+    .btn-cancel:hover { color: #ccc; border-color: #333; }
+    #saveConfirm { display: none; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+    #saveConfirm.visible { display: flex; }
+    #saveConfirmLabel { font-size: 0.76rem; color: #999; }
+    #baselineStatus { font-size: 0.72rem; margin-top: 0.4rem; width: 100%; color: #999; }
+    #baselineStatus.ok  { color: #00ff9988; }
+    #baselineStatus.err { color: #ff444488; }
 
     /* ── readiness banner ── */
     .readiness-banner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #111;
-      border: 1px solid #222;
-      border-radius: 8px;
-      padding: 0.75rem 1rem;
-      margin-bottom: 0.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      background: #111; border: 1px solid #222; border-radius: 8px;
+      padding: 0.75rem 1rem; margin-bottom: 0.5rem;
     }
     .readiness-status { font-family: monospace; font-size: 1rem; letter-spacing: 0.08em; }
     .readiness-status.ready     { color: #00ff99; }
@@ -329,6 +203,20 @@
       padding: 0.2rem 0.6rem; cursor: pointer;
     }
     .readiness-refresh:hover { color: #ccc; border-color: #333; }
+
+    /* ── impediment list ── */
+    .imp-list { background: #111; border: 1px solid #222; border-radius: 8px; overflow: hidden; }
+    .imp-row {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      padding: 0.65rem 1rem; border-top: 1px solid #1a1a1a;
+    }
+    .imp-row:first-child { border-top: none; }
+    .imp-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+    .imp-dot.critical { background: #ff4444; }
+    .imp-dot.warning  { background: #ffcc00; }
+    .imp-label { font-size: 0.8rem; color: #ccc; font-weight: 500; min-width: 130px; }
+    .imp-detail { font-size: 0.75rem; color: #999; flex: 1; line-height: 1.4; }
+    .imp-clear { font-size: 0.8rem; color: #00ff99; padding: 0.75rem 1rem; }
   </style>
 </head>
 <body>
@@ -344,7 +232,7 @@
     <a href="health.html">Health</a>
   </nav>
 
-  <div class="two-col">
+  <div class="status-row">
     <div class="section">
       <h2>System Readiness</h2>
       <div class="readiness-banner">
@@ -356,6 +244,53 @@
     <div class="section">
       <h2>Impediment Radar</h2>
       <div class="imp-list" id="imp-list"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Pipeline Metrics</h2>
+    <div class="cards" id="metrics-cards"></div>
+  </div>
+
+  <div class="detail-row">
+    <div class="section">
+      <h2>Sprint History</h2>
+      <table class="vel-table" id="velocity-table">
+        <thead>
+          <tr><th>Date</th><th>Stories</th><th>Done</th><th>Pass %</th><th>Avg Cycle</th></tr>
+        </thead>
+        <tbody id="velocity-rows"></tbody>
+      </table>
+    </div>
+    <div class="section">
+      <h2>Sprint Trend</h2>
+      <div class="trend-wrap">
+        <div class="trend-dots" id="trend-dots"></div>
+        <div class="trend-legend" id="trend-legend"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-row">
+    <div class="section">
+      <h2>Rejection Patterns</h2>
+      <div class="pattern-list" id="rejection-patterns"></div>
+    </div>
+    <div class="section">
+      <h2>Configuration &amp; CSS</h2>
+      <div class="check-list" id="config-checks"></div>
+      <div class="check-list" style="margin-top:0.6rem" id="css-checks"></div>
+    </div>
+  </div>
+
+  <div class="detail-row">
+    <div class="section">
+      <h2>Coding Wisdom</h2>
+      <div class="bullet-list" id="system-wisdom-bullets"></div>
+    </div>
+    <div class="section">
+      <h2>AC Wisdom</h2>
+      <div class="bullet-list" id="story-wisdom-bullets"></div>
     </div>
   </div>
 
@@ -376,65 +311,6 @@
         </div>
       </div>
       <div id="baselineStatus"></div>
-    </div>
-  </div>
-
-  <div class="two-col">
-    <div class="section">
-      <h2>Configuration</h2>
-      <div class="check-list" id="config-checks"></div>
-    </div>
-    <div class="section">
-      <h2>CSS Quality — index.html</h2>
-      <div class="check-list" id="css-checks"></div>
-      <div class="cards" style="margin-top:0.6rem" id="file-cards"></div>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Pipeline Data Flow</h2>
-    <div class="cards" id="flow-cards"></div>
-  </div>
-
-  <div class="two-col">
-    <div class="section">
-      <h2>Velocity &amp; Cycle Time</h2>
-      <div class="cards" id="velocity-cards"></div>
-      <table class="vel-table" id="velocity-table">
-        <thead>
-          <tr><th>Date</th><th>Stories</th><th>Done</th><th>Pass %</th><th>Avg Cycle</th></tr>
-        </thead>
-        <tbody id="velocity-rows"></tbody>
-      </table>
-    </div>
-    <div class="section">
-      <h2>Sprint Trend</h2>
-      <div class="trend-wrap">
-        <div class="trend-dots" id="trend-dots"></div>
-        <div class="trend-legend" id="trend-legend"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="two-col">
-    <div class="section">
-      <h2>Hermes Consistency</h2>
-      <div class="cards" id="hermes-cards"></div>
-    </div>
-    <div class="section">
-      <h2>Rejection Patterns</h2>
-      <div class="pattern-list" id="rejection-patterns"></div>
-    </div>
-  </div>
-
-  <div class="two-col">
-    <div class="section">
-      <h2>Coding Wisdom Quality</h2>
-      <div class="bullet-list" id="system-wisdom-bullets"></div>
-    </div>
-    <div class="section">
-      <h2>AC Wisdom Quality</h2>
-      <div class="bullet-list" id="story-wisdom-bullets"></div>
     </div>
   </div>
 
@@ -464,13 +340,10 @@
       </div>`;
     }
 
-    function relTime(ts) {
-      if (!ts) return '—';
-      const ago = (Date.now() / 1000) - ts;
-      if (ago < 60)    return Math.round(ago) + 's ago';
-      if (ago < 3600)  return Math.round(ago / 60) + 'm ago';
-      if (ago < 86400) return Math.round(ago / 3600) + 'h ago';
-      return Math.round(ago / 86400) + 'd ago';
+    function fmtCycle(s) {
+      if (s == null) return '—';
+      if (s < 60) return s + 's';
+      return Math.floor(s / 60) + 'm ' + (s % 60) + 's';
     }
 
     function fmtDate(s) {
@@ -478,39 +351,23 @@
       return s.slice(0, 10);
     }
 
-    function fmtCycle(s) {
-      if (s == null) return '—';
-      if (s < 60) return s + 's';
-      return Math.floor(s / 60) + 'm ' + (s % 60) + 's';
-    }
-
-    async function loadVelocity() {
+    async function loadReadiness() {
+      const statusEl = document.getElementById('readiness-status');
+      const checksEl = document.getElementById('readiness-checks');
+      statusEl.textContent = 'Checking…';
+      statusEl.className = 'readiness-status checking';
+      checksEl.innerHTML = '';
       try {
-        const r = await fetch('/health/velocity');
+        const r = await fetch('/health/readiness');
         const d = await r.json();
-        if (d.error) return;
-
-        const passCol = d.pass_rate_30d >= 80 ? 'green' : d.pass_rate_30d >= 50 ? 'yellow' : 'red';
-        document.getElementById('velocity-cards').innerHTML =
-          card('Avg Cycle Time', fmtCycle(d.avg_cycle_s), '', 'last 10 stories') +
-          card('Avg Tokens / Story', d.avg_tokens ? '~' + d.avg_tokens.toLocaleString() : '—', '', 'last 10 stories') +
-          card('Pass Rate (30d)', d.pass_rate_30d != null ? d.pass_rate_30d + '%' : '—', passCol,
-            `${d.total_done} shipped of ${d.total_processed} total`) +
-          card('Sprint Runs', d.sprint_count ?? '—', '');
-
-        const rows = (d.recent_sprints || []).reverse().map(s => {
-          const pCol = s.pass_rate >= 80 ? 'vel-pass' : s.pass_rate >= 50 ? 'vel-warn' : 'vel-fail';
-          return `<tr>
-            <td>${esc(s.date)}</td>
-            <td>${s.stories}</td>
-            <td>${s.done}</td>
-            <td class="${pCol}">${s.pass_rate}%</td>
-            <td>${fmtCycle(s.avg_cycle_s)}</td>
-          </tr>`;
-        }).join('');
-        document.getElementById('velocity-rows').innerHTML =
-          rows || '<tr><td colspan="5" style="color:#999">No sprint history</td></tr>';
-      } catch (e) {}
+        statusEl.textContent = d.ready ? '● SYSTEM READY' : '● NOT READY';
+        statusEl.className = 'readiness-status ' + (d.ready ? 'ready' : 'not-ready');
+        checksEl.innerHTML = (d.checks || []).map(c => checkRow(c.name, c.pass, c.detail)).join('');
+      } catch (e) {
+        statusEl.textContent = '● CHECK FAILED';
+        statusEl.className = 'readiness-status not-ready';
+        checksEl.innerHTML = checkRow('Server error', false, e.message);
+      }
     }
 
     async function loadImpediments() {
@@ -533,109 +390,67 @@
       }
     }
 
-    async function loadReadiness() {
-      const statusEl = document.getElementById('readiness-status');
-      const checksEl = document.getElementById('readiness-checks');
-      statusEl.textContent = 'Checking…';
-      statusEl.className = 'readiness-status checking';
-      checksEl.innerHTML = '';
-      try {
-        const r = await fetch('/health/readiness');
-        const d = await r.json();
-        statusEl.textContent = d.ready ? '● SYSTEM READY' : '● NOT READY';
-        statusEl.className = 'readiness-status ' + (d.ready ? 'ready' : 'not-ready');
-        checksEl.innerHTML = (d.checks || []).map(c => checkRow(c.name, c.pass, c.detail)).join('');
-      } catch (e) {
-        statusEl.textContent = '● CHECK FAILED';
-        statusEl.className = 'readiness-status not-ready';
-        checksEl.innerHTML = checkRow('Server error', false, e.message);
-      }
-    }
-
-    async function load() {
-      const [diagRes, healthRes] = await Promise.all([
+    async function loadAll() {
+      const [diagRes, healthRes, velRes] = await Promise.all([
         fetch('/health/diagnostics'),
         fetch('/health'),
+        fetch('/health/velocity'),
       ]);
-      const d = await diagRes.json();
-      const h = await healthRes.json();
+      const diag   = await diagRes.json();
+      const health = await healthRes.json();
+      const vel    = await velRes.json();
 
-      // ── Configuration ──────────────────────────────────────────────────────
-      const cfg = d.config || {};
-      let cfgHtml = '';
-      for (const key of ['CODING_WISDOM_FILE', 'AC_WISDOM_FILE', 'RETRO_FILE']) {
-        const c = cfg[key] || {};
-        const pass = c.exists;
-        const detail = c.value
-          ? (pass ? c.value : `${c.value} — FILE NOT FOUND`)
-          : 'not found in agent.py';
-        cfgHtml += checkRow(key, pass, detail);
-      }
-      document.getElementById('config-checks').innerHTML = cfgHtml;
+      // ── Pipeline Metrics bar ───────────────────────────────────────────────
+      const hm = diag.hermes || {};
+      const approveCol    = hm.approve_rate >= 70 ? 'green' : hm.approve_rate >= 40 ? 'yellow' : 'red';
+      const approveBarCls = hm.approve_rate >= 70 ? ''      : hm.approve_rate >= 40 ? 'yellow' : 'red';
+      const passCol = vel.pass_rate_30d >= 80 ? 'green' : vel.pass_rate_30d >= 50 ? 'yellow' : 'red';
+      const hCol = health.status === 'healthy' ? 'green' : health.status === 'warning' ? 'yellow' : 'red';
+      const bCol = health.status === 'healthy' ? ''      : health.status === 'warning' ? 'yellow' : 'red';
+      const pct  = Math.min(100, Math.round((health.kb / 24) * 100));
 
-      // ── CSS Quality ────────────────────────────────────────────────────────
-      const css = d.css_checks || [];
-      document.getElementById('css-checks').innerHTML =
-        css.map(c => checkRow(c.name, c.pass, c.detail)).join('') ||
-        '<div class="check-row"><div class="check-name" style="color:#999">No data</div></div>';
+      document.getElementById('metrics-cards').innerHTML =
+        card('Avg Cycle Time',   fmtCycle(vel.avg_cycle_s), '', 'last 10 stories') +
+        card('Pass Rate (30d)',  vel.pass_rate_30d != null ? vel.pass_rate_30d + '%' : '—', passCol,
+          `${vel.total_done || 0} of ${vel.total_processed || 0} shipped`) +
+        card('Hermes Approve',   (hm.approve_rate ?? 0) + '%', approveCol,
+          `${hm.approved ?? 0} / ${hm.total_reviewed ?? 0} reviewed`,
+          hm.approve_rate ?? 0, approveBarCls) +
+        card('Sprint Runs',      vel.sprint_count ?? '—', '') +
+        card('File Size',        (health.kb || 0) + ' KB', hCol,
+          `${pct}% of 24 KB budget`, pct, bCol);
 
-      // file size cards
-      const pct = Math.min(100, Math.round((h.kb / 24) * 100));
-      const hCol = h.status === 'healthy' ? 'green' : h.status === 'warning' ? 'yellow' : 'red';
-      const bCol = h.status === 'healthy' ? '' : h.status === 'warning' ? 'yellow' : 'red';
-      document.getElementById('file-cards').innerHTML =
-        card('File Size', h.kb + ' KB', hCol, `${pct}% of 24 KB budget`, pct, bCol) +
-        card('Est. Tokens', '~' + (h.tokens_est || 0).toLocaleString(), hCol) +
-        card('Lines', h.lines || 0, '');
-
-      // ── Data Flow ──────────────────────────────────────────────────────────
-      const df = d.data_flow || {};
-      const staleCol = df.wisdom_stale ? 'yellow' : 'green';
-      const staleVal = df.wisdom_stale ? 'Stale' : 'Fresh';
-      const sprintsSince = df.sprints_since_retro ?? '—';
-      const sprintsCol = sprintsSince >= 10 ? 'red' : sprintsSince >= 5 ? 'yellow' : 'green';
-      document.getElementById('flow-cards').innerHTML =
-        card('Last Sprint', df.last_sprint_ts ? relTime(df.last_sprint_ts) : '—', '') +
-        card('Last Retro', fmtDate(df.last_retro_date), '') +
-        card('Retro Count', df.retro_count ?? '—', '') +
-        card('Wisdom Sync', staleVal, staleCol,
-          df.coding_wisdom_at ? 'Synced ' + fmtDate(df.coding_wisdom_at) : 'Never synthesized') +
-        card('Sprints Since Retro', sprintsSince, typeof sprintsSince === 'number' ? sprintsCol : '');
+      // ── Sprint History table ───────────────────────────────────────────────
+      const rows = (vel.recent_sprints || []).reverse().map(s => {
+        const pCol = s.pass_rate >= 80 ? 'vel-pass' : s.pass_rate >= 50 ? 'vel-warn' : 'vel-fail';
+        return `<tr>
+          <td>${esc(s.date)}</td>
+          <td>${s.stories}</td>
+          <td>${s.done}</td>
+          <td class="${pCol}">${s.pass_rate}%</td>
+          <td>${fmtCycle(s.avg_cycle_s)}</td>
+        </tr>`;
+      }).join('');
+      document.getElementById('velocity-rows').innerHTML =
+        rows || '<tr><td colspan="5" style="color:#999">No sprint history</td></tr>';
 
       // ── Sprint Trend ───────────────────────────────────────────────────────
-      const trend = d.sprint_trend || [];
-      let dotsHtml = '';
-      let doneN = 0, failN = 0;
+      const trend = diag.sprint_trend || [];
+      let dotsHtml = '', doneN = 0, failN = 0;
       for (const s of trend) {
-        const label = s.idea ? esc(s.idea) : s.status;
-        dotsHtml += `<div class="dot ${s.status}" data-tip="${label}"></div>`;
-        if (s.status === 'done') doneN++;
-        else failN++;
+        dotsHtml += `<div class="dot ${s.status}" data-tip="${esc(s.idea || s.status)}"></div>`;
+        s.status === 'done' ? doneN++ : failN++;
       }
-      if (!trend.length) dotsHtml = '<div style="font-size:0.75rem;color:#333">No sprint history yet</div>';
+      if (!trend.length) dotsHtml = '<div style="font-size:0.75rem;color:#999">No sprint history yet</div>';
       document.getElementById('trend-dots').innerHTML = dotsHtml;
       document.getElementById('trend-legend').textContent =
-        trend.length
-          ? `Last ${trend.length} sprints — ${doneN} done · ${failN} failed`
-          : '';
-
-      // ── Hermes ─────────────────────────────────────────────────────────────
-      const hm = d.hermes || {};
-      const approveCol = (hm.approve_rate >= 70) ? 'green' : (hm.approve_rate >= 40) ? 'yellow' : 'red';
-      const barColH = (hm.approve_rate >= 70) ? '' : (hm.approve_rate >= 40) ? 'yellow' : 'red';
-      document.getElementById('hermes-cards').innerHTML =
-        card('Approve Rate', (hm.approve_rate ?? 0) + '%', approveCol,
-          `${hm.approved ?? 0} / ${hm.total_reviewed ?? 0} reviewed`,
-          hm.approve_rate ?? 0, barColH) +
-        card('Approved', hm.approved ?? 0, 'green') +
-        card('Rejected', hm.rejected ?? 0, hm.rejected > 0 ? 'red' : 'green') +
-        card('Reviewed', hm.total_reviewed ?? 0, '');
+        trend.length ? `Last ${trend.length} — ${doneN} done · ${failN} failed` : '';
 
       // ── Rejection Patterns ─────────────────────────────────────────────────
-      const rp = d.rejection_patterns || {};
+      const rp = diag.rejection_patterns || {};
       const rpEntries = Object.entries(rp).filter(([k]) => k !== 'error');
       const rpMax = rpEntries.reduce((m, [, v]) => Math.max(m, v), 1);
-      let rpHtml = rpEntries.length
+      document.getElementById('rejection-patterns').innerHTML = rpEntries.length
         ? rpEntries.map(([label, count]) => `
             <div class="pattern-row">
               <div class="pattern-label">${esc(label)}</div>
@@ -645,10 +460,24 @@
               <div class="pattern-count">${count}</div>
             </div>`).join('')
         : `<div class="empty-note">No rejection patterns recorded yet</div>`;
-      document.getElementById('rejection-patterns').innerHTML = rpHtml;
+
+      // ── Configuration + CSS ────────────────────────────────────────────────
+      const cfg = diag.config || {};
+      let cfgHtml = '';
+      for (const key of ['CODING_WISDOM_FILE', 'AC_WISDOM_FILE', 'RETRO_FILE']) {
+        const c = cfg[key] || {};
+        cfgHtml += checkRow(key, c.exists,
+          c.value ? (c.exists ? c.value : `${c.value} — FILE NOT FOUND`) : 'not found in agent.py');
+      }
+      document.getElementById('config-checks').innerHTML = cfgHtml;
+
+      const css = diag.css_checks || [];
+      document.getElementById('css-checks').innerHTML =
+        css.map(c => checkRow(c.name, c.pass, c.detail)).join('') ||
+        '<div class="check-row"><div class="check-name" style="color:#999">No data</div></div>';
 
       // ── Wisdom Quality ─────────────────────────────────────────────────────
-      function renderWisdomBullets(containerId, wq) {
+      function renderWisdom(containerId, wq) {
         if (!wq || wq.error) {
           document.getElementById(containerId).innerHTML =
             `<div class="bullet-item" style="color:#999">${wq?.error || 'Unavailable'}</div>`;
@@ -658,22 +487,20 @@
         for (const f of wq.flagged || []) flagMap[f.bullet] = f.reasons;
         const html = (wq.bullets || []).map(b => {
           const reasons = flagMap[b];
-          const flag = reasons
-            ? `<span class="bullet-flag">${esc(reasons.join(', '))}</span>`
-            : '';
+          const flag = reasons ? `<span class="bullet-flag">${esc(reasons.join(', '))}</span>` : '';
           return `<div class="bullet-item">${flag}<span>${esc(b.replace(/^[•\-]\s*/, ''))}</span></div>`;
         }).join('') || '<div class="bullet-item" style="color:#999">No bullets</div>';
         const meta = `<div class="bullet-item" style="border-top:1px solid #1c1c1c;margin-top:0.2rem">
-          <span style="font-size:0.65rem;color:#333">
-            ${wq.count} bullets · synthesized ${fmtDate(wq.synthesized_at)} · ${wq.finding_count ?? '?'} findings processed
+          <span style="font-size:0.65rem;color:#555">
+            ${wq.count} bullets · ${fmtDate(wq.synthesized_at)} · ${wq.finding_count ?? '?'} findings
           </span>
         </div>`;
         document.getElementById(containerId).innerHTML = html + meta;
       }
 
-      const wq = d.wisdom_quality || {};
-      renderWisdomBullets('system-wisdom-bullets', wq.coding);
-      renderWisdomBullets('story-wisdom-bullets', wq.ac);
+      const wq = diag.wisdom_quality || {};
+      renderWisdom('system-wisdom-bullets', wq.coding);
+      renderWisdom('story-wisdom-bullets', wq.ac);
     }
 
     async function baselineAction(url, successMsg) {
@@ -683,13 +510,8 @@
       try {
         const r = await fetch(url, { method: 'POST' });
         const d = await r.json();
-        if (d.ok) {
-          status.textContent = successMsg;
-          status.className = 'ok';
-        } else {
-          status.textContent = d.error || 'failed';
-          status.className = 'err';
-        }
+        status.textContent = d.ok ? successMsg : (d.error || 'failed');
+        status.className = d.ok ? 'ok' : 'err';
       } catch (e) {
         status.textContent = 'server error';
         status.className = 'err';
@@ -718,8 +540,7 @@
     document.getElementById('readiness-refresh').addEventListener('click', loadReadiness);
     loadReadiness();
     loadImpediments();
-    loadVelocity();
-    load();
+    loadAll();
   </script>
 </body>
 </html>

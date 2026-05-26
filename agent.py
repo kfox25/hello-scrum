@@ -31,6 +31,7 @@ REPO_URL     = "https://kfox25.github.io/hello-scrum"
 RETRO_FILE         = "retrospective.json"
 CODING_WISDOM_FILE = "coding_wisdom.json"
 AC_WISDOM_FILE     = "ac_wisdom.json"
+SPRINT_RESULT_FILE = "sprint_result.json"
 
 _log_lines = []
 
@@ -204,7 +205,7 @@ def save_backlog(data):
 
 def get_next_item(backlog, sprint_only=False):
     for item in backlog["items"]:
-        if item["status"] == "pending":
+        if item.get("status") == "pending":
             if sprint_only and not item.get("in_sprint"):
                 continue
             return item
@@ -712,6 +713,23 @@ def synthesize_coding_wisdom(processed_items=None):
     synthesize_ac_wisdom(processed_items)
 
 
+# ── Sprint result (for decoupled retro) ──────────────────────────────────────
+
+def _append_sprint_result(item_id):
+    """Append a processed item ID to sprint_result.json."""
+    try:
+        try:
+            with open(SPRINT_RESULT_FILE, encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception:
+            data = {"item_ids": []}
+        data.setdefault("item_ids", []).append(str(item_id))
+        with open(SPRINT_RESULT_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f)
+    except Exception:
+        pass
+
+
 # ── Main loop ─────────────────────────────────────────────────────────────────
 
 def run_one(sprint_only=False, processed=None, sprint_wisdom=None):
@@ -930,6 +948,27 @@ def main():
         synthesize_coding_wisdom()
         return
 
+    if "--run-retro" in sys.argv:
+        # Runs in a clean subprocess after sprint exits — no SSE pipe dependency
+        try:
+            with open(SPRINT_RESULT_FILE, encoding="utf-8") as f:
+                result = json.load(f)
+            item_ids = set(str(x) for x in result.get("item_ids", []))
+            if item_ids:
+                backlog = load_backlog()
+                processed = [i for i in backlog["items"] if str(i["id"]) in item_ids]
+                if processed:
+                    log("\nRunning final retrospective...")
+                    run_retro(processed)
+        except Exception as e:
+            log(f"Retro error: {e}")
+        finally:
+            try:
+                os.remove(SPRINT_RESULT_FILE)
+            except Exception:
+                pass
+        return
+
     sprint_mode = "--sprint" in sys.argv
     loop_mode = "--loop" in sys.argv
     print("\nAI Scrum Agent")
@@ -937,13 +976,20 @@ def main():
     print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     if sprint_mode or loop_mode:
+        # Clear any stale sprint result from a previous run
+        try:
+            os.remove(SPRINT_RESULT_FILE)
+        except Exception:
+            pass
+
         processed = []
         sprint_wisdom = None  # story 1: CODING WISDOM only; SPRINT WISDOM loads after first item
         while True:
             prev_len = len(processed)
-            success = run_one(sprint_only=sprint_mode, processed=processed, sprint_wisdom=sprint_wisdom)
+            run_one(sprint_only=sprint_mode, processed=processed, sprint_wisdom=sprint_wisdom)
             item_was_processed = len(processed) > prev_len
             if item_was_processed:
+                _append_sprint_result(processed[-1]["id"])
                 backlog = load_backlog()
                 more_items = get_next_item(backlog, sprint_only=sprint_mode) is not None
                 if more_items:
@@ -954,14 +1000,11 @@ def main():
                         log(f"Sprint wisdom error: {e}")
                         sprint_wisdom = None
                 else:
-                    log("\nRunning final retrospective...")
-                    try:
-                        run_retro(processed)
-                    except Exception as e:
-                        log(f"Retro error: {e}")
+                    log("\nSprint complete.")
                     break
             if not item_was_processed:
                 break
+        clear_active()
     else:
         run_one()
 

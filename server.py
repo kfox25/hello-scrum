@@ -661,7 +661,21 @@ def start_sprint():
             line_queue.put(f"[server error] {e}")
         finally:
             agent_running = False
-            line_queue.put(None)  # sentinel — subprocess finished
+            line_queue.put(None)  # sentinel — SSE stream can close now
+            # Run retro in a separate daemon thread so SSE closes immediately
+            sprint_result = os.path.join(BASE, "sprint_result.json")
+            if os.path.exists(sprint_result):
+                def _run_retro():
+                    try:
+                        subprocess.run(
+                            ["python", "agent.py", "--run-retro"],
+                            cwd=BASE,
+                            env=os.environ.copy(),
+                            timeout=120,
+                        )
+                    except Exception as e:
+                        print(f"[retro error] {e}", flush=True)
+                threading.Thread(target=_run_retro, daemon=True).start()
 
     threading.Thread(target=_reader, daemon=True).start()
 

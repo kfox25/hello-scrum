@@ -131,7 +131,11 @@
     .card-expand-btn:hover { color: #00ff9999; }
     .card-expand-btn .expand-arrow { display: inline-block; transition: transform 0.2s; }
     .card.expanded .card-expand-btn .expand-arrow { transform: rotate(180deg); }
-    .ac-item { font-size: 0.73rem; color: #999; line-height: 1.6; }
+    .ac-item { font-size: 0.73rem; color: #999; line-height: 1.6; display: flex; align-items: baseline; gap: 0.3rem; }
+    .ac-item-text { flex: 1; }
+    .ac-edit-btn { font-size: 0.65rem; background: none; border: none; color: #333; cursor: pointer; padding: 0; flex-shrink: 0; line-height: 1; }
+    .ac-edit-btn:hover { color: #00ff99; }
+    .ac-item-input { background: #111; border: 1px solid #00ff9940; color: #ccc; font-size: 0.73rem; font-family: inherit; padding: 0.1rem 0.3rem; border-radius: 3px; width: 100%; outline: none; }
 
     .badge {
       font-size: 0.7rem;
@@ -479,7 +483,11 @@
       }
 
       const acHtml = hasAC
-        ? `<div class="card-ac">${item.acceptance_criteria.map(c => `<div class="ac-item">· ${escHtml(c)}</div>`).join('')}</div>`
+        ? `<div class="card-ac">${item.acceptance_criteria.map((c, idx) => `
+          <div class="ac-item">
+            <span class="ac-item-text">· ${escHtml(c)}</span>
+            ${isPending && !item.in_sprint ? `<button class="ac-edit-btn" onclick="editAC('${item.id}',${idx},event)" title="Edit">✎</button>` : ''}
+          </div>`).join('')}</div>`
         : '';
 
       const expandBtn = hasAC
@@ -748,6 +756,39 @@
       input.addEventListener('keydown', ev => {
         if (ev.key === 'Enter') input.blur();
         if (ev.key === 'Escape') renderBoard();
+      });
+    }
+
+    function editAC(id, idx, e) {
+      e.stopPropagation();
+      const item = backlogData.items.find(i => String(i.id) === String(id));
+      if (!item || !item.acceptance_criteria) return;
+      const card = document.querySelector(`.card[data-id="${id}"]`);
+      const acItems = card.querySelectorAll('.ac-item');
+      const acItem = acItems[idx];
+      const textEl = acItem.querySelector('.ac-item-text');
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = item.acceptance_criteria[idx];
+      input.className = 'ac-item-input';
+      acItem.replaceWith(input);
+      input.focus();
+      input.select();
+      function save() {
+        const val = input.value.trim();
+        if (val) item.acceptance_criteria[idx] = val;
+        persistBacklog();
+        renderBoard();
+        const updatedCard = document.querySelector(`.card[data-id="${id}"]`);
+        if (updatedCard && !updatedCard.classList.contains('expanded')) {
+          updatedCard.classList.add('expanded');
+          expandedIds.add(String(id));
+        }
+      }
+      input.addEventListener('blur', save);
+      input.addEventListener('keydown', ev => {
+        if (ev.key === 'Enter') input.blur();
+        if (ev.key === 'Escape') { renderBoard(); }
       });
     }
 

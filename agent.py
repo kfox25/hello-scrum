@@ -1004,7 +1004,6 @@ def main():
                     break
             if not item_was_processed:
                 break
-        clear_active()
     else:
         run_one()
 

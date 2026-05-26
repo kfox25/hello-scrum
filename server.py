@@ -398,13 +398,17 @@ def messenger_meeting():
         items = backlog.get("items", [])
 
         all_stories = [i for i in items if not i.get("opportunity")]
+        # Active stories first so they are never cut off by the slice limit
+        active   = [i for i in all_stories if i.get("in_sprint") or i.get("status") == "pending"]
+        inactive = [i for i in all_stories if i not in active]
+        ordered  = active + inactive
         stories_context = "\n".join(
             f"- [{i['id']}] {i.get('idea', '')}"
             + (" [IN SPRINT]" if i.get("in_sprint") else "")
             + (" [DONE]"      if i.get("status") == "done"   else "")
             + (" [FAILED]"    if i.get("status") == "failed" else "")
             + (f" (AC: {'; '.join(i['acceptance_criteria'][:2])})" if i.get("acceptance_criteria") else "")
-            for i in all_stories[:40]
+            for i in ordered[:60]
         ) or "(none)"
 
         client = anthropic.Anthropic()

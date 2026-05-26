@@ -157,7 +157,8 @@
 
     .empty-note { font-size: 0.75rem; color: #999; padding: 0.5rem 0; }
 
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 2.5rem; }
+    .two-col .section { margin-bottom: 0; }
     @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
 
     /* ── baseline panel ── */
@@ -343,20 +344,17 @@
     <a href="health.html">Health</a>
   </nav>
 
-  <div class="section">
-    <h2>System Readiness</h2>
-    <div style="max-width:420px">
+  <div class="two-col">
+    <div class="section">
+      <h2>System Readiness</h2>
       <div class="readiness-banner">
         <span class="readiness-status checking" id="readiness-status">Checking…</span>
         <button class="readiness-refresh" id="readiness-refresh">↺ Refresh</button>
       </div>
       <div class="check-list" id="readiness-checks"></div>
     </div>
-  </div>
-
-  <div class="section">
-    <h2>Impediment Radar</h2>
-    <div style="max-width:480px">
+    <div class="section">
+      <h2>Impediment Radar</h2>
       <div class="imp-list" id="imp-list"></div>
     </div>
   </div>
@@ -381,16 +379,15 @@
     </div>
   </div>
 
-  <div class="section">
-    <h2>Configuration</h2>
-    <div class="check-list" id="config-checks"></div>
-  </div>
-
-  <div class="section">
-    <h2>CSS Quality — index.html</h2>
-    <div class="two-col">
+  <div class="two-col">
+    <div class="section">
+      <h2>Configuration</h2>
+      <div class="check-list" id="config-checks"></div>
+    </div>
+    <div class="section">
+      <h2>CSS Quality — index.html</h2>
       <div class="check-list" id="css-checks"></div>
-      <div class="cards" id="file-cards"></div>
+      <div class="cards" style="margin-top:0.6rem" id="file-cards"></div>
     </div>
   </div>
 
@@ -399,45 +396,46 @@
     <div class="cards" id="flow-cards"></div>
   </div>
 
-  <div class="section">
-    <h2>Velocity &amp; Cycle Time</h2>
-    <div style="max-width:520px">
-    <div class="cards" id="velocity-cards"></div>
-    <table class="vel-table" id="velocity-table">
-      <thead>
-        <tr><th>Date</th><th>Stories</th><th>Done</th><th>Pass %</th><th>Avg Cycle</th></tr>
-      </thead>
-      <tbody id="velocity-rows"></tbody>
-    </table>
+  <div class="two-col">
+    <div class="section">
+      <h2>Velocity &amp; Cycle Time</h2>
+      <div class="cards" id="velocity-cards"></div>
+      <table class="vel-table" id="velocity-table">
+        <thead>
+          <tr><th>Date</th><th>Stories</th><th>Done</th><th>Pass %</th><th>Avg Cycle</th></tr>
+        </thead>
+        <tbody id="velocity-rows"></tbody>
+      </table>
+    </div>
+    <div class="section">
+      <h2>Sprint Trend</h2>
+      <div class="trend-wrap">
+        <div class="trend-dots" id="trend-dots"></div>
+        <div class="trend-legend" id="trend-legend"></div>
+      </div>
     </div>
   </div>
 
-  <div class="section">
-    <h2>Sprint Trend</h2>
-    <div class="trend-wrap">
-      <div class="trend-dots" id="trend-dots"></div>
-      <div class="trend-legend" id="trend-legend"></div>
+  <div class="two-col">
+    <div class="section">
+      <h2>Hermes Consistency</h2>
+      <div class="cards" id="hermes-cards"></div>
+    </div>
+    <div class="section">
+      <h2>Rejection Patterns</h2>
+      <div class="pattern-list" id="rejection-patterns"></div>
     </div>
   </div>
 
-  <div class="section">
-    <h2>Hermes Consistency</h2>
-    <div class="cards" id="hermes-cards"></div>
-  </div>
-
-  <div class="section">
-    <h2>Rejection Patterns</h2>
-    <div class="pattern-list" id="rejection-patterns"></div>
-  </div>
-
-  <div class="section">
-    <h2>Coding Wisdom Quality</h2>
-    <div class="bullet-list" id="system-wisdom-bullets"></div>
-  </div>
-
-  <div class="section">
-    <h2>AC Wisdom Quality</h2>
-    <div class="bullet-list" id="story-wisdom-bullets"></div>
+  <div class="two-col">
+    <div class="section">
+      <h2>Coding Wisdom Quality</h2>
+      <div class="bullet-list" id="system-wisdom-bullets"></div>
+    </div>
+    <div class="section">
+      <h2>AC Wisdom Quality</h2>
+      <div class="bullet-list" id="story-wisdom-bullets"></div>
+    </div>
   </div>
 
   <script>

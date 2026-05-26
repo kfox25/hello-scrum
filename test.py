@@ -78,6 +78,29 @@ def test_no_webkit_text_fill_color():
     print("PASS  no -webkit-text-fill-color in style block")
 
 
+def test_no_duplicate_body_rules():
+    with open("index.html", "r", encoding="utf-8") as f:
+        html = f.read()
+    style_match = re.search(r'<style>([\s\S]*?)</style>', html)
+    assert style_match, "No <style> block found"
+    style = style_match.group(1)
+    body_count = len(re.findall(r'\bbody\s*\{', style))
+    assert body_count <= 1, f"Duplicate body rules found ({body_count} occurrences)"
+    print(f"PASS  no duplicate body rules ({body_count} found)")
+
+
+def test_no_mixed_color_formats():
+    with open("index.html", "r", encoding="utf-8") as f:
+        html = f.read()
+    style_match = re.search(r'<style>([\s\S]*?)</style>', html)
+    assert style_match, "No <style> block found"
+    style = style_match.group(1)
+    has_rgb = bool(re.search(r'color:\s*rgb', style))
+    has_hex = bool(re.search(r'color:\s*#', style))
+    assert not (has_rgb and has_hex), "Mixed color formats: both rgb() and hex found in style block"
+    print("PASS  no mixed color formats")
+
+
 if __name__ == "__main__":
     tests = [
         test_index_html_exists,
@@ -87,6 +110,8 @@ if __name__ == "__main__":
         test_no_css_outside_style_block,
         test_no_duplicate_h1_rules,
         test_no_webkit_text_fill_color,
+        test_no_duplicate_body_rules,
+        test_no_mixed_color_formats,
     ]
     failures = 0
     for test in tests:

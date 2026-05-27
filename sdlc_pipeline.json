@@ -1,19 +1,17 @@
 {
   "items": [
     {
-      "id": "status-feed-test-3",
-      "idea": "Add a hover color change to the changelog entries on the homepage",
+      "id": "sprint-1-add-cursor-pointer",
+      "idea": "Add pointer cursor to changelog entries on the homepage",
       "in_sprint": true,
-      "status": "done",
-      "story": "As a visitor to the homepage, I want changelog entries to highlight when I hover over them so that I can easily read individual entries.",
+      "status": "failed",
+      "story": "As a visitor to the homepage, I want the cursor to change to a pointer when hovering over changelog entries so that I know they are interactive.",
       "acceptance_criteria": [
-        "Hovering over a changelog entry changes its background to a subtle dark highlight color",
-        "The highlight color is consistent with the dark theme (e.g. #1a1a1a or #222)",
-        "The transition is smooth using CSS transition property",
-        "No existing changelog styles or layout are otherwise modified"
+        "Hovering over a changelog entry shows a pointer cursor",
+        "The cursor style is applied via CSS (cursor: pointer)",
+        "No other styles or layout are modified"
       ],
-      "summary": "Add smooth hover highlight (#1a1a1a) to changelog entries via CSS transition",
-      "diff": "diff --git a/index.html b/index.html\nindex 8d36994..03adc14 100644\n--- a/index.html\n+++ b/index.html\n@@ -64,6 +64,8 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n+    .changelog-entry { transition: background 0.2s; }\n+    .changelog-entry:hover { background: #1a1a1a; }\n     .site-footer {\n       position: fixed;\n       bottom: 0;\n@@ -112,9 +114,9 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.75</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.76</div>\n   <div class=\"meta\" id=\"story-count\"></div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 12:23:01 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 12:42:16 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 7dca10c..fcf9c1f 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.75\",\n-  \"deployed\": \"2026-05-27 12:23:01 CT\",\n+  \"version\": \"0.1.76\",\n+  \"deployed\": \"2026-05-27 12:42:16 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -383,6 +383,11 @@\n       \"version\": \"0.1.75\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add 'built with AI' label to the site footer in muted #555 color\"\n+    },\n+    {\n+      \"version\": \"0.1.76\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add smooth hover highlight to changelog entries on the homepage\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "diff": "diff --git a/index.html b/index.html\nindex 03adc14..7daa083 100644\n--- a/index.html\n+++ b/index.html\n@@ -11,7 +11,7 @@\n       flex-direction: column;\n       align-items: center;\n       text-align: center;\n-      padding: 4.5rem 2rem 3.5rem;\n+      padding: 4.5rem 2rem 2rem;\n       margin: 0;\n       min-height: 100vh;\n       background: #0f1117;\n@@ -41,11 +41,6 @@\n       color: #7a8099;\n       margin-bottom: 0;\n     }\n-    @keyframes versionGlow {\n-      0%   { box-shadow: 0 0 0 0 rgba(0, 255, 153, 0); }\n-      50%  { box-shadow: 0 0 8px 0 rgba(0, 255, 153, 0.5); }\n-      100% { box-shadow: 0 0 0 0 rgba(0, 255, 153, 0); }\n-    }\n     .version {\n       font-size: 0.85rem;\n       color: #00ff99;\n@@ -54,7 +49,6 @@\n       padding: 0.3rem 0.9rem;\n       border-radius: 20px;\n       margin-bottom: 0.4rem;\n-      animation: versionGlow 2s ease-in-out infinite;\n     }\n     .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; }\n     .changelog { margin-top: 1.5rem; width: 100%; max-width: 500px; }\n@@ -64,38 +58,7 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n-    .changelog-entry { transition: background 0.2s; }\n-    .changelog-entry:hover { background: #1a1a1a; }\n-    .site-footer {\n-      position: fixed;\n-      bottom: 0;\n-      left: 0;\n-      width: 100%;\n-      background: #0f1117;\n-      color: #e8eaf0;\n-      text-align: center;\n-      padding: 0.55rem 1rem;\n-      border-top: 1px solid #1c1c1c;\n-      font-size: 0.82rem;\n-      z-index: 999;\n-    }\n-    .site-footer a {\n-      color: #00ff99;\n-      text-decoration: none;\n-      border: 1px solid #00ff9966;\n-      padding: 0.2rem 0.75rem;\n-      border-radius: 14px;\n-      transition: background 0.2s, border-color 0.2s;\n-    }\n-    .site-footer a:hover {\n-      background: #0d3320;\n-      border-color: #00ff99;\n-    }\n-    .footer-ai-label {\n-      color: #555;\n-      font-size: 0.75rem;\n-      margin-left: 0.85rem;\n-    }\n+    .changelog-entry { cursor: pointer; }\n   </style>\n </head>\n <body>\n@@ -114,9 +77,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.76</div>\n-  <div class=\"meta\" id=\"story-count\"></div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 12:42:16 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.77</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 18:20:47 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -141,22 +103,7 @@\n         })\n         .catch(() => {});\n     }\n-    function loadStoryCount() {\n-      fetch('/version.json')\n-        .then(r => r.json())\n-        .then(data => {\n-          const count = (data.changelog || []).length;\n-          const el = document.getElementById('story-count');\n-          if (el) el.textContent = count + ' stor' + (count === 1 ? 'y' : 'ies') + ' shipped';\n-        })\n-        .catch(() => {});\n-    }\n-    loadStoryCount();\n     loadChangelog();\n   </script>\n-  <footer class=\"site-footer\">\n-    <a href=\"https://kfox25.github.io/hello-scrum\" target=\"_blank\" rel=\"noopener\">GitHub Pages \u00e2\u2020\u2014</a>\n-    <span class=\"footer-ai-label\">built with AI</span>\n-  </footer>\n </body>\n </html>\ndiff --git a/version.json b/version.json\nindex fcf9c1f..415ee58 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.76\",\n-  \"deployed\": \"2026-05-27 12:42:16 CT\",\n+  \"version\": \"0.1.77\",\n+  \"deployed\": \"2026-05-27 18:20:47 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -388,6 +388,11 @@\n       \"version\": \"0.1.76\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add smooth hover highlight to changelog entries on the homepage\"\n+    },\n+    {\n+      \"version\": \"0.1.77\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add pointer cursor to changelog entries on the homepage\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "test_results": [
         {
           "status": "pass",
@@ -21,15 +19,15 @@
         },
         {
           "status": "pass",
-          "message": "version 0.1.76 matches between version.json and index.html"
+          "message": "version 0.1.77 matches between version.json and index.html"
         },
         {
           "status": "pass",
-          "message": "deployed timestamp '2026-05-27 12:42:16 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-27 18:20:47 CT' present in index.html"
         },
         {
           "status": "pass",
-          "message": "changelog has entry for v0.1.76: Add smooth hover highlight to changelog entries on the homepage"
+          "message": "changelog has entry for v0.1.77: Add pointer cursor to changelog entries on the homepage"
         },
         {
           "status": "pass",
@@ -52,85 +50,152 @@
           "message": "no mixed color formats"
         }
       ],
-      "deployed": "2026-05-27 12:42:16 CT",
+      "code_review_verdict": "reject",
+      "code_review_reason": "The diff removes the .changelog-entry:hover style rule that provides visual feedback, leaving only cursor: pointer without the hover effect that was previously there, which breaks the interactive affordance for users.",
+      "hermes_verdict": "reject",
+      "hermes_reason": "The diff removes the .changelog-entry:hover style rule that provides visual feedback, leaving only cursor: pointer without the hover effect that was previously there, which breaks the interactive affordance for users.",
+      "started": 1779924047.149652,
+      "stage_times": {
+        "pull": 1779924047.149652,
+        "story": 1779924047.19172,
+        "code": 1779924059.133317,
+        "test": 1779924067.277559,
+        "code_review": 1779924075.454266,
+        "rejected": 1779924077.183323
+      },
+      "tokens_in": 4087,
+      "tokens_out": 338
+    },
+    {
+      "id": "sprint-2-footer-year",
+      "idea": "Add a copyright year to the site footer",
+      "in_sprint": true,
+      "status": "done",
+      "story": "As a visitor to the homepage, I want to see a copyright year in the site footer so that the site feels polished and professional.",
+      "acceptance_criteria": [
+        "The footer displays a copyright notice with the current year (e.g. '\u00a9 2026')",
+        "The text is styled in a muted color consistent with the dark theme",
+        "No existing footer layout or other elements are modified"
+      ],
+      "retro_context": "[fail] Incomplete CSS refactoring: The implementation removed a hover style rule (.changelog-entry:hover) while adding only cursor: pointer, destroying the existing visual feedback mechanism. Changes should preserve or enhance existing interactive affordances rather than replace them.\n[note] Tests passed but code review caught the issue: All 9 technical tests passed, yet Hermes rejected the change due to UX impact. Current test suite does not validate that interactive elements maintain their visual feedback properties.\n[note] Single item sprint with zero completions indicates either scope mismatch or the task was too large for one iteration. Consider breaking future features into smaller, independently deployable units.",
+      "summary": "Add copyright year (\u00a9 2026) to site footer in muted color",
+      "diff": "diff --git a/index.html b/index.html\nindex 03adc14..5652bdf 100644\n--- a/index.html\n+++ b/index.html\n@@ -96,6 +96,11 @@\n       font-size: 0.75rem;\n       margin-left: 0.85rem;\n     }\n+    .footer-copyright {\n+      color: #555;\n+      font-size: 0.75rem;\n+      margin-right: 0.85rem;\n+    }\n   </style>\n </head>\n <body>\n@@ -114,9 +119,9 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.76</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.77</div>\n   <div class=\"meta\" id=\"story-count\"></div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 12:42:16 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 18:21:21 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -156,6 +161,7 @@\n   </script>\n   <footer class=\"site-footer\">\n     <a href=\"https://kfox25.github.io/hello-scrum\" target=\"_blank\" rel=\"noopener\">GitHub Pages \u00e2\u2020\u2014</a>\n+    <span class=\"footer-copyright\">\u00c2\u00a9 2026</span>\n     <span class=\"footer-ai-label\">built with AI</span>\n   </footer>\n </body>\ndiff --git a/version.json b/version.json\nindex fcf9c1f..5905dd9 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.76\",\n-  \"deployed\": \"2026-05-27 12:42:16 CT\",\n+  \"version\": \"0.1.77\",\n+  \"deployed\": \"2026-05-27 18:21:21 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -388,6 +388,11 @@\n       \"version\": \"0.1.76\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add smooth hover highlight to changelog entries on the homepage\"\n+    },\n+    {\n+      \"version\": \"0.1.77\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add copyright year to site footer\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.77 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 18:21:21 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.77: Add copyright year to site footer"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-27 18:21:21 CT",
       "code_review_verdict": "approve",
-      "code_review_reason": "CSS selectors and properties are valid, transition syntax is correct, and changes are scoped to the changelog hover feature with expected version/timestamp updates.",
+      "code_review_reason": "All changes are syntactically correct HTML/CSS with proper selectors, the footer copyright span is correctly placed in the footer element, and version.json updates appropriately accompany the feature change.",
       "ac_check_verdict": "approve",
-      "ac_check_reason": "All acceptance criteria are met: hover changes background to #1a1a1a (dark theme consistent), transition is smooth with 0.2s CSS transition property, and no existing changelog styles or layout are modified.",
+      "ac_check_reason": "All acceptance criteria are met: the footer displays '\u00a9 2026' in the current year, the text uses muted color #555 consistent with the dark theme, and no existing footer layout or other elements were modified\u2014only a new span with footer-copyright class was added.",
       "hermes_verdict": "approve"
     },
     {
-      "id": "1779855039283",
-      "idea": "Add a notification bell to the nav bar",
-      "in_sprint": false,
-      "opportunity": true,
-      "status": "pending"
-    },
-    {
-      "id": "1779853864447",
-      "idea": "Add progress bar to sprint cards showing completion percentage",
-      "in_sprint": false,
-      "opportunity": true,
-      "status": "pending"
-    },
-    {
-      "elaborate_error": "\"Could not resolve authentication method. Expected one of api_key, auth_token, or credentials to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted\"",
-      "id": "demo-opp-1",
-      "idea": "Integrate with Jira to sync story status bidirectionally",
-      "in_sprint": false,
-      "status": "pending"
-    },
-    {
+      "ac_check_reason": "All acceptance criteria are met: hover changes background to #1a1a1a (dark theme consistent), transition is smooth with 0.2s CSS transition property, and no existing changelog styles or layout are modified.",
+      "ac_check_verdict": "approve",
       "acceptance_criteria": [
-        "The h1 element with text 'Hello Scrum' has color property changed from #00ff99 to #00dd88",
-        "The title remains uppercase, monospace, 3rem font size, and 800 font weight with no other style properties modified",
-        "The computed color value of the h1 element renders as rgb(0, 221, 136) in the browser",
-        "All other page elements (navigation, version badge, footer links) retain their original #00ff99 accent color without modification"
+        "Hovering over a changelog entry changes its background to a subtle dark highlight color",
+        "The highlight color is consistent with the dark theme (e.g. #1a1a1a or #222)",
+        "The transition is smooth using CSS transition property",
+        "No existing changelog styles or layout are otherwise modified"
       ],
-      "id": "1779901679873",
-      "idea": "change title on homepage to green",
+      "code_review_reason": "CSS selectors and properties are valid, transition syntax is correct, and changes are scoped to the changelog hover feature with expected version/timestamp updates.",
+      "code_review_verdict": "approve",
+      "deployed": "2026-05-27 12:42:16 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex 8d36994..03adc14 100644\n--- a/index.html\n+++ b/index.html\n@@ -64,6 +64,8 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n+    .changelog-entry { transition: background 0.2s; }\n+    .changelog-entry:hover { background: #1a1a1a; }\n     .site-footer {\n       position: fixed;\n       bottom: 0;\n@@ -112,9 +114,9 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.75</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.76</div>\n   <div class=\"meta\" id=\"story-count\"></div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 12:23:01 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 12:42:16 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 7dca10c..fcf9c1f 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.75\",\n-  \"deployed\": \"2026-05-27 12:23:01 CT\",\n+  \"version\": \"0.1.76\",\n+  \"deployed\": \"2026-05-27 12:42:16 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -383,6 +383,11 @@\n       \"version\": \"0.1.75\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add 'built with AI' label to the site footer in muted #555 color\"\n+    },\n+    {\n+      \"version\": \"0.1.76\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add smooth hover highlight to changelog entries on the homepage\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_verdict": "approve",
+      "id": "status-feed-test-3",
+      "idea": "Add a hover color change to the changelog entries on the homepage",
       "in_sprint": false,
-      "status": "pending",
-      "story": "As a user visiting the homepage, I want the title to display in green so that it stands out with a distinct color that matches the site's design aesthetic."
-    },
-    {
-      "id": "demo-opp-2",
-      "idea": "AI-generated sprint retrospective summary sent to the team after each sprint",
-      "opportunity": true,
-      "status": "pending",
-      "in_sprint": false
-    },
-    {
-      "acceptance_criteria": [
-        "A toggle button appears in the nav bar",
-        "Clicking it switches the page between light and dark color schemes"
+      "stage_times": {
+        "ac_check": 1779903743.146761,
+        "code": 1779903741.695486,
+        "code_review": 1779903741.988439,
+        "deploy": 1779903744.490419,
+        "done": 1779903747.542314,
+        "pull": 1779903736.195392,
+        "story": 1779903736.21508,
+        "test": 1779903741.819657
+      },
+      "started": 1779903736.195392,
+      "status": "done",
+      "story": "As a visitor to the homepage, I want changelog entries to highlight when I hover over them so that I can easily read individual entries.",
+      "summary": "Add smooth hover highlight (#1a1a1a) to changelog entries via CSS transition",
+      "test_results": [
+        {
+          "message": "index.html exists and contains title",
+          "status": "pass"
+        },
+        {
+          "message": "version 0.1.76 matches between version.json and index.html",
+          "status": "pass"
+        },
+        {
+          "message": "deployed timestamp '2026-05-27 12:42:16 CT' present in index.html",
+          "status": "pass"
+        },
+        {
+          "message": "changelog has entry for v0.1.76: Add smooth hover highlight to changelog entries on the homepage",
+          "status": "pass"
+        },
+        {
+          "message": "no CSS outside style block",
+          "status": "pass"
+        },
+        {
+          "message": "no duplicate h1 rules (1 found)",
+          "status": "pass"
+        },
+        {
+          "message": "no -webkit-text-fill-color in style block",
+          "status": "pass"
+        },
+        {
+          "message": "no duplicate body rules (1 found)",
+          "status": "pass"
+        },
+        {
+          "message": "no mixed color formats",
+          "status": "pass"
+        }
       ],
-      "id": "demo-story-1",
-      "idea": "Add a dark mode toggle to the navigation bar",
-      "status": "pending",
-      "in_sprint": false
-    },
-    {
-      "acceptance_criteria": [
-        "Each backlog card displays a point value",
-        "Points can be set by clicking the card"
-      ],
-      "id": "demo-story-2",
-      "idea": "Show story point estimates on backlog items",
-      "status": "pending",
-      "in_sprint": false
-    },
-    {
-      "id": "demo-sprint-1",
-      "idea": "Display sprint velocity trend graph on the health page",
-      "in_sprint": false,
-      "status": "pending"
-    },
-    {
-      "id": "demo-sprint-2",
-      "idea": "Add bulk-archive option to clear done stories from the backlog",
-      "in_sprint": false,
-      "status": "pending"
+      "tokens_in": 5138,
+      "tokens_out": 443
     },
     {
       "ac_check_reason": "The implementation correctly displays the total shipped story count below the version badge by fetching the changelog length from version.json and dynamically inserting it into a new meta div with proper singular/plural handling.",
@@ -3349,6 +3414,7 @@
       "diff": "diff --git a/index.html b/index.html\nindex 1a59b52..1c27f1e 100644\n--- a/index.html\n+++ b/index.html\n@@ -19,7 +19,13 @@\n     h1 {\n       font-size: 3rem;\n       color: #00ff99;\n-      margin-bottom: 0.5rem;\n+      margin-bottom: 0.25rem;\n+    }\n+    .tagline {\n+      font-size: 1.1rem;\n+      color: #aaa;\n+      font-style: italic;\n+      margin-bottom: 0.75rem;\n     }\n     .meta {\n       font-size: 1rem;\n@@ -39,8 +45,9 @@\n </head>\n <body>\n   <h1>Hello Scrum</h1>\n-  <div class=\"version\">v0.1.0</div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 14:15:49 CT</div>\n+  <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n+  <div class=\"version\">v0.1.1</div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 14:57:05 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n </body>\n-</html>\n+</html>\n\\ No newline at end of file\ndiff --git a/version.json b/version.json\nindex 827cedb..6d34a17 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,12 +1,17 @@\n {\n-  \"version\": \"0.1.0\",\n-  \"deployed\": \"2026-05-22 14:15:49 CT\",\n+  \"version\": \"0.1.1\",\n+  \"deployed\": \"2026-05-22 14:57:05 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n       \"version\": \"0.1.0\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Initial hello world\"\n+    },\n+    {\n+      \"version\": \"0.1.1\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Added motivational tagline below the title\"\n     }\n   ]\n-}\n+}\n\\ No newline at end of file\n",
       "id": 1,
       "idea": "Add a motivational tagline below the title",
+      "in_sprint": false,
       "status": "done",
       "story": "As a user, I want to see a motivational tagline below the title so that I feel inspired when visiting the app.",
       "summary": "Add motivational tagline 'Iterate. Improve. Deliver.' below the main title",
@@ -3369,8 +3435,7 @@
           "message": "changelog has entry for v0.1.1: Added motivational tagline below the title",
           "status": "pass"
         }
-      ],
-      "in_sprint": false
+      ]
     },
     {
       "acceptance_criteria": [
@@ -3383,6 +3448,7 @@
       "diff": "diff --git a/index.html b/index.html\nindex b34ad07..7f5c35a 100644\n--- a/index.html\n+++ b/index.html\n@@ -58,14 +58,37 @@\n       border-radius: 6px;\n       border: 1px solid #333;\n     }\n+    .features-counter {\n+      margin-top: 1rem;\n+      background: #1a1a1a;\n+      border: 1px solid #00ff9940;\n+      border-radius: 6px;\n+      padding: 0.5rem 1.5rem;\n+      text-align: center;\n+    }\n+    .features-counter .count {\n+      font-size: 2rem;\n+      color: #00ff99;\n+      font-weight: bold;\n+    }\n+    .features-counter .label {\n+      font-size: 0.8rem;\n+      color: #888;\n+      text-transform: uppercase;\n+      letter-spacing: 0.1em;\n+    }\n   </style>\n </head>\n <body>\n   <a class=\"audit-btn\" href=\"audit.html\">Audit</a>\n   <h1>Hello Scrum</h1>\n   <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n-  <div class=\"version\">v0.1.1</div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 14:57:05 CT</div>\n+  <div class=\"version\">v0.1.2</div>\n+  <div class=\"features-counter\">\n+    <div class=\"count\">3</div>\n+    <div class=\"label\">Features Deployed</div>\n+  </div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 15:01:57 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n </body>\n </html>\n\\ No newline at end of file\ndiff --git a/version.json b/version.json\nindex 6d34a17..e1897d5 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.1\",\n-  \"deployed\": \"2026-05-22 14:57:05 CT\",\n+  \"version\": \"0.1.2\",\n+  \"deployed\": \"2026-05-22 15:01:57 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -12,6 +12,11 @@\n       \"version\": \"0.1.1\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Added motivational tagline below the title\"\n+    },\n+    {\n+      \"version\": \"0.1.2\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Added features deployed counter that increments with each release\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "id": 2,
       "idea": "Show a features deployed counter that increments with each release",
+      "in_sprint": false,
       "status": "done",
       "story": "As a user, I want to see a features deployed counter on the page so that I can track how many releases have shipped over time.",
       "summary": "Add features deployed counter showing total number of releases",
@@ -3403,8 +3469,7 @@
           "message": "changelog has entry for v0.1.2: Added features deployed counter that increments with each release",
           "status": "pass"
         }
-      ],
-      "in_sprint": false
+      ]
     },
     {
       "acceptance_criteria": [
@@ -3418,6 +3483,7 @@
       "diff": "diff --git a/index.html b/index.html\nindex 7f5c35a..55575b8 100644\n--- a/index.html\n+++ b/index.html\n@@ -13,8 +13,10 @@\n       flex-direction: column;\n       align-items: center;\n       justify-content: center;\n-      height: 100vh;\n+      min-height: 100vh;\n       margin: 0;\n+      padding: 2rem 1rem;\n+      box-sizing: border-box;\n     }\n     h1 {\n       font-size: 3rem;\n@@ -77,18 +79,76 @@\n       text-transform: uppercase;\n       letter-spacing: 0.1em;\n     }\n+    .changelog {\n+      margin-top: 1.5rem;\n+      background: #1a1a1a;\n+      border: 1px solid #333;\n+      border-radius: 6px;\n+      padding: 1rem 1.5rem;\n+      width: 100%;\n+      max-width: 480px;\n+    }\n+    .changelog h2 {\n+      font-size: 0.85rem;\n+      text-transform: uppercase;\n+      letter-spacing: 0.1em;\n+      color: #888;\n+      margin: 0 0 0.75rem 0;\n+    }\n+    .changelog-entry {\n+      display: flex;\n+      align-items: baseline;\n+      gap: 0.75rem;\n+      padding: 0.35rem 0;\n+      border-top: 1px solid #222;\n+    }\n+    .changelog-entry:first-of-type {\n+      border-top: none;\n+    }\n+    .changelog-entry .cv {\n+      color: #00ff99;\n+      font-size: 0.8rem;\n+      white-space: nowrap;\n+    }\n+    .changelog-entry .cd {\n+      color: #555;\n+      font-size: 0.75rem;\n+      white-space: nowrap;\n+    }\n+    .changelog-entry .ct {\n+      color: #ccc;\n+      font-size: 0.85rem;\n+    }\n   </style>\n </head>\n <body>\n   <a class=\"audit-btn\" href=\"audit.html\">Audit</a>\n   <h1>Hello Scrum</h1>\n   <div class=\"tagline\">Iterate. Improve. Deliver.</div>\n-  <div class=\"version\">v0.1.2</div>\n+  <div class=\"version\">v0.1.3</div>\n   <div class=\"features-counter\">\n-    <div class=\"count\">3</div>\n+    <div class=\"count\">4</div>\n     <div class=\"label\">Features Deployed</div>\n   </div>\n-  <div class=\"meta\">Last deployed: 2026-05-22 15:01:57 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-22 15:09:42 CT</div>\n   <div class=\"meta\">Status: baseline</div>\n+  <div class=\"changelog\">\n+    <h2>Recent Changes</h2>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.3</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"ct\">Added changelog section showing the last 3 updates</span>\n+    </div>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.2</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"ct\">Added features deployed counter that increments with each release</span>\n+    </div>\n+    <div class=\"changelog-entry\">\n+      <span class=\"cv\">v0.1.1</span>\n+      <span class=\"cd\">2026-05-22</span>\n+      <span class=\"ct\">Added motivational tagline below the title</span>\n+    </div>\n+  </div>\n </body>\n </html>\n\\ No newline at end of file\ndiff --git a/version.json b/version.json\nindex e1897d5..b882088 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.2\",\n-  \"deployed\": \"2026-05-22 15:01:57 CT\",\n+  \"version\": \"0.1.3\",\n+  \"deployed\": \"2026-05-22 15:09:42 CT\",\n   \"status\": \"baseline\",\n   \"changelog\": [\n     {\n@@ -17,6 +17,11 @@\n       \"version\": \"0.1.2\",\n       \"date\": \"2026-05-22\",\n       \"change\": \"Added features deployed counter that increments with each release\"\n+    },\n+    {\n+      \"version\": \"0.1.3\",\n+      \"date\": \"2026-05-22\",\n+      \"change\": \"Added changelog section showing the last 3 updates\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "id": 3,
       "idea": "Add a changelog section showing the last 3 updates",
+      "in_sprint": false,
       "status": "done",
       "story": "As a user, I want to see a changelog section showing the last 3 updates so that I can quickly understand what has recently changed in the app.",
       "summary": "Add changelog section displaying the 3 most recent releases",
@@ -3438,8 +3504,7 @@
           "message": "changelog has entry for v0.1.3: Added changelog section showing the last 3 updates",
           "status": "pass"
         }
-      ],
-      "in_sprint": false
+      ]
     },
     {
       "acceptance_criteria": [

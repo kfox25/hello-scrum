@@ -160,6 +160,8 @@
       font-size: 0.62rem; padding: 0.1rem 0.4rem; border-radius: 3px; flex-shrink: 0;
       background: #0a1525; color: #4499cc; border: 1px solid #4499cc30;
     }
+    .watercooler-collapsed { }
+    .card.expanded .watercooler-collapsed { display: none; }
     .retry-btn {
       font-family: monospace;
       font-size: 0.85rem;
@@ -518,6 +520,7 @@
           ${expandBtn}
         </div>
         ${hermesTag}
+        ${item.meeting_update ? `<span class="watercooler-tag watercooler-collapsed" title="${escHtml(item.meeting_update)}">&#8592; watercooler</span>` : ''}
         <span class="badge badge-${item.status}">${item.status}</span>
         ${retryBtn}
         ${deleteBtn}

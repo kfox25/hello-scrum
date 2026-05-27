@@ -486,10 +486,15 @@
         storyLine = `<div class="card-story">${escHtml(item.story)}</div>`;
       }
 
+      const wcTag = item.meeting_update
+        ? `<span class="watercooler-tag" title="${escHtml(item.meeting_update)}">&#8592; watercooler</span>`
+        : '';
+      const lastAC = hasAC ? item.acceptance_criteria.length - 1 : -1;
       const acHtml = hasAC
         ? `<div class="card-ac">${item.acceptance_criteria.map((c, idx) => `
           <div class="ac-item">
             <span class="ac-item-text">· ${escHtml(c)}</span>
+            ${idx === lastAC ? wcTag : ''}
             ${isPending && !item.in_sprint ? `<button class="ac-edit-btn" onclick="editAC('${item.id}',${idx},event)" title="Edit">✎</button>` : ''}
           </div>`).join('')}</div>`
         : '';
@@ -513,7 +518,6 @@
           ${expandBtn}
         </div>
         ${hermesTag}
-        ${item.meeting_update ? `<span class="watercooler-tag" title="${escHtml(item.meeting_update)}">&#8592; watercooler</span>` : ''}
         <span class="badge badge-${item.status}">${item.status}</span>
         ${retryBtn}
         ${deleteBtn}

@@ -147,12 +147,12 @@
       margin-bottom: 0.4rem;
     }
     .extract-story {
-      background: #0f1f0f; border: 1px solid #00ff9930; border-radius: 5px;
+      background: #111; border: 1px solid #2a2a2a; border-radius: 6px;
       padding: 0.5rem 0.75rem; font-size: 0.83rem; color: #aaa;
       cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s;
       margin-bottom: 0.35rem;
     }
-    .extract-story:hover { background: #0d3320; border-color: #00ff99; color: #e0e0e0; }
+    .extract-story:hover { background: #0d3320; border-color: #00ff9960; color: #e0e0e0; }
     .extract-story.added { background: #0b1f14; border-color: #00ff9940; color: #00ff99; cursor: default; }
     .update-card {
       background: #111; border: 1px solid #222; border-radius: 6px;
@@ -180,15 +180,24 @@
 
     /* ── alignment cards ── */
     .alignment-card {
-      background: #111; border: 1px solid #222; border-radius: 6px;
+      background: #111; border: 1px solid #2a2a2a; border-radius: 6px;
       padding: 0.75rem 0.9rem; display: flex; flex-direction: column; gap: 0.4rem;
       margin-bottom: 0.35rem;
     }
     .alignment-in-sprint { border-color: #00ff9960; background: #0b1f14; }
-    .alignment-done      { opacity: 0.4; }
+    .alignment-done      { border-color: #1e1e1e; }
+    .alignment-done .update-idea    { color: #555; }
+    .alignment-done .update-changes { color: #444; }
     .alignment-covered   { border-color: #2a2a2a; }
     .alignment-covered .update-idea    { color: #888; }
     .alignment-covered .update-changes { color: #666; }
+
+    /* ── session summary ── */
+    .session-summary {
+      font-size: 0.75rem; color: #555; padding: 0.4rem 0; margin-bottom: 0.5rem;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .session-summary span { color: #00ff99; }
     .in-sprint-badge {
       display: inline-block; font-size: 0.68rem; font-weight: 600; color: #00ff99;
       background: #0d3320; border: 1px solid #00ff9960; border-radius: 3px;
@@ -389,6 +398,20 @@
     const extractBtn   = document.getElementById('extract-btn');
     const resultsEl    = document.getElementById('extract-results');
     let pendingUpdates = {};
+    let sessionStats = { applied: 0, added: 0 };
+
+    function updateSummary() {
+      const el = document.getElementById('session-summary');
+      if (!el) return;
+      const { applied, added } = sessionStats;
+      if (!applied && !added) { el.style.display = 'none'; return; }
+      const parts = [];
+      if (applied) parts.push(`<span>${applied}</span> update${applied !== 1 ? 's' : ''} applied`);
+      if (added)   parts.push(`<span>${added}</span> stor${added !== 1 ? 'ies' : 'y'} added`);
+      el.textContent = '';
+      el.innerHTML = parts.join(' · ');
+      el.style.display = 'block';
+    }
 
     async function extractStories() {
       const text = transcriptEl.value.trim();
@@ -397,6 +420,7 @@
       extractBtn.textContent = 'Extracting…';
       resultsEl.innerHTML = '';
       pendingUpdates = {};
+      sessionStats = { applied: 0, added: 0 };
 
       try {
         const res  = await fetch('/messenger/meeting', {
@@ -487,7 +511,7 @@
           html = '<div style="font-size:0.8rem;color:#555">No matches or new stories found in this transcript.</div>';
         }
 
-        resultsEl.innerHTML = html;
+        resultsEl.innerHTML = `<div class="session-summary" id="session-summary" style="display:none"></div>` + html;
 
       } catch (err) {
         resultsEl.innerHTML = `<div style="font-size:0.8rem;color:#ff4444">Error: ${esc(err.message)}</div>`;
@@ -504,6 +528,8 @@
         const title = story.dataset.story;
         story.classList.add('added');
         story.textContent = '✓ ' + title;
+        sessionStats.added++;
+        updateSummary();
         try {
           await fetch('/messenger/choose', {
             method: 'POST',
@@ -530,6 +556,8 @@
           card.style.borderColor = '#00ff9960';
           card.querySelector('.update-actions').innerHTML =
             '<span style="font-size:0.75rem;color:#00ff99">✓ Applied</span>';
+          sessionStats.applied++;
+          updateSummary();
         } catch (err) {
           card.querySelector('.update-changes').textContent = 'Error: ' + err.message;
         }

@@ -243,7 +243,7 @@
       </div>
       <div class="extract-body">
         <textarea class="transcript-input" id="transcript" placeholder="Paste meeting notes or transcript here…"></textarea>
-        <button class="extract-btn" id="extract-btn">Extract/Process Signals</button>
+        <button class="extract-btn" id="extract-btn">Extract &amp; Process Signals</button>
         <div class="extract-results" id="extract-results"></div>
       </div>
     </div>
@@ -517,7 +517,7 @@
         resultsEl.innerHTML = `<div style="font-size:0.8rem;color:#ff4444">Error: ${esc(err.message)}</div>`;
       } finally {
         extractBtn.disabled = false;
-        extractBtn.textContent = 'Extract/Process Signals';
+        extractBtn.textContent = 'Extract & Process Signals';
       }
     }
 

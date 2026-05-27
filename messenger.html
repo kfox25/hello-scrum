@@ -239,11 +239,11 @@
     <div class="right-panel">
       <div class="panel-header">
         <h2>Heard Around the Watercooler</h2>
-        <div class="subtitle">Paste a transcript &mdash; find stories &amp; updates.</div>
+        <div class="subtitle">Paste a transcript &mdash; find opportunities &amp; updates.</div>
       </div>
       <div class="extract-body">
         <textarea class="transcript-input" id="transcript" placeholder="Paste meeting notes or transcript here…"></textarea>
-        <button class="extract-btn" id="extract-btn">Find Opportunities</button>
+        <button class="extract-btn" id="extract-btn">Extract/Process Signals</button>
         <div class="extract-results" id="extract-results"></div>
       </div>
     </div>
@@ -517,7 +517,7 @@
         resultsEl.innerHTML = `<div style="font-size:0.8rem;color:#ff4444">Error: ${esc(err.message)}</div>`;
       } finally {
         extractBtn.disabled = false;
-        extractBtn.textContent = 'Find Opportunities';
+        extractBtn.textContent = 'Extract/Process Signals';
       }
     }
 

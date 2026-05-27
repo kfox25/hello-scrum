@@ -185,12 +185,8 @@
       margin-bottom: 0.35rem;
     }
     .alignment-in-sprint { border-color: #00ff9960; background: #0b1f14; }
-    .alignment-done      { border-color: #333; }
-    .alignment-done .update-idea    { color: #555; }
-    .alignment-done .update-changes { color: #444; }
-    .alignment-covered   { border-color: #333; }
-    .alignment-covered .update-idea    { color: #888; }
-    .alignment-covered .update-changes { color: #666; }
+    .alignment-done    { border-color: #333; }
+    .alignment-covered { border-color: #333; }
 
     /* ── session summary ── */
     .session-summary {
@@ -487,7 +483,7 @@
           for (const a of done) {
             alignHtml += `<div class="alignment-card alignment-done" data-id="${esc(a.id)}">
               <div class="update-idea">${esc(a.idea)}</div>
-              <div class="update-changes" style="color:#777">Already shipped.</div>
+              <div class="update-changes">Already shipped.</div>
             </div>`;
           }
 

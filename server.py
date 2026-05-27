@@ -410,9 +410,10 @@ Otherwise:
             return jsonify({"reply": text, "stories": None})
 
         if result.get("is_idea") and result.get("suggestions"):
+            sliced = result["suggestions"][:2]
             return jsonify({
                 "reply": result.get("reply", "Looks like a story idea."),
-                "stories": result["suggestions"][:2],
+                "stories": sliced,
                 "original": message,
             })
 

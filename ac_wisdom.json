@@ -1,14 +1,14 @@
 {
   "bullets": [
-    "\u2022 Name the CSS property and its exact before/after values.",
-    "\u2022 Specify the selector receiving the change without implementation detail.",
-    "\u2022 Assert unchanged properties remain unmodified in that selector.",
-    "\u2022 Describe the observable visual outcome users will see.",
-    "\u2022 Write assertions as testable facts, not procedural steps.",
-    "\u2022 Use consistent notation for all color and numeric values.",
-    "\u2022 Verify computed styles match assertions; reject scope creep.",
-    "\u2022 Avoid build processes, tooling requirements, and file structure specifics."
+    "\u2022 Specify exact CSS property values: before/after states, colors as hex.",
+    "\u2022 Name the selector and assert unchanged properties remain unmodified.",
+    "\u2022 Write assertions as testable facts, not procedural implementation steps.",
+    "\u2022 Describe observable visual outcomes users perceive on screen.",
+    "\u2022 Verify computed styles match assertions; reject scope creep additions.",
+    "\u2022 Use consistent notation for all color values and measurements.",
+    "\u2022 State measurable animation parameters: duration, repetition, keyframe positions.",
+    "\u2022 Assert layout impact explicitly: spacing, overlap prevention, content flow effects."
   ],
-  "synthesized_at": "2026-05-26 01:52:52",
-  "item_count": 77
+  "synthesized_at": "2026-05-26 10:55:05",
+  "item_count": 79
 }

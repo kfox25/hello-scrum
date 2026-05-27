@@ -1,6 +1,20 @@
 {
   "items": [
     {
+      "id": "1779855039283",
+      "idea": "Add a notification bell to the nav bar",
+      "status": "pending",
+      "in_sprint": false,
+      "opportunity": true
+    },
+    {
+      "id": "1779853864447",
+      "idea": "Add progress bar to sprint cards showing completion percentage",
+      "status": "pending",
+      "in_sprint": false,
+      "opportunity": true
+    },
+    {
       "id": "demo-opp-1",
       "idea": "Integrate with Jira to sync story status bidirectionally",
       "opportunity": true,

@@ -1,11 +1,11 @@
 {
   "bullets": [
-    "\u2022 Validate color values against design system before submitting styling changes.",
-    "\u2022 Document CSS property changes with before/after values in patch descriptions.",
     "\u2022 Assert modified property values in tests against parsed style block source.",
-    "\u2022 Include version, timestamp, and changelog updates with every patch submission.",
-    "\u2022 Scope CSS patches to single property modifications per submission when possible."
+    "\u2022 Scope CSS patches to single property modifications per submission when possible.",
+    "\u2022 Validate color values against design system before submitting styling changes.",
+    "\u2022 Document test checklist: HTML validation, version sync, changelog, CSS linting.",
+    "\u2022 Verify design system adherence before approving UI/UX enhancement patches."
   ],
-  "synthesized_at": "2026-05-26 01:52:50",
-  "finding_count": 291
+  "synthesized_at": "2026-05-26 10:55:03",
+  "finding_count": 295
 }

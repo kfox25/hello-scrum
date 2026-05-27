@@ -343,7 +343,8 @@
             `<div class="story-choice" data-story="${s.replace(/"/g, '&quot;')}">${i + 1}. ${esc(s)}</div>`
           ).join('');
           const orig = data.original || '';
-          const promoteBtn = `<div class="story-choice promote-as-is" data-story="${orig.replace(/"/g, '&quot;')}">3. ${esc(orig.charAt(0).toUpperCase() + orig.slice(1))}</div>`;
+          const origNum = data.stories.length + 1;
+          const promoteBtn = `<div class="story-choice promote-as-is" data-story="${orig.replace(/"/g, '&quot;')}">${origNum}. ${esc(orig.charAt(0).toUpperCase() + orig.slice(1))}</div>`;
           appendMessage('hello-scrum', `${data.reply || 'Pick a version:'}<div class="story-choices">${suggestions}${promoteBtn}</div>`, true);
         } else {
           appendMessage('hello-scrum', data.reply || '', true);

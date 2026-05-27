@@ -388,6 +388,7 @@ Classify the user message and respond with JSON only (no markdown):
 
 If it describes a story idea (something a developer could build):
 {{"is_idea": true, "suggestions": ["<title 1>", "<title 2>"], "reply": "<one sentence acknowledging>"}}
+Return EXACTLY 2 suggestions in the array, no more, no less.
 
 If it asks a question about the app, sprint, backlog, or team progress:
 {{"is_query": true, "reply": "<concise conversational answer using the app state above>"}}

@@ -442,6 +442,8 @@ Rules:
 - Only add to new_stories when NO existing story (including done ones) covers the topic
 - Never put the same topic in both alignments and new_stories — if it matched a story, it goes in alignments only
 - Only set needs_update: true when discussion clearly changes or adds requirements
+- CRITICAL: alignment ids must be exact ids from the backlog list above — never invent or guess an id
+- If no real backlog story matches a topic, put it in new_stories, not alignments
 - Both arrays may be empty""",
             messages=[{"role": "user", "content": f"TRANSCRIPT:\n{transcript}\n\nFULL BACKLOG:\n{stories_context}\n\nOPPORTUNITY BACKLOG (already captured, not yet started):\n{opps_context}"}],
         )
@@ -460,6 +462,10 @@ Rules:
             if "changes" not in a and "summary" in a:
                 a["changes"] = a.pop("summary")
             a.setdefault("needs_update", False)
+
+        # Drop hallucinated alignments whose IDs don't exist in the backlog
+        valid_ids = {str(i["id"]) for i in items}
+        result["alignments"] = [a for a in result.get("alignments", []) if str(a.get("id", "")) in valid_ids]
 
         # Enrich alignments with live status/in_sprint from backlog
         item_map = {str(i["id"]): i for i in items}

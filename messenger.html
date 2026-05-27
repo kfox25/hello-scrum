@@ -243,7 +243,7 @@
       </div>
       <div class="extract-body">
         <textarea class="transcript-input" id="transcript" placeholder="Paste meeting notes or transcript here…"></textarea>
-        <button class="extract-btn" id="extract-btn">Extract Stories</button>
+        <button class="extract-btn" id="extract-btn">Find Opportunities</button>
         <div class="extract-results" id="extract-results"></div>
       </div>
     </div>
@@ -417,7 +417,7 @@
       const text = transcriptEl.value.trim();
       if (!text) return;
       extractBtn.disabled = true;
-      extractBtn.textContent = 'Extracting…';
+      extractBtn.textContent = 'Finding…';
       resultsEl.innerHTML = '';
       pendingUpdates = {};
       sessionStats = { applied: 0, added: 0 };
@@ -517,7 +517,7 @@
         resultsEl.innerHTML = `<div style="font-size:0.8rem;color:#ff4444">Error: ${esc(err.message)}</div>`;
       } finally {
         extractBtn.disabled = false;
-        extractBtn.textContent = 'Extract Stories';
+        extractBtn.textContent = 'Find Opportunities';
       }
     }
 

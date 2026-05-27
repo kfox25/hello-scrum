@@ -156,6 +156,10 @@
     }
     .hermes-approve { background: #0a1f12; color: #00ff9980; border: 1px solid #00ff9920; }
     .hermes-reject  { background: #1a0808; color: #ff444480; border: 1px solid #ff444420; }
+    .watercooler-tag {
+      font-size: 0.62rem; padding: 0.1rem 0.4rem; border-radius: 3px; flex-shrink: 0;
+      background: #0a1525; color: #4499cc; border: 1px solid #4499cc30;
+    }
     .retry-btn {
       font-family: monospace;
       font-size: 0.85rem;
@@ -509,6 +513,7 @@
           ${expandBtn}
         </div>
         ${hermesTag}
+        ${item.meeting_update ? `<span class="watercooler-tag" title="${escHtml(item.meeting_update)}">~ watercooler</span>` : ''}
         <span class="badge badge-${item.status}">${item.status}</span>
         ${retryBtn}
         ${deleteBtn}

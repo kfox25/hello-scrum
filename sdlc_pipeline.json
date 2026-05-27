@@ -1,24 +1,96 @@
 {
   "items": [
     {
+      "id": "status-feed-test-1",
+      "idea": "Add a 'built with AI' label to the homepage footer",
+      "in_sprint": true,
+      "status": "done",
+      "story": "As a visitor to the homepage, I want to see a small 'built with AI' label in the footer so that it is clear this project is AI-powered.",
+      "acceptance_criteria": [
+        "A small text label reading 'built with AI' appears in the site footer",
+        "The label uses the existing footer link color (#555) and small font size",
+        "No existing footer links or elements are modified or removed"
+      ],
+      "summary": "Add 'built with AI' label to homepage footer",
+      "diff": "diff --git a/index.html b/index.html\nindex 88a55e9..8d36994 100644\n--- a/index.html\n+++ b/index.html\n@@ -89,6 +89,11 @@\n       background: #0d3320;\n       border-color: #00ff99;\n     }\n+    .footer-ai-label {\n+      color: #555;\n+      font-size: 0.75rem;\n+      margin-left: 0.85rem;\n+    }\n   </style>\n </head>\n <body>\n@@ -107,9 +112,9 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.74</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.75</div>\n   <div class=\"meta\" id=\"story-count\"></div>\n-  <div class=\"meta\">Last deployed: 2026-05-26 14:36:46 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 12:23:01 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -149,6 +154,7 @@\n   </script>\n   <footer class=\"site-footer\">\n     <a href=\"https://kfox25.github.io/hello-scrum\" target=\"_blank\" rel=\"noopener\">GitHub Pages \u00e2\u2020\u2014</a>\n+    <span class=\"footer-ai-label\">built with AI</span>\n   </footer>\n </body>\n </html>\ndiff --git a/version.json b/version.json\nindex 8122f98..7dca10c 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.74\",\n-  \"deployed\": \"2026-05-26 14:36:46 CT\",\n+  \"version\": \"0.1.75\",\n+  \"deployed\": \"2026-05-27 12:23:01 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -378,6 +378,11 @@\n       \"version\": \"0.1.74\",\n       \"date\": \"2026-05-26\",\n       \"change\": \"Show total shipped story count below the version badge, loaded dynamically from version.json changelog length\"\n+    },\n+    {\n+      \"version\": \"0.1.75\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add 'built with AI' label to the site footer in muted #555 color\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.75 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 12:23:01 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.75: Add 'built with AI' label to the site footer in muted #555 color"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-27 12:23:01 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "All changes are syntactically correct: CSS class is properly defined, HTML span element is valid, version and deployment timestamp updates are expected, and the changelog entry is properly formatted JSON.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All acceptance criteria are met: the 'built with AI' label appears in the footer, uses the correct color (#555) and small font size (0.75rem), and no existing footer links or elements were modified or removed.",
+      "hermes_verdict": "approve"
+    },
+    {
       "id": "1779855039283",
       "idea": "Add a notification bell to the nav bar",
-      "status": "pending",
       "in_sprint": false,
-      "opportunity": true
+      "opportunity": true,
+      "status": "pending"
     },
     {
       "id": "1779853864447",
       "idea": "Add progress bar to sprint cards showing completion percentage",
-      "status": "pending",
       "in_sprint": false,
-      "opportunity": true
-    },
-    {
-      "id": "demo-opp-1",
-      "idea": "Integrate with Jira to sync story status bidirectionally",
       "opportunity": true,
       "status": "pending"
+    },
+    {
+      "elaborate_error": "\"Could not resolve authentication method. Expected one of api_key, auth_token, or credentials to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted\"",
+      "id": "demo-opp-1",
+      "idea": "Integrate with Jira to sync story status bidirectionally",
+      "in_sprint": false,
+      "status": "pending"
+    },
+    {
+      "acceptance_criteria": [
+        "The h1 element with text 'Hello Scrum' has color property changed from #00ff99 to #00dd88",
+        "The title remains uppercase, monospace, 3rem font size, and 800 font weight with no other style properties modified",
+        "The computed color value of the h1 element renders as rgb(0, 221, 136) in the browser",
+        "All other page elements (navigation, version badge, footer links) retain their original #00ff99 accent color without modification"
+      ],
+      "id": "1779901679873",
+      "idea": "change title on homepage to green",
+      "in_sprint": false,
+      "status": "pending",
+      "story": "As a user visiting the homepage, I want the title to display in green so that it stands out with a distinct color that matches the site's design aesthetic."
     },
     {
       "id": "demo-opp-2",
@@ -27,33 +99,33 @@
       "status": "pending"
     },
     {
-      "id": "demo-story-1",
-      "idea": "Add a dark mode toggle to the navigation bar",
-      "status": "pending",
       "acceptance_criteria": [
         "A toggle button appears in the nav bar",
         "Clicking it switches the page between light and dark color schemes"
-      ]
+      ],
+      "id": "demo-story-1",
+      "idea": "Add a dark mode toggle to the navigation bar",
+      "status": "pending"
     },
     {
-      "id": "demo-story-2",
-      "idea": "Show story point estimates on backlog items",
-      "status": "pending",
       "acceptance_criteria": [
         "Each backlog card displays a point value",
         "Points can be set by clicking the card"
-      ]
+      ],
+      "id": "demo-story-2",
+      "idea": "Show story point estimates on backlog items",
+      "status": "pending"
     },
     {
       "id": "demo-sprint-1",
       "idea": "Display sprint velocity trend graph on the health page",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "pending"
     },
     {
       "id": "demo-sprint-2",
       "idea": "Add bulk-archive option to clear done stories from the backlog",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "pending"
     },
     {

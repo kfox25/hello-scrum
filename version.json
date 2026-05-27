@@ -1,6 +1,6 @@
 {
-  "version": "0.1.74",
-  "deployed": "2026-05-26 14:36:46 CT",
+  "version": "0.1.75",
+  "deployed": "2026-05-27 12:23:01 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -378,6 +378,11 @@
       "version": "0.1.74",
       "date": "2026-05-26",
       "change": "Show total shipped story count below the version badge, loaded dynamically from version.json changelog length"
+    },
+    {
+      "version": "0.1.75",
+      "date": "2026-05-27",
+      "change": "Add 'built with AI' label to the site footer in muted #555 color"
     }
   ]
 }

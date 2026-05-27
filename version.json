@@ -1,6 +1,6 @@
 {
-  "version": "0.1.75",
-  "deployed": "2026-05-27 12:23:01 CT",
+  "version": "0.1.76",
+  "deployed": "2026-05-27 12:42:16 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -383,6 +383,11 @@
       "version": "0.1.75",
       "date": "2026-05-27",
       "change": "Add 'built with AI' label to the site footer in muted #555 color"
+    },
+    {
+      "version": "0.1.76",
+      "date": "2026-05-27",
+      "change": "Add smooth hover highlight to changelog entries on the homepage"
     }
   ]
 }

@@ -79,10 +79,23 @@
 
     .compose {
       border-top: 1px solid #222;
-      padding: 0.75rem 1.25rem 2.5rem;
+      padding: 0.75rem 1.25rem 0.5rem;
       display: flex; gap: 0.6rem; align-items: flex-end;
       flex-shrink: 0;
     }
+    .prompt-hints {
+      padding: 0 1.25rem 1.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+      flex-shrink: 0;
+    }
+    .hint-chip {
+      font-family: monospace; font-size: 0.72rem;
+      color: #666; border: 1px solid #2a2a2a;
+      background: #141414; border-radius: 3px;
+      padding: 0.2rem 0.55rem; cursor: pointer;
+      white-space: nowrap; user-select: none;
+    }
+    .hint-chip:hover { color: #aaa; border-color: #444; background: #1c1c1c; }
     .compose-input {
       flex: 1; background: #1a1a1a; border: 1px solid #2a2a2a;
       border-radius: 6px; padding: 0.6rem 0.9rem;
@@ -226,6 +239,13 @@
       <div class="compose">
         <textarea class="compose-input" id="compose" placeholder="Message #general" rows="1"></textarea>
         <button class="send-btn" id="send-btn">Send</button>
+      </div>
+      <div class="prompt-hints">
+        <span class="hint-chip" data-hint="Add an opportunity: ">add an opportunity</span>
+        <span class="hint-chip" data-hint="What's in the sprint right now?">what's in the sprint?</span>
+        <span class="hint-chip" data-hint="How many stories are in the backlog?">backlog count</span>
+        <span class="hint-chip" data-hint="What did we ship recently?">recent shipments</span>
+        <span class="hint-chip" data-hint="What version is the app on?">app version</span>
       </div>
     </div>
 
@@ -378,6 +398,15 @@
       } catch (err) {
         appendMessage('hello-scrum', `Error: ${esc(err.message)}`, true);
       }
+    });
+
+    document.querySelectorAll('.hint-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        composeEl.value = chip.dataset.hint;
+        composeEl.focus();
+        composeEl.style.height = 'auto';
+        composeEl.style.height = Math.min(composeEl.scrollHeight, 120) + 'px';
+      });
     });
 
     loadMessages();

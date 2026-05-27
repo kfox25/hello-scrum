@@ -347,17 +347,53 @@ def messenger_send():
         if not message:
             return jsonify({"reply": "Empty message.", "stories": None})
 
+        # Build compact app state snapshot for query answering
+        try:
+            with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+                backlog = json.load(f)
+            items = backlog.get("items", [])
+            in_sprint  = [i for i in items if i.get("in_sprint") and i.get("status") == "pending"]
+            pending    = [i for i in items if not i.get("in_sprint") and not i.get("opportunity") and i.get("status") == "pending"]
+            opps       = [i for i in items if i.get("opportunity") and i.get("status") == "pending"]
+            done_items = [i for i in items if i.get("status") == "done"]
+            failed     = [i for i in items if i.get("status") == "failed"]
+
+            sprint_lines = "\n".join(f"  - {i.get('idea','')}" for i in in_sprint) or "  (none)"
+            recent_done  = "\n".join(f"  - {i.get('idea','')}" for i in done_items[-5:]) or "  (none)"
+
+            with open(os.path.join(BASE, "version.json"), encoding="utf-8") as f:
+                version_data = json.load(f)
+
+            app_state = f"""CURRENT APP STATE:
+Sprint ({len(in_sprint)} in progress):
+{sprint_lines}
+Story Backlog: {len(pending)} pending
+Opportunity Backlog: {len(opps)} ideas
+Total shipped: {len(done_items)} stories | Failed: {len(failed)}
+Current version: {version_data.get('version','?')} — last deployed: {version_data.get('deployed','?')}
+Recently shipped:
+{recent_done}"""
+        except Exception:
+            app_state = "APP STATE: unavailable"
+
         client = anthropic.Anthropic()
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
-            max_tokens=200,
-            system="""You are a scrum assistant. Determine if this message describes a story idea — something a developer could build as a feature or improvement.
+            max_tokens=300,
+            system=f"""You are the hello-scrum app assistant embedded in a team messenger.
 
-If YES: generate 2 distinct alternative phrasings as concise backlog titles (≤10 words each, action-oriented). Respond with JSON only (no markdown):
-{"is_idea": true, "suggestions": ["<title 1>", "<title 2>"], "reply": "<one sentence acknowledging the idea>"}
+{app_state}
 
-If NO: respond with JSON only (no markdown):
-{"is_idea": false, "reply": "<brief helpful response>"}""",
+Classify the user message and respond with JSON only (no markdown):
+
+If it describes a story idea (something a developer could build):
+{{"is_idea": true, "suggestions": ["<title 1>", "<title 2>"], "reply": "<one sentence acknowledging>"}}
+
+If it asks a question about the app, sprint, backlog, or team progress:
+{{"is_query": true, "reply": "<concise conversational answer using the app state above>"}}
+
+Otherwise:
+{{"reply": "<brief helpful response>"}}""",
             messages=[{"role": "user", "content": message}],
         )
 

@@ -443,8 +443,9 @@
         if (alignments.length) {
           const inSprint   = alignments.filter(a => a.in_sprint);
           const done       = alignments.filter(a => !a.in_sprint && a.status === 'done');
-          const actionable = alignments.filter(a => !a.in_sprint && a.status !== 'done' && a.needs_update);
-          const covered    = alignments.filter(a => !a.in_sprint && a.status !== 'done' && !a.needs_update);
+          const actionable = alignments.filter(a => !a.in_sprint && a.status !== 'done' && !a.opportunity && a.needs_update);
+          const covered    = alignments.filter(a => !a.in_sprint && a.status !== 'done' && !a.opportunity && !a.needs_update);
+          const inOpportunity = alignments.filter(a => a.opportunity);
 
           for (const a of actionable) pendingUpdates[String(a.id)] = a;
 
@@ -487,6 +488,14 @@
             alignHtml += `<div class="alignment-card alignment-done" data-id="${esc(a.id)}">
               <div class="update-idea">${esc(a.idea)}</div>
               <div class="update-changes" style="color:#777">Already shipped.</div>
+            </div>`;
+          }
+
+          for (const a of inOpportunity) {
+            alignHtml += `<div class="alignment-card alignment-covered" data-id="${esc(a.id)}">
+              <div class="update-idea">${esc(a.idea)}</div>
+              <div class="update-changes">Already in Opportunity Backlog.</div>
+              <div class="covered-label">No action needed</div>
             </div>`;
           }
 

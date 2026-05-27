@@ -398,6 +398,7 @@ def messenger_meeting():
         items = backlog.get("items", [])
 
         all_stories = [i for i in items if not i.get("opportunity")]
+        opportunities = [i for i in items if i.get("opportunity")]
         # Active stories first so they are never cut off by the slice limit
         active   = [i for i in all_stories if i.get("in_sprint") or i.get("status") == "pending"]
         inactive = [i for i in all_stories if i not in active]
@@ -409,6 +410,11 @@ def messenger_meeting():
             + (" [FAILED]"    if i.get("status") == "failed" else "")
             + (f" (AC: {'; '.join(i['acceptance_criteria'][:2])})" if i.get("acceptance_criteria") else "")
             for i in ordered[:60]
+        ) or "(none)"
+        # Include opportunities separately so the model knows they already exist
+        opps_context = "\n".join(
+            f"- [{i['id']}] {i.get('idea', '')} [OPPORTUNITY]"
+            for i in opportunities[:20]
         ) or "(none)"
 
         client = anthropic.Anthropic()
@@ -437,7 +443,7 @@ Rules:
 - Never put the same topic in both alignments and new_stories — if it matched a story, it goes in alignments only
 - Only set needs_update: true when discussion clearly changes or adds requirements
 - Both arrays may be empty""",
-            messages=[{"role": "user", "content": f"TRANSCRIPT:\n{transcript}\n\nFULL BACKLOG:\n{stories_context}"}],
+            messages=[{"role": "user", "content": f"TRANSCRIPT:\n{transcript}\n\nFULL BACKLOG:\n{stories_context}\n\nOPPORTUNITY BACKLOG (already captured, not yet started):\n{opps_context}"}],
         )
 
         text = response.content[0].text.strip()
@@ -460,10 +466,11 @@ Rules:
         for a in result.get("alignments", []):
             live = item_map.get(str(a.get("id", "")))
             if live:
-                a["status"]    = live.get("status", "pending")
-                a["in_sprint"] = live.get("in_sprint", False)
+                a["status"]      = live.get("status", "pending")
+                a["in_sprint"]   = live.get("in_sprint", False)
+                a["opportunity"] = bool(live.get("opportunity"))
 
-        # Safety net: rescue any new_story that actually matches a backlog story
+        # Safety net: rescue any new_story that actually matches a backlog or opportunity story
         stop_words = {"a","an","the","in","on","at","to","for","of","and","or","is","it","be","that","this","with","as","from"}
         aligned_ids = {str(a.get("id","")) for a in result.get("alignments", [])}
 
@@ -473,8 +480,8 @@ Rules:
         rescued, remaining = [], []
         for ns in result.get("new_stories", []):
             ns_kw = kw(ns)
-            best_score, best_item = 0.0, None
-            for i in all_stories:
+            best_score, best_item, best_is_opp = 0.0, None, False
+            for i in all_stories + opportunities:
                 story_kw = kw(i.get("idea", ""))
                 union = ns_kw | story_kw
                 if not union:
@@ -482,16 +489,18 @@ Rules:
                 score = len(ns_kw & story_kw) / len(union)
                 if score > best_score:
                     best_score, best_item = score, i
+                    best_is_opp = bool(i.get("opportunity"))
             if best_item and str(best_item["id"]) in aligned_ids:
                 continue  # already aligned — drop duplicate from new_stories silently
             if best_score >= 0.25 and best_item:
                 rescued.append({
                     "id": best_item["id"],
                     "idea": best_item.get("idea", ""),
-                    "changes": f'Mentioned as potential new story: "{ns}"',
+                    "changes": "Already captured as an opportunity." if best_is_opp else f'Mentioned as potential new story: "{ns}"',
                     "needs_update": False,
                     "status": best_item.get("status", "pending"),
                     "in_sprint": best_item.get("in_sprint", False),
+                    "opportunity": best_is_opp,
                 })
                 aligned_ids.add(str(best_item["id"]))
             else:

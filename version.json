@@ -1,6 +1,6 @@
 {
-  "version": "0.1.101",
-  "deployed": "2026-05-28 00:03:31 CT",
+  "version": "0.1.102",
+  "deployed": "2026-05-28 00:06:15 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -513,6 +513,11 @@
       "version": "0.1.101",
       "date": "2026-05-28",
       "change": "Add letter-spacing: 0.03em to .meta deployment line for a refined look"
+    },
+    {
+      "version": "0.1.102",
+      "date": "2026-05-28",
+      "change": "Add gap: 0.5rem to .hero flex container for consistent child spacing"
     }
   ]
 }

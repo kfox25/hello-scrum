@@ -1,6 +1,88 @@
 {
   "items": [
     {
+      "idea": "Add gap: 0.5rem to the .hero flex container for consistent child spacing",
+      "story": "As a visitor, I want the hero section elements to have consistent spacing so the layout feels balanced.",
+      "acceptance_criteria": [
+        "The .hero selector has gap: 0.5rem added",
+        "No other .hero styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-10-hero-gap",
+      "in_sprint": true,
+      "status": "done",
+      "summary": "Add gap: 0.5rem to .hero flex container for consistent child spacing",
+      "diff": "diff --git a/index.html b/index.html\nindex 7192c56..2a6661f 100644\n--- a/index.html\n+++ b/index.html\n@@ -13,6 +13,7 @@\n       display: flex;\n       flex-direction: column;\n       align-items: center;\n+      gap: 0.5rem;\n       text-align: center;\n       padding: 4.5rem 2rem 2rem;\n       margin: 0;\n@@ -116,8 +117,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.101</div>\n-  <div class=\"meta\">Last deployed: 2026-05-28 00:03:31 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.102</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 00:06:15 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 0885361..24de7b1 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.101\",\n-  \"deployed\": \"2026-05-28 00:03:31 CT\",\n+  \"version\": \"0.1.102\",\n+  \"deployed\": \"2026-05-28 00:06:15 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -513,6 +513,11 @@\n       \"version\": \"0.1.101\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add letter-spacing: 0.03em to .meta deployment line for a refined look\"\n+    },\n+    {\n+      \"version\": \"0.1.102\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add gap: 0.5rem to .hero flex container for consistent child spacing\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.102 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-28 00:06:15 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.102: Add gap: 0.5rem to .hero flex container for consistent child spacing"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-28 00:06:15 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "CSS gap property is valid for flex containers, version and deployment timestamp updates are expected, and the change is scoped only to the .hero element styling.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The .hero selector has gap: 0.5rem added, no other .hero styles are modified, and no other selectors are added or removed.",
+      "hermes_verdict": "approve"
+    },
+    {
+      "idea": "Add font-style: italic to .changelog-entry .cd so the date has a subtle typographic distinction",
+      "story": "As a visitor, I want the changelog date to appear in italics so it is visually distinct from the version and change text.",
+      "acceptance_criteria": [
+        "The .changelog-entry .cd rule has font-style: italic added",
+        "No other .changelog-entry .cd styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-10-changelog-date-italic",
+      "in_sprint": true,
+      "status": "pending"
+    },
+    {
+      "idea": "Add padding: 0 0.5rem to the .changelog container for slight side breathing room",
+      "story": "As a visitor, I want the changelog section to have a little side padding so it does not feel edge-to-edge.",
+      "acceptance_criteria": [
+        "The .changelog rule has padding: 0 0.5rem added",
+        "No other .changelog styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-10-changelog-padding",
+      "in_sprint": true,
+      "status": "pending"
+    },
+    {
       "idea": "Add line-height: 1.6 to the body for better text readability",
       "story": "As a visitor, I want the page text to have comfortable line spacing so it is easier to read.",
       "acceptance_criteria": [
@@ -9,7 +91,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-9-body-line-height",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "started": 1779944546.462627,
       "stage_times": {
@@ -81,7 +163,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-9-version-user-select",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "retro_context": "[fail] Scope creep guard rejected patch due to unintended content deletion. The agent modified a 5046-char file but only patched 3524 chars, removing 1522 chars outside the story scope. This suggests the agent is making broader changes than the focused CSS line-height task requires.\n[note] Single item sprint with 0% completion rate and no alternative failure reasons recorded (no hermes_verdict, code_review_reason, ac_check_reason, or test_results), indicating the patch was rejected at validation stage before downstream checks.",
       "started": 1779944597.737746,
@@ -154,18 +236,22 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-9-meta-letter-spacing",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "retro_context": "[fail] Both items failed due to scope creep guard rejections, indicating the patched files lost ~1500 characters of content. The agent is likely modifying files incorrectly or not preserving existing content when applying CSS changes.\n[note] Both failures occurred on simple, isolated CSS additions (line-height and user-select properties), suggesting the issue is systematic in how the agent handles file patching rather than related to task complexity.",
-      "started": 1779943480.156523,
+      "started": 1779944611.639926,
       "stage_times": {
-        "pull": 1779943480.156523,
-        "code": 1779943492.826613,
-        "story": 1779943488.595155,
-        "failed": 1779943492.928745
+        "pull": 1779944611.639926,
+        "code": 1779944616.488221,
+        "story": 1779944611.705099,
+        "test": 1779944616.603889,
+        "code_review": 1779944616.737223,
+        "ac_check": 1779944617.914056,
+        "deploy": 1779944620.796927,
+        "done": 1779944623.949202
       },
-      "tokens_in": 8125,
-      "tokens_out": 818,
+      "tokens_in": 5621,
+      "tokens_out": 438,
       "summary": "Add letter-spacing: 0.03em to .meta rule for polished deployment line appearance",
       "diff": "diff --git a/index.html b/index.html\nindex aa13de7..7192c56 100644\n--- a/index.html\n+++ b/index.html\n@@ -67,7 +67,7 @@\n     .version:hover {\n       box-shadow: 0 0 10px #00ff9940;\n     }\n-    .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; margin-bottom: 0.75rem; }\n+    .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; margin-bottom: 0.75rem; letter-spacing: 0.03em; }\n     .changelog { margin-top: 1.5rem; width: 100%; max-width: 500px; }\n     .changelog h2 { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; }\n     .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }\n@@ -116,8 +116,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.100</div>\n-  <div class=\"meta\">Last deployed: 2026-05-28 00:03:17 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.101</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 00:03:31 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex a7416e4..0885361 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.100\",\n-  \"deployed\": \"2026-05-28 00:03:17 CT\",\n+  \"version\": \"0.1.101\",\n+  \"deployed\": \"2026-05-28 00:03:31 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -508,6 +508,11 @@\n       \"version\": \"0.1.100\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add user-select: none to .version badge to prevent text selection on click\"\n+    },\n+    {\n+      \"version\": \"0.1.101\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add letter-spacing: 0.03em to .meta deployment line for a refined look\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "test_results": [
@@ -6443,5 +6529,5 @@
       "tokens_out": 2816
     }
   ],
-  "sprint_number": 9
+  "sprint_number": 10
 }

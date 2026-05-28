@@ -1,6 +1,6 @@
 {
-  "version": "0.1.118",
-  "deployed": "2026-05-28 10:16:40 CT",
+  "version": "0.1.119",
+  "deployed": "2026-05-28 10:16:53 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -598,6 +598,11 @@
       "version": "0.1.118",
       "date": "2026-05-28",
       "change": "Add line-height: 1.6 to body for comfortable text readability"
+    },
+    {
+      "version": "0.1.119",
+      "date": "2026-05-28",
+      "change": "Add transition: box-shadow 0.2s ease to .version for smooth hover animation"
     }
   ]
 }

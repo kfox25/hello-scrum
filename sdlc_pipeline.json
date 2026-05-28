@@ -1,9 +1,136 @@
 {
   "items": [
     {
+      "id": "sprint-9-nav-link-opacity",
+      "idea": "Add a smooth opacity transition to nav links on hover",
+      "in_sprint": true,
+      "status": "failed",
+      "story": "As a visitor, I want nav links to fade slightly on hover so that the navigation feels more polished.",
+      "acceptance_criteria": [
+        "Nav links have a CSS transition on opacity",
+        "Hover state reduces opacity to 0.7",
+        "Transition duration is 0.2s",
+        "No other nav styles or layout are modified"
+      ],
+      "diff": "diff --git a/index.html b/index.html\nindex 0882d6a..489ae92 100644\n--- a/index.html\n+++ b/index.html\n@@ -32,7 +32,6 @@\n       margin: 0 0 0.5rem;\n       text-transform: uppercase;\n       color: #00ff99;\n-      text-shadow: 0 0 6px #00ff9940;\n     }\n     .tagline {\n       font-size: 1.2rem;\n@@ -59,18 +58,8 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n-    .changelog-entry { transition: box-shadow 0.2s ease; }\n-    .changelog-entry:hover { box-shadow: 0 0 8px #00ff9920; }\n-    .site-tagline {\n-      font-size: 1rem;\n-      color: #555e7a;\n-      margin: 0 0 0.75rem;\n-      font-weight: 400;\n-      letter-spacing: 0.04em;\n-    }\n-    .top-nav a.nav-active {\n-      color: #00ff99;\n-    }\n+    .top-nav a { transition: opacity 0.2s; }\n+    .top-nav a:hover { opacity: 0.7; }\n   </style>\n </head>\n <body>\n@@ -87,11 +76,10 @@\n   </nav>\n   <div class=\"hero\">\n     <h1>Hello Scrum</h1>\n-    <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.84</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 20:14:21 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.85</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 20:43:40 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -104,10 +92,6 @@\n       fetch('/version.json')\n         .then(r => r.json())\n         .then(data => {\n-          const badge = document.getElementById('version-badge');\n-          if (data.version) {\n-            badge.title = 'v' + data.version;\n-          }\n           const entries = (data.changelog || []).slice().reverse().slice(0, 5);\n           document.getElementById('changelog-entries').innerHTML = entries.map(e => {\n             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;\n@@ -121,18 +105,6 @@\n         .catch(() => {});\n     }\n     loadChangelog();\n-\n-    (function() {\n-      var links = document.querySelectorAll('.top-nav a');\n-      var current = window.location.pathname.split('/').pop() || 'index.html';\n-      if (current === '') current = 'index.html';\n-      links.forEach(function(link) {\n-        var href = link.getAttribute('href').split('/').pop() || 'index.html';\n-        if (href === current) {\n-          link.classList.add('nav-active');\n-        }\n-      });\n-    })();\n   </script>\n </body>\n </html>\ndiff --git a/version.json b/version.json\nindex 14d1535..8620e58 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.84\",\n-  \"deployed\": \"2026-05-27 20:14:21 CT\",\n+  \"version\": \"0.1.85\",\n+  \"deployed\": \"2026-05-27 20:43:40 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -428,6 +428,11 @@\n       \"version\": \"0.1.84\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add subtle box-shadow on hover to changelog entries for interactive feel\"\n+    },\n+    {\n+      \"version\": \"0.1.85\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add smooth opacity transition (0.2s) on nav link hover, reducing opacity to 0.7\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.85 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 20:43:40 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.85: Add smooth opacity transition (0.2s) on nav link hover, reducing opacity to 0.7"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "code_review_verdict": "reject",
+      "code_review_reason": "Removed JavaScript that implements active nav link detection (.nav-active class assignment), which breaks the feature that highlights the current page in navigation; the CSS-only opacity transition replacement does not provide equivalent functionality.",
+      "hermes_verdict": "reject",
+      "hermes_reason": "Removed JavaScript that implements active nav link detection (.nav-active class assignment), which breaks the feature that highlights the current page in navigation; the CSS-only opacity transition replacement does not provide equivalent functionality.",
+      "started": 1779932620.534091,
+      "stage_times": {
+        "pull": 1779932620.534091,
+        "story": 1779932620.547265,
+        "code": 1779932633.717252,
+        "test": 1779932641.915799,
+        "code_review": 1779932650.16227,
+        "rejected": 1779932652.983857
+      },
+      "tokens_in": 3869,
+      "tokens_out": 388
+    },
+    {
+      "id": "sprint-10-h1-letter-spacing",
+      "idea": "Add letter-spacing to the h1 site title for a more refined look",
+      "in_sprint": true,
+      "status": "done",
+      "story": "As a visitor, I want the site title to have subtle letter-spacing so that it looks more refined.",
+      "acceptance_criteria": [
+        "The h1 site title has a letter-spacing CSS property applied",
+        "The value is between 0.02em and 0.06em",
+        "No other h1 styles or layout are modified",
+        "No duplicate h1 rules introduced"
+      ],
+      "retro_context": "[fail] Feature scope reduction without acceptance criteria validation: The implementation removed existing JavaScript functionality (active nav link detection) to simplify the solution, breaking a core requirement that was not explicitly in the story but was part of the existing system behavior.\n[note] All automated tests passed despite code review rejection, indicating the test suite does not validate functional requirements like active nav link detection\u2014consider adding tests that verify the .nav-active class is properly assigned and displayed.",
+      "summary": "Add letter-spacing 0.04em to h1 for refined site title appearance",
+      "diff": "diff --git a/index.html b/index.html\nindex 0882d6a..cafb614 100644\n--- a/index.html\n+++ b/index.html\n@@ -28,7 +28,7 @@\n       font-family: monospace;\n       font-size: 3rem;\n       font-weight: 800;\n-      letter-spacing: -0.03em;\n+      letter-spacing: 0.04em;\n       margin: 0 0 0.5rem;\n       text-transform: uppercase;\n       color: #00ff99;\n@@ -90,8 +90,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.84</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 20:14:21 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.85</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 20:44:17 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 14d1535..aa18b33 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.84\",\n-  \"deployed\": \"2026-05-27 20:14:21 CT\",\n+  \"version\": \"0.1.85\",\n+  \"deployed\": \"2026-05-27 20:44:17 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -428,6 +428,11 @@\n       \"version\": \"0.1.84\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add subtle box-shadow on hover to changelog entries for interactive feel\"\n+    },\n+    {\n+      \"version\": \"0.1.85\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add letter-spacing 0.04em to h1 site title for a more refined look\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.85 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 20:44:17 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.85: Add letter-spacing 0.04em to h1 site title for a more refined look"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-27 20:44:17 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The letter-spacing property change from -0.03em to 0.04em is valid CSS, version.json and deployment timestamps are appropriately updated, and no extraneous files were modified.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The h1 site title has letter-spacing of 0.04em applied (within the 0.02em-0.06em range), no other h1 styles or layout were modified, no duplicate h1 rules were introduced, and all acceptance criteria are met.",
+      "hermes_verdict": "approve"
+    },
+    {
       "id": "sprint-7-h1-text-shadow",
       "idea": "Add a subtle green text-shadow to the site title on the homepage",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "story": "As a visitor, I want the site title to have a subtle green glow so that it feels more vibrant.",
       "acceptance_criteria": [
@@ -75,7 +202,7 @@
     {
       "id": "sprint-8-changelog-hover-shadow",
       "idea": "Add a subtle box-shadow to changelog entries on hover",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "story": "As a visitor, I want changelog entries to show a subtle shadow when hovered so that they feel interactive.",
       "acceptance_criteria": [
@@ -130,7 +257,20 @@
       "code_review_reason": "CSS syntax is valid, box-shadow property and transition are correctly formatted, selector targeting is sound, and version/deployment updates are expected accompaniments to feature changes.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "All acceptance criteria are met: hover adds box-shadow to changelog entries, shadow color (#00ff9920) is consistent with dark theme, transition is smooth (0.2s ease), and no existing styles are modified.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779930861.784909,
+      "stage_times": {
+        "pull": 1779930861.784909,
+        "story": 1779930861.790673,
+        "code": 1779930874.900451,
+        "test": 1779930883.018958,
+        "code_review": 1779930891.209495,
+        "ac_check": 1779930900.583419,
+        "deploy": 1779930910.231611,
+        "done": 1779930913.336725
+      },
+      "tokens_in": 5110,
+      "tokens_out": 444
     },
     {
       "id": "sprint-5-footer-copyright",

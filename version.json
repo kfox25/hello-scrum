@@ -1,6 +1,6 @@
 {
-  "version": "0.1.84",
-  "deployed": "2026-05-27 20:14:21 CT",
+  "version": "0.1.85",
+  "deployed": "2026-05-27 20:44:17 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -428,6 +428,11 @@
       "version": "0.1.84",
       "date": "2026-05-27",
       "change": "Add subtle box-shadow on hover to changelog entries for interactive feel"
+    },
+    {
+      "version": "0.1.85",
+      "date": "2026-05-27",
+      "change": "Add letter-spacing 0.04em to h1 site title for a more refined look"
     }
   ]
 }

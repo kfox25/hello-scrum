@@ -123,9 +123,9 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.78</div>
+  <div class="version" id="version-badge">v0.1.79</div>
   <div class="meta" id="story-count"></div>
-  <div class="meta">Last deployed: 2026-05-27 19:03:20 CT</div>
+  <div class="meta">Last deployed: 2026-05-27 19:04:18 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -138,6 +138,8 @@
       fetch('/version.json')
         .then(r => r.json())
         .then(data => {
+          const badge = document.getElementById('version-badge');
+          if (badge && data.version) badge.title = 'v' + data.version;
           const entries = (data.changelog || []).slice().reverse().slice(0, 5);
           document.getElementById('changelog-entries').innerHTML = entries.map(e => {
             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;

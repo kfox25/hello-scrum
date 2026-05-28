@@ -57,20 +57,80 @@
       "code_review_reason": "CSS selector and JavaScript logic are syntactically correct; the script properly identifies the current page and applies the nav-active class without errors.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "All acceptance criteria are met: the nav-active CSS class applies the distinct highlight color #00ff99 to the matching link, other links retain default styling, a small inline IIFE script adds the class based on current pathname, and no existing nav styles or layout are modified.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779926600.871508,
+      "stage_times": {
+        "pull": 1779926600.871508,
+        "story": 1779926600.88835,
+        "code": 1779926615.845499,
+        "test": 1779926624.053644,
+        "code_review": 1779926632.352174,
+        "ac_check": 1779926641.769675,
+        "deploy": 1779926652.022096,
+        "done": 1779926655.1828
+      },
+      "tokens_in": 5438,
+      "tokens_out": 618
     },
     {
       "id": "sprint-4-version-tooltip",
       "idea": "Show the full version string as a tooltip on the version badge",
       "in_sprint": true,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want to hover over the version badge and see the full deployed version string so that I can quickly confirm which build is live.",
       "acceptance_criteria": [
         "The version badge element has a title attribute containing the version string from version.json",
         "The title attribute is set by existing JavaScript that already reads version.json",
         "No visual change to the badge itself",
         "No new files or dependencies are added"
-      ]
+      ],
+      "retro_context": "[ok] Perfect execution on feature delivery: single item completed with Hermes approval, all acceptance criteria met, and comprehensive test suite passed (9/9 tests). Code review identified correct CSS and JavaScript implementation with no syntax errors.\n[ok] Strong quality assurance process: tests covered critical areas including file existence, version consistency, deployment metadata, changelog accuracy, CSS hygiene, and color format standardization\u2014catching multiple potential issues before production.\n[note] Sprint velocity limited to single item; unclear if this represents optimal team capacity, reduced scope, or other constraints. One-item sprints provide limited data for pattern identification.",
+      "summary": "Add title tooltip to version badge showing full version string from version.json",
+      "diff": "diff --git a/index.html b/index.html\nindex 217dec8..9965e0f 100644\n--- a/index.html\n+++ b/index.html\n@@ -123,9 +123,9 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.78</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.79</div>\n   <div class=\"meta\" id=\"story-count\"></div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 19:03:20 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 19:04:18 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -138,6 +138,8 @@\n       fetch('/version.json')\n         .then(r => r.json())\n         .then(data => {\n+          const badge = document.getElementById('version-badge');\n+          if (badge && data.version) badge.title = 'v' + data.version;\n           const entries = (data.changelog || []).slice().reverse().slice(0, 5);\n           document.getElementById('changelog-entries').innerHTML = entries.map(e => {\n             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;\ndiff --git a/version.json b/version.json\nindex 5bce26a..0f176ba 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.78\",\n-  \"deployed\": \"2026-05-27 19:03:20 CT\",\n+  \"version\": \"0.1.79\",\n+  \"deployed\": \"2026-05-27 19:04:18 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -398,6 +398,11 @@\n       \"version\": \"0.1.78\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Highlight active nav link on current page via inline script and CSS class\"\n+    },\n+    {\n+      \"version\": \"0.1.79\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Set title attribute on version badge from version.json so hover shows full version string\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.79 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 19:04:18 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.79: Set title attribute on version badge from version.json so hover shows full version string"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-27 19:04:18 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The code correctly fetches the version from version.json, validates both the badge element and data.version exist, and sets the title attribute which browsers will display as a native tooltip on hover.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All acceptance criteria are satisfied: the version badge element has a title attribute set by existing JavaScript that reads version.json, no visual changes were made to the badge, and no new files or dependencies were added.",
+      "hermes_verdict": "approve"
     },
     {
       "id": "sprint-1-add-cursor-pointer",

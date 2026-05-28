@@ -1,6 +1,6 @@
 {
-  "version": "0.1.78",
-  "deployed": "2026-05-27 19:03:20 CT",
+  "version": "0.1.79",
+  "deployed": "2026-05-27 19:04:18 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -398,6 +398,11 @@
       "version": "0.1.78",
       "date": "2026-05-27",
       "change": "Highlight active nav link on current page via inline script and CSS class"
+    },
+    {
+      "version": "0.1.79",
+      "date": "2026-05-27",
+      "change": "Set title attribute on version badge from version.json so hover shows full version string"
     }
   ]
 }

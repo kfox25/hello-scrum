@@ -1,6 +1,6 @@
 {
-  "version": "0.1.136",
-  "deployed": "2026-05-28 11:42:25 CT",
+  "version": "0.1.137",
+  "deployed": "2026-05-28 11:42:39 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -688,6 +688,11 @@
       "version": "0.1.136",
       "date": "2026-05-28",
       "change": "Add gap: 0.5rem to .hero for consistent spacing between headline and tagline"
+    },
+    {
+      "version": "0.1.137",
+      "date": "2026-05-28",
+      "change": "Add line-height: 1.4 to .changelog-entry .ct so long change descriptions wrap cleanly"
     }
   ]
 }

@@ -84,19 +84,53 @@
       ],
       "id": "sprint-4-version-hover",
       "in_sprint": true,
-      "status": "failed",
-      "retro_context": "[ok] Comprehensive test coverage and strict validation gates are working effectively\u2014all 9 tests passed, Hermes approved the change, and code review validated both acceptance criteria and changelog consistency without issues.\n[ok] Version management and deployment metadata are being maintained correctly across all files, with automated checks catching version mismatches and timestamp consistency.\n[note] The sprint processed only 1 item; while it succeeded, the low throughput limits ability to identify patterns or assess velocity trends.",
-      "error": "Parse error: Scope creep guard: find block is 9 lines (max 8). Use a minimal single-line anchor. Target: '    .version {\\n      font-size: 0.85rem;\\n      color: #00ff99;\\n      background:' | Response preview: {\n  \"patches\": [\n    {\n      \"find\": \"    .version {\\n      font-size: 0.85rem;\\n      color: #00ff99;\\n      background: #0b1f14;\\n      border: 1px solid #00ff9966;\\n      padding: 0.3rem 0.9rem;\\n ",
-      "started": 1779939936.000076,
-      "stage_times": {
-        "pull": 1779939936.000076,
-        "story": 1779939936.013967,
-        "code": 1779939942.9751,
-        "failed": 1779939942.977574
-      },
-      "tokens_in": 3066,
-      "tokens_out": 457,
-      "sprint_wisdom": "[fail] Patch generation exceeded scope creep guard limits by targeting multi-line CSS blocks (9 lines vs 8 max). The agent attempted to modify .version selector with a find block that was too large, causing parse error rejection.\n[ok] Single-line CSS modifications with precise targeting pass all validation gates reliably. The scroll-behavior item succeeded by adding one property to a single selector with clean version/timestamp consistency.\n[note] The failed item's scope creep guard is functioning as intended to prevent large diffs, but the agent needs better guidance on how to decompose multi-property CSS changes into compliant single-line patches."
+      "status": "done",
+      "summary": "Add glow hover effect and box-shadow transition to .version badge",
+      "diff": "diff --git a/index.html b/index.html\nindex 69f0be2..33a4412 100644\n--- a/index.html\n+++ b/index.html\n@@ -53,6 +53,10 @@\n       padding: 0.3rem 0.9rem;\n       border-radius: 20px;\n       margin-bottom: 0.4rem;\n+      transition: box-shadow 0.2s ease;\n+    }\n+    .version:hover {\n+      box-shadow: 0 0 10px #00ff9940;\n     }\n     .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; }\n     .changelog { margin-top: 1.5rem; width: 100%; max-width: 500px; }\n@@ -103,8 +107,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.91</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 22:45:47 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.92</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 22:46:42 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 3d314b6..5b79b81 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.91\",\n-  \"deployed\": \"2026-05-27 22:45:47 CT\",\n+  \"version\": \"0.1.92\",\n+  \"deployed\": \"2026-05-27 22:46:42 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -463,6 +463,11 @@\n       \"version\": \"0.1.91\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add border-radius: 6px to .changelog-entry for softer rounded corners\"\n+    },\n+    {\n+      \"version\": \"0.1.92\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add glow hover effect to version badge with box-shadow transition using #00ff99\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.92 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 22:46:42 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.92: Add glow hover effect to version badge with box-shadow transition using #00ff99"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-27 22:46:42 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "CSS transition and hover rule are syntactically correct, box-shadow property is valid, version and deployment timestamp updates are expected, and no scope creep is present.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All acceptance criteria are met: .version:hover rule added with box-shadow using #00ff99 at low opacity (40), transition added to .version for box-shadow, existing .version styles unchanged, and no other selectors added or removed.",
+      "hermes_verdict": "approve"
     },
     {
       "idea": "Add border-radius to changelog entries for a softer look",
@@ -156,7 +190,20 @@
       "code_review_reason": "CSS property border-radius: 6px is syntactically valid and will apply correctly to changelog entries; version and timestamp updates are expected for feature changes.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "The .changelog-entry selector has border-radius: 6px added (within 4px-12px range), no other .changelog-entry styles are modified, and no other selectors are added or removed.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779939947.173209,
+      "stage_times": {
+        "pull": 1779939947.173209,
+        "story": 1779939947.178895,
+        "code": 1779939951.396817,
+        "test": 1779939951.465818,
+        "code_review": 1779939951.678638,
+        "ac_check": 1779939952.786858,
+        "deploy": 1779939954.110292,
+        "done": 1779939957.910104
+      },
+      "tokens_in": 5472,
+      "tokens_out": 390
     },
     {
       "idea": "Add a subtle green glow text-shadow to the h1 heading",

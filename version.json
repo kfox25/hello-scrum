@@ -1,6 +1,6 @@
 {
-  "version": "0.1.91",
-  "deployed": "2026-05-27 22:45:47 CT",
+  "version": "0.1.92",
+  "deployed": "2026-05-27 22:46:42 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -463,6 +463,11 @@
       "version": "0.1.91",
       "date": "2026-05-27",
       "change": "Add border-radius: 6px to .changelog-entry for softer rounded corners"
+    },
+    {
+      "version": "0.1.92",
+      "date": "2026-05-27",
+      "change": "Add glow hover effect to version badge with box-shadow transition using #00ff99"
     }
   ]
 }

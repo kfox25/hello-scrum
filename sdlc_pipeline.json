@@ -1,9 +1,170 @@
 {
   "items": [
     {
+      "id": "sprint-3-nav-active",
+      "idea": "Highlight the active nav link on each page",
+      "in_sprint": true,
+      "status": "done",
+      "story": "As a visitor, I want the current page's nav link to appear highlighted so that I know which page I am on.",
+      "acceptance_criteria": [
+        "The nav link matching the current page has a distinct highlight style (e.g. color: #00ff99)",
+        "All other nav links retain their default style",
+        "The highlight is applied via a CSS class added by a small inline script",
+        "No existing nav styles or layout are otherwise modified"
+      ],
+      "summary": "Highlight active nav link on current page via inline script and CSS class",
+      "diff": "diff --git a/index.html b/index.html\nindex 5652bdf..217dec8 100644\n--- a/index.html\n+++ b/index.html\n@@ -101,6 +101,10 @@\n       font-size: 0.75rem;\n       margin-right: 0.85rem;\n     }\n+    .top-nav a.nav-active {\n+      color: #00ff99;\n+      border-color: #00ff99;\n+    }\n   </style>\n </head>\n <body>\n@@ -119,9 +123,9 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.77</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.78</div>\n   <div class=\"meta\" id=\"story-count\"></div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 18:21:21 CT</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 19:03:20 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -158,6 +162,14 @@\n     }\n     loadStoryCount();\n     loadChangelog();\n+    (function() {\n+      var links = document.querySelectorAll('.top-nav a');\n+      var current = location.pathname.split('/').pop() || 'index.html';\n+      links.forEach(function(a) {\n+        var href = a.getAttribute('href').split('/').pop() || 'index.html';\n+        if (href === current) a.classList.add('nav-active');\n+      });\n+    })();\n   </script>\n   <footer class=\"site-footer\">\n     <a href=\"https://kfox25.github.io/hello-scrum\" target=\"_blank\" rel=\"noopener\">GitHub Pages \u00e2\u2020\u2014</a>\ndiff --git a/version.json b/version.json\nindex 5905dd9..5bce26a 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.77\",\n-  \"deployed\": \"2026-05-27 18:21:21 CT\",\n+  \"version\": \"0.1.78\",\n+  \"deployed\": \"2026-05-27 19:03:20 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -393,6 +393,11 @@\n       \"version\": \"0.1.77\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add copyright year to site footer\"\n+    },\n+    {\n+      \"version\": \"0.1.78\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Highlight active nav link on current page via inline script and CSS class\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.78 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 19:03:20 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.78: Highlight active nav link on current page via inline script and CSS class"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-27 19:03:20 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "CSS selector and JavaScript logic are syntactically correct; the script properly identifies the current page and applies the nav-active class without errors.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All acceptance criteria are met: the nav-active CSS class applies the distinct highlight color #00ff99 to the matching link, other links retain default styling, a small inline IIFE script adds the class based on current pathname, and no existing nav styles or layout are modified.",
+      "hermes_verdict": "approve"
+    },
+    {
+      "id": "sprint-4-version-tooltip",
+      "idea": "Show the full version string as a tooltip on the version badge",
+      "in_sprint": true,
+      "status": "pending",
+      "story": "As a visitor, I want to hover over the version badge and see the full deployed version string so that I can quickly confirm which build is live.",
+      "acceptance_criteria": [
+        "The version badge element has a title attribute containing the version string from version.json",
+        "The title attribute is set by existing JavaScript that already reads version.json",
+        "No visual change to the badge itself",
+        "No new files or dependencies are added"
+      ]
+    },
+    {
       "id": "sprint-1-add-cursor-pointer",
       "idea": "Add pointer cursor to changelog entries on the homepage",
-      "in_sprint": true,
+      "in_sprint": false,
+      "status": "failed",
+      "story": "As a visitor to the homepage, I want the cursor to change to a pointer when hovering over changelog entries so that I know they are interactive.",
+      "acceptance_criteria": [
+        "Hovering over a changelog entry shows a pointer cursor",
+        "The cursor style is applied via CSS (cursor: pointer)",
+        "No other styles or layout are modified"
+      ],
+      "diff": "diff --git a/index.html b/index.html\nindex 5652bdf..b6d719e 100644\n--- a/index.html\n+++ b/index.html\n@@ -11,7 +11,7 @@\n       flex-direction: column;\n       align-items: center;\n       text-align: center;\n-      padding: 4.5rem 2rem 3.5rem;\n+      padding: 4.5rem 2rem 2rem;\n       margin: 0;\n       min-height: 100vh;\n       background: #0f1117;\n@@ -41,11 +41,6 @@\n       color: #7a8099;\n       margin-bottom: 0;\n     }\n-    @keyframes versionGlow {\n-      0%   { box-shadow: 0 0 0 0 rgba(0, 255, 153, 0); }\n-      50%  { box-shadow: 0 0 8px 0 rgba(0, 255, 153, 0.5); }\n-      100% { box-shadow: 0 0 0 0 rgba(0, 255, 153, 0); }\n-    }\n     .version {\n       font-size: 0.85rem;\n       color: #00ff99;\n@@ -54,7 +49,6 @@\n       padding: 0.3rem 0.9rem;\n       border-radius: 20px;\n       margin-bottom: 0.4rem;\n-      animation: versionGlow 2s ease-in-out infinite;\n     }\n     .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; }\n     .changelog { margin-top: 1.5rem; width: 100%; max-width: 500px; }\n@@ -64,43 +58,7 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n-    .changelog-entry { transition: background 0.2s; }\n-    .changelog-entry:hover { background: #1a1a1a; }\n-    .site-footer {\n-      position: fixed;\n-      bottom: 0;\n-      left: 0;\n-      width: 100%;\n-      background: #0f1117;\n-      color: #e8eaf0;\n-      text-align: center;\n-      padding: 0.55rem 1rem;\n-      border-top: 1px solid #1c1c1c;\n-      font-size: 0.82rem;\n-      z-index: 999;\n-    }\n-    .site-footer a {\n-      color: #00ff99;\n-      text-decoration: none;\n-      border: 1px solid #00ff9966;\n-      padding: 0.2rem 0.75rem;\n-      border-radius: 14px;\n-      transition: background 0.2s, border-color 0.2s;\n-    }\n-    .site-footer a:hover {\n-      background: #0d3320;\n-      border-color: #00ff99;\n-    }\n-    .footer-ai-label {\n-      color: #555;\n-      font-size: 0.75rem;\n-      margin-left: 0.85rem;\n-    }\n-    .footer-copyright {\n-      color: #555;\n-      font-size: 0.75rem;\n-      margin-right: 0.85rem;\n-    }\n+    .changelog-entry { cursor: pointer; }\n   </style>\n </head>\n <body>\n@@ -119,9 +77,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.77</div>\n-  <div class=\"meta\" id=\"story-count\"></div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 18:21:21 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.78</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 18:53:22 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -146,23 +103,7 @@\n         })\n         .catch(() => {});\n     }\n-    function loadStoryCount() {\n-      fetch('/version.json')\n-        .then(r => r.json())\n-        .then(data => {\n-          const count = (data.changelog || []).length;\n-          const el = document.getElementById('story-count');\n-          if (el) el.textContent = count + ' stor' + (count === 1 ? 'y' : 'ies') + ' shipped';\n-        })\n-        .catch(() => {});\n-    }\n-    loadStoryCount();\n     loadChangelog();\n   </script>\n-  <footer class=\"site-footer\">\n-    <a href=\"https://kfox25.github.io/hello-scrum\" target=\"_blank\" rel=\"noopener\">GitHub Pages \u00e2\u2020\u2014</a>\n-    <span class=\"footer-copyright\">\u00c2\u00a9 2026</span>\n-    <span class=\"footer-ai-label\">built with AI</span>\n-  </footer>\n </body>\n </html>\ndiff --git a/version.json b/version.json\nindex 5905dd9..f800de5 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.77\",\n-  \"deployed\": \"2026-05-27 18:21:21 CT\",\n+  \"version\": \"0.1.78\",\n+  \"deployed\": \"2026-05-27 18:53:22 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -393,6 +393,11 @@\n       \"version\": \"0.1.77\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add copyright year to site footer\"\n+    },\n+    {\n+      \"version\": \"0.1.78\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add pointer cursor to changelog entries on the homepage\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.78 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 18:53:22 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.78: Add pointer cursor to changelog entries on the homepage"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "code_review_verdict": "reject",
+      "code_review_reason": "Scope creep: the diff removes large sections of unrelated code (site footer HTML/CSS, story count functionality, version glow animation) that are not part of the pointer cursor feature",
+      "hermes_verdict": "reject",
+      "hermes_reason": "Scope creep: the diff removes large sections of unrelated code (site footer HTML/CSS, story count functionality, version glow animation) that are not part of the pointer cursor feature",
+      "started": 1779926002.787385,
+      "stage_times": {
+        "pull": 1779926002.787385,
+        "story": 1779926002.804912,
+        "code": 1779926015.604602,
+        "test": 1779926023.734191,
+        "code_review": 1779926031.901131,
+        "rejected": 1779926033.777803
+      },
+      "tokens_in": 4155,
+      "tokens_out": 333
+    },
+    {
+      "id": "sprint-2-footer-year",
+      "idea": "Add a copyright year to the site footer",
+      "in_sprint": false,
+      "status": "failed",
+      "story": "As a visitor to the homepage, I want to see a copyright year in the site footer so that the site feels polished and professional.",
+      "acceptance_criteria": [
+        "The footer displays a copyright notice with the current year (e.g. '\u00a9 2026')",
+        "The text is styled in a muted color consistent with the dark theme",
+        "No existing footer layout or other elements are modified"
+      ],
+      "retro_context": "[fail] Scope creep in implementation: the agent removed unrelated code sections (site footer HTML/CSS, story count functionality, version glow animation) instead of making a minimal, focused change for the pointer cursor feature. This caused Hermes rejection despite all tests passing.\n[note] Strong test coverage masked the scope creep issue: all 9 validation tests passed, indicating the test suite did not catch or penalize removal of unrelated functionality, only validating presence of required features.",
+      "error": "Parse error: Expecting value: line 1 column 1 (char 0) | Response preview: Looking at the current index.html, I can see the footer already has `<span class=\"footer-copyright\">\u00a9 2026</span>` and the `.footer-copyright` CSS rule already exists. The story appears to already be ",
+      "started": 1779926037.487907,
+      "stage_times": {
+        "pull": 1779926037.487907,
+        "story": 1779926037.502761,
+        "code": 1779926055.220678,
+        "failed": 1779926055.224201
+      },
+      "tokens_in": 2928,
+      "tokens_out": 519
+    },
+    {
+      "id": "sprint-1-add-cursor-pointer",
+      "idea": "Add pointer cursor to changelog entries on the homepage",
+      "in_sprint": false,
       "status": "failed",
       "story": "As a visitor to the homepage, I want the cursor to change to a pointer when hovering over changelog entries so that I know they are interactive.",
       "acceptance_criteria": [
@@ -69,7 +230,7 @@
     {
       "id": "sprint-2-footer-year",
       "idea": "Add a copyright year to the site footer",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "story": "As a visitor to the homepage, I want to see a copyright year in the site footer so that the site feels polished and professional.",
       "acceptance_criteria": [
@@ -123,7 +284,20 @@
       "code_review_reason": "All changes are syntactically correct HTML/CSS with proper selectors, the footer copyright span is correctly placed in the footer element, and version.json updates appropriately accompany the feature change.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "All acceptance criteria are met: the footer displays '\u00a9 2026' in the current year, the text uses muted color #555 consistent with the dark theme, and no existing footer layout or other elements were modified\u2014only a new span with footer-copyright class was added.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779924081.06216,
+      "stage_times": {
+        "pull": 1779924081.06216,
+        "story": 1779924081.107526,
+        "code": 1779924094.81743,
+        "test": 1779924103.020114,
+        "code_review": 1779924111.178227,
+        "ac_check": 1779924120.478885,
+        "deploy": 1779924130.421887,
+        "done": 1779924133.340086
+      },
+      "tokens_in": 5306,
+      "tokens_out": 549
     },
     {
       "ac_check_reason": "All acceptance criteria are met: hover changes background to #1a1a1a (dark theme consistent), transition is smooth with 0.2s CSS transition property, and no existing changelog styles or layout are modified.",

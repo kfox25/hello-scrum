@@ -101,6 +101,10 @@
       font-size: 0.75rem;
       margin-right: 0.85rem;
     }
+    .top-nav a.nav-active {
+      color: #00ff99;
+      border-color: #00ff99;
+    }
   </style>
 </head>
 <body>
@@ -119,9 +123,9 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.77</div>
+  <div class="version" id="version-badge">v0.1.78</div>
   <div class="meta" id="story-count"></div>
-  <div class="meta">Last deployed: 2026-05-27 18:21:21 CT</div>
+  <div class="meta">Last deployed: 2026-05-27 19:03:20 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -158,6 +162,14 @@
     }
     loadStoryCount();
     loadChangelog();
+    (function() {
+      var links = document.querySelectorAll('.top-nav a');
+      var current = location.pathname.split('/').pop() || 'index.html';
+      links.forEach(function(a) {
+        var href = a.getAttribute('href').split('/').pop() || 'index.html';
+        if (href === current) a.classList.add('nav-active');
+      });
+    })();
   </script>
   <footer class="site-footer">
     <a href="https://kfox25.github.io/hello-scrum" target="_blank" rel="noopener">GitHub Pages ↗</a>

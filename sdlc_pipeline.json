@@ -56,7 +56,21 @@
       "code_review_reason": "The diff adds valid CSS scroll-behavior property to the html selector, updates version numbers and timestamps consistently across both files, and includes appropriate changelog entries with no syntax errors or scope creep.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "The html selector has scroll-behavior: smooth added, no other html or body styles are modified, and no other selectors are added or removed.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779939921.601708,
+      "stage_times": {
+        "pull": 1779939921.601708,
+        "story": 1779939921.621642,
+        "code": 1779939926.162704,
+        "test": 1779939926.252693,
+        "code_review": 1779939926.462056,
+        "ac_check": 1779939927.853155,
+        "deploy": 1779939929.581182,
+        "done": 1779939932.838716
+      },
+      "tokens_in": 5314,
+      "tokens_out": 358,
+      "sprint_wisdom": "[ok] Comprehensive test coverage and strict validation gates are working effectively\u2014all 9 tests passed, Hermes approved the change, and code review validated both acceptance criteria and changelog consistency without issues.\n[ok] Version management and deployment metadata are being maintained correctly across all files, with automated checks catching version mismatches and timestamp consistency.\n[note] The sprint processed only 1 item; while it succeeded, the low throughput limits ability to identify patterns or assess velocity trends."
     },
     {
       "idea": "Add a glow effect to the version badge on hover",
@@ -70,7 +84,19 @@
       ],
       "id": "sprint-4-version-hover",
       "in_sprint": true,
-      "status": "pending"
+      "status": "failed",
+      "retro_context": "[ok] Comprehensive test coverage and strict validation gates are working effectively\u2014all 9 tests passed, Hermes approved the change, and code review validated both acceptance criteria and changelog consistency without issues.\n[ok] Version management and deployment metadata are being maintained correctly across all files, with automated checks catching version mismatches and timestamp consistency.\n[note] The sprint processed only 1 item; while it succeeded, the low throughput limits ability to identify patterns or assess velocity trends.",
+      "error": "Parse error: Scope creep guard: find block is 9 lines (max 8). Use a minimal single-line anchor. Target: '    .version {\\n      font-size: 0.85rem;\\n      color: #00ff99;\\n      background:' | Response preview: {\n  \"patches\": [\n    {\n      \"find\": \"    .version {\\n      font-size: 0.85rem;\\n      color: #00ff99;\\n      background: #0b1f14;\\n      border: 1px solid #00ff9966;\\n      padding: 0.3rem 0.9rem;\\n ",
+      "started": 1779939936.000076,
+      "stage_times": {
+        "pull": 1779939936.000076,
+        "story": 1779939936.013967,
+        "code": 1779939942.9751,
+        "failed": 1779939942.977574
+      },
+      "tokens_in": 3066,
+      "tokens_out": 457,
+      "sprint_wisdom": "[fail] Patch generation exceeded scope creep guard limits by targeting multi-line CSS blocks (9 lines vs 8 max). The agent attempted to modify .version selector with a find block that was too large, causing parse error rejection.\n[ok] Single-line CSS modifications with precise targeting pass all validation gates reliably. The scroll-behavior item succeeded by adding one property to a single selector with clean version/timestamp consistency.\n[note] The failed item's scope creep guard is functioning as intended to prevent large diffs, but the agent needs better guidance on how to decompose multi-property CSS changes into compliant single-line patches."
     },
     {
       "idea": "Add border-radius to changelog entries for a softer look",
@@ -83,7 +109,54 @@
       ],
       "id": "sprint-4-changelog-radius",
       "in_sprint": true,
-      "status": "pending"
+      "status": "done",
+      "retro_context": "[fail] Patch generation exceeded scope creep guard limits by targeting multi-line CSS blocks (9 lines vs 8 max). The agent attempted to modify .version selector with a find block that was too large, causing parse error rejection.\n[ok] Single-line CSS modifications with precise targeting pass all validation gates reliably. The scroll-behavior item succeeded by adding one property to a single selector with clean version/timestamp consistency.\n[note] The failed item's scope creep guard is functioning as intended to prevent large diffs, but the agent needs better guidance on how to decompose multi-property CSS changes into compliant single-line patches.",
+      "summary": "Add border-radius: 6px to .changelog-entry for softer rounded corners",
+      "diff": "diff --git a/index.html b/index.html\nindex d84b5bb..69f0be2 100644\n--- a/index.html\n+++ b/index.html\n@@ -62,7 +62,7 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n-    .changelog-entry { transition: box-shadow 0.2s ease; }\n+    .changelog-entry { transition: box-shadow 0.2s ease; border-radius: 6px; }\n     .changelog-entry:hover { box-shadow: 0 0 8px #00ff9920; }\n     .site-tagline {\n       font-size: 1rem;\n@@ -103,8 +103,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.90</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 22:45:21 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.91</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 22:45:47 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex a90d9c1..3d314b6 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.90\",\n-  \"deployed\": \"2026-05-27 22:45:21 CT\",\n+  \"version\": \"0.1.91\",\n+  \"deployed\": \"2026-05-27 22:45:47 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -458,6 +458,11 @@\n       \"version\": \"0.1.90\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add scroll-behavior: smooth to html selector for polished page navigation\"\n+    },\n+    {\n+      \"version\": \"0.1.91\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add border-radius: 6px to .changelog-entry for softer rounded corners\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.91 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 22:45:47 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.91: Add border-radius: 6px to .changelog-entry for softer rounded corners"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-27 22:45:47 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "CSS property border-radius: 6px is syntactically valid and will apply correctly to changelog entries; version and timestamp updates are expected for feature changes.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The .changelog-entry selector has border-radius: 6px added (within 4px-12px range), no other .changelog-entry styles are modified, and no other selectors are added or removed.",
+      "hermes_verdict": "approve"
     },
     {
       "idea": "Add a subtle green glow text-shadow to the h1 heading",

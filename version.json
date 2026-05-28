@@ -1,6 +1,6 @@
 {
-  "version": "0.1.103",
-  "deployed": "2026-05-28 00:06:29 CT",
+  "version": "0.1.104",
+  "deployed": "2026-05-28 00:06:44 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -523,6 +523,11 @@
       "version": "0.1.103",
       "date": "2026-05-28",
       "change": "Add font-style: italic to .changelog-entry .cd for typographic distinction"
+    },
+    {
+      "version": "0.1.104",
+      "date": "2026-05-28",
+      "change": "Add padding: 0 0.5rem to .changelog for slight side breathing room"
     }
   ]
 }

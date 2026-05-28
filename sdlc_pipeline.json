@@ -8,8 +8,66 @@
         "No other .changelog-entry .ct styles are modified",
         "No other selectors are added or removed"
       ],
-      "id": "sprint-26-ct-line-height",
+      "id": "sprint-27-ct-line-height",
       "in_sprint": true,
+      "status": "done",
+      "summary": "Add line-height: 1.4 to .changelog-entry .ct for comfortable wrapped text readability",
+      "diff": "diff --git a/index.html b/index.html\nindex b95ba7a..4bc2b47 100644\n--- a/index.html\n+++ b/index.html\n@@ -57,7 +57,7 @@\n     .changelog-entry:first-of-type { border-top: none; }\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n-    .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n+    .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; line-height: 1.4; }\n   </style>\n </head>\n <body>\n@@ -76,8 +76,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.142</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 12:08:28 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex d60e746..69e7d52 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.141\",\n-  \"deployed\": \"2026-05-28 11:53:35 CT\",\n+  \"version\": \"0.1.142\",\n+  \"deployed\": \"2026-05-28 12:08:28 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -713,6 +713,11 @@\n       \"version\": \"0.1.141\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add cursor: pointer to .version so the version badge feels clickable\"\n+    },\n+    {\n+      \"version\": \"0.1.142\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add line-height: 1.4 to .changelog-entry .ct so long change descriptions wrap cleanly\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.142 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-28 12:08:28 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.142: Add line-height: 1.4 to .changelog-entry .ct so long change descriptions wrap cleanly"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-28 12:08:28 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The diff adds a valid CSS line-height property to the correct selector, updates version.json and deployment timestamp as expected for feature changes, and contains no syntax errors or broken selectors.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The diff adds line-height: 1.4 to the .changelog-entry .ct selector without modifying any other styles in that rule or adding/removing any selectors, satisfying all acceptance criteria.",
+      "hermes_verdict": "approve"
+    },
+    {
+      "idea": "Add line-height: 1.4 to .changelog-entry .ct so long change descriptions wrap cleanly",
+      "story": "As a visitor, I want changelog change text to have comfortable line height so wrapped descriptions are easy to read.",
+      "acceptance_criteria": [
+        "The .changelog-entry .ct selector has line-height: 1.4 added",
+        "No other .changelog-entry .ct styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-26-ct-line-height",
+      "in_sprint": false,
       "status": "done",
       "summary": "Add line-height: 1.4 to .changelog-entry .ct for comfortable text wrapping",
       "diff": "diff --git a/index.html b/index.html\nindex b95ba7a..634c13e 100644\n--- a/index.html\n+++ b/index.html\n@@ -57,7 +57,7 @@\n     .changelog-entry:first-of-type { border-top: none; }\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n-    .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n+    .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; line-height: 1.4; }\n   </style>\n </head>\n <body>\n@@ -76,8 +76,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.140</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 11:53:21 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex c8908a9..3a1877f 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.139\",\n-  \"deployed\": \"2026-05-28 11:51:37 CT\",\n+  \"version\": \"0.1.140\",\n+  \"deployed\": \"2026-05-28 11:53:21 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -703,6 +703,11 @@\n       \"version\": \"0.1.139\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add gap: 0.5rem to .hero for consistent spacing between headline and tagline\"\n+    },\n+    {\n+      \"version\": \"0.1.140\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add line-height: 1.4 to .changelog-entry .ct so long change descriptions wrap cleanly\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
@@ -81,7 +139,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-26-version-cursor",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "retro_context": "[ok] 100% completion rate with perfect test pass rate (9/9 tests passing) and Hermes approval indicates strong execution discipline on focused, well-defined CSS improvements\n[ok] Comprehensive test coverage across versioning, deployment tracking, CSS validation, and changelog consistency demonstrates robust quality gates that caught zero defects\n[note] Single item sprint suggests either a very focused scope or limited capacity; monitor whether this is intentional process refinement or a capacity constraint",
       "summary": "Add cursor: pointer to .version badge to signal interactivity",
@@ -129,7 +187,20 @@
       "code_review_reason": "The CSS property cursor: pointer is valid and correctly applied to the .version selector; version.json and deployment timestamp updates are expected and do not constitute scope creep.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "The .version selector has cursor: pointer added as the only modification to its styles, no other selectors are added or removed, and all acceptance criteria are satisfied.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779987215.567655,
+      "stage_times": {
+        "pull": 1779987215.567655,
+        "code": 1779987220.693059,
+        "story": 1779987215.580568,
+        "test": 1779987220.772675,
+        "code_review": 1779987220.961355,
+        "ac_check": 1779987222.319326,
+        "deploy": 1779987223.576678,
+        "done": 1779987226.482452
+      },
+      "tokens_in": 4789,
+      "tokens_out": 387
     },
     {
       "idea": "Add gap: 0.5rem to .hero so there is consistent spacing between the headline and tagline",
@@ -9025,5 +9096,5 @@
       "tokens_out": 2816
     }
   ],
-  "sprint_number": 26
+  "sprint_number": 27
 }

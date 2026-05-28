@@ -56,7 +56,21 @@
       "code_review_reason": "The CSS property addition is syntactically valid, the selector exists and is correctly targeted, and version/deployment timestamp updates are expected alongside feature changes.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "All three acceptance criteria are met: font-family: monospace was added to .changelog-entry .cv, no other styles in that rule were modified, and no selectors were added or removed.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779985847.855962,
+      "stage_times": {
+        "pull": 1779985847.855962,
+        "code": 1779985855.947449,
+        "story": 1779985850.895221,
+        "test": 1779985859.055603,
+        "code_review": 1779985862.21153,
+        "ac_check": 1779985866.521886,
+        "deploy": 1779985871.207745,
+        "done": 1779985874.342321
+      },
+      "tokens_in": 5066,
+      "tokens_out": 437,
+      "sprint_wisdom": "[ok] Perfect execution on targeted CSS styling task: all acceptance criteria met, code review approved, Hermes verdict approved, and all 9 test cases passed without errors.\n[note] Sprint consisted of a single, well-scoped item focused on a specific visual improvement (monospace font for changelog version numbers), indicating clear prioritization and minimal scope.\n[ok] Comprehensive test coverage validated not just the feature (monospace font addition) but also file integrity, version consistency, and CSS hygiene across the codebase."
     },
     {
       "idea": "Add font-weight: 600 to .changelog h2 so the Recent Changes heading has more presence",
@@ -68,7 +82,54 @@
       ],
       "id": "sprint-21-changelog-h2-font-weight",
       "in_sprint": true,
-      "status": "pending"
+      "status": "done",
+      "retro_context": "[ok] Perfect execution on targeted CSS styling task: all acceptance criteria met, code review approved, Hermes verdict approved, and all 9 test cases passed without errors.\n[note] Sprint consisted of a single, well-scoped item focused on a specific visual improvement (monospace font for changelog version numbers), indicating clear prioritization and minimal scope.\n[ok] Comprehensive test coverage validated not just the feature (monospace font addition) but also file integrity, version consistency, and CSS hygiene across the codebase.",
+      "summary": "Add font-weight: 600 to .changelog h2 for semi-bold heading presence",
+      "diff": "diff --git a/index.html b/index.html\nindex 3fac64b..a5a4a07 100644\n--- a/index.html\n+++ b/index.html\n@@ -52,7 +52,7 @@\n     }\n     .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; }\n     .changelog { margin-top: 1.5rem; width: 100%; max-width: 500px; }\n-    .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; }\n+    .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; font-weight: 600; }\n     .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }\n     .changelog-entry:first-of-type { border-top: none; }\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; font-family: monospace; }\n@@ -76,8 +76,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.133</div>\n-  <div class=\"meta\">Last deployed: 2026-05-28 11:30:47 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.134</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 11:31:17 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 95383f1..241e2cf 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.133\",\n-  \"deployed\": \"2026-05-28 11:30:47 CT\",\n+  \"version\": \"0.1.134\",\n+  \"deployed\": \"2026-05-28 11:31:17 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -673,6 +673,11 @@\n       \"version\": \"0.1.133\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add font-family: monospace to .changelog-entry .cv so version numbers render in monospace\"\n+    },\n+    {\n+      \"version\": \"0.1.134\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add font-weight: 600 to .changelog h2 so the Recent Changes heading has more visual presence\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.134 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-28 11:31:17 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.134: Add font-weight: 600 to .changelog h2 so the Recent Changes heading has more visual presence"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-28 11:31:17 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "CSS property addition is syntactically valid, version and timestamp updates are expected, and no unrelated files were modified.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The .changelog h2 selector now has font-weight: 600 added, no other styles in that selector were modified, and no other selectors were added or removed.",
+      "hermes_verdict": "approve"
     },
     {
       "idea": "Add text-shadow: 0 0 20px #00ff9940 to h1 so the headline has a subtle green glow",

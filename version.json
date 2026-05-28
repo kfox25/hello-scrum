@@ -1,6 +1,6 @@
 {
-  "version": "0.1.106",
-  "deployed": "2026-05-28 08:40:28 CT",
+  "version": "0.1.108",
+  "deployed": "2026-05-28 09:17:15 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -538,6 +538,16 @@
       "version": "0.1.106",
       "date": "2026-05-28",
       "change": "Add opacity: 0.8 to .meta so the deployment line is subtly de-emphasized"
+    },
+    {
+      "version": "0.1.107",
+      "date": "2026-05-28",
+      "change": "Add cursor: default to body so the cursor is always an arrow over non-interactive areas"
+    },
+    {
+      "version": "0.1.108",
+      "date": "2026-05-28",
+      "change": "Add cursor: default to body selector for intentional arrow cursor on non-interactive areas"
     }
   ]
 }

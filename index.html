@@ -87,8 +87,8 @@
     <p class="site-tagline">AI-powered Scrum, built in the open</p>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.81</div>
-  <div class="meta">Last deployed: 2026-05-27 19:41:07 CT</div>
+  <div class="version" id="version-badge">v0.1.82</div>
+  <div class="meta">Last deployed: 2026-05-27 19:49:45 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -101,6 +101,10 @@
       fetch('/version.json')
         .then(r => r.json())
         .then(data => {
+          const badge = document.getElementById('version-badge');
+          if (data.version) {
+            badge.title = 'v' + data.version;
+          }
           const entries = (data.changelog || []).slice().reverse().slice(0, 5);
           document.getElementById('changelog-entries').innerHTML = entries.map(e => {
             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;

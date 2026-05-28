@@ -8,8 +8,66 @@
         "No other h1 styles are modified",
         "No other selectors are added or removed"
       ],
-      "id": "sprint-19-h1-text-shadow",
+      "id": "sprint-20-h1-text-shadow",
       "in_sprint": true,
+      "status": "done",
+      "summary": "Add subtle green glow text-shadow to h1 headline",
+      "diff": "diff --git a/index.html b/index.html\nindex b95ba7a..b4164d6 100644\n--- a/index.html\n+++ b/index.html\n@@ -32,6 +32,7 @@\n       margin: 0 0 0.5rem;\n       text-transform: uppercase;\n       color: #00ff99;\n+      text-shadow: 0 0 20px #00ff9940;\n     }\n     .tagline {\n       font-size: 1.2rem;\n@@ -76,8 +77,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.132</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 11:13:50 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex ba57765..e69f89e 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.131\",\n-  \"deployed\": \"2026-05-28 11:03:41 CT\",\n+  \"version\": \"0.1.132\",\n+  \"deployed\": \"2026-05-28 11:13:50 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -663,6 +663,11 @@\n       \"version\": \"0.1.131\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add font-family: monospace to .changelog-entry .cv so version numbers render in monospace\"\n+    },\n+    {\n+      \"version\": \"0.1.132\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add text-shadow: 0 0 20px #00ff9940 to h1 for a subtle green glow effect\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.132 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-28 11:13:50 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.132: Add text-shadow: 0 0 20px #00ff9940 to h1 for a subtle green glow effect"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-28 11:13:50 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The text-shadow CSS property is valid, the hex color with alpha channel (#00ff9940) is syntactically correct, and version/deployment timestamp updates are expected.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The h1 selector now has text-shadow: 0 0 20px #00ff9940 added, no other h1 styles were modified, and no selectors were added or removed.",
+      "hermes_verdict": "approve"
+    },
+    {
+      "idea": "Add text-shadow: 0 0 20px #00ff9940 to h1 so the headline has a subtle green glow",
+      "story": "As a visitor, I want the main headline to have a soft glow so it feels polished and on-brand.",
+      "acceptance_criteria": [
+        "The h1 selector has text-shadow: 0 0 20px #00ff9940 added",
+        "No other h1 styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-19-h1-text-shadow",
+      "in_sprint": false,
       "status": "done",
       "summary": "Add subtle green glow (text-shadow) to h1 headline",
       "diff": "diff --git a/index.html b/index.html\nindex b95ba7a..ab9df0f 100644\n--- a/index.html\n+++ b/index.html\n@@ -32,6 +32,7 @@\n       margin: 0 0 0.5rem;\n       text-transform: uppercase;\n       color: #00ff99;\n+      text-shadow: 0 0 20px #00ff9940;\n     }\n     .tagline {\n       font-size: 1.2rem;\n@@ -76,8 +77,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.130</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 11:03:26 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex fbc8e8f..e64587d 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.129\",\n-  \"deployed\": \"2026-05-28 10:57:01 CT\",\n+  \"version\": \"0.1.130\",\n+  \"deployed\": \"2026-05-28 11:03:26 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -653,6 +653,11 @@\n       \"version\": \"0.1.129\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add line-height: 1.4 to .changelog-entry .ct so long change descriptions wrap cleanly\"\n+    },\n+    {\n+      \"version\": \"0.1.130\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add text-shadow: 0 0 20px #00ff9940 to h1 for a subtle green glow effect\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
@@ -81,7 +139,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-19-cv-font-family",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "retro_context": "[ok] Perfect execution with comprehensive test coverage. All 9 tests passed, including version consistency, deployment metadata, CSS syntax validation, and duplicate rule checks\u2014demonstrating robust automated quality gates.\n[ok] Well-scoped user story with clear acceptance criteria. The change was minimal (single CSS property addition), properly documented in changelog, and approved through all review stages without friction.\n[note] Single item sprint completed successfully with 100% pass rate, suggesting either a light sprint week or optimal story sizing and complexity for the AI agent's current capability.",
       "summary": "Add font-family: monospace to .changelog-entry .cv for code-aesthetic version number alignment",
@@ -129,7 +187,20 @@
       "code_review_reason": "CSS property addition is valid, version/deployment timestamp updates are expected with feature changes, and changelog entry documents the modification correctly.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "The diff adds font-family: monospace to .changelog-entry .cv without modifying any other styles in that selector or adding/removing any selectors, satisfying all three acceptance criteria.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779984221.27623,
+      "stage_times": {
+        "pull": 1779984221.27623,
+        "code": 1779984225.376023,
+        "story": 1779984221.288591,
+        "test": 1779984225.499356,
+        "code_review": 1779984225.624029,
+        "ac_check": 1779984227.029223,
+        "deploy": 1779984228.355775,
+        "done": 1779984231.570321
+      },
+      "tokens_in": 5212,
+      "tokens_out": 426
     },
     {
       "idea": "Add caret-color: #00ff99 to the body so text cursors match the brand color",
@@ -8309,5 +8380,5 @@
       "tokens_out": 2816
     }
   ],
-  "sprint_number": 19
+  "sprint_number": 20
 }

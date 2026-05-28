@@ -1,6 +1,6 @@
 {
-  "version": "0.1.131",
-  "deployed": "2026-05-28 11:03:41 CT",
+  "version": "0.1.132",
+  "deployed": "2026-05-28 11:13:50 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -663,6 +663,11 @@
       "version": "0.1.131",
       "date": "2026-05-28",
       "change": "Add font-family: monospace to .changelog-entry .cv so version numbers render in monospace"
+    },
+    {
+      "version": "0.1.132",
+      "date": "2026-05-28",
+      "change": "Add text-shadow: 0 0 20px #00ff9940 to h1 for a subtle green glow effect"
     }
   ]
 }

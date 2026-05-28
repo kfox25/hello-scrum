@@ -57,20 +57,80 @@
       "code_review_reason": "CSS text-shadow property is syntactically correct, hex color with alpha channel is valid, and version/deployment timestamp updates are expected with feature changes.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "The h1 site title now has a text-shadow CSS property with a muted green color (#00ff9940), a subtle 6px blur radius with zero offset, and no other h1 styles or layout were modified.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779930807.872304,
+      "stage_times": {
+        "pull": 1779930807.872304,
+        "story": 1779930807.884948,
+        "code": 1779930820.158791,
+        "test": 1779930828.345159,
+        "code_review": 1779930836.553549,
+        "ac_check": 1779930845.886159,
+        "deploy": 1779930855.095169,
+        "done": 1779930858.047795
+      },
+      "tokens_in": 4820,
+      "tokens_out": 384
     },
     {
       "id": "sprint-8-changelog-hover-shadow",
       "idea": "Add a subtle box-shadow to changelog entries on hover",
       "in_sprint": true,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want changelog entries to show a subtle shadow when hovered so that they feel interactive.",
       "acceptance_criteria": [
         "Hovering a changelog entry adds a box-shadow to that entry",
         "The shadow color is consistent with the dark theme (e.g. #00ff9920)",
         "The transition is smooth using the CSS transition property",
         "No existing changelog styles or layout are otherwise modified"
-      ]
+      ],
+      "retro_context": "[ok] Comprehensive test coverage and validation: All 9 tests passed including version management, deployment tracking, CSS syntax validation, and changelog consistency, indicating a well-structured QA process.\n[ok] Clean code implementation with no style regressions: The CSS modification was isolated to a single h1 rule with no duplicate definitions, layout changes, or non-standard properties, suggesting good development discipline.\n[note] Single small item sprint: Only 1 item processed this cycle represents a focused, low-risk sprint with minimal complexity and high approval likelihood.",
+      "summary": "Add smooth box-shadow hover effect to changelog entries using theme color #00ff9920",
+      "diff": "diff --git a/index.html b/index.html\nindex 9883f01..0882d6a 100644\n--- a/index.html\n+++ b/index.html\n@@ -59,6 +59,8 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n+    .changelog-entry { transition: box-shadow 0.2s ease; }\n+    .changelog-entry:hover { box-shadow: 0 0 8px #00ff9920; }\n     .site-tagline {\n       font-size: 1rem;\n       color: #555e7a;\n@@ -88,8 +90,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.83</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 20:13:27 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.84</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 20:14:21 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 6b309bc..14d1535 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.83\",\n-  \"deployed\": \"2026-05-27 20:13:27 CT\",\n+  \"version\": \"0.1.84\",\n+  \"deployed\": \"2026-05-27 20:14:21 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -423,6 +423,11 @@\n       \"version\": \"0.1.83\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add subtle muted green text-shadow glow to h1 site title\"\n+    },\n+    {\n+      \"version\": \"0.1.84\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add subtle box-shadow on hover to changelog entries for interactive feel\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.84 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 20:14:21 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.84: Add subtle box-shadow on hover to changelog entries for interactive feel"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-27 20:14:21 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "CSS syntax is valid, box-shadow property and transition are correctly formatted, selector targeting is sound, and version/deployment updates are expected accompaniments to feature changes.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All acceptance criteria are met: hover adds box-shadow to changelog entries, shadow color (#00ff9920) is consistent with dark theme, transition is smooth (0.2s ease), and no existing styles are modified.",
+      "hermes_verdict": "approve"
     },
     {
       "id": "sprint-5-footer-copyright",

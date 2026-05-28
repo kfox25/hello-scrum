@@ -8,9 +8,104 @@
         "No other footer styles are modified",
         "No other selectors are added or removed"
       ],
-      "id": "sprint-39-footer-opacity",
+      "id": "sprint-41-footer-opacity",
       "in_sprint": true,
       "status": "pending"
+    },
+    {
+      "idea": "Add font-style: italic to .tagline so the tagline has a distinctive look",
+      "story": "As a visitor, I want the tagline to be italicised so it stands out from the heading.",
+      "acceptance_criteria": [
+        "The .tagline selector has font-style: italic added",
+        "No other .tagline styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-41-tagline-italic",
+      "in_sprint": true,
+      "status": "pending"
+    },
+    {
+      "idea": "Set opacity: 0.7 on the footer element so it appears slightly muted",
+      "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
+      "acceptance_criteria": [
+        "The footer selector has opacity: 0.7 added",
+        "No other footer styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-40-footer-opacity",
+      "in_sprint": false,
+      "status": "pending"
+    },
+    {
+      "idea": "Set opacity: 0.7 on the footer element so it appears slightly muted",
+      "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
+      "acceptance_criteria": [
+        "The footer selector has opacity: 0.7 added",
+        "No other footer styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-39-footer-opacity",
+      "in_sprint": false,
+      "status": "done",
+      "summary": "Add opacity: 0.7 to footer selector to make footer appear slightly muted",
+      "diff": "diff --git a/index.html b/index.html\nindex b95ba7a..15ea3f8 100644\n--- a/index.html\n+++ b/index.html\n@@ -58,6 +58,7 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n+    footer { opacity: 0.7; }\n   </style>\n </head>\n <body>\n@@ -76,8 +77,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast Â· break things Â· own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.163</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 13:31:44 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex e5955ff..6463b0d 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.162\",\n-  \"deployed\": \"2026-05-28 13:26:14 CT\",\n+  \"version\": \"0.1.163\",\n+  \"deployed\": \"2026-05-28 13:31:44 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -818,6 +818,11 @@\n       \"version\": \"0.1.162\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Set opacity: 0.7 on footer element so it appears slightly muted\"\n+    },\n+    {\n+      \"version\": \"0.1.163\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Added opacity: 0.7 to footer selector so footer appears slightly muted\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.163 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-28 13:31:44 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.163: Added opacity: 0.7 to footer selector so footer appears slightly muted"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-28 13:31:44 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "CSS rule is syntactically correct, applies to the footer element, and will function as intended without breaking any existing code.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The footer selector has opacity: 0.7 added, no other footer styles are modified, and no other selectors are added or removed.",
+      "hermes_verdict": "approve",
+      "started": 1779993104.743671,
+      "stage_times": {
+        "pull": 1779993104.743671,
+        "code": 1779993109.491394,
+        "story": 1779993104.801008,
+        "test": 1779993109.609967,
+        "code_review": 1779993109.805764,
+        "ac_check": 1779993110.95417,
+        "deploy": 1779993112.287079,
+        "done": 1779993115.447612
+      },
+      "tokens_in": 4650,
+      "tokens_out": 397
     },
     {
       "idea": "Set opacity: 0.7 on the footer element so it appears slightly muted",
@@ -10562,5 +10657,5 @@
       "tokens_out": 2816
     }
   ],
-  "sprint_number": 39
+  "sprint_number": 41
 }

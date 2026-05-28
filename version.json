@@ -1,6 +1,6 @@
 {
-  "version": "0.1.119",
-  "deployed": "2026-05-28 10:16:53 CT",
+  "version": "0.1.120",
+  "deployed": "2026-05-28 10:17:08 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -603,6 +603,11 @@
       "version": "0.1.119",
       "date": "2026-05-28",
       "change": "Add transition: box-shadow 0.2s ease to .version for smooth hover animation"
+    },
+    {
+      "version": "0.1.120",
+      "date": "2026-05-28",
+      "change": "Add margin-bottom: 0.75rem to .meta for more breathing room below deployment line"
     }
   ]
 }

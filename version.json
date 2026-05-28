@@ -1,6 +1,6 @@
 {
-  "version": "0.1.97",
-  "deployed": "2026-05-27 23:37:54 CT",
+  "version": "0.1.98",
+  "deployed": "2026-05-27 23:38:08 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -493,6 +493,11 @@
       "version": "0.1.97",
       "date": "2026-05-27",
       "change": "Set caret-color: #00ff99 on body so text cursors match brand green"
+    },
+    {
+      "version": "0.1.98",
+      "date": "2026-05-27",
+      "change": "Add opacity hover transition to .tagline so it brightens smoothly on hover"
     }
   ]
 }

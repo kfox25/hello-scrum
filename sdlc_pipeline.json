@@ -1,6 +1,109 @@
 {
   "items": [
     {
+      "idea": "Add caret-color: #00ff99 to the body so text cursors match the brand color",
+      "story": "As a visitor, I want the text insertion cursor to be green so it matches the brand.",
+      "acceptance_criteria": [
+        "The body selector has caret-color: #00ff99 added",
+        "No other body styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-16-body-caret",
+      "in_sprint": true,
+      "status": "done",
+      "started": 1779982179.062979,
+      "stage_times": {
+        "pull": 1779982179.062979,
+        "code": 1779982179.082257,
+        "story": 1779982179.102251,
+        "failed": 1779982179.650984
+      },
+      "summary": "Add caret-color: #00ff99 to body for brand-matching text insertion cursor",
+      "diff": "diff --git a/index.html b/index.html\nindex b95ba7a..1850d4c 100644\n--- a/index.html\n+++ b/index.html\n@@ -17,6 +17,7 @@\n       background: #0f1117;\n       color: #e8eaf0;\n       font-family: 'Segoe UI', system-ui, sans-serif;\n+      caret-color: #00ff99;\n     }\n     .hero {\n       display: flex;\n@@ -76,8 +77,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.121</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 10:41:54 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex ffb4df8..759a5a0 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.120\",\n-  \"deployed\": \"2026-05-28 10:17:08 CT\",\n+  \"version\": \"0.1.121\",\n+  \"deployed\": \"2026-05-28 10:41:54 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -608,6 +608,11 @@\n       \"version\": \"0.1.120\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add margin-bottom: 0.75rem to .meta for more breathing room below deployment line\"\n+    },\n+    {\n+      \"version\": \"0.1.121\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add caret-color: #00ff99 to body so text cursors match the brand green\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.121 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-28 10:41:54 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.121: Add caret-color: #00ff99 to body so text cursors match the brand green"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-28 10:41:54 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The caret-color property is valid CSS, the hex color is well-formed, version and deployment timestamp updates are expected, and no unrelated files were modified.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The body selector now contains caret-color: #00ff99, no other body styles were modified, and no other selectors were added or removed.",
+      "hermes_verdict": "approve"
+    },
+    {
+      "idea": "Add opacity: 0.7 to .tagline so it is subtly de-emphasized relative to the headline",
+      "story": "As a visitor, I want the tagline to appear slightly dimmed so it does not compete with the main headline.",
+      "acceptance_criteria": [
+        "The .tagline selector has opacity: 0.7 added",
+        "No other .tagline styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-16-tagline-opacity",
+      "in_sprint": true,
+      "status": "pending",
+      "started": 1779982179.840921,
+      "stage_times": {
+        "pull": 1779982179.840921,
+        "code": 1779982179.854218,
+        "story": 1779982179.861793,
+        "failed": 1779982179.989772
+      }
+    },
+    {
+      "idea": "Add font-style: italic to .changelog-entry .cd for a subtle date styling",
+      "story": "As a visitor, I want changelog dates to appear in italics so they are visually distinct.",
+      "acceptance_criteria": [
+        "The .changelog-entry .cd rule has font-style: italic added",
+        "No other .changelog-entry .cd styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-16-changelog-entry-cd-italic",
+      "in_sprint": true,
+      "status": "pending",
+      "started": 1779982180.18475,
+      "stage_times": {
+        "pull": 1779982180.18475,
+        "code": 1779982180.198632,
+        "story": 1779982180.208232,
+        "failed": 1779982180.715019
+      }
+    },
+    {
       "idea": "Add line-height: 1.6 to the body for comfortable text readability",
       "story": "As a visitor, I want the page text to have comfortable line spacing so it is easier to read.",
       "acceptance_criteria": [
@@ -9,7 +112,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-15-body-line-height",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "summary": "Add line-height: 1.6 to body selector for improved text readability",
       "diff": "diff --git a/index.html b/index.html\nindex b95ba7a..f6c6086 100644\n--- a/index.html\n+++ b/index.html\n@@ -17,6 +17,7 @@\n       background: #0f1117;\n       color: #e8eaf0;\n       font-family: 'Segoe UI', system-ui, sans-serif;\n+      line-height: 1.6;\n     }\n     .hero {\n       display: flex;\n@@ -76,8 +77,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.118</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 10:16:40 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 112c91d..13c3c26 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.117\",\n-  \"deployed\": \"2026-05-28 09:50:04 CT\",\n+  \"version\": \"0.1.118\",\n+  \"deployed\": \"2026-05-28 10:16:40 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -593,6 +593,11 @@\n       \"version\": \"0.1.117\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add letter-spacing: 0.03em to .meta for a refined deployment metadata look\"\n+    },\n+    {\n+      \"version\": \"0.1.118\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add line-height: 1.6 to body for comfortable text readability\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
@@ -81,7 +184,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-15-version-transition",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "retro_context": "[ok] Perfect execution on a focused user story: the line-height change passed all 9 test checks, received Hermes approval, and maintained strict scope boundaries with no extraneous modifications.\n[ok] Strong change management discipline: version number, deployment timestamp, and changelog entry were all synchronized and validated across files.\n[note] Single-item sprint with 100% completion rate suggests either a very short sprint cycle or incomplete item intake for this reporting period.",
       "summary": "Add box-shadow transition to .version badge for polished hover effect",
@@ -154,7 +257,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-15-meta-margin-bottom",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "retro_context": "[ok] Both items passed all tests and received Hermes approval without errors. The agent consistently updated version numbers, deployment timestamps, and changelog entries in sync with code changes, demonstrating strong process discipline.\n[ok] CSS modifications were minimal and focused\u2014each item changed exactly one selector with a single property addition. This narrow scope reduced test complexity and approval friction.\n[note] Both items were CSS-only enhancements targeting user experience (readability and visual polish). The sprint contained no backend logic, state management, or complex component changes.",
       "summary": "Add margin-bottom: 0.75rem to .meta for improved layout spacing",
@@ -202,7 +305,20 @@
       "code_review_reason": "CSS rule is syntactically valid, margin-bottom property works as written, and version/timestamp updates are expected accompaniments to feature changes.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "The .meta rule now includes margin-bottom: 0.75rem as required, no other .meta styles were modified, and no other selectors were added or removed.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779981428.939341,
+      "stage_times": {
+        "pull": 1779981428.939341,
+        "code": 1779981432.871691,
+        "story": 1779981428.953033,
+        "test": 1779981432.973283,
+        "code_review": 1779981433.155909,
+        "ac_check": 1779981434.215005,
+        "deploy": 1779981435.470594,
+        "done": 1779981438.46691
+      },
+      "tokens_in": 5136,
+      "tokens_out": 408
     },
     {
       "idea": "Add line-height: 1.5 to the body for comfortable reading",
@@ -7514,5 +7630,5 @@
       "tokens_out": 2816
     }
   ],
-  "sprint_number": 15
+  "sprint_number": 16
 }

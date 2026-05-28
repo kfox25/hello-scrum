@@ -1,6 +1,6 @@
 {
-  "version": "0.1.120",
-  "deployed": "2026-05-28 10:17:08 CT",
+  "version": "0.1.121",
+  "deployed": "2026-05-28 10:41:54 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -608,6 +608,11 @@
       "version": "0.1.120",
       "date": "2026-05-28",
       "change": "Add margin-bottom: 0.75rem to .meta for more breathing room below deployment line"
+    },
+    {
+      "version": "0.1.121",
+      "date": "2026-05-28",
+      "change": "Add caret-color: #00ff99 to body so text cursors match the brand green"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
-  "version": "0.1.168",
-  "deployed": "2026-05-28 14:23:28 CT",
+  "version": "0.1.169",
+  "deployed": "2026-05-28 14:23:43 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -848,6 +848,11 @@
       "version": "0.1.168",
       "date": "2026-05-28",
       "change": "Set opacity: 0.7 on footer element so it appears slightly muted and doesn't compete with main content"
+    },
+    {
+      "version": "0.1.169",
+      "date": "2026-05-28",
+      "change": "Added font-style: italic to .tagline so the tagline has a distinctive look and stands out from the heading"
     }
   ]
 }

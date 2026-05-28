@@ -1,6 +1,6 @@
 {
-  "version": "0.1.124",
-  "deployed": "2026-05-28 10:49:05 CT",
+  "version": "0.1.125",
+  "deployed": "2026-05-28 10:49:35 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -628,6 +628,11 @@
       "version": "0.1.124",
       "date": "2026-05-28",
       "change": "Add line-height: 1.6 to body for comfortable text readability"
+    },
+    {
+      "version": "0.1.125",
+      "date": "2026-05-28",
+      "change": "Add subtle green glow text-shadow to h1 for on-brand visual polish"
     }
   ]
 }

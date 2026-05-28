@@ -1,6 +1,6 @@
 {
-  "version": "0.1.134",
-  "deployed": "2026-05-28 11:31:17 CT",
+  "version": "0.1.135",
+  "deployed": "2026-05-28 11:36:42 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -678,6 +678,11 @@
       "version": "0.1.134",
       "date": "2026-05-28",
       "change": "Add font-weight: 600 to .changelog h2 so the Recent Changes heading has more visual presence"
+    },
+    {
+      "version": "0.1.135",
+      "date": "2026-05-28",
+      "change": "Add letter-spacing: 0.04em to .meta so the deployment date line has subtle spacing"
     }
   ]
 }

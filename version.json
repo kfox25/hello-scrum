@@ -1,6 +1,6 @@
 {
-  "version": "0.1.80",
-  "deployed": "2026-05-27 19:40:08 CT",
+  "version": "0.1.81",
+  "deployed": "2026-05-27 19:41:07 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -408,6 +408,11 @@
       "version": "0.1.80",
       "date": "2026-05-27",
       "change": "Add site tagline 'AI-powered Scrum, built in the open' below the h1 on the homepage"
+    },
+    {
+      "version": "0.1.81",
+      "date": "2026-05-27",
+      "change": "Highlight active nav link on each page using a CSS class added by an inline script"
     }
   ]
 }

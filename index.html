@@ -65,6 +65,9 @@
       font-weight: 400;
       letter-spacing: 0.04em;
     }
+    .top-nav a.nav-active {
+      color: #00ff99;
+    }
   </style>
 </head>
 <body>
@@ -84,8 +87,8 @@
     <p class="site-tagline">AI-powered Scrum, built in the open</p>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.80</div>
-  <div class="meta">Last deployed: 2026-05-27 19:40:08 CT</div>
+  <div class="version" id="version-badge">v0.1.81</div>
+  <div class="meta">Last deployed: 2026-05-27 19:41:07 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -111,6 +114,18 @@
         .catch(() => {});
     }
     loadChangelog();
+
+    (function() {
+      var links = document.querySelectorAll('.top-nav a');
+      var current = window.location.pathname.split('/').pop() || 'index.html';
+      if (current === '') current = 'index.html';
+      links.forEach(function(link) {
+        var href = link.getAttribute('href').split('/').pop() || 'index.html';
+        if (href === current) {
+          link.classList.add('nav-active');
+        }
+      });
+    })();
   </script>
 </body>
 </html>

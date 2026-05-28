@@ -1,6 +1,6 @@
 {
-  "version": "0.1.85",
-  "deployed": "2026-05-27 20:44:17 CT",
+  "version": "0.1.86",
+  "deployed": "2026-05-27 21:31:02 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -433,6 +433,11 @@
       "version": "0.1.85",
       "date": "2026-05-27",
       "change": "Add letter-spacing 0.04em to h1 site title for a more refined look"
+    },
+    {
+      "version": "0.1.86",
+      "date": "2026-05-27",
+      "change": "Style text selection highlight with brand green (#00ff9930 background, #00ff99 text)"
     }
   ]
 }

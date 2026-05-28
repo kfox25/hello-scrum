@@ -1,9 +1,417 @@
 {
   "items": [
     {
+      "idea": "Add letter-spacing to the tagline text for a more polished look",
+      "story": "As a visitor, I want the tagline text to have subtle letter-spacing so that it looks more refined.",
+      "acceptance_criteria": [
+        "The .tagline selector has a letter-spacing CSS property added",
+        "The value is between 0.05em and 0.15em",
+        "No other .tagline styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-1-tagline-spacing",
+      "in_sprint": true,
+      "status": "failed",
+      "diff": "diff --git a/index.html b/index.html\nindex cafb614..171246a 100644\n--- a/index.html\n+++ b/index.html\n@@ -28,16 +28,15 @@\n       font-family: monospace;\n       font-size: 3rem;\n       font-weight: 800;\n-      letter-spacing: 0.04em;\n+      letter-spacing: -0.03em;\n       margin: 0 0 0.5rem;\n       text-transform: uppercase;\n       color: #00ff99;\n-      text-shadow: 0 0 6px #00ff9940;\n     }\n     .tagline {\n       font-size: 1.2rem;\n       font-weight: 300;\n-      letter-spacing: 0.12em;\n+      letter-spacing: 0.10em;\n       text-transform: uppercase;\n       color: #7a8099;\n       margin-bottom: 0;\n@@ -59,18 +58,6 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n-    .changelog-entry { transition: box-shadow 0.2s ease; }\n-    .changelog-entry:hover { box-shadow: 0 0 8px #00ff9920; }\n-    .site-tagline {\n-      font-size: 1rem;\n-      color: #555e7a;\n-      margin: 0 0 0.75rem;\n-      font-weight: 400;\n-      letter-spacing: 0.04em;\n-    }\n-    .top-nav a.nav-active {\n-      color: #00ff99;\n-    }\n   </style>\n </head>\n <body>\n@@ -87,11 +74,10 @@\n   </nav>\n   <div class=\"hero\">\n     <h1>Hello Scrum</h1>\n-    <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.85</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 20:44:17 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.86</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 21:30:28 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -104,10 +90,6 @@\n       fetch('/version.json')\n         .then(r => r.json())\n         .then(data => {\n-          const badge = document.getElementById('version-badge');\n-          if (data.version) {\n-            badge.title = 'v' + data.version;\n-          }\n           const entries = (data.changelog || []).slice().reverse().slice(0, 5);\n           document.getElementById('changelog-entries').innerHTML = entries.map(e => {\n             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;\n@@ -121,18 +103,6 @@\n         .catch(() => {});\n     }\n     loadChangelog();\n-\n-    (function() {\n-      var links = document.querySelectorAll('.top-nav a');\n-      var current = window.location.pathname.split('/').pop() || 'index.html';\n-      if (current === '') current = 'index.html';\n-      links.forEach(function(link) {\n-        var href = link.getAttribute('href').split('/').pop() || 'index.html';\n-        if (href === current) {\n-          link.classList.add('nav-active');\n-        }\n-      });\n-    })();\n   </script>\n </body>\n </html>\ndiff --git a/version.json b/version.json\nindex aa18b33..d7b45db 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.85\",\n-  \"deployed\": \"2026-05-27 20:44:17 CT\",\n+  \"version\": \"0.1.86\",\n+  \"deployed\": \"2026-05-27 21:30:28 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -433,6 +433,11 @@\n       \"version\": \"0.1.85\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add letter-spacing 0.04em to h1 site title for a more refined look\"\n+    },\n+    {\n+      \"version\": \"0.1.86\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add letter-spacing 0.10em to .tagline for a more polished look\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.86 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 21:30:28 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.86: Add letter-spacing 0.10em to .tagline for a more polished look"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "code_review_verdict": "reject",
+      "code_review_reason": "Scope creep: the diff removes unrelated functionality (nav-active styling, version badge title setting, and navigation active link detection) that goes beyond the stated feature of adding letter-spacing to the tagline.",
+      "hermes_verdict": "reject",
+      "hermes_reason": "Scope creep: the diff removes unrelated functionality (nav-active styling, version badge title setting, and navigation active link detection) that goes beyond the stated feature of adding letter-spacing to the tagline.",
+      "started": 1779935428.456956,
+      "stage_times": {
+        "pull": 1779935428.456956,
+        "story": 1779935428.507115,
+        "code": 1779935441.114955,
+        "test": 1779935449.320097,
+        "code_review": 1779935457.552984,
+        "rejected": 1779935459.497016
+      },
+      "tokens_in": 4070,
+      "tokens_out": 388
+    },
+    {
+      "idea": "Style text selection highlight to match the brand green",
+      "story": "As a visitor, I want text I select on the page to highlight in the brand green so that the experience feels cohesive.",
+      "acceptance_criteria": [
+        "A ::selection CSS rule is added to the style block",
+        "The selection background is a muted green (e.g. #00ff9930)",
+        "The selected text color is #00ff99",
+        "No existing CSS rules are modified"
+      ],
+      "id": "sprint-1-text-selection",
+      "in_sprint": true,
+      "status": "done",
+      "retro_context": "[fail] Scope creep in implementation: the agent included unrelated changes (nav-active styling, version badge title, navigation detection) alongside the core feature (letter-spacing), causing Hermes rejection despite all tests passing\n[note] All functional and structural tests passed (9/9), indicating the code quality and build process are solid\u2014the failure was purely due to feature scope management, not technical execution",
+      "summary": "Add ::selection CSS rule with brand green highlight colors",
+      "diff": "diff --git a/index.html b/index.html\nindex cafb614..8dfec51 100644\n--- a/index.html\n+++ b/index.html\n@@ -71,6 +71,10 @@\n     .top-nav a.nav-active {\n       color: #00ff99;\n     }\n+    ::selection {\n+      background: #00ff9930;\n+      color: #00ff99;\n+    }\n   </style>\n </head>\n <body>\n@@ -90,8 +94,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.85</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 20:44:17 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.86</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 21:31:02 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex aa18b33..071efa3 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.85\",\n-  \"deployed\": \"2026-05-27 20:44:17 CT\",\n+  \"version\": \"0.1.86\",\n+  \"deployed\": \"2026-05-27 21:31:02 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -433,6 +433,11 @@\n       \"version\": \"0.1.85\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add letter-spacing 0.04em to h1 site title for a more refined look\"\n+    },\n+    {\n+      \"version\": \"0.1.86\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Style text selection highlight with brand green (#00ff9930 background, #00ff99 text)\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.86 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 21:31:02 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.86: Style text selection highlight with brand green (#00ff9930 background, #00ff99 text)"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-27 21:31:02 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The CSS `::selection` pseudo-element is valid and will apply the brand green styling to text selection without syntax errors, and version/deployment timestamp updates are expected with feature changes.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All acceptance criteria are met: a ::selection CSS rule is added with background #00ff9930 and color #00ff99, no existing CSS rules are modified, and test results confirm correct implementation.",
+      "hermes_verdict": "approve"
+    },
+    {
+      "idea": "Add a smooth opacity transition to nav links on hover",
+      "story": "As a visitor, I want nav links to fade slightly on hover so that the navigation feels more polished.",
+      "acceptance_criteria": [
+        "Nav links have a CSS transition on opacity",
+        "Hover state reduces opacity to 0.7",
+        "Transition duration is 0.2s",
+        "No other nav styles or layout are modified"
+      ],
+      "id": "sprint-1-nav-opacity",
+      "in_sprint": true,
+      "status": "pending"
+    },
+    {
+      "id": "sprint-14-tagline-spacing",
+      "idea": "Add letter-spacing to the tagline text for a more polished look",
+      "in_sprint": false,
+      "status": "failed",
+      "story": "As a visitor, I want the tagline text to have subtle letter-spacing so that it looks more refined.",
+      "acceptance_criteria": [
+        "The .tagline selector has a letter-spacing CSS property added",
+        "The value is between 0.05em and 0.15em",
+        "No other .tagline styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "diff": "diff --git a/index.html b/index.html\nindex cafb614..cb376f9 100644\n--- a/index.html\n+++ b/index.html\n@@ -28,16 +28,15 @@\n       font-family: monospace;\n       font-size: 3rem;\n       font-weight: 800;\n-      letter-spacing: 0.04em;\n+      letter-spacing: -0.03em;\n       margin: 0 0 0.5rem;\n       text-transform: uppercase;\n       color: #00ff99;\n-      text-shadow: 0 0 6px #00ff9940;\n     }\n     .tagline {\n       font-size: 1.2rem;\n       font-weight: 300;\n-      letter-spacing: 0.12em;\n+      letter-spacing: 0.1em;\n       text-transform: uppercase;\n       color: #7a8099;\n       margin-bottom: 0;\n@@ -59,18 +58,6 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n-    .changelog-entry { transition: box-shadow 0.2s ease; }\n-    .changelog-entry:hover { box-shadow: 0 0 8px #00ff9920; }\n-    .site-tagline {\n-      font-size: 1rem;\n-      color: #555e7a;\n-      margin: 0 0 0.75rem;\n-      font-weight: 400;\n-      letter-spacing: 0.04em;\n-    }\n-    .top-nav a.nav-active {\n-      color: #00ff99;\n-    }\n   </style>\n </head>\n <body>\n@@ -87,11 +74,10 @@\n   </nav>\n   <div class=\"hero\">\n     <h1>Hello Scrum</h1>\n-    <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.85</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 20:44:17 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.86</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 21:15:46 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -104,10 +90,6 @@\n       fetch('/version.json')\n         .then(r => r.json())\n         .then(data => {\n-          const badge = document.getElementById('version-badge');\n-          if (data.version) {\n-            badge.title = 'v' + data.version;\n-          }\n           const entries = (data.changelog || []).slice().reverse().slice(0, 5);\n           document.getElementById('changelog-entries').innerHTML = entries.map(e => {\n             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;\n@@ -121,18 +103,6 @@\n         .catch(() => {});\n     }\n     loadChangelog();\n-\n-    (function() {\n-      var links = document.querySelectorAll('.top-nav a');\n-      var current = window.location.pathname.split('/').pop() || 'index.html';\n-      if (current === '') current = 'index.html';\n-      links.forEach(function(link) {\n-        var href = link.getAttribute('href').split('/').pop() || 'index.html';\n-        if (href === current) {\n-          link.classList.add('nav-active');\n-        }\n-      });\n-    })();\n   </script>\n </body>\n </html>\ndiff --git a/version.json b/version.json\nindex aa18b33..a65e326 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.85\",\n-  \"deployed\": \"2026-05-27 20:44:17 CT\",\n+  \"version\": \"0.1.86\",\n+  \"deployed\": \"2026-05-27 21:15:46 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -433,6 +433,11 @@\n       \"version\": \"0.1.85\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add letter-spacing 0.04em to h1 site title for a more refined look\"\n+    },\n+    {\n+      \"version\": \"0.1.86\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add letter-spacing 0.1em to .tagline for a more polished refined look\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.86 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 21:15:46 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.86: Add letter-spacing 0.1em to .tagline for a more polished refined look"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "code_review_verdict": "reject",
+      "code_review_reason": "The diff removes functional code (navigation active state detection and version badge title setting) that is unrelated to the tagline letter-spacing feature, constituting scope creep.",
+      "hermes_verdict": "reject",
+      "hermes_reason": "The diff removes functional code (navigation active state detection and version badge title setting) that is unrelated to the tagline letter-spacing feature, constituting scope creep.",
+      "started": 1779934546.402783,
+      "stage_times": {
+        "pull": 1779934546.402783,
+        "story": 1779934546.455856,
+        "code": 1779934559.250686,
+        "test": 1779934567.440943,
+        "code_review": 1779934575.611561,
+        "rejected": 1779934577.320485
+      },
+      "tokens_in": 4037,
+      "tokens_out": 359
+    },
+    {
+      "id": "sprint-13-tagline-spacing",
+      "idea": "Add letter-spacing to the tagline text for a more polished look",
+      "in_sprint": false,
+      "status": "failed",
+      "story": "As a visitor, I want the tagline text to have subtle letter-spacing so that it looks more refined.",
+      "acceptance_criteria": [
+        "The .tagline selector has a letter-spacing CSS property added",
+        "The value is between 0.05em and 0.15em",
+        "No other .tagline styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "diff": "diff --git a/index.html b/index.html\nindex cafb614..ef7523a 100644\n--- a/index.html\n+++ b/index.html\n@@ -28,16 +28,15 @@\n       font-family: monospace;\n       font-size: 3rem;\n       font-weight: 800;\n-      letter-spacing: 0.04em;\n+      letter-spacing: -0.03em;\n       margin: 0 0 0.5rem;\n       text-transform: uppercase;\n       color: #00ff99;\n-      text-shadow: 0 0 6px #00ff9940;\n     }\n     .tagline {\n       font-size: 1.2rem;\n       font-weight: 300;\n-      letter-spacing: 0.12em;\n+      letter-spacing: 0.10em;\n       text-transform: uppercase;\n       color: #7a8099;\n       margin-bottom: 0;\n@@ -59,18 +58,6 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n-    .changelog-entry { transition: box-shadow 0.2s ease; }\n-    .changelog-entry:hover { box-shadow: 0 0 8px #00ff9920; }\n-    .site-tagline {\n-      font-size: 1rem;\n-      color: #555e7a;\n-      margin: 0 0 0.75rem;\n-      font-weight: 400;\n-      letter-spacing: 0.04em;\n-    }\n-    .top-nav a.nav-active {\n-      color: #00ff99;\n-    }\n   </style>\n </head>\n <body>\n@@ -87,11 +74,10 @@\n   </nav>\n   <div class=\"hero\">\n     <h1>Hello Scrum</h1>\n-    <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.85</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 20:44:17 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.86</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 21:08:05 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -104,10 +90,6 @@\n       fetch('/version.json')\n         .then(r => r.json())\n         .then(data => {\n-          const badge = document.getElementById('version-badge');\n-          if (data.version) {\n-            badge.title = 'v' + data.version;\n-          }\n           const entries = (data.changelog || []).slice().reverse().slice(0, 5);\n           document.getElementById('changelog-entries').innerHTML = entries.map(e => {\n             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;\n@@ -121,18 +103,6 @@\n         .catch(() => {});\n     }\n     loadChangelog();\n-\n-    (function() {\n-      var links = document.querySelectorAll('.top-nav a');\n-      var current = window.location.pathname.split('/').pop() || 'index.html';\n-      if (current === '') current = 'index.html';\n-      links.forEach(function(link) {\n-        var href = link.getAttribute('href').split('/').pop() || 'index.html';\n-        if (href === current) {\n-          link.classList.add('nav-active');\n-        }\n-      });\n-    })();\n   </script>\n </body>\n </html>\ndiff --git a/version.json b/version.json\nindex aa18b33..5049569 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.85\",\n-  \"deployed\": \"2026-05-27 20:44:17 CT\",\n+  \"version\": \"0.1.86\",\n+  \"deployed\": \"2026-05-27 21:08:05 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -433,6 +433,11 @@\n       \"version\": \"0.1.85\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add letter-spacing 0.04em to h1 site title for a more refined look\"\n+    },\n+    {\n+      \"version\": \"0.1.86\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add letter-spacing 0.10em to .tagline for a more polished look\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.86 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 21:08:05 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.86: Add letter-spacing 0.10em to .tagline for a more polished look"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "code_review_verdict": "reject",
+      "code_review_reason": "The diff removes substantial features (nav-active styling, site-tagline element, version badge title logic, and navigation active state detection) that are unrelated to the tagline letter-spacing change, constituting scope creep.",
+      "hermes_verdict": "reject",
+      "hermes_reason": "The diff removes substantial features (nav-active styling, site-tagline element, version badge title logic, and navigation active state detection) that are unrelated to the tagline letter-spacing change, constituting scope creep.",
+      "started": 1779934085.575865,
+      "stage_times": {
+        "pull": 1779934085.575865,
+        "story": 1779934085.604421,
+        "code": 1779934097.886723,
+        "test": 1779934106.100371,
+        "code_review": 1779934114.289283,
+        "rejected": 1779934116.015909
+      },
+      "tokens_in": 4036,
+      "tokens_out": 371
+    },
+    {
+      "id": "sprint-12-text-selection",
+      "idea": "Style text selection highlight to match the brand green",
+      "in_sprint": false,
+      "status": "failed",
+      "story": "As a visitor, I want text I select on the page to highlight in the brand green so that the experience feels cohesive.",
+      "acceptance_criteria": [
+        "A ::selection CSS rule is added to the style block",
+        "The selection background is a muted green (e.g. #00ff9930)",
+        "The selected text color is #00ff99",
+        "No existing CSS rules are modified"
+      ],
+      "diff": "diff --git a/index.html b/index.html\nindex cafb614..ba7c965 100644\n--- a/index.html\n+++ b/index.html\n@@ -28,11 +28,10 @@\n       font-family: monospace;\n       font-size: 3rem;\n       font-weight: 800;\n-      letter-spacing: 0.04em;\n+      letter-spacing: -0.03em;\n       margin: 0 0 0.5rem;\n       text-transform: uppercase;\n       color: #00ff99;\n-      text-shadow: 0 0 6px #00ff9940;\n     }\n     .tagline {\n       font-size: 1.2rem;\n@@ -59,18 +58,7 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n-    .changelog-entry { transition: box-shadow 0.2s ease; }\n-    .changelog-entry:hover { box-shadow: 0 0 8px #00ff9920; }\n-    .site-tagline {\n-      font-size: 1rem;\n-      color: #555e7a;\n-      margin: 0 0 0.75rem;\n-      font-weight: 400;\n-      letter-spacing: 0.04em;\n-    }\n-    .top-nav a.nav-active {\n-      color: #00ff99;\n-    }\n+    ::selection { background: #00ff9930; color: #00ff99; }\n   </style>\n </head>\n <body>\n@@ -87,11 +75,10 @@\n   </nav>\n   <div class=\"hero\">\n     <h1>Hello Scrum</h1>\n-    <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.85</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 20:44:17 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.86</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 20:56:01 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -104,10 +91,6 @@\n       fetch('/version.json')\n         .then(r => r.json())\n         .then(data => {\n-          const badge = document.getElementById('version-badge');\n-          if (data.version) {\n-            badge.title = 'v' + data.version;\n-          }\n           const entries = (data.changelog || []).slice().reverse().slice(0, 5);\n           document.getElementById('changelog-entries').innerHTML = entries.map(e => {\n             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;\n@@ -121,18 +104,6 @@\n         .catch(() => {});\n     }\n     loadChangelog();\n-\n-    (function() {\n-      var links = document.querySelectorAll('.top-nav a');\n-      var current = window.location.pathname.split('/').pop() || 'index.html';\n-      if (current === '') current = 'index.html';\n-      links.forEach(function(link) {\n-        var href = link.getAttribute('href').split('/').pop() || 'index.html';\n-        if (href === current) {\n-          link.classList.add('nav-active');\n-        }\n-      });\n-    })();\n   </script>\n </body>\n </html>\ndiff --git a/version.json b/version.json\nindex aa18b33..35cca5e 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.85\",\n-  \"deployed\": \"2026-05-27 20:44:17 CT\",\n+  \"version\": \"0.1.86\",\n+  \"deployed\": \"2026-05-27 20:56:01 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -433,6 +433,11 @@\n       \"version\": \"0.1.85\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add letter-spacing 0.04em to h1 site title for a more refined look\"\n+    },\n+    {\n+      \"version\": \"0.1.86\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Style text selection highlight with brand green background and text color\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.86 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 20:56:01 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.86: Style text selection highlight with brand green background and text color"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "code_review_verdict": "reject",
+      "code_review_reason": "The diff removes functional code (nav-active highlighting logic and version badge title setting) that is unrelated to the text selection feature, constituting scope creep.",
+      "hermes_verdict": "reject",
+      "hermes_reason": "The diff removes functional code (nav-active highlighting logic and version badge title setting) that is unrelated to the text selection feature, constituting scope creep.",
+      "started": 1779933361.266676,
+      "stage_times": {
+        "pull": 1779933361.266676,
+        "story": 1779933361.30898,
+        "code": 1779933374.811079,
+        "test": 1779933382.980984,
+        "code_review": 1779933391.169853,
+        "rejected": 1779933392.56445
+      },
+      "tokens_in": 3994,
+      "tokens_out": 368
+    },
+    {
+      "id": "sprint-11-h1-letter-spacing",
+      "idea": "Add letter-spacing to the h1 site title for a more refined look",
+      "in_sprint": false,
+      "status": "failed",
+      "story": "As a visitor, I want the site title to have subtle letter-spacing so that it looks more refined.",
+      "acceptance_criteria": [
+        "The h1 site title has a letter-spacing CSS property applied",
+        "The value is between 0.02em and 0.06em",
+        "No other h1 styles or layout are modified",
+        "No duplicate h1 rules introduced"
+      ],
+      "diff": "diff --git a/index.html b/index.html\nindex cafb614..2aeb904 100644\n--- a/index.html\n+++ b/index.html\n@@ -32,7 +32,6 @@\n       margin: 0 0 0.5rem;\n       text-transform: uppercase;\n       color: #00ff99;\n-      text-shadow: 0 0 6px #00ff9940;\n     }\n     .tagline {\n       font-size: 1.2rem;\n@@ -59,18 +58,6 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n-    .changelog-entry { transition: box-shadow 0.2s ease; }\n-    .changelog-entry:hover { box-shadow: 0 0 8px #00ff9920; }\n-    .site-tagline {\n-      font-size: 1rem;\n-      color: #555e7a;\n-      margin: 0 0 0.75rem;\n-      font-weight: 400;\n-      letter-spacing: 0.04em;\n-    }\n-    .top-nav a.nav-active {\n-      color: #00ff99;\n-    }\n   </style>\n </head>\n <body>\n@@ -87,11 +74,10 @@\n   </nav>\n   <div class=\"hero\">\n     <h1>Hello Scrum</h1>\n-    <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.85</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 20:44:17 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.86</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 20:50:44 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -104,10 +90,6 @@\n       fetch('/version.json')\n         .then(r => r.json())\n         .then(data => {\n-          const badge = document.getElementById('version-badge');\n-          if (data.version) {\n-            badge.title = 'v' + data.version;\n-          }\n           const entries = (data.changelog || []).slice().reverse().slice(0, 5);\n           document.getElementById('changelog-entries').innerHTML = entries.map(e => {\n             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;\n@@ -121,18 +103,6 @@\n         .catch(() => {});\n     }\n     loadChangelog();\n-\n-    (function() {\n-      var links = document.querySelectorAll('.top-nav a');\n-      var current = window.location.pathname.split('/').pop() || 'index.html';\n-      if (current === '') current = 'index.html';\n-      links.forEach(function(link) {\n-        var href = link.getAttribute('href').split('/').pop() || 'index.html';\n-        if (href === current) {\n-          link.classList.add('nav-active');\n-        }\n-      });\n-    })();\n   </script>\n </body>\n </html>\ndiff --git a/version.json b/version.json\nindex aa18b33..f0826a6 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.85\",\n-  \"deployed\": \"2026-05-27 20:44:17 CT\",\n+  \"version\": \"0.1.86\",\n+  \"deployed\": \"2026-05-27 20:50:44 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -433,6 +433,11 @@\n       \"version\": \"0.1.85\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add letter-spacing 0.04em to h1 site title for a more refined look\"\n+    },\n+    {\n+      \"version\": \"0.1.86\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Apply letter-spacing 0.04em to h1 site title for a more refined look\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.86 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 20:50:44 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.86: Apply letter-spacing 0.04em to h1 site title for a more refined look"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "code_review_verdict": "reject",
+      "code_review_reason": "The diff removes CSS for letter-spacing on h1 and deletes the .site-tagline class that contained letter-spacing: 0.04em, but never actually adds letter-spacing to the h1 element itself, making the stated feature incomplete.",
+      "hermes_verdict": "reject",
+      "hermes_reason": "The diff removes CSS for letter-spacing on h1 and deletes the .site-tagline class that contained letter-spacing: 0.04em, but never actually adds letter-spacing to the h1 element itself, making the stated feature incomplete.",
+      "started": 1779933044.288914,
+      "stage_times": {
+        "pull": 1779933044.288914,
+        "story": 1779933044.299931,
+        "code": 1779933056.182661,
+        "test": 1779933064.322481,
+        "code_review": 1779933072.502004,
+        "rejected": 1779933075.134316
+      },
+      "tokens_in": 3920,
+      "tokens_out": 339
+    },
+    {
       "id": "sprint-9-nav-link-opacity",
       "idea": "Add a smooth opacity transition to nav links on hover",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "failed",
       "story": "As a visitor, I want nav links to fade slightly on hover so that the navigation feels more polished.",
       "acceptance_criteria": [
@@ -70,7 +478,7 @@
     {
       "id": "sprint-10-h1-letter-spacing",
       "idea": "Add letter-spacing to the h1 site title for a more refined look",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "story": "As a visitor, I want the site title to have subtle letter-spacing so that it looks more refined.",
       "acceptance_criteria": [
@@ -125,7 +533,20 @@
       "code_review_reason": "The letter-spacing property change from -0.03em to 0.04em is valid CSS, version.json and deployment timestamps are appropriately updated, and no extraneous files were modified.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "The h1 site title has letter-spacing of 0.04em applied (within the 0.02em-0.06em range), no other h1 styles or layout were modified, no duplicate h1 rules were introduced, and all acceptance criteria are met.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779932657.65723,
+      "stage_times": {
+        "pull": 1779932657.65723,
+        "story": 1779932657.676311,
+        "code": 1779932670.318315,
+        "test": 1779932678.47181,
+        "code_review": 1779932686.661652,
+        "ac_check": 1779932695.743292,
+        "deploy": 1779932705.968879,
+        "done": 1779932708.879715
+      },
+      "tokens_in": 4925,
+      "tokens_out": 395
     },
     {
       "id": "sprint-7-h1-text-shadow",
@@ -4645,5 +5066,6 @@
       "tokens_in": 7439,
       "tokens_out": 2816
     }
-  ]
+  ],
+  "sprint_number": 1
 }

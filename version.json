@@ -1,6 +1,6 @@
 {
-  "version": "0.1.116",
-  "deployed": "2026-05-28 09:49:48 CT",
+  "version": "0.1.117",
+  "deployed": "2026-05-28 09:50:04 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -588,6 +588,11 @@
       "version": "0.1.116",
       "date": "2026-05-28",
       "change": "Add subtle green glow text-shadow to h1 for on-brand styling"
+    },
+    {
+      "version": "0.1.117",
+      "date": "2026-05-28",
+      "change": "Add letter-spacing: 0.03em to .meta for a refined deployment metadata look"
     }
   ]
 }

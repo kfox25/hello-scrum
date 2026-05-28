@@ -125,7 +125,20 @@
       "code_review_reason": "The CSS `::selection` pseudo-element is valid and will apply the brand green styling to text selection without syntax errors, and version/deployment timestamp updates are expected with feature changes.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "All acceptance criteria are met: a ::selection CSS rule is added with background #00ff9930 and color #00ff99, no existing CSS rules are modified, and test results confirm correct implementation.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779935462.95831,
+      "stage_times": {
+        "pull": 1779935462.95831,
+        "story": 1779935462.973416,
+        "code": 1779935476.290958,
+        "test": 1779935484.486776,
+        "code_review": 1779935492.741928,
+        "ac_check": 1779935501.893562,
+        "deploy": 1779935511.363665,
+        "done": 1779935514.648647
+      },
+      "tokens_in": 4989,
+      "tokens_out": 424
     },
     {
       "idea": "Add a smooth opacity transition to nav links on hover",
@@ -138,7 +151,54 @@
       ],
       "id": "sprint-1-nav-opacity",
       "in_sprint": true,
-      "status": "pending"
+      "status": "done",
+      "retro_context": "[fail] Scope creep in implementation: the failed letter-spacing item included unrelated changes (nav-active styling, version badge, navigation detection) beyond the stated feature, causing Hermes rejection. The agent modified multiple systems when tasked with a single CSS property change.\n[ok] Focused, single-responsibility changes succeed: the text selection styling item passed all checks by adding only the ::selection rule without modifying existing functionality, demonstrating clean scope adherence.\n[note] All test infrastructure passed consistently (9/9 tests per item), indicating robust validation harness; failures stem from human-level review concerns (scope creep) rather than technical test gaps.",
+      "summary": "Add opacity transition (0.2s) to nav links with hover state at 0.7 opacity",
+      "diff": "diff --git a/index.html b/index.html\nindex 8dfec51..350e276 100644\n--- a/index.html\n+++ b/index.html\n@@ -68,6 +68,12 @@\n       font-weight: 400;\n       letter-spacing: 0.04em;\n     }\n+    .top-nav a {\n+      transition: opacity 0.2s;\n+    }\n+    .top-nav a:hover {\n+      opacity: 0.7;\n+    }\n     .top-nav a.nav-active {\n       color: #00ff99;\n     }\n@@ -94,8 +100,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.86</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 21:31:02 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.87</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 21:32:00 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 071efa3..a498694 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.86\",\n-  \"deployed\": \"2026-05-27 21:31:02 CT\",\n+  \"version\": \"0.1.87\",\n+  \"deployed\": \"2026-05-27 21:32:00 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -438,6 +438,11 @@\n       \"version\": \"0.1.86\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Style text selection highlight with brand green (#00ff9930 background, #00ff99 text)\"\n+    },\n+    {\n+      \"version\": \"0.1.87\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add smooth opacity transition (0.2s) to nav links on hover, reducing opacity to 0.7\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.87 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 21:32:00 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.87: Add smooth opacity transition (0.2s) to nav links on hover, reducing opacity to 0.7"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-27 21:32:00 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "CSS transition and opacity properties are syntactically correct, the selectors target existing elements (.top-nav a), and version/deployment timestamp changes are expected.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All acceptance criteria are met: nav links have CSS transition on opacity with 0.2s duration, hover state reduces opacity to 0.7, and no other nav styles or layout were modified.",
+      "hermes_verdict": "approve"
     },
     {
       "id": "sprint-14-tagline-spacing",

@@ -1,6 +1,6 @@
 {
-  "version": "0.1.86",
-  "deployed": "2026-05-27 21:31:02 CT",
+  "version": "0.1.87",
+  "deployed": "2026-05-27 21:32:00 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -438,6 +438,11 @@
       "version": "0.1.86",
       "date": "2026-05-27",
       "change": "Style text selection highlight with brand green (#00ff9930 background, #00ff99 text)"
+    },
+    {
+      "version": "0.1.87",
+      "date": "2026-05-27",
+      "change": "Add smooth opacity transition (0.2s) to nav links on hover, reducing opacity to 0.7"
     }
   ]
 }

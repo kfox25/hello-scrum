@@ -1,6 +1,6 @@
 {
-  "version": "0.1.129",
-  "deployed": "2026-05-28 10:57:01 CT",
+  "version": "0.1.130",
+  "deployed": "2026-05-28 11:03:26 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -653,6 +653,11 @@
       "version": "0.1.129",
       "date": "2026-05-28",
       "change": "Add line-height: 1.4 to .changelog-entry .ct so long change descriptions wrap cleanly"
+    },
+    {
+      "version": "0.1.130",
+      "date": "2026-05-28",
+      "change": "Add text-shadow: 0 0 20px #00ff9940 to h1 for a subtle green glow effect"
     }
   ]
 }

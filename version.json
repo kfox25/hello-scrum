@@ -1,6 +1,6 @@
 {
-  "version": "0.1.148",
-  "deployed": "2026-05-28 12:22:08 CT",
+  "version": "0.1.149",
+  "deployed": "2026-05-28 12:24:21 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -748,6 +748,11 @@
       "version": "0.1.148",
       "date": "2026-05-28",
       "change": "Add cursor: pointer to .version badge so it feels clickable"
+    },
+    {
+      "version": "0.1.149",
+      "date": "2026-05-28",
+      "change": "Add font-family: monospace to .changelog-entry .cv so version numbers render in monospace"
     }
   ]
 }

@@ -1,6 +1,76 @@
 {
   "items": [
     {
+      "idea": "Add font-family: monospace to .changelog-entry .cv so version numbers render in monospace",
+      "story": "As a visitor, I want changelog version numbers to use monospace font so they align with the code aesthetic.",
+      "acceptance_criteria": [
+        "The .changelog-entry .cv selector has font-family: monospace added",
+        "No other .changelog-entry .cv styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-31-cv-font-family",
+      "in_sprint": true,
+      "status": "done",
+      "summary": "Add font-family: monospace to .changelog-entry .cv for code-aesthetic version number rendering",
+      "diff": "diff --git a/index.html b/index.html\nindex b95ba7a..f512004 100644\n--- a/index.html\n+++ b/index.html\n@@ -55,7 +55,7 @@\n     .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; }\n     .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }\n     .changelog-entry:first-of-type { border-top: none; }\n-    .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n+    .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; font-family: monospace; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n   </style>\n@@ -76,8 +76,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.149</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 12:24:21 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 7a99853..854df78 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.148\",\n-  \"deployed\": \"2026-05-28 12:22:08 CT\",\n+  \"version\": \"0.1.149\",\n+  \"deployed\": \"2026-05-28 12:24:21 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -748,6 +748,11 @@\n       \"version\": \"0.1.148\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add cursor: pointer to .version badge so it feels clickable\"\n+    },\n+    {\n+      \"version\": \"0.1.149\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add font-family: monospace to .changelog-entry .cv so version numbers render in monospace\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.149 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-28 12:24:21 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.149: Add font-family: monospace to .changelog-entry .cv so version numbers render in monospace"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-28 12:24:21 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "CSS property addition is valid, version/deployment timestamps are correctly updated, and changelog entry is properly formatted.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The .changelog-entry .cv selector now has font-family: monospace added, no other styles in that selector were modified, and no other selectors were added or removed.",
+      "hermes_verdict": "approve"
+    },
+    {
+      "idea": "Add font-weight: 600 to .changelog h2 so the Recent Changes heading has more presence",
+      "story": "As a visitor, I want the changelog heading to be semi-bold so it stands out from the entries below it.",
+      "acceptance_criteria": [
+        "The .changelog h2 selector has font-weight: 600 added",
+        "No other .changelog h2 styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-31-changelog-h2-font-weight",
+      "in_sprint": true,
+      "status": "pending"
+    },
+    {
       "idea": "Add gap: 0.5rem to .hero so there is consistent spacing between the headline and tagline",
       "story": "As a visitor, I want the hero section to have consistent spacing between elements so the layout feels balanced.",
       "acceptance_criteria": [
@@ -9,7 +79,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-30-hero-gap",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "summary": "Add gap: 0.5rem to .hero for consistent spacing between headline and tagline",
       "diff": "diff --git a/index.html b/index.html\nindex b95ba7a..b6af910 100644\n--- a/index.html\n+++ b/index.html\n@@ -23,6 +23,7 @@\n       flex-direction: column;\n       align-items: center;\n       padding: 1rem 0 2rem;\n+      gap: 0.5rem;\n     }\n     h1 {\n       font-family: monospace;\n@@ -76,8 +77,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.147</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 12:21:53 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex da2ab80..dcc40e6 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.146\",\n-  \"deployed\": \"2026-05-28 12:17:26 CT\",\n+  \"version\": \"0.1.147\",\n+  \"deployed\": \"2026-05-28 12:21:53 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -738,6 +738,11 @@\n       \"version\": \"0.1.146\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add cursor: pointer to .version badge so it feels clickable\"\n+    },\n+    {\n+      \"version\": \"0.1.147\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add gap: 0.5rem to .hero for consistent spacing between headline and tagline\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
@@ -81,7 +151,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-30-version-cursor",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "retro_context": "[ok] Perfect execution on CSS spacing task: all 9 tests passed, Hermes approved, code review validated scoping, and changelog properly documented. Indicates strong process alignment for styling changes.\n[note] Single-item sprint with 100% completion rate (1/1 done) suggests either a light sprint or very focused scope. Insufficient sample size to identify meaningful patterns.",
       "summary": "Add cursor: pointer to .version badge for clickable affordance",
@@ -129,7 +199,20 @@
       "code_review_reason": "CSS property cursor: pointer is valid and will render correctly; version and timestamp updates are expected accompaniments to feature changes.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "The .version selector has cursor: pointer added, no other .version styles are modified, and no other selectors are added or removed.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779988928.865973,
+      "stage_times": {
+        "pull": 1779988928.865973,
+        "code": 1779988932.81376,
+        "story": 1779988928.895095,
+        "test": 1779988932.918814,
+        "code_review": 1779988933.053432,
+        "ac_check": 1779988934.201791,
+        "deploy": 1779988935.484003,
+        "done": 1779988938.918861
+      },
+      "tokens_in": 4707,
+      "tokens_out": 360
     },
     {
       "idea": "Add gap: 0.5rem to .hero so there is consistent spacing between the headline and tagline",
@@ -9528,5 +9611,5 @@
       "tokens_out": 2816
     }
   ],
-  "sprint_number": 30
+  "sprint_number": 31
 }

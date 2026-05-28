@@ -1,6 +1,6 @@
 {
-  "version": "0.1.157",
-  "deployed": "2026-05-28 13:08:20 CT",
+  "version": "0.1.158",
+  "deployed": "2026-05-28 13:12:29 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -793,6 +793,11 @@
       "version": "0.1.157",
       "date": "2026-05-28",
       "change": "Add text-decoration: underline to anchor tags so links are clearly distinguishable"
+    },
+    {
+      "version": "0.1.158",
+      "date": "2026-05-28",
+      "change": "Set max-width: 860px and margin: 0 auto on body to center layout on wide screens"
     }
   ]
 }

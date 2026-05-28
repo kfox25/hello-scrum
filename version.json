@@ -1,6 +1,6 @@
 {
-  "version": "0.1.161",
-  "deployed": "2026-05-28 13:24:09 CT",
+  "version": "0.1.162",
+  "deployed": "2026-05-28 13:26:14 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -813,6 +813,11 @@
       "version": "0.1.161",
       "date": "2026-05-28",
       "change": "Add text-decoration: underline to anchor tags so links are clearly distinguishable"
+    },
+    {
+      "version": "0.1.162",
+      "date": "2026-05-28",
+      "change": "Set opacity: 0.7 on footer element so it appears slightly muted"
     }
   ]
 }

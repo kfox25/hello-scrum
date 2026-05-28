@@ -1,6 +1,6 @@
 {
-  "version": "0.1.127",
-  "deployed": "2026-05-28 10:56:01 CT",
+  "version": "0.1.128",
+  "deployed": "2026-05-28 10:56:30 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -643,6 +643,11 @@
       "version": "0.1.127",
       "date": "2026-05-28",
       "change": "Add caret-color: #00ff99 to body so text cursors match the brand green"
+    },
+    {
+      "version": "0.1.128",
+      "date": "2026-05-28",
+      "change": "Add cursor: pointer to .version badge so it feels clickable"
     }
   ]
 }

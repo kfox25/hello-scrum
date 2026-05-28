@@ -1,6 +1,6 @@
 {
-  "version": "0.1.144",
-  "deployed": "2026-05-28 12:09:44 CT",
+  "version": "0.1.145",
+  "deployed": "2026-05-28 12:17:12 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -728,6 +728,11 @@
       "version": "0.1.144",
       "date": "2026-05-28",
       "change": "Add font-family: monospace to .changelog-entry .cv so version numbers render in monospace"
+    },
+    {
+      "version": "0.1.145",
+      "date": "2026-05-28",
+      "change": "Add gap: 0.5rem to .hero for consistent spacing between headline and tagline"
     }
   ]
 }

@@ -129,7 +129,21 @@
       "code_review_reason": "CSS text-shadow syntax is valid, version and deployment timestamp updates are expected, and changes are scoped only to the h1 styling and version metadata.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "The h1 selector now contains text-shadow: 0 0 8px #00ff9933, no other h1 styles were modified, and no other selectors were added or removed.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779983375.006012,
+      "stage_times": {
+        "pull": 1779983375.006012,
+        "code": 1779983382.197237,
+        "story": 1779983378.046374,
+        "test": 1779983385.342271,
+        "code_review": 1779983388.55264,
+        "ac_check": 1779983392.929313,
+        "deploy": 1779983397.183859,
+        "done": 1779983400.419086
+      },
+      "tokens_in": 4797,
+      "tokens_out": 397,
+      "sprint_wisdom": "[ok] All items passed comprehensive test suites including version tracking, deployment timestamps, changelog entries, and CSS validation rules. The testing framework is thorough and effective at catching regressions.\n[ok] Both Hermes approvals and code reviews were granted smoothly with clear, specific reasoning. Changes were scoped tightly to their respective selectors with no unrelated modifications.\n[note] Sprint delivered two CSS enhancement items focused on visual polish (readability and branding). Both items were small, well-defined changes that aligned cleanly with user stories and acceptance criteria."
     },
     {
       "idea": "Add opacity: 0.8 to .meta so the deployment line is subtly de-emphasized",
@@ -141,7 +155,54 @@
       ],
       "id": "sprint-17-meta-opacity",
       "in_sprint": true,
-      "status": "pending"
+      "status": "done",
+      "retro_context": "[ok] All items passed comprehensive test suites including version tracking, deployment timestamps, changelog entries, and CSS validation rules. The testing framework is thorough and effective at catching regressions.\n[ok] Both Hermes approvals and code reviews were granted smoothly with clear, specific reasoning. Changes were scoped tightly to their respective selectors with no unrelated modifications.\n[note] Sprint delivered two CSS enhancement items focused on visual polish (readability and branding). Both items were small, well-defined changes that aligned cleanly with user stories and acceptance criteria.",
+      "summary": "Add opacity: 0.8 to .meta rule to subtly dim the deployment metadata line",
+      "diff": "diff --git a/index.html b/index.html\nindex 1091d51..1500d94 100644\n--- a/index.html\n+++ b/index.html\n@@ -52,7 +52,7 @@\n       border-radius: 20px;\n       margin-bottom: 0.4rem;\n     }\n-    .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; }\n+    .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; opacity: 0.8; }\n     .changelog { margin-top: 1.5rem; width: 100%; max-width: 500px; }\n     .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; }\n     .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }\n@@ -78,8 +78,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.125</div>\n-  <div class=\"meta\">Last deployed: 2026-05-28 10:49:35 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.126</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 10:50:04 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 8d43075..64b8d3f 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.125\",\n-  \"deployed\": \"2026-05-28 10:49:35 CT\",\n+  \"version\": \"0.1.126\",\n+  \"deployed\": \"2026-05-28 10:50:04 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -633,6 +633,11 @@\n       \"version\": \"0.1.125\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add subtle green glow text-shadow to h1 for on-brand visual polish\"\n+    },\n+    {\n+      \"version\": \"0.1.126\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add opacity: 0.8 to .meta to subtly de-emphasize the deployment line\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.126 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-28 10:50:04 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.126: Add opacity: 0.8 to .meta to subtly de-emphasize the deployment line"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-28 10:50:04 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "CSS opacity property is valid and will render correctly; version/timestamp updates are expected; no syntax errors or scope creep detected.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The .meta rule has opacity: 0.8 added, no other .meta styles are modified, and no other selectors are added or removed.",
+      "hermes_verdict": "approve"
     },
     {
       "idea": "Add caret-color: #00ff99 to the body so text cursors match the brand color",

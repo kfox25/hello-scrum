@@ -1,6 +1,6 @@
 {
-  "version": "0.1.125",
-  "deployed": "2026-05-28 10:49:35 CT",
+  "version": "0.1.126",
+  "deployed": "2026-05-28 10:50:04 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -633,6 +633,11 @@
       "version": "0.1.125",
       "date": "2026-05-28",
       "change": "Add subtle green glow text-shadow to h1 for on-brand visual polish"
+    },
+    {
+      "version": "0.1.126",
+      "date": "2026-05-28",
+      "change": "Add opacity: 0.8 to .meta to subtly de-emphasize the deployment line"
     }
   ]
 }

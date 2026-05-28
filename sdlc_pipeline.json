@@ -1,9 +1,81 @@
 {
   "items": [
     {
+      "id": "sprint-7-h1-text-shadow",
+      "idea": "Add a subtle green text-shadow to the site title on the homepage",
+      "in_sprint": true,
+      "status": "done",
+      "story": "As a visitor, I want the site title to have a subtle green glow so that it feels more vibrant.",
+      "acceptance_criteria": [
+        "The h1 site title has a text-shadow CSS property applied",
+        "The shadow color is a muted green (e.g. #00ff9940)",
+        "The shadow is subtle \u2014 small blur radius (4-8px), zero offset",
+        "No other h1 styles or layout are modified"
+      ],
+      "summary": "Add subtle green text-shadow glow to h1 site title",
+      "diff": "diff --git a/index.html b/index.html\nindex f7f8edd..9883f01 100644\n--- a/index.html\n+++ b/index.html\n@@ -32,6 +32,7 @@\n       margin: 0 0 0.5rem;\n       text-transform: uppercase;\n       color: #00ff99;\n+      text-shadow: 0 0 6px #00ff9940;\n     }\n     .tagline {\n       font-size: 1.2rem;\n@@ -87,8 +88,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.82</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 19:49:45 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.83</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 20:13:27 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 5497e1d..6b309bc 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.82\",\n-  \"deployed\": \"2026-05-27 19:49:45 CT\",\n+  \"version\": \"0.1.83\",\n+  \"deployed\": \"2026-05-27 20:13:27 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -418,6 +418,11 @@\n       \"version\": \"0.1.82\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add title tooltip to version badge showing full version string, populated from version.json\"\n+    },\n+    {\n+      \"version\": \"0.1.83\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add subtle muted green text-shadow glow to h1 site title\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.83 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-27 20:13:27 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.83: Add subtle muted green text-shadow glow to h1 site title"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-27 20:13:27 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "CSS text-shadow property is syntactically correct, hex color with alpha channel is valid, and version/deployment timestamp updates are expected with feature changes.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The h1 site title now has a text-shadow CSS property with a muted green color (#00ff9940), a subtle 6px blur radius with zero offset, and no other h1 styles or layout were modified.",
+      "hermes_verdict": "approve"
+    },
+    {
+      "id": "sprint-8-changelog-hover-shadow",
+      "idea": "Add a subtle box-shadow to changelog entries on hover",
+      "in_sprint": true,
+      "status": "pending",
+      "story": "As a visitor, I want changelog entries to show a subtle shadow when hovered so that they feel interactive.",
+      "acceptance_criteria": [
+        "Hovering a changelog entry adds a box-shadow to that entry",
+        "The shadow color is consistent with the dark theme (e.g. #00ff9920)",
+        "The transition is smooth using the CSS transition property",
+        "No existing changelog styles or layout are otherwise modified"
+      ]
+    },
+    {
       "id": "sprint-5-footer-copyright",
       "idea": "Add a copyright year to the site footer",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "failed",
       "story": "As a visitor, I want to see a copyright year in the site footer so that the site feels polished.",
       "acceptance_criteria": [
@@ -12,7 +84,7 @@
         "The copyright is added inside the existing footer element without replacing any existing footer content",
         "No other styles or layout are modified"
       ],
-      "diff": "diff --git a/index.html b/index.html\nindex 1713080..2904c23 100644\n--- a/index.html\n+++ b/index.html\n@@ -58,16 +58,7 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n-    .site-tagline {\n-      font-size: 1rem;\n-      color: #555e7a;\n-      margin: 0 0 0.75rem;\n-      font-weight: 400;\n-      letter-spacing: 0.04em;\n-    }\n-    .top-nav a.nav-active {\n-      color: #00ff99;\n-    }\n+    .site-footer { margin-top: 2rem; font-size: 0.78rem; color: #444; }\n   </style>\n </head>\n <body>\n@@ -84,15 +75,15 @@\n   </nav>\n   <div class=\"hero\">\n     <h1>Hello Scrum</h1>\n-    <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.81</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 19:41:07 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.82</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 19:49:10 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n   </div>\n+  <footer class=\"site-footer\">&copy; 2026 Hello Scrum</footer>\n   <script>\n     function escHtml(s) {\n       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');\n@@ -114,18 +105,6 @@\n         .catch(() => {});\n     }\n     loadChangelog();\n-\n-    (function() {\n-      var links = document.querySelectorAll('.top-nav a');\n-      var current = window.location.pathname.split('/').pop() || 'index.html';\n-      if (current === '') current = 'index.html';\n-      links.forEach(function(link) {\n-        var href = link.getAttribute('href').split('/').pop() || 'index.html';\n-        if (href === current) {\n-          link.classList.add('nav-active');\n-        }\n-      });\n-    })();\n   </script>\n </body>\n </html>\ndiff --git a/version.json b/version.json\nindex a55b896..593001b 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.81\",\n-  \"deployed\": \"2026-05-27 19:41:07 CT\",\n+  \"version\": \"0.1.82\",\n+  \"deployed\": \"2026-05-27 19:49:10 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -413,6 +413,11 @@\n       \"version\": \"0.1.81\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Highlight active nav link on each page using a CSS class added by an inline script\"\n+    },\n+    {\n+      \"version\": \"0.1.82\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add copyright year notice to site footer with muted styling\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "diff": "diff --git a/index.html b/index.html\nindex f7f8edd..9cec276 100644\n--- a/index.html\n+++ b/index.html\n@@ -58,16 +58,7 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n-    .site-tagline {\n-      font-size: 1rem;\n-      color: #555e7a;\n-      margin: 0 0 0.75rem;\n-      font-weight: 400;\n-      letter-spacing: 0.04em;\n-    }\n-    .top-nav a.nav-active {\n-      color: #00ff99;\n-    }\n+    .site-copyright { font-size: 0.78rem; color: #444; margin-top: 2rem; }\n   </style>\n </head>\n <body>\n@@ -84,11 +75,10 @@\n   </nav>\n   <div class=\"hero\">\n     <h1>Hello Scrum</h1>\n-    <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.82</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 19:49:45 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.83</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 20:08:25 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -101,10 +91,6 @@\n       fetch('/version.json')\n         .then(r => r.json())\n         .then(data => {\n-          const badge = document.getElementById('version-badge');\n-          if (data.version) {\n-            badge.title = 'v' + data.version;\n-          }\n           const entries = (data.changelog || []).slice().reverse().slice(0, 5);\n           document.getElementById('changelog-entries').innerHTML = entries.map(e => {\n             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;\n@@ -118,18 +104,9 @@\n         .catch(() => {});\n     }\n     loadChangelog();\n-\n-    (function() {\n-      var links = document.querySelectorAll('.top-nav a');\n-      var current = window.location.pathname.split('/').pop() || 'index.html';\n-      if (current === '') current = 'index.html';\n-      links.forEach(function(link) {\n-        var href = link.getAttribute('href').split('/').pop() || 'index.html';\n-        if (href === current) {\n-          link.classList.add('nav-active');\n-        }\n-      });\n-    })();\n   </script>\n+  <footer>\n+    <p class=\"site-copyright\">&copy; 2026 Hello Scrum</p>\n+  </footer>\n </body>\n </html>\ndiff --git a/version.json b/version.json\nindex 5497e1d..0498a30 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.82\",\n-  \"deployed\": \"2026-05-27 19:49:45 CT\",\n+  \"version\": \"0.1.83\",\n+  \"deployed\": \"2026-05-27 20:08:25 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -418,6 +418,11 @@\n       \"version\": \"0.1.82\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add title tooltip to version badge showing full version string, populated from version.json\"\n+    },\n+    {\n+      \"version\": \"0.1.83\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add copyright year notice to site footer with muted color consistent with dark theme\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "test_results": [
         {
           "status": "pass",
@@ -20,15 +92,15 @@
         },
         {
           "status": "pass",
-          "message": "version 0.1.82 matches between version.json and index.html"
+          "message": "version 0.1.83 matches between version.json and index.html"
         },
         {
           "status": "pass",
-          "message": "deployed timestamp '2026-05-27 19:49:10 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-27 20:08:25 CT' present in index.html"
         },
         {
           "status": "pass",
-          "message": "changelog has entry for v0.1.82: Add copyright year notice to site footer with muted styling"
+          "message": "changelog has entry for v0.1.83: Add copyright year notice to site footer with muted color consistent with dark theme"
         },
         {
           "status": "pass",
@@ -52,26 +124,26 @@
         }
       ],
       "code_review_verdict": "reject",
-      "code_review_reason": "The diff removes functional JavaScript code (nav-active link highlighting) and CSS styles (.site-tagline, .top-nav a.nav-active) that are unrelated to adding a copyright footer, constituting scope creep.",
+      "code_review_reason": "Scope creep: diff removes unrelated functionality (.site-tagline CSS, .top-nav a.nav-active styling, nav active link detection JavaScript, and version badge title population) that are not part of the copyright year feature",
       "hermes_verdict": "reject",
-      "hermes_reason": "The diff removes functional JavaScript code (nav-active link highlighting) and CSS styles (.site-tagline, .top-nav a.nav-active) that are unrelated to adding a copyright footer, constituting scope creep.",
-      "started": 1779929350.082761,
+      "hermes_reason": "Scope creep: diff removes unrelated functionality (.site-tagline CSS, .top-nav a.nav-active styling, nav active link detection JavaScript, and version badge title population) that are not part of the copyright year feature",
+      "started": 1779930505.742105,
       "stage_times": {
-        "pull": 1779929350.082761,
-        "story": 1779929350.10343,
-        "code": 1779929363.280081,
-        "test": 1779929371.440085,
-        "code_review": 1779929379.641131,
-        "rejected": 1779929381.224422
+        "pull": 1779930505.742105,
+        "story": 1779930505.751262,
+        "code": 1779930518.952703,
+        "test": 1779930527.091893,
+        "code_review": 1779930535.341004,
+        "rejected": 1779930537.171957
       },
-      "tokens_in": 3496,
-      "tokens_out": 431
+      "tokens_in": 3783,
+      "tokens_out": 443
     },
     {
       "id": "sprint-6-version-tooltip",
       "idea": "Show the deployed version string as a tooltip on the version badge",
-      "in_sprint": true,
-      "status": "done",
+      "in_sprint": false,
+      "status": "failed",
       "story": "As a visitor, I want to hover over the version badge and see the full version string so I can confirm which build is live.",
       "acceptance_criteria": [
         "The version badge element has a title attribute set to the version string",
@@ -79,53 +151,17 @@
         "No visual change to the badge appearance",
         "No new files or dependencies are introduced"
       ],
-      "retro_context": "[fail] Scope creep in code changes: the diff removed unrelated functional JavaScript and CSS (.nav-active highlighting, .site-tagline styles) when implementing the copyright footer, causing Hermes rejection despite all technical tests passing\n[note] All automated technical tests (HTML structure, versioning, CSS rules, formatting) passed successfully, indicating strong test coverage but insufficient validation of change scope alignment with user story intent",
-      "summary": "Add version string tooltip to version badge via title attribute set by existing JS fetch",
-      "diff": "diff --git a/index.html b/index.html\nindex 1713080..f7f8edd 100644\n--- a/index.html\n+++ b/index.html\n@@ -87,8 +87,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.81</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 19:41:07 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.82</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 19:49:45 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -101,6 +101,10 @@\n       fetch('/version.json')\n         .then(r => r.json())\n         .then(data => {\n+          const badge = document.getElementById('version-badge');\n+          if (data.version) {\n+            badge.title = 'v' + data.version;\n+          }\n           const entries = (data.changelog || []).slice().reverse().slice(0, 5);\n           document.getElementById('changelog-entries').innerHTML = entries.map(e => {\n             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;\ndiff --git a/version.json b/version.json\nindex a55b896..5497e1d 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.81\",\n-  \"deployed\": \"2026-05-27 19:41:07 CT\",\n+  \"version\": \"0.1.82\",\n+  \"deployed\": \"2026-05-27 19:49:45 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -413,6 +413,11 @@\n       \"version\": \"0.1.81\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Highlight active nav link on each page using a CSS class added by an inline script\"\n+    },\n+    {\n+      \"version\": \"0.1.82\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add title tooltip to version badge showing full version string, populated from version.json\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
-      "test_results": [
-        {
-          "status": "pass",
-          "message": "index.html exists and contains title"
-        },
-        {
-          "status": "pass",
-          "message": "version 0.1.82 matches between version.json and index.html"
-        },
-        {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-27 19:49:45 CT' present in index.html"
-        },
-        {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.82: Add title tooltip to version badge showing full version string, populated from version.json"
-        },
-        {
-          "status": "pass",
-          "message": "no CSS outside style block"
-        },
-        {
-          "status": "pass",
-          "message": "no duplicate h1 rules (1 found)"
-        },
-        {
-          "status": "pass",
-          "message": "no -webkit-text-fill-color in style block"
-        },
-        {
-          "status": "pass",
-          "message": "no duplicate body rules (1 found)"
-        },
-        {
-          "status": "pass",
-          "message": "no mixed color formats"
-        }
-      ],
-      "deployed": "2026-05-27 19:49:45 CT",
-      "code_review_verdict": "approve",
-      "code_review_reason": "Code correctly fetches the version from version.json, sets the title attribute for tooltip display, and includes proper null-check for the data.version property.",
-      "ac_check_verdict": "approve",
-      "ac_check_reason": "All acceptance criteria are met: the title attribute is added to the version badge element, it is populated by the existing version.json JavaScript logic, no visual styling changes were made, and no new files or dependencies were introduced.",
-      "hermes_verdict": "approve"
+      "retro_context": "[fail] Scope creep in implementation: the copyright year feature diff inadvertently removed unrelated CSS rules (.site-tagline, .top-nav a.nav-active) and JavaScript functionality (nav active link detection, version badge title), indicating insufficient change isolation or accidental edits during implementation\n[note] All functional tests passed despite Hermes rejection, suggesting the tests do not validate against scope creep or unintended removals\u2014test coverage gaps exist around detecting removed functionality",
+      "error": "Parse error: Expecting value: line 1 column 1 (char 0) | Response preview: Looking at the acceptance criteria, the JavaScript already has `badge.title = 'v' + data.version;` in the existing `loadChangelog()` function. The story is already implemented in the provided index.ht",
+      "started": 1779930541.441014,
+      "stage_times": {
+        "pull": 1779930541.441014,
+        "story": 1779930541.455603,
+        "code": 1779930554.614609,
+        "failed": 1779930554.619387
+      },
+      "tokens_in": 2661,
+      "tokens_out": 280
     },
     {
       "id": "sprint-4-footer-tagline",

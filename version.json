@@ -1,6 +1,6 @@
 {
-  "version": "0.1.82",
-  "deployed": "2026-05-27 19:49:45 CT",
+  "version": "0.1.83",
+  "deployed": "2026-05-27 20:13:27 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -418,6 +418,11 @@
       "version": "0.1.82",
       "date": "2026-05-27",
       "change": "Add title tooltip to version badge showing full version string, populated from version.json"
+    },
+    {
+      "version": "0.1.83",
+      "date": "2026-05-27",
+      "change": "Add subtle muted green text-shadow glow to h1 site title"
     }
   ]
 }

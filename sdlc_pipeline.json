@@ -1,6 +1,88 @@
 {
   "items": [
     {
+      "idea": "Add caret-color: #00ff99 to the body so text cursors match the brand color",
+      "story": "As a visitor, I want the text insertion cursor to be green so it matches the brand.",
+      "acceptance_criteria": [
+        "The body selector has caret-color: #00ff99 added",
+        "No other body styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-18-body-caret",
+      "in_sprint": true,
+      "status": "done",
+      "summary": "Add caret-color: #00ff99 to body for brand-matched text insertion cursor",
+      "diff": "diff --git a/index.html b/index.html\nindex b95ba7a..68facd0 100644\n--- a/index.html\n+++ b/index.html\n@@ -17,6 +17,7 @@\n       background: #0f1117;\n       color: #e8eaf0;\n       font-family: 'Segoe UI', system-ui, sans-serif;\n+      caret-color: #00ff99;\n     }\n     .hero {\n       display: flex;\n@@ -76,8 +77,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.127</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 10:56:01 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 64b8d3f..b0408fa 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.126\",\n-  \"deployed\": \"2026-05-28 10:50:04 CT\",\n+  \"version\": \"0.1.127\",\n+  \"deployed\": \"2026-05-28 10:56:01 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -638,6 +638,11 @@\n       \"version\": \"0.1.126\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add opacity: 0.8 to .meta to subtly de-emphasize the deployment line\"\n+    },\n+    {\n+      \"version\": \"0.1.127\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add caret-color: #00ff99 to body so text cursors match the brand green\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.127 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-28 10:56:01 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.127: Add caret-color: #00ff99 to body so text cursors match the brand green"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-28 10:56:01 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The caret-color property is valid CSS, the hex color is correctly formatted, and version/deployment timestamp updates are expected with feature changes.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The body selector now has caret-color: #00ff99 added, no other body styles were modified, and no other selectors were added or removed.",
+      "hermes_verdict": "approve"
+    },
+    {
+      "idea": "Add cursor: pointer to .version so the badge feels clickable",
+      "story": "As a visitor, I want the version badge to show a pointer cursor so I know it is interactive.",
+      "acceptance_criteria": [
+        "The .version selector has cursor: pointer added",
+        "No other .version styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-18-version-cursor",
+      "in_sprint": true,
+      "status": "pending"
+    },
+    {
+      "idea": "Add line-height: 1.4 to .changelog-entry .ct so long change descriptions wrap cleanly",
+      "story": "As a visitor, I want the changelog change text to have comfortable line height so wrapped descriptions are easy to read.",
+      "acceptance_criteria": [
+        "The .changelog-entry .ct rule has line-height: 1.4 added",
+        "No other .changelog-entry .ct styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-18-changelog-ct-line-height",
+      "in_sprint": true,
+      "status": "pending"
+    },
+    {
       "idea": "Add line-height: 1.6 to body for comfortable text readability",
       "story": "As a visitor, I want the page text to have comfortable line spacing so it is easier to read.",
       "acceptance_criteria": [
@@ -9,7 +91,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-17-body-line-height",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "summary": "Add line-height: 1.6 to body for comfortable text readability",
       "diff": "diff --git a/index.html b/index.html\nindex b95ba7a..2240af1 100644\n--- a/index.html\n+++ b/index.html\n@@ -17,6 +17,7 @@\n       background: #0f1117;\n       color: #e8eaf0;\n       font-family: 'Segoe UI', system-ui, sans-serif;\n+      line-height: 1.6;\n     }\n     .hero {\n       display: flex;\n@@ -76,8 +77,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.124</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 10:49:05 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 3dcf4cc..b3425e7 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.123\",\n-  \"deployed\": \"2026-05-28 10:42:24 CT\",\n+  \"version\": \"0.1.124\",\n+  \"deployed\": \"2026-05-28 10:49:05 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -623,6 +623,11 @@\n       \"version\": \"0.1.123\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add font-style: italic to .changelog-entry .cd for subtle date styling\"\n+    },\n+    {\n+      \"version\": \"0.1.124\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add line-height: 1.6 to body for comfortable text readability\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
@@ -81,7 +163,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-17-h1-glow",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "retro_context": "[ok] Perfect execution on a focused CSS improvement: all tests passed, Hermes approved, code review clean, and acceptance criteria met. The item was well-scoped and properly validated.\n[note] Sprint processed only 1 item with 100% completion rate (1/1 done, 0 failed). This suggests either a very short sprint, a single-item batch, or exceptionally efficient delivery on a small task.",
       "summary": "Add text-shadow: 0 0 8px #00ff9933 to h1 for subtle on-brand glow",
@@ -154,7 +236,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-17-meta-opacity",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "retro_context": "[ok] All items passed comprehensive test suites including version tracking, deployment timestamps, changelog entries, and CSS validation rules. The testing framework is thorough and effective at catching regressions.\n[ok] Both Hermes approvals and code reviews were granted smoothly with clear, specific reasoning. Changes were scoped tightly to their respective selectors with no unrelated modifications.\n[note] Sprint delivered two CSS enhancement items focused on visual polish (readability and branding). Both items were small, well-defined changes that aligned cleanly with user stories and acceptance criteria.",
       "summary": "Add opacity: 0.8 to .meta rule to subtly dim the deployment metadata line",
@@ -202,7 +284,20 @@
       "code_review_reason": "CSS opacity property is valid and will render correctly; version/timestamp updates are expected; no syntax errors or scope creep detected.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "The .meta rule has opacity: 0.8 added, no other .meta styles are modified, and no other selectors are added or removed.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779983404.411289,
+      "stage_times": {
+        "pull": 1779983404.411289,
+        "code": 1779983411.617753,
+        "story": 1779983407.438063,
+        "test": 1779983414.741298,
+        "code_review": 1779983418.04104,
+        "ac_check": 1779983422.291605,
+        "deploy": 1779983427.362573,
+        "done": 1779983430.671106
+      },
+      "tokens_in": 5129,
+      "tokens_out": 401
     },
     {
       "idea": "Add caret-color: #00ff99 to the body so text cursors match the brand color",
@@ -7948,5 +8043,5 @@
       "tokens_out": 2816
     }
   ],
-  "sprint_number": 17
+  "sprint_number": 18
 }

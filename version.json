@@ -1,6 +1,6 @@
 {
-  "version": "0.1.111",
-  "deployed": "2026-05-28 09:37:33 CT",
+  "version": "0.1.112",
+  "deployed": "2026-05-28 09:37:48 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -563,6 +563,11 @@
       "version": "0.1.111",
       "date": "2026-05-28",
       "change": "Add subtle green glow (text-shadow: 0 0 8px #00ff9933) to h1 for on-brand feel"
+    },
+    {
+      "version": "0.1.112",
+      "date": "2026-05-28",
+      "change": "Add cursor: pointer to .version badge so it feels interactive"
     }
   ]
 }

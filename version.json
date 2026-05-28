@@ -1,6 +1,6 @@
 {
-  "version": "0.1.153",
-  "deployed": "2026-05-28 12:48:05 CT",
+  "version": "0.1.154",
+  "deployed": "2026-05-28 13:03:12 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -773,6 +773,11 @@
       "version": "0.1.153",
       "date": "2026-05-28",
       "change": "Add letter-spacing: 0.04em to .meta so the deployment date line has subtle spacing"
+    },
+    {
+      "version": "0.1.154",
+      "date": "2026-05-28",
+      "change": "Add border-top: 1px solid #333 to footer element to visually separate it from main content"
     }
   ]
 }

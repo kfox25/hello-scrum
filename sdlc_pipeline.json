@@ -68,7 +68,53 @@
       ],
       "id": "sprint-10-changelog-date-italic",
       "in_sprint": true,
-      "status": "pending"
+      "status": "done",
+      "summary": "Add font-style: italic to .changelog-entry .cd",
+      "diff": "diff --git a/index.html b/index.html\nindex 2a6661f..c18ce2a 100644\n--- a/index.html\n+++ b/index.html\n@@ -74,7 +74,7 @@\n     .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }\n     .changelog-entry:first-of-type { border-top: none; }\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n-    .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n+    .changelog-entry .cd { color: #444; font-size: 0.73rem; font-style: italic; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n     .changelog-entry { transition: box-shadow 0.2s ease; border-radius: 6px; }\n     .changelog-entry:hover { box-shadow: 0 0 8px #00ff9920; }\n@@ -117,8 +117,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.102</div>\n-  <div class=\"meta\">Last deployed: 2026-05-28 00:06:15 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.103</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 00:06:29 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 24de7b1..ab787a6 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.102\",\n-  \"deployed\": \"2026-05-28 00:06:15 CT\",\n+  \"version\": \"0.1.103\",\n+  \"deployed\": \"2026-05-28 00:06:29 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -518,6 +518,11 @@\n       \"version\": \"0.1.102\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add gap: 0.5rem to .hero flex container for consistent child spacing\"\n+    },\n+    {\n+      \"version\": \"0.1.103\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add font-style: italic to .changelog-entry .cd for typographic distinction\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.103 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-28 00:06:29 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.103: Add font-style: italic to .changelog-entry .cd for typographic distinction"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-28 00:06:29 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "CSS property is valid, selector exists and targets the correct element, version/deployment timestamp changes are expected, and changelog entry is properly formatted.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All three acceptance criteria are met: font-style: italic was added to .changelog-entry .cd, no other styles in that rule were modified, and no selectors were added or removed.",
+      "hermes_verdict": "approve"
     },
     {
       "idea": "Add padding: 0 0.5rem to the .changelog container for slight side breathing room",

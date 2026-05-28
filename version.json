@@ -1,6 +1,6 @@
 {
-  "version": "0.1.145",
-  "deployed": "2026-05-28 12:17:12 CT",
+  "version": "0.1.146",
+  "deployed": "2026-05-28 12:17:26 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -733,6 +733,11 @@
       "version": "0.1.145",
       "date": "2026-05-28",
       "change": "Add gap: 0.5rem to .hero for consistent spacing between headline and tagline"
+    },
+    {
+      "version": "0.1.146",
+      "date": "2026-05-28",
+      "change": "Add cursor: pointer to .version badge so it feels clickable"
     }
   ]
 }

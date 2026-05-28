@@ -1,6 +1,121 @@
 {
   "items": [
     {
+      "idea": "Add line-height: 1.5 to the body for comfortable reading",
+      "story": "As a visitor, I want the page text to have comfortable line spacing so it is easier to read.",
+      "acceptance_criteria": [
+        "The body selector has line-height: 1.5 added",
+        "No other body styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-14-tagline-spacing",
+      "in_sprint": true,
+      "status": "done",
+      "started": 1779979431.981243,
+      "stage_times": {
+        "pull": 1779979431.981243,
+        "code": 1779979438.993818,
+        "story": 1779979432.020946,
+        "test": 1779979439.076374,
+        "code_review": 1779979439.250685,
+        "rejected": 1779979440.545552
+      },
+      "tokens_in": 3313,
+      "tokens_out": 402,
+      "sprint_wisdom": "[fail] Implementation gap between intended changes and actual diff: the idea describes adding letter-spacing to .tagline CSS, but the submitted diff only modified version.json and index.html metadata, omitting the core CSS rule entirely.\n[note] Tests passed comprehensively (9/9), indicating strong validation of deployment metadata and file integrity, yet the actual feature implementation was incomplete\u2014suggesting tests may not validate that described changes are present in the diff.\n[note] 100% of the sprint (1 item) failed due to a single root cause: missing implementation of the promised feature, not due to bugs or test failures.",
+      "summary": "Add line-height: 1.5 to body for comfortable reading",
+      "diff": "diff --git a/index.html b/index.html\nindex b95ba7a..e7323b0 100644\n--- a/index.html\n+++ b/index.html\n@@ -17,6 +17,7 @@\n       background: #0f1117;\n       color: #e8eaf0;\n       font-family: 'Segoe UI', system-ui, sans-serif;\n+      line-height: 1.5;\n     }\n     .hero {\n       display: flex;\n@@ -76,8 +77,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.115</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 09:49:30 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 7cfcba9..a472744 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.112\",\n-  \"deployed\": \"2026-05-28 09:37:48 CT\",\n+  \"version\": \"0.1.115\",\n+  \"deployed\": \"2026-05-28 09:49:30 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -568,6 +568,21 @@\n       \"version\": \"0.1.112\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add cursor: pointer to .version badge so it feels interactive\"\n+    },\n+    {\n+      \"version\": \"0.1.113\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add letter-spacing: 0.12em to .tagline for a refined uppercase feel\"\n+    },\n+    {\n+      \"version\": \"0.1.114\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add border-radius: 20px to .version to give the badge a pill shape\"\n+    },\n+    {\n+      \"version\": \"0.1.115\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add line-height: 1.5 to body for comfortable reading\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.115 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-28 09:49:30 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.115: Add line-height: 1.5 to body for comfortable reading"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-28 09:49:30 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The diff adds a valid CSS line-height property to the body element, updates version tracking files as expected, and contains no syntax errors or broken selectors.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The body selector has line-height: 1.5 added, no other body styles are modified, and no other selectors are added or removed.",
+      "hermes_verdict": "approve"
+    },
+    {
+      "idea": "Add text-shadow: 0 0 8px #00ff9933 to h1 for a subtle glow",
+      "story": "As a visitor, I want the main headline to have a faint green glow so it feels on-brand.",
+      "acceptance_criteria": [
+        "The h1 selector has text-shadow: 0 0 8px #00ff9933 added",
+        "No other h1 styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-14-version-radius",
+      "in_sprint": true,
+      "status": "pending",
+      "started": 1779979444.761339,
+      "stage_times": {
+        "pull": 1779979444.761339,
+        "code": 1779979448.733866,
+        "story": 1779979444.802664,
+        "test": 1779979448.859525,
+        "code_review": 1779979449.051778,
+        "rejected": 1779979450.277919
+      },
+      "tokens_in": 3515,
+      "tokens_out": 306,
+      "sprint_wisdom": "[fail] Both failures stem from the same root cause: CSS rule changes are documented in changelog and version metadata but omitted from the actual stylesheet diff. The agent describes the intended CSS modification but fails to include it in the style block, causing Hermes rejection despite all tests passing.\n[note] All functional tests pass consistently (version matching, changelog entries, HTML structure validation), indicating the agent handles metadata and versioning correctly but struggles with implementation of the core feature requirement."
+    },
+    {
+      "idea": "Add letter-spacing: 0.03em to .meta for a refined look",
+      "story": "As a visitor, I want the deployment metadata line to have slight letter spacing so it feels polished.",
+      "acceptance_criteria": [
+        "The .meta rule has letter-spacing: 0.03em added",
+        "No other .meta styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-14-changelog-max-width",
+      "in_sprint": true,
+      "status": "pending",
+      "started": 1779979455.077579,
+      "stage_times": {
+        "pull": 1779979455.077579,
+        "code": 1779979458.817563,
+        "story": 1779979455.091242,
+        "failed": 1779979458.820439
+      },
+      "tokens_in": 2576,
+      "tokens_out": 275
+    },
+    {
       "idea": "Add line-height: 1.6 to the body for comfortable text readability",
       "story": "As a visitor, I want the page text to have comfortable line spacing so it is easier to read.",
       "acceptance_criteria": [
@@ -9,7 +124,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-13-body-line-height",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "summary": "Add line-height: 1.6 to body for comfortable text readability",
       "diff": "diff --git a/index.html b/index.html\nindex b95ba7a..8f9aa33 100644\n--- a/index.html\n+++ b/index.html\n@@ -17,6 +17,7 @@\n       background: #0f1117;\n       color: #e8eaf0;\n       font-family: 'Segoe UI', system-ui, sans-serif;\n+      line-height: 1.6;\n     }\n     .hero {\n       display: flex;\n@@ -76,8 +77,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.110</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 09:37:19 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 0af54df..2e68271 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.109\",\n-  \"deployed\": \"2026-05-28 09:17:36 CT\",\n+  \"version\": \"0.1.110\",\n+  \"deployed\": \"2026-05-28 09:37:19 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -553,6 +553,11 @@\n       \"version\": \"0.1.109\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add subtle green glow (text-shadow: 0 0 8px #00ff9933) to h1 for on-brand visual effect\"\n+    },\n+    {\n+      \"version\": \"0.1.110\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add line-height: 1.6 to body for comfortable text readability\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
@@ -81,7 +196,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-13-h1-glow",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "retro_context": "[ok] Perfect execution on a focused, scoped change: the line-height CSS addition passed all 9 test cases, received Hermes approval, and met acceptance criteria with no errors.\n[ok] Strong version control and deployment hygiene: version tracking, changelog entry, and deployment timestamp were all correctly updated and verified.\n[note] Sprint completed with 1 item at 100% success rate; small batch size may indicate conservative pacing or limited backlog availability.",
       "summary": "Add faint green glow text-shadow to h1 for on-brand styling",
@@ -154,7 +269,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-13-version-cursor",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "retro_context": "[ok] Perfect test coverage and Hermes approval rate: all 2 items passed all validation checks, code reviews, acceptance criteria verification, and received approve verdicts with no syntax errors or scope creep.\n[ok] Strong process discipline: version tracking, deployment timestamps, and changelog entries were consistently maintained across all items, indicating reliable automation and checklist adherence.\n[note] Sprint focused on incremental CSS improvements (line-height and text-shadow) rather than feature development, suggesting either a stabilization phase or backlog composed of UX refinements.",
       "summary": "Add cursor: pointer to .version badge for interactive feel",
@@ -202,7 +317,20 @@
       "code_review_reason": "The diff adds a valid CSS property (cursor: pointer) to the .version class, updates version and deployment timestamps consistently across both files, and includes an appropriate changelog entry with no syntax errors.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "The .version selector has cursor: pointer added, no other .version styles are modified, and no other selectors are added or removed.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779979068.442982,
+      "stage_times": {
+        "pull": 1779979068.442982,
+        "code": 1779979072.240144,
+        "story": 1779979068.458877,
+        "test": 1779979072.34056,
+        "code_review": 1779979072.611063,
+        "ac_check": 1779979074.007492,
+        "deploy": 1779979075.278295,
+        "done": 1779979078.492313
+      },
+      "tokens_in": 4834,
+      "tokens_out": 386
     },
     {
       "idea": "Add cursor: default to the body so the cursor is always an arrow on non-interactive areas",
@@ -2219,73 +2347,6 @@
       },
       "tokens_in": 5109,
       "tokens_out": 444
-    },
-    {
-      "id": "sprint-14-tagline-spacing",
-      "idea": "Add letter-spacing to the tagline text for a more polished look",
-      "in_sprint": false,
-      "status": "failed",
-      "story": "As a visitor, I want the tagline text to have subtle letter-spacing so that it looks more refined.",
-      "acceptance_criteria": [
-        "The .tagline selector has a letter-spacing CSS property added",
-        "The value is between 0.05em and 0.15em",
-        "No other .tagline styles are modified",
-        "No other selectors are added or removed"
-      ],
-      "diff": "diff --git a/index.html b/index.html\nindex cafb614..cb376f9 100644\n--- a/index.html\n+++ b/index.html\n@@ -28,16 +28,15 @@\n       font-family: monospace;\n       font-size: 3rem;\n       font-weight: 800;\n-      letter-spacing: 0.04em;\n+      letter-spacing: -0.03em;\n       margin: 0 0 0.5rem;\n       text-transform: uppercase;\n       color: #00ff99;\n-      text-shadow: 0 0 6px #00ff9940;\n     }\n     .tagline {\n       font-size: 1.2rem;\n       font-weight: 300;\n-      letter-spacing: 0.12em;\n+      letter-spacing: 0.1em;\n       text-transform: uppercase;\n       color: #7a8099;\n       margin-bottom: 0;\n@@ -59,18 +58,6 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n-    .changelog-entry { transition: box-shadow 0.2s ease; }\n-    .changelog-entry:hover { box-shadow: 0 0 8px #00ff9920; }\n-    .site-tagline {\n-      font-size: 1rem;\n-      color: #555e7a;\n-      margin: 0 0 0.75rem;\n-      font-weight: 400;\n-      letter-spacing: 0.04em;\n-    }\n-    .top-nav a.nav-active {\n-      color: #00ff99;\n-    }\n   </style>\n </head>\n <body>\n@@ -87,11 +74,10 @@\n   </nav>\n   <div class=\"hero\">\n     <h1>Hello Scrum</h1>\n-    <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.85</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 20:44:17 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.86</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 21:15:46 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -104,10 +90,6 @@\n       fetch('/version.json')\n         .then(r => r.json())\n         .then(data => {\n-          const badge = document.getElementById('version-badge');\n-          if (data.version) {\n-            badge.title = 'v' + data.version;\n-          }\n           const entries = (data.changelog || []).slice().reverse().slice(0, 5);\n           document.getElementById('changelog-entries').innerHTML = entries.map(e => {\n             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;\n@@ -121,18 +103,6 @@\n         .catch(() => {});\n     }\n     loadChangelog();\n-\n-    (function() {\n-      var links = document.querySelectorAll('.top-nav a');\n-      var current = window.location.pathname.split('/').pop() || 'index.html';\n-      if (current === '') current = 'index.html';\n-      links.forEach(function(link) {\n-        var href = link.getAttribute('href').split('/').pop() || 'index.html';\n-        if (href === current) {\n-          link.classList.add('nav-active');\n-        }\n-      });\n-    })();\n   </script>\n </body>\n </html>\ndiff --git a/version.json b/version.json\nindex aa18b33..a65e326 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.85\",\n-  \"deployed\": \"2026-05-27 20:44:17 CT\",\n+  \"version\": \"0.1.86\",\n+  \"deployed\": \"2026-05-27 21:15:46 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -433,6 +433,11 @@\n       \"version\": \"0.1.85\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add letter-spacing 0.04em to h1 site title for a more refined look\"\n+    },\n+    {\n+      \"version\": \"0.1.86\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add letter-spacing 0.1em to .tagline for a more polished refined look\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
-      "test_results": [
-        {
-          "status": "pass",
-          "message": "index.html exists and contains title"
-        },
-        {
-          "status": "pass",
-          "message": "version 0.1.86 matches between version.json and index.html"
-        },
-        {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-27 21:15:46 CT' present in index.html"
-        },
-        {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.86: Add letter-spacing 0.1em to .tagline for a more polished refined look"
-        },
-        {
-          "status": "pass",
-          "message": "no CSS outside style block"
-        },
-        {
-          "status": "pass",
-          "message": "no duplicate h1 rules (1 found)"
-        },
-        {
-          "status": "pass",
-          "message": "no -webkit-text-fill-color in style block"
-        },
-        {
-          "status": "pass",
-          "message": "no duplicate body rules (1 found)"
-        },
-        {
-          "status": "pass",
-          "message": "no mixed color formats"
-        }
-      ],
-      "code_review_verdict": "reject",
-      "code_review_reason": "The diff removes functional code (navigation active state detection and version badge title setting) that is unrelated to the tagline letter-spacing feature, constituting scope creep.",
-      "hermes_verdict": "reject",
-      "hermes_reason": "The diff removes functional code (navigation active state detection and version badge title setting) that is unrelated to the tagline letter-spacing feature, constituting scope creep.",
-      "started": 1779934546.402783,
-      "stage_times": {
-        "pull": 1779934546.402783,
-        "story": 1779934546.455856,
-        "code": 1779934559.250686,
-        "test": 1779934567.440943,
-        "code_review": 1779934575.611561,
-        "rejected": 1779934577.320485
-      },
-      "tokens_in": 4037,
-      "tokens_out": 359
     },
     {
       "id": "sprint-13-tagline-spacing",
@@ -7147,5 +7208,5 @@
       "tokens_out": 2816
     }
   ],
-  "sprint_number": 13
+  "sprint_number": 14
 }

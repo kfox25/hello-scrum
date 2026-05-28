@@ -1,6 +1,6 @@
 {
-  "version": "0.1.112",
-  "deployed": "2026-05-28 09:37:48 CT",
+  "version": "0.1.115",
+  "deployed": "2026-05-28 09:49:30 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -568,6 +568,21 @@
       "version": "0.1.112",
       "date": "2026-05-28",
       "change": "Add cursor: pointer to .version badge so it feels interactive"
+    },
+    {
+      "version": "0.1.113",
+      "date": "2026-05-28",
+      "change": "Add letter-spacing: 0.12em to .tagline for a refined uppercase feel"
+    },
+    {
+      "version": "0.1.114",
+      "date": "2026-05-28",
+      "change": "Add border-radius: 20px to .version to give the badge a pill shape"
+    },
+    {
+      "version": "0.1.115",
+      "date": "2026-05-28",
+      "change": "Add line-height: 1.5 to body for comfortable reading"
     }
   ]
 }

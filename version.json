@@ -1,6 +1,6 @@
 {
-  "version": "0.1.105",
-  "deployed": "2026-05-28 08:40:06 CT",
+  "version": "0.1.106",
+  "deployed": "2026-05-28 08:40:28 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -533,6 +533,11 @@
       "version": "0.1.105",
       "date": "2026-05-28",
       "change": "Add line-height: 1.4 to .changelog-entry .ct for comfortable wrapping of long change descriptions"
+    },
+    {
+      "version": "0.1.106",
+      "date": "2026-05-28",
+      "change": "Add opacity: 0.8 to .meta so the deployment line is subtly de-emphasized"
     }
   ]
 }

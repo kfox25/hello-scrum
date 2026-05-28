@@ -11,15 +11,19 @@
       "id": "sprint-11-ct-line-height",
       "in_sprint": true,
       "status": "done",
-      "started": 1779975538.947104,
+      "started": 1779975606.871463,
       "stage_times": {
-        "pull": 1779975538.947104,
-        "code": 1779975545.362296,
-        "story": 1779975539.079878,
-        "failed": 1779975545.365092
+        "pull": 1779975606.871463,
+        "code": 1779975612.025785,
+        "story": 1779975606.958045,
+        "test": 1779975612.125901,
+        "code_review": 1779975612.314108,
+        "ac_check": 1779975613.913402,
+        "deploy": 1779975615.458035,
+        "done": 1779975619.925134
       },
-      "tokens_in": 3076,
-      "tokens_out": 288,
+      "tokens_in": 5600,
+      "tokens_out": 432,
       "summary": "Add line-height: 1.4 to .changelog-entry .ct for readable wrapped text",
       "diff": "diff --git a/index.html b/index.html\nindex 1bb1e82..f0bab20 100644\n--- a/index.html\n+++ b/index.html\n@@ -75,7 +75,7 @@\n     .changelog-entry:first-of-type { border-top: none; }\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; font-style: italic; }\n-    .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n+    .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; line-height: 1.4; }\n     .changelog-entry { transition: box-shadow 0.2s ease; border-radius: 6px; }\n     .changelog-entry:hover { box-shadow: 0 0 8px #00ff9920; }\n     .site-tagline {\n@@ -117,8 +117,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.104</div>\n-  <div class=\"meta\">Last deployed: 2026-05-28 00:06:44 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.105</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 08:40:06 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 2adcdef..a56559d 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.104\",\n-  \"deployed\": \"2026-05-28 00:06:44 CT\",\n+  \"version\": \"0.1.105\",\n+  \"deployed\": \"2026-05-28 08:40:06 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -528,6 +528,11 @@\n       \"version\": \"0.1.104\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add padding: 0 0.5rem to .changelog for slight side breathing room\"\n+    },\n+    {\n+      \"version\": \"0.1.105\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add line-height: 1.4 to .changelog-entry .ct for comfortable wrapping of long change descriptions\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "test_results": [
@@ -77,7 +81,53 @@
       ],
       "id": "sprint-11-meta-opacity",
       "in_sprint": true,
-      "status": "pending"
+      "status": "done",
+      "summary": "Add opacity: 0.8 to .meta to subtly dim the deployment metadata line",
+      "diff": "diff --git a/index.html b/index.html\nindex f0bab20..a649f21 100644\n--- a/index.html\n+++ b/index.html\n@@ -68,7 +68,7 @@\n     .version:hover {\n       box-shadow: 0 0 10px #00ff9940;\n     }\n-    .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; margin-bottom: 0.75rem; letter-spacing: 0.03em; }\n+    .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; margin-bottom: 0.75rem; letter-spacing: 0.03em; opacity: 0.8; }\n     .changelog { margin-top: 1.5rem; width: 100%; max-width: 500px; padding: 0 0.5rem; }\n     .changelog h2 { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; }\n     .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }\n@@ -117,8 +117,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.105</div>\n-  <div class=\"meta\">Last deployed: 2026-05-28 08:40:06 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.106</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 08:40:28 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex a56559d..cbfe4f3 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.105\",\n-  \"deployed\": \"2026-05-28 08:40:06 CT\",\n+  \"version\": \"0.1.106\",\n+  \"deployed\": \"2026-05-28 08:40:28 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -533,6 +533,11 @@\n       \"version\": \"0.1.105\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add line-height: 1.4 to .changelog-entry .ct for comfortable wrapping of long change descriptions\"\n+    },\n+    {\n+      \"version\": \"0.1.106\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add opacity: 0.8 to .meta so the deployment line is subtly de-emphasized\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.106 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-28 08:40:28 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.106: Add opacity: 0.8 to .meta so the deployment line is subtly de-emphasized"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-28 08:40:28 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "CSS property opacity: 0.8 is syntactically valid and will apply correctly to the .meta element; version and deployment timestamp updates are expected accompaniments to feature changes.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The .meta rule now has opacity: 0.8 added, no other .meta styles were modified, and no other selectors were added or removed.",
+      "hermes_verdict": "approve"
     },
     {
       "idea": "Add gap: 0.5rem to the .hero flex container for consistent child spacing",

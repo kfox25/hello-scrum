@@ -1,6 +1,6 @@
 {
-  "version": "0.1.123",
-  "deployed": "2026-05-28 10:42:24 CT",
+  "version": "0.1.124",
+  "deployed": "2026-05-28 10:49:05 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -623,6 +623,11 @@
       "version": "0.1.123",
       "date": "2026-05-28",
       "change": "Add font-style: italic to .changelog-entry .cd for subtle date styling"
+    },
+    {
+      "version": "0.1.124",
+      "date": "2026-05-28",
+      "change": "Add line-height: 1.6 to body for comfortable text readability"
     }
   ]
 }

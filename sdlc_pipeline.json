@@ -1,6 +1,64 @@
 {
   "items": [
     {
+      "idea": "Add gap: 0.5rem to .hero so there is consistent spacing between the headline and tagline",
+      "story": "As a visitor, I want the hero section to have consistent spacing between elements so the layout feels balanced.",
+      "acceptance_criteria": [
+        "The .hero selector has gap: 0.5rem added",
+        "No other .hero styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-25-hero-gap",
+      "in_sprint": true,
+      "status": "done",
+      "summary": "Add gap: 0.5rem to .hero for consistent spacing between headline and tagline",
+      "diff": "diff --git a/index.html b/index.html\nindex b95ba7a..54154cc 100644\n--- a/index.html\n+++ b/index.html\n@@ -23,6 +23,7 @@\n       flex-direction: column;\n       align-items: center;\n       padding: 1rem 0 2rem;\n+      gap: 0.5rem;\n     }\n     h1 {\n       font-family: monospace;\n@@ -76,8 +77,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.139</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 11:51:37 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 5fd7d57..c8908a9 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.138\",\n-  \"deployed\": \"2026-05-28 11:48:03 CT\",\n+  \"version\": \"0.1.139\",\n+  \"deployed\": \"2026-05-28 11:51:37 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -698,6 +698,11 @@\n       \"version\": \"0.1.138\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add cursor: pointer to .version so the version badge feels clickable\"\n+    },\n+    {\n+      \"version\": \"0.1.139\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add gap: 0.5rem to .hero for consistent spacing between headline and tagline\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.139 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-28 11:51:37 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.139: Add gap: 0.5rem to .hero for consistent spacing between headline and tagline"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-28 11:51:37 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The gap property is added to a flex container (.hero) which already has flex-direction: column, making it a valid and functional CSS change with no syntax errors or scope creep.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The .hero selector has gap: 0.5rem added as the only modification to that rule, no other styles are changed, and no selectors are added or removed.",
+      "hermes_verdict": "approve"
+    },
+    {
       "idea": "Add cursor: pointer to .version so the version badge feels clickable",
       "story": "As a visitor, I want the version badge to show a pointer cursor so I know it is interactive.",
       "acceptance_criteria": [
@@ -9,7 +67,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-24-version-cursor",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "summary": "Add cursor: pointer to .version badge to indicate interactivity",
       "diff": "diff --git a/index.html b/index.html\nindex b95ba7a..a5ace78 100644\n--- a/index.html\n+++ b/index.html\n@@ -49,6 +49,7 @@\n       padding: 0.3rem 0.9rem;\n       border-radius: 20px;\n       margin-bottom: 0.4rem;\n+      cursor: pointer;\n     }\n     .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; }\n     .changelog { margin-top: 1.5rem; width: 100%; max-width: 500px; }\n@@ -76,8 +77,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.138</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 11:48:03 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex b414873..5fd7d57 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.137\",\n-  \"deployed\": \"2026-05-28 11:42:39 CT\",\n+  \"version\": \"0.1.138\",\n+  \"deployed\": \"2026-05-28 11:48:03 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -693,6 +693,11 @@\n       \"version\": \"0.1.137\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add line-height: 1.4 to .changelog-entry .ct so long change descriptions wrap cleanly\"\n+    },\n+    {\n+      \"version\": \"0.1.138\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add cursor: pointer to .version so the version badge feels clickable\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
@@ -56,7 +114,20 @@
       "code_review_reason": "The diff adds a valid CSS property (cursor: pointer) to the .version class, updates version metadata and changelog appropriately, with no syntax errors or broken selectors.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "The .version selector has cursor: pointer added, no other .version styles are modified, and no other selectors are added or removed.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779986883.788865,
+      "stage_times": {
+        "pull": 1779986883.788865,
+        "code": 1779986889.300507,
+        "story": 1779986883.834222,
+        "test": 1779986889.406795,
+        "code_review": 1779986889.574211,
+        "ac_check": 1779986890.672051,
+        "deploy": 1779986891.499901,
+        "done": 1779986894.432089
+      },
+      "tokens_in": 4672,
+      "tokens_out": 390
     },
     {
       "idea": "Add gap: 0.5rem to .hero so there is consistent spacing between the headline and tagline",
@@ -8810,5 +8881,5 @@
       "tokens_out": 2816
     }
   ],
-  "sprint_number": 24
+  "sprint_number": 25
 }

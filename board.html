@@ -64,6 +64,19 @@
       border: 1px solid #00ff9960;
     }
     #start-btn:hover:not(:disabled) { background: #114428; border-color: #00ff99; }
+    #start-slow-btn {
+      background: #1a1200;
+      color: #ffaa00;
+      border: 1px solid #ffaa0060;
+    }
+    #restore-btn {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      font-family: monospace; font-size: 0.75rem;
+      background: #0b1f14; color: #00ff99; border: 1px solid #00ff9940;
+      padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer;
+    }
+    #restore-btn:hover { background: #0d2a1a; }
+    #start-slow-btn:hover:not(:disabled) { background: #221800; border-color: #ffaa00; }
     #complete-btn {
       background: #1a1a1a;
       color: #888;
@@ -71,6 +84,7 @@
     }
     #complete-btn:hover:not(:disabled) { background: #222; color: #aaa; border-color: #555; }
     .sprint-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
 
     .drop-zone {
       flex: 1;
@@ -148,15 +162,7 @@
     .badge-pending { background: #1a1a00; color: #ffcc00; border: 1px solid #ffcc0040; }
     .badge-failed  { background: #2a0a0a; color: #ff4444; border: 1px solid #ff444440; }
 
-    .hermes-tag {
-      font-size: 0.65rem;
-      padding: 0.1rem 0.4rem;
-      border-radius: 3px;
-      flex-shrink: 0;
-    }
-    .hermes-approve { background: #0a1f12; color: #00ff9980; border: 1px solid #00ff9920; }
-    .hermes-reject  { background: #1a0808; color: #ff444480; border: 1px solid #ff444420; }
-    .watercooler-tag {
+.watercooler-tag {
       font-size: 0.62rem; padding: 0.1rem 0.4rem; border-radius: 3px; flex-shrink: 0;
       background: #0a1525; color: #4499cc; border: 1px solid #4499cc30;
     }
@@ -250,34 +256,6 @@
     }
     .add-item button:hover { background: #0d3320; border-color: #00ff9960; }
 
-    /* log panel */
-    #log-panel {
-      display: none;
-      flex-direction: column;
-      height: 220px;
-      border-top: 1px solid #222;
-    }
-    .log-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.5rem 1.25rem;
-      background: #141414;
-      border-bottom: 1px solid #222;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #666;
-    }
-    #clear-log {
-      background: none;
-      border: none;
-      color: #333;
-      font-family: monospace;
-      font-size: 0.75rem;
-      cursor: pointer;
-    }
-    #clear-log:hover { color: #555; }
     #log-output {
       flex: 1;
       overflow-y: auto;
@@ -306,6 +284,7 @@
     <a href="workflow.html">Workflow</a>
     <a href="notes.html">Notes</a>
     <a href="health.html">Health</a>
+    <a href="prompts.html">Prompts</a>
   </nav>
   <header>
     <h1>Product Backlog</h1>
@@ -357,8 +336,9 @@
           <span class="col-count" id="sprint-count"></span>
         </div>
         <div style="display:flex;gap:0.4rem">
-          <button id="start-btn"    class="sprint-btn" onclick="startSprint()">▶ Start Sprint</button>
-          <button id="complete-btn" class="sprint-btn" onclick="completeSprint()">✓ Complete Sprint</button>
+          <button id="start-btn"      class="sprint-btn" onclick="startSprint(false)">▶ Start Sprint</button>
+          <button id="start-slow-btn" class="sprint-btn" onclick="startSprint(true)">⏱ Slow Sprint</button>
+          <button id="complete-btn"   class="sprint-btn" onclick="completeSprint()">✓ Complete Sprint</button>
         </div>
       </div>
       <div class="add-item">
@@ -373,13 +353,8 @@
     </div>
   </div>
 
-  <div id="log-panel">
-    <div class="log-header">
-      <span>Agent Output</span>
-      <button id="clear-log" onclick="clearLog()">clear</button>
-    </div>
-    <div id="log-output"></div>
-  </div>
+
+  <button id="restore-btn">Restore to Baseline</button>
 
   <script>
     let backlogData = null;
@@ -449,8 +424,9 @@
 
       const hasPending    = sprintItems.some(i => i.status === 'pending');
       const hasFinished   = sprintItems.some(i => i.status === 'done' || i.status === 'failed');
-      document.getElementById('start-btn').disabled    = !hasPending;
-      document.getElementById('complete-btn').disabled = !hasFinished;
+      document.getElementById('start-btn').disabled      = !hasPending;
+      document.getElementById('start-slow-btn').disabled = !hasPending;
+      document.getElementById('complete-btn').disabled   = !hasFinished;
     }
 
     function renderCard(item) {
@@ -458,11 +434,6 @@
       const draggable = isPending ? 'draggable="true"' : '';
       const handle    = isPending ? '<span class="drag-handle">&#8942;&#8942;</span>' : '<span class="drag-handle"></span>';
 
-      let hermesTag = '';
-      if (item.hermes_verdict) {
-        const cls = item.hermes_verdict === 'approve' ? 'hermes-approve' : 'hermes-reject';
-        hermesTag = `<span class="hermes-tag ${cls}">H:${item.hermes_verdict === 'approve' ? '✓' : '✗'}</span>`;
-      }
 
       const retryBtn = item.status === 'failed'
         ? `<button class="retry-btn" onclick="retryItem('${item.id}', event)" title="Reset to pending">↺</button>`
@@ -519,7 +490,6 @@
           ${acHtml}
           ${expandBtn}
         </div>
-        ${hermesTag}
         ${item.meeting_update ? `<span class="watercooler-tag watercooler-collapsed" title="${escHtml(item.meeting_update)}">watercooler</span>` : ''}
         <span class="badge badge-${item.status}">${item.status}</span>
         ${retryBtn}
@@ -665,74 +635,24 @@
 
     // ── Sprint ────────────────────────────────────────────────────────────────
 
-    async function startSprint() {
+    async function startSprint(slowMode = false) {
       const btn = document.getElementById('start-btn');
+      const slowBtn = document.getElementById('start-slow-btn');
       btn.disabled = true;
+      slowBtn.disabled = true;
       btn.textContent = '⟳ Running...';
 
-      const panel = document.getElementById('log-panel');
-      panel.style.display = 'flex';
+      await fetch('/slow-mode/set', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({enabled: slowMode}) });
 
       const response = await fetch('/sprint/start', { method: 'POST' });
 
       if (!response.ok) {
-        appendLog('Sprint start failed: ' + response.statusText, 'log-fail');
         btn.disabled = false;
         btn.textContent = '▶ Start Sprint';
         return;
       }
 
       window.location.href = 'active.html';
-      return;
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const parts = buffer.split('\n\n');
-        buffer = parts.pop();
-
-        for (const part of parts) {
-          if (!part.startsWith('data: ')) continue;
-          const msg = JSON.parse(part.slice(6));
-          if (msg === '__done__') {
-            appendLog('', '');
-            appendLog('Sprint complete.', 'log-done');
-            await loadBacklog();
-            const stillPending = backlogData.items.some(i => i.in_sprint && i.status === 'pending');
-            btn.disabled = !stillPending;
-            btn.textContent = '▶ Start Sprint';
-          } else {
-            appendLog(msg);
-          }
-        }
-      }
-    }
-
-    function appendLog(text, cls) {
-      const out = document.getElementById('log-output');
-      const div = document.createElement('div');
-      div.className = 'log-line ' + (cls || colorClass(text));
-      div.textContent = text;
-      out.appendChild(div);
-      out.scrollTop = out.scrollHeight;
-    }
-
-    function colorClass(line) {
-      if (line.startsWith('PASS'))                          return 'log-pass';
-      if (line.startsWith('FAIL') || line.includes('FAILED')) return 'log-fail';
-      if (line.startsWith('Hermes: APPROVE'))               return 'log-hermes-approve';
-      if (line.startsWith('Hermes: REJECT'))                return 'log-hermes-reject';
-      if (line.startsWith('Deployed:') || line.startsWith('Live at')) return 'log-deploy';
-      if (line.startsWith('==='))                           return 'log-section';
-      return '';
-    }
-
-    function clearLog() {
-      document.getElementById('log-output').innerHTML = '';
     }
 
     function deleteItem(id, e) {
@@ -860,8 +780,29 @@
       persistBacklog();
     }
 
+
+    // ── Baseline restore ──────────────────────────────────────────────────────
+    document.getElementById('restore-btn').addEventListener('click', async () => {
+      const btn = document.getElementById('restore-btn');
+      btn.textContent = 'restoring…'; btn.disabled = true;
+      try {
+        const r = await fetch('/baseline/restore', { method: 'POST' });
+        const d = await r.json();
+        btn.textContent = d.ok ? 'restored ✓' : 'failed';
+        setTimeout(() => { btn.textContent = 'Restore to Baseline'; btn.disabled = false; }, 2000);
+      } catch(e) { btn.textContent = 'error'; btn.disabled = false; }
+    });
+
     // ── Init ──────────────────────────────────────────────────────────────────
+    fetch('/sprint/status').then(r => r.json()).then(d => {
+      if (d.running) {
+        document.getElementById('start-btn').disabled      = true;
+        document.getElementById('start-slow-btn').disabled = true;
+        document.getElementById('start-btn').textContent   = '⟳ Running...';
+      }
+    }).catch(() => {});
     loadBacklog();
   </script>
-</body>
+<script src="shared.js"></script></body>
 </html>
+

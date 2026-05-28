@@ -21,31 +21,16 @@
     }
     .left-pane  { flex: 1; min-width: 0; }
     .right-pane { flex: 1; min-width: 0; }
-    #clear-btn {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      font-family: monospace;
-      font-size: 0.75rem;
-      background: none;
-      color: #333;
-      border: 1px solid #222;
-      padding: 0.3rem 0.8rem;
-      border-radius: 4px;
-      cursor: pointer;
-      display: none;
-    }
-    #clear-btn:hover { color: #888; border-color: #444; }
 
     /* idle state */
     .idle {
       text-align: center;
-      color: #2a2a2a;
+      color: #aaa;
       padding-top: 3rem;
     }
     .idle-icon { font-size: 3rem; margin-bottom: 1rem; }
-    .idle-title { font-size: 1.1rem; color: #333; margin-bottom: 0.4rem; }
-    .idle-sub { font-size: 0.8rem; color: #2a2a2a; }
+    .idle-title { font-size: 1.1rem; color: #aaa; margin-bottom: 0.4rem; }
+    .idle-sub { font-size: 0.8rem; color: #aaa; }
 
     /* active state */
     .work-card {
@@ -58,18 +43,20 @@
     }
 
     .work-header {
-      padding: 1.25rem 1.5rem;
+      padding: 0 1.5rem 1.25rem;
       border-bottom: 1px solid #2a2a2a;
     }
     .work-label {
-      font-size: 0.7rem;
+      font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: #444;
-      margin-bottom: 0.4rem;
+      color: #aaa;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #2a2a2a;
+      margin-bottom: 0.75rem;
     }
-    .work-id { color: #555; font-size: 0.85rem; margin-right: 0.5rem; }
-    .work-idea { font-size: 1.1rem; color: #e0e0e0; }
+    .work-id { color: #aaa; font-size: 0.85rem; margin-right: 0.5rem; }
+    .work-idea { font-size: 1.1rem; color: #aaa; }
 
     /* pipeline */
     .pipeline {
@@ -129,7 +116,7 @@
       font-size: 0.6rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: #333;
+      color: #888;
       text-align: center;
     }
     .stage.done .stage-label   { color: #00ff9970; }
@@ -137,7 +124,7 @@
 
     .stage-time {
       font-size: 0.85rem;
-      color: #555;
+      color: #aaa;
       text-align: center;
       min-height: 0.8em;
       margin-top: 0.15rem;
@@ -148,6 +135,55 @@
     .stage.active .stage-time { color: #00ff99; }
     .stage.failed .stage-time { color: #ff444480; }
 
+    .stage-badge {
+      font-size: 0.55rem;
+      color: #888;
+      text-align: center;
+      min-height: 0.7em;
+      margin-top: 0.1rem;
+      letter-spacing: 0;
+      font-variant-numeric: tabular-nums;
+    }
+    .stage.done .stage-badge   { color: #00ff9960; }
+    .stage.failed .stage-badge { color: #ff444450; }
+
+    .story-section {
+      padding: 0.5rem 1.5rem 0.6rem;
+      border-top: 1px solid #1a1a1a;
+    }
+    .story-text {
+      font-size: 0.75rem;
+      color: #aaa;
+      line-height: 1.5;
+      font-style: italic;
+      margin-bottom: 0.35rem;
+    }
+    .story-ac {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .story-ac li {
+      font-size: 0.68rem;
+      color: #aaa;
+      padding: 0.05rem 0;
+      line-height: 1.4;
+    }
+    .story-ac li::before {
+      content: "· ";
+      color: #00ff9980;
+    }
+
+    .status-detail {
+      padding: 0 1.5rem 0.75rem;
+      font-size: 0.7rem;
+      color: #aaa;
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .timer-bar {
       padding: 0.35rem 1.5rem 0.5rem;
       font-size: 0.72rem;
@@ -156,16 +192,16 @@
       gap: 0.4rem;
       border-top: 1px solid #1a1a1a;
     }
-    .timer-icon  { color: #2a2a2a; font-size: 0.7rem; }
-    .timer-total { color: #00ff9960; font-variant-numeric: tabular-nums; }
-    .timer-label { color: #2a2a2a; font-size: 0.65rem; }
-    .timer-sep   { color: #222; margin: 0 0.2rem; }
-    .token-count { color: #4488ff55; font-size: 0.7rem; font-variant-numeric: tabular-nums; }
+    .timer-icon  { color: #aaa; font-size: 0.7rem; }
+    .timer-total { color: #00ff99; font-variant-numeric: tabular-nums; }
+    .timer-label { color: #aaa; font-size: 0.65rem; }
+    .timer-sep   { color: #555; margin: 0 0.2rem; }
+    .token-count { color: #4488ffaa; font-size: 0.7rem; font-variant-numeric: tabular-nums; }
 
     .work-status {
       padding: 0.75rem 1.5rem 1.25rem;
       font-size: 0.8rem;
-      color: #555;
+      color: #aaa;
       border-top: 1px solid #1e1e1e;
     }
     .status-dot {
@@ -188,6 +224,7 @@
       border-radius: 5px;
       font-size: 0.82rem;
       line-height: 1.5;
+      overflow: hidden;
     }
     .hermes-verdict .label {
       font-size: 0.7rem;
@@ -207,6 +244,81 @@
       color: #ff6666;
     }
 
+    .sprint-backlog {
+      width: 100%;
+      max-width: 620px;
+      margin-top: 1rem;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .backlog-header {
+      padding: 0.5rem 1.25rem;
+      border-bottom: 1px solid #2a2a2a;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #aaa;
+    }
+    .backlog-list {
+      padding: 0.4rem 0;
+    }
+    .backlog-row {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.35rem 1.25rem;
+    }
+    .backlog-row:hover        { background: #222; }
+    .backlog-row.active-row   { background: #0d1f13; border-left: 2px solid #00ff9940; padding-left: calc(1.25rem - 2px); }
+    .backlog-selected         { background: #222; border-left: 2px solid #3a3a3a; padding-left: calc(1.25rem - 2px); }
+    .backlog-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: #333;
+      border: 1px solid #444;
+    }
+    .backlog-dot.active {
+      background: #00ff99;
+      border-color: #00ff99;
+      animation: pulse-dot 1.2s ease-in-out infinite;
+    }
+    .backlog-dot.done   { background: #00ff9960; border-color: #00ff9960; }
+    .backlog-dot.failed  { background: #ff4444; border-color: #ff4444; }
+    .backlog-dot.rejected { background: #ff8800; border-color: #ff8800; }
+.backlog-idea {
+      font-size: 0.78rem;
+      color: #aaa;
+      line-height: 1.4;
+    }
+    .backlog-idea.active { color: #00ff99; }
+    .backlog-idea.done   { color: #aaa; }
+    .backlog-status {
+      margin-left: auto;
+      font-size: 0.62rem;
+      color: #555;
+      flex-shrink: 0;
+    }
+    .backlog-status.done     { color: #00ff9970; }
+    .backlog-status.failed   { color: #ff444480; }
+    .backlog-status.rejected { color: #ff880080; }
+    .backlog-status.active   { color: #00ff9990; }
+
+    .backlog-retro {
+      padding: 0.4rem 1.25rem;
+      border-top: 1px solid #2a2a2a;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      cursor: pointer;
+      font-size: 0.78rem;
+    }
+    .backlog-retro:hover { background: #222; }
+    .backlog-retro.backlog-selected { background: #222; border-left: 2px solid #3a3a3a; padding-left: calc(1.25rem - 2px); color: #aaa; }
+
     .log-panel {
       background: #111;
       border: 1px solid #1e1e1e;
@@ -218,11 +330,11 @@
     }
     .log-panel-header {
       padding: 0.5rem 1.25rem;
-      border-bottom: 1px solid #1a1a1a;
-      font-size: 0.65rem;
+      border-bottom: 1px solid #2a2a2a;
+      font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: #333;
+      color: #aaa;
       flex-shrink: 0;
     }
     .log-output {
@@ -235,18 +347,29 @@
       max-height: 70vh;
     }
     .log-empty {
-      color: #2a2a2a;
+      color: #888;
       font-size: 0.8rem;
       padding: 1rem 0;
       text-align: center;
     }
-    .log-line     { color: #888; white-space: pre-wrap; }
+    .log-line     { color: #aaa; white-space: pre-wrap; }
     .log-pass     { color: #00ff9990; }
     .log-fail     { color: #ff444490; }
     .log-approve  { color: #00ff99; }
     .log-reject   { color: #ff4444; }
-    .log-deploy   { color: #e0e0e0; }
+    .log-deploy   { color: #aaa; }
     .log-section  { color: #00ff9940; }
+    .log-stage-header {
+      color: #00ff99;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-top: 0.9rem;
+      margin-bottom: 0.1rem;
+      padding-top: 0.45rem;
+      border-top: 1px solid #00ff9930;
+    }
+    .log-stage-header:first-child { margin-top: 0.2rem; border-top: none; }
   </style>
 </head>
 <body>
@@ -260,18 +383,33 @@
     <a href="workflow.html">Workflow</a>
     <a href="notes.html">Notes</a>
     <a href="health.html">Health</a>
+    <a href="prompts.html">Prompts</a>
   </nav>
 
   <div class="layout">
-    <div class="left-pane" id="root"></div>
+    <div class="left-pane">
+      <div id="root"></div>
+      <div id="sprint-backlog" class="sprint-backlog" style="display:none;">
+        <div class="backlog-header">Active Sprint</div>
+        <div class="backlog-list" id="backlog-list"></div>
+        <div class="backlog-retro" id="retro-row" onclick="selectRetro()">
+          <div class="backlog-dot" id="retro-dot"></div>
+          <span class="backlog-idea" id="retro-label">Sprint Retrospective</span>
+          <span class="backlog-status" id="retro-status" style="margin-left:auto;"></span>
+        </div>
+        <div id="sprint-complete-row" style="display:none;padding:0.45rem 1.25rem;border-top:1px solid #2a2a2a;font-size:0.72rem;color:#00ff99;letter-spacing:0.12em;text-transform:uppercase;text-align:center;">✓ Sprint Complete</div>
+      </div>
+    </div>
     <div class="right-pane log-panel" id="log-panel">
-      <div class="log-panel-header">Agent Activity Stream</div>
+      <div class="log-panel-header" style="display:flex;justify-content:space-between;align-items:center;">
+        <span id="log-panel-title">Agent Activity Stream</span>
+        <a id="log-live-link" href="#" onclick="selectItem(null);return false;" style="display:none;font-size:0.65rem;color:#555;text-decoration:none;">← live</a>
+      </div>
       <div class="log-output" id="log-output">
         <div class="log-empty" id="log-empty">Waiting for sprint…</div>
       </div>
     </div>
   </div>
-  <button id="clear-btn" onclick="clearActive()">✕ clear stuck state</button>
 
   <script>
     const STAGES = ["pull", "story", "code", "test", "code_review", "ac_check", "deploy"];
@@ -287,6 +425,23 @@
       done:        "Deployed successfully.",
       rejected:    "Hermes rejected this story.",
       failed:      "An error occurred — see activity stream for details.",
+    };
+
+    const RETRO_STAGES = ['retro', 'sprint_coding_wisdom', 'sprint_ac_wisdom', 'coding_wisdom', 'ac_wisdom'];
+    const RETRO_LABELS = {
+      retro:                'Retro',
+      sprint_coding_wisdom: 'Sprint Coding',
+      sprint_ac_wisdom:     'Sprint AC',
+      coding_wisdom:        'Coding Wisdom',
+      ac_wisdom:            'AC Wisdom',
+    };
+    const RETRO_STATUS = {
+      retro:                'Generating retrospective…',
+      sprint_coding_wisdom: 'Extracting sprint coding wisdom…',
+      sprint_ac_wisdom:     'Extracting sprint AC wisdom…',
+      coding_wisdom:        'Synthesizing coding wisdom…',
+      ac_wisdom:            'Synthesizing AC wisdom…',
+      retro_done:           'Sprint complete.',
     };
 
     let lastStageKey = undefined;
@@ -306,6 +461,11 @@
         return;
       }
 
+      if (data.item_id === '__retro__') {
+        renderRetroCard(data, root);
+        return;
+      }
+
       const isRejected = data.stage === "rejected";
       const isFailed   = data.stage === "failed";
       const isDone     = data.stage === "done";
@@ -317,44 +477,68 @@
       const dots = STAGES.map((s, i) => {
         let cls = i < stageIdx ? "done" : i === stageIdx ? "active" : "";
         if ((isRejected || isFailed) && i === stageIdx) cls = "failed";
+        let badge = "";
+        if (s === "test" && data.test_pass_count !== undefined && (cls === "done" || cls === "failed")) {
+          badge = `${data.test_pass_count}/${data.test_total}`;
+        } else if (s === "code_review" || s === "ac_check") {
+          if (cls === "done") badge = "✓";
+          else if (cls === "failed") badge = "✗";
+        }
         return `<div class="stage ${cls}">
           <div class="stage-dot"></div>
           <div class="stage-label">${LABELS[s]}</div>
           <div class="stage-time" id="stime-${s}"></div>
+          <div class="stage-badge">${badge}</div>
         </div>`;
       }).join("");
 
-      let hermesHtml = "";
+      let hermesContent = '';
+      let hermesClass = '';
       if (isFailed && data.error) {
-        hermesHtml = `
-          <div class="hermes-verdict hermes-reject">
-            <span class="label">✗ Failed</span>
-            ${escHtml(data.error)}
-          </div>`;
+        hermesClass = 'hermes-reject';
+        hermesContent = `<span class="label">✗ Failed</span>${escHtml(data.error)}`;
       } else if (data.hermes_verdict) {
         const approved = data.hermes_verdict === "approve";
-        hermesHtml = `
-          <div class="hermes-verdict ${approved ? "hermes-approve" : "hermes-reject"}">
-            <span class="label">Hermes ${approved ? "✓ Approved" : "✗ Rejected"}</span>
-            ${escHtml(data.ac_check_reason || data.code_review_reason || "")}
-          </div>`;
+        hermesClass = approved ? 'hermes-approve' : 'hermes-reject';
+        hermesContent = `<span class="label">Hermes ${approved ? "✓ Approved" : "✗ Rejected"}</span>${escHtml(data.ac_check_reason || data.code_review_reason || "")}`;
       }
+      const hermesHtml = `<div class="hermes-verdict ${hermesClass}" style="min-height:4.5rem;${hermesContent ? '' : 'visibility:hidden'}">${hermesContent || ''}</div>`;
 
       const spinning = !isRejected && !isFailed && !isDone;
       const totalTok = (data.tokens_in || 0) + (data.tokens_out || 0);
       const tokenHtml = totalTok > 0
         ? `<span class="timer-sep">·</span><span class="token-count">↑${fmtTokens(data.tokens_in)} ↓${fmtTokens(data.tokens_out)} tok</span>`
         : '';
+
+      const hasStory = data.story || (data.acceptance_criteria && data.acceptance_criteria.length > 0);
+      const storyText = data.story ? `<div class="story-text">${escHtml(data.story)}</div>` : "";
+      const acItems = (data.acceptance_criteria || []).map(ac => `<li>${escHtml(ac)}</li>`).join("");
+      const storyHtml = `<div class="story-section" style="min-height:6.5rem;${hasStory ? '' : 'visibility:hidden'}">${storyText}${acItems ? `<ul class="story-ac">${acItems}</ul>` : ""}</div>`;
+
+      const isCommitMsg = data.stage === "done" && data.stage_detail;
+      const stageDetailContent = data.stage_detail
+        ? `${isCommitMsg ? '<span style="color:#00ff9950;margin-right:0.4rem;">commit</span>' : ""}${escHtml(data.stage_detail)}`
+        : '';
+      const stageDetailHtml = `<div class="status-detail" style="min-height:1.4rem;${stageDetailContent ? '' : 'visibility:hidden'}">${stageDetailContent || ''}</div>`;
+
       root.innerHTML = `
         <div class="work-card">
-          <div class="work-header">
-            <div class="work-label">Active Work</div>
+          <div class="work-header" style="display:flex;justify-content:space-between;align-items:flex-start;">
             <div>
-              <span class="work-id">#${data.item_id}</span>
-              <span class="work-idea">${escHtml(data.idea)}</span>
+              <div class="work-label">Active Work</div>
+              <div>
+                <span class="work-idea">${escHtml(data.idea)}</span>
+              </div>
             </div>
+            <button id="slow-mode-btn" onclick="toggleSlowMode()" style="
+              font-family:monospace;font-size:0.65rem;
+              background:none;border:1px solid #222;border-radius:4px;
+              padding:0.2rem 0.5rem;cursor:pointer;color:#aaa;
+              white-space:nowrap;margin-top:0.1rem;
+            ">⏱ slow: off</button>
           </div>
           <div class="pipeline">${dots}</div>
+          ${storyHtml}
           <div class="timer-bar">
             <span class="timer-icon">⏱</span>
             <span class="timer-total" id="timer-total">—</span>
@@ -365,6 +549,45 @@
           <div class="work-status">
             ${spinning ? '<span class="status-dot"></span>' : ""}${STATUS_TEXT[data.stage] || data.stage}
           </div>
+          ${stageDetailHtml}
+        </div>`;
+      currentTimerData = data;
+      updateTimers();
+      updateSlowBtn(slowModeOn);
+    }
+
+    function renderRetroCard(data, root) {
+      const isDone  = data.stage === 'retro_done';
+      const stageIdx = isDone ? RETRO_STAGES.length : RETRO_STAGES.indexOf(data.stage);
+      const dots = RETRO_STAGES.map((s, i) => {
+        const cls = i < stageIdx ? 'done' : i === stageIdx ? 'active' : '';
+        return `<div class="stage ${cls}">
+          <div class="stage-dot"></div>
+          <div class="stage-label">${RETRO_LABELS[s]}</div>
+          <div class="stage-time" id="rstime-${s}"></div>
+          <div class="stage-badge"></div>
+        </div>`;
+      }).join('');
+      const spinning = !isDone;
+      const statusText = RETRO_STATUS[data.stage] || 'Running…';
+      root.innerHTML = `
+        <div class="work-card">
+          <div class="work-header">
+            <div class="work-label">Active Work</div>
+            <div><span class="work-idea">Retrospective · Wisdom</span></div>
+          </div>
+          <div class="pipeline">${dots}</div>
+          <div style="min-height:6.5rem;visibility:hidden"></div>
+          <div class="timer-bar">
+            <span class="timer-icon">⏱</span>
+            <span class="timer-total" id="timer-total">—</span>
+            <span class="timer-label">total</span>
+          </div>
+          <div style="min-height:4.5rem;visibility:hidden"></div>
+          <div class="work-status">
+            ${spinning ? '<span class="status-dot"></span>' : ''}${statusText}
+          </div>
+          <div style="min-height:1.4rem;visibility:hidden"></div>
         </div>`;
       currentTimerData = data;
       updateTimers();
@@ -374,13 +597,7 @@
       return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
     }
 
-    async function clearActive() {
-      await fetch('/active/clear', { method: 'POST' });
-      lastStageKey = undefined;
-      lastActiveData = null;
-      render({ item_id: null });
-      document.getElementById('clear-btn').style.display = 'none';
-    }
+
 
     function logColorClass(line) {
       if (line.startsWith('PASS'))                             return 'log-pass';
@@ -396,6 +613,7 @@
     }
 
     async function pollLog() {
+      if (selectedItemId) return;
       try {
         const res = await fetch('/agent-log');
         const data = await res.json();
@@ -403,8 +621,11 @@
         const out   = document.getElementById('log-output');
         const empty = document.getElementById('log-empty');
 
+        latestLogLines = lines;
+
         if (lines.length === 0) {
           out.innerHTML = '<div class="log-empty" id="log-empty">Waiting for sprint…</div>';
+          if (lastLogCount > 0) pollSprintBacklog();
           lastLogCount = 0;
           return;
         }
@@ -412,9 +633,48 @@
         if (empty) empty.remove();
 
         if (lines.length !== lastLogCount) {
-          if (lines.length < lastLogCount) out.innerHTML = '';
+          if (lines.length < lastLogCount) {
+            out.innerHTML = '';
+            lastInjectedSection = null;
+            lastLogCount = 0;
+          }
           const newLines = lines.slice(lastLogCount);
           newLines.forEach(line => {
+            if (line === '=== SPRINT WISDOM ===') {
+              if (lastInjectedSection !== 'sprint_wisdom') {
+                out.appendChild(makeStageHeader('sprint_wisdom'));
+                lastInjectedSection = 'sprint_wisdom';
+              }
+              return;
+            }
+            if (line === '=== USER STORY ===') {
+              if (lastInjectedSection !== 'story') {
+                out.appendChild(makeStageHeader('story'));
+                lastInjectedSection = 'story';
+              }
+              return;
+            }
+            if (line === '=== RETROSPECTIVE ===') {
+              out.innerHTML = '';
+              lastInjectedSection = null;
+              pollSprintBacklog();
+              out.appendChild(makeStageHeader('retrospective'));
+              lastInjectedSection = 'retrospective';
+              return;
+            }
+            if (line === '=== WISDOM ===') {
+              if (lastInjectedSection !== 'wisdom') {
+                out.appendChild(makeStageHeader('wisdom'));
+                lastInjectedSection = 'wisdom';
+              }
+              return;
+            }
+            if (line === '=== SPRINT COMPLETE ===') return;
+            const section = detectLineSection(line);
+            if (section && section !== lastInjectedSection) {
+              out.appendChild(makeStageHeader(section));
+              lastInjectedSection = section;
+            }
             const div = document.createElement('div');
             div.className = 'log-line ' + logColorClass(line);
             div.textContent = line;
@@ -438,13 +698,14 @@
 
         if (stageKey !== lastStageKey) {
           lastStageKey = stageKey;
-          if (display) {
-            render(display);
-            // only show clear button for a live (not cached) active item
-            document.getElementById('clear-btn').style.display = data.item_id ? 'block' : 'none';
-          } else {
-            render({ item_id: null });
+          if (!selectedItemId) {
+            if (display) {
+              render(display);
+            } else {
+              render({ item_id: null });
+            }
           }
+          pollSprintBacklog();
         }
       } catch (e) {}
     }
@@ -470,27 +731,333 @@
       const now = Date.now() / 1000;
       const st = currentTimerData.stage_times;
       const started = currentTimerData.started;
-      const cap = st["done"] || now;
+      const isRetro = currentTimerData.item_id === '__retro__';
+      const stages  = isRetro ? RETRO_STAGES : STAGES;
+      const prefix  = isRetro ? 'rstime-' : 'stime-';
+      const terminalTime = isRetro ? st['retro_done'] : (st["done"] || st["rejected"] || st["failed"]);
+      const cap = terminalTime || now;
       const totalEl = document.getElementById('timer-total');
       if (totalEl && started) totalEl.textContent = fmtSecs(cap - started);
-      STAGES.forEach((s, i) => {
-        const el = document.getElementById('stime-' + s);
+      stages.forEach((s, i) => {
+        const el = document.getElementById(prefix + s);
         if (!el) return;
         if (!st[s]) { el.textContent = ''; return; }
         let endTime = null;
-        for (let j = i + 1; j < STAGES.length; j++) {
-          if (st[STAGES[j]]) { endTime = st[STAGES[j]]; break; }
+        for (let j = i + 1; j < stages.length; j++) {
+          if (st[stages[j]]) { endTime = st[stages[j]]; break; }
         }
-        if (!endTime) endTime = st["done"] || null;
+        if (!endTime) endTime = terminalTime || null;
         el.textContent = fmtSecs((endTime || now) - st[s]);
       });
     }
 
+    let selectedItemId = null;
+    let lastInjectedSection = null;
+    let latestLogLines = [];
+
+    const STAGE_SECTION_LABELS = {
+      agent_response: 'Agent Response',
+      sprint_wisdom:  'Sprint Wisdom',
+      story:          'Story',
+      code:           'Code',
+      test:           'Test (DoD)',
+      code_review:    'Code Review',
+      ac_check:       'AC Check',
+      deploy:         'Deploy',
+      retrospective:  'Retrospective',
+      wisdom:         'Wisdom',
+    };
+
+    function detectLineSection(line) {
+      if (line === 'Calling agent...') return 'agent_response';
+      if (line === '=== SPRINT WISDOM ===') return 'sprint_wisdom';
+      if (line === '=== USER STORY ===') return 'story';
+      if (line === '=== RETROSPECTIVE ===') return 'retrospective';
+      if (line === '=== WISDOM ===') return 'wisdom';
+      if (line.startsWith('@@') ||
+          (line.startsWith('+') && !line.startsWith('+++')) ||
+          (line.startsWith('-') && !line.startsWith('---'))) return 'code';
+      if (line.startsWith('PASS ') || line.startsWith('FAIL ')) return 'test';
+      if (/hermes.*code.?review/i.test(line)) return 'code_review';
+      if (/hermes.*ac.?check/i.test(line)) return 'ac_check';
+      if (line.startsWith('Deployed:') || line.startsWith('Live at')) return 'deploy';
+      return null;
+    }
+
+    function makeStageHeader(section) {
+      const div = document.createElement('div');
+      div.className = 'log-stage-header';
+      div.textContent = STAGE_SECTION_LABELS[section] || section;
+      return div;
+    }
+
+    async function pollSprintBacklog() {
+      try {
+        const res = await fetch('/sprint/backlog');
+        const data = await res.json();
+        const items = data.items || [];
+        const panel = document.getElementById('sprint-backlog');
+        const list  = document.getElementById('backlog-list');
+        if (items.length === 0) { panel.style.display = 'none'; return; }
+        panel.style.display = 'block';
+        const retroRow = document.getElementById('retro-row');
+        if (retroRow) retroRow.classList.toggle('backlog-selected', selectedItemId === '__retro__');
+        try {
+          const rr = await fetch('/sprint/retro');
+          const retro = await rr.json();
+          const hasDone = retro && retro.summary;
+          const allTerminal = items.length > 0 && items.every(item =>
+            ['done', 'failed', 'rejected'].includes(item.status)
+          );
+          const sprintComplete = latestLogLines.includes('=== SPRINT COMPLETE ===');
+          const retroIsActive = lastActiveData && lastActiveData.item_id === '__retro__';
+          const retroRunning = allTerminal && retroIsActive && (!hasDone || !sprintComplete);
+          const retroDone    = allTerminal && hasDone && sprintComplete;
+          const dot    = document.getElementById('retro-dot');
+          const label  = document.getElementById('retro-label');
+          const status = document.getElementById('retro-status');
+          const state  = retroDone ? 'done' : retroRunning ? 'active' : '';
+          if (dot)    dot.className    = 'backlog-dot'   + (state ? ' ' + state : '');
+          if (label)  label.className  = 'backlog-idea'  + (state ? ' ' + state : '');
+          if (status) { status.className = 'backlog-status' + (state ? ' ' + state : ''); status.textContent = retroDone ? 'done' : retroRunning ? 'running' : 'pending'; }
+
+          const completeRow = document.getElementById('sprint-complete-row');
+          if (completeRow) completeRow.style.display = retroDone ? 'block' : 'none';
+        } catch(e) {}
+        const activeId = lastActiveData ? lastActiveData.item_id : null;
+        list.innerHTML = items.map(item => {
+          const isActive = item.id === activeId && activeId &&
+                           !['done','rejected','failed'].includes(item.status) &&
+                           lastActiveData && !['done','rejected','failed'].includes(lastActiveData.stage);
+          const st = isActive ? 'active' : item.status;
+          const label = isActive ? 'in progress' : item.status;
+          const sel = item.id === selectedItemId;
+          return `<div class="backlog-row${isActive ? ' active-row' : ''}${sel ? ' backlog-selected' : ''}" onclick="selectItem('${escHtml(item.id)}')" style="cursor:pointer;">
+            <div class="backlog-dot ${st}"></div>
+            <span class="backlog-idea ${st}">${escHtml(item.idea)}</span>
+            <span class="backlog-status ${st}">${label}</span>
+          </div>`;
+        }).join('');
+      } catch(e) {}
+    }
+
+    function itemToActiveData(item) {
+      const stageTimes = item.stage_times || {};
+      let lastStage = null;
+      STAGES.forEach(s => { if (stageTimes[s] !== undefined) lastStage = s; });
+      const testResults = item.test_results || [];
+      return {
+        item_id:             item.id,
+        idea:                item.idea,
+        stage:               item.status,
+        started:             item.started,
+        stage_times:         stageTimes,
+        tokens_in:           item.tokens_in,
+        tokens_out:          item.tokens_out,
+        story:               item.story,
+        acceptance_criteria: item.acceptance_criteria,
+        hermes_verdict:      item.hermes_verdict,
+        code_review_verdict: item.code_review_verdict,
+        code_review_reason:  item.code_review_reason,
+        ac_check_verdict:    item.ac_check_verdict,
+        ac_check_reason:     item.ac_check_reason,
+        stage_detail:        item.summary || '',
+        error:               item.error   || '',
+        test_pass_count:     testResults.filter(t => t.status === 'pass').length,
+        test_total:          testResults.length,
+        rejected_at:         item.status === 'rejected' ? lastStage : undefined,
+        failed_at:           item.status === 'failed'   ? lastStage : undefined,
+      };
+    }
+
+    async function selectItem(id) {
+      selectedItemId = id;
+      const title    = document.getElementById('log-panel-title');
+      const liveLink = document.getElementById('log-live-link');
+      const out      = document.getElementById('log-output');
+
+      if (!id) {
+        title.textContent = 'Agent Activity Stream';
+        liveLink.style.display = 'none';
+        lastLogCount = 0;
+        lastInjectedSection = null;
+        out.innerHTML = '';
+        const retroRow = document.getElementById('retro-row');
+        if (retroRow) retroRow.classList.remove('backlog-selected');
+        lastStageKey = null;
+        render(lastActiveData || { item_id: null });
+        pollLog();
+        pollSprintBacklog();
+        return;
+      }
+
+      try {
+        const res  = await fetch(`/sprint/item/${encodeURIComponent(id)}`);
+        const item = await res.json();
+        title.textContent = item.idea || id;
+        liveLink.style.display = 'inline';
+        out.innerHTML = renderItemHistory(item);
+        out.scrollTop = 0;
+        render(itemToActiveData(item));
+      } catch(e) {}
+      pollSprintBacklog();
+    }
+
+    function renderItemHistory(item) {
+      const lines = [];
+      const add = (text, cls) => lines.push(`<div class="log-line ${cls || ''}">${escHtml(text)}</div>`);
+      const sec = label => lines.push(`<div class="log-stage-header">${escHtml(label)}</div>`);
+
+      if (item.story) {
+        sec('Story');
+        add(item.story);
+        (item.acceptance_criteria || []).forEach(ac => add('· ' + ac));
+      }
+
+      if (item.diff) {
+        sec('Diff');
+        item.diff.split('\n').forEach(line => {
+          let cls = 'log-line';
+          if (line.startsWith('+') && !line.startsWith('+++')) cls += ' log-pass';
+          else if (line.startsWith('-') && !line.startsWith('---')) cls += ' log-fail';
+          else if (line.startsWith('@@')) cls += ' log-section';
+          lines.push(`<div class="${cls}">${escHtml(line)}</div>`);
+        });
+      }
+
+      if (item.test_results && item.test_results.length > 0) {
+        sec('Tests');
+        item.test_results.forEach(t => {
+          const cls = t.status === 'pass' ? 'log-pass' : 'log-fail';
+          add((t.status === 'pass' ? 'PASS ' : 'FAIL ') + t.message, cls);
+        });
+      }
+
+      if (item.code_review_reason) {
+        sec('Code Review');
+        const cls = item.code_review_verdict === 'approve' ? 'log-approve' : 'log-reject';
+        add((item.code_review_verdict === 'approve' ? 'Hermes: APPROVE — ' : 'Hermes: REJECT — ') + item.code_review_reason, cls);
+      }
+
+      if (item.ac_check_reason) {
+        sec('AC Check');
+        const cls = item.ac_check_verdict === 'approve' ? 'log-approve' : 'log-reject';
+        add((item.ac_check_verdict === 'approve' ? 'Hermes: APPROVE — ' : 'Hermes: REJECT — ') + item.ac_check_reason, cls);
+      }
+
+      if (item.deployed) {
+        sec('Deploy');
+        add('Deployed: ' + item.deployed, 'log-deploy');
+      }
+
+      if (item.sprint_wisdom) {
+        sec('Sprint Wisdom');
+        item.sprint_wisdom.split('\n').forEach(line => {
+          const cls = line.startsWith('[fail]') ? 'log-fail' :
+                      line.startsWith('[ok]') ? 'log-pass' : '';
+          add(line, cls);
+        });
+      }
+
+      if (lines.length === 0) {
+        return '<div class="log-empty">No history yet.</div>';
+      }
+      return lines.join('');
+    }
+
+    async function selectRetro() {
+      selectedItemId = '__retro__';
+      const title    = document.getElementById('log-panel-title');
+      const liveLink = document.getElementById('log-live-link');
+      const out      = document.getElementById('log-output');
+      document.getElementById('retro-row').classList.add('backlog-selected');
+      if (lastActiveData && lastActiveData.item_id === '__retro__') {
+        render(lastActiveData);
+      }
+      pollSprintBacklog();
+
+      try {
+        const retroRes = await fetch('/sprint/retro');
+        const retro = await retroRes.json();
+        title.textContent = 'Sprint Retrospective';
+        liveLink.style.display = 'inline';
+        out.innerHTML = renderRetroHistory(retro);
+        out.scrollTop = 0;
+      } catch(e) {}
+    }
+
+    function renderRetroHistory(retro) {
+      if (!retro || !retro.summary) {
+        return '<div class="log-empty">No retrospective yet.</div>';
+      }
+      const lines = [];
+      const add = (text, cls) => lines.push(`<div class="log-line ${cls || ''}">${escHtml(text)}</div>`);
+      const sec = label => lines.push(`<div class="log-stage-header">${escHtml(label)}</div>`);
+      const typeLabel = { failure_pattern: 'FAIL', success_pattern: 'PASS', improvement: 'NOTE', observation: 'OBS ' };
+      const typeCls   = { failure_pattern: 'log-fail', success_pattern: 'log-pass', improvement: 'log-line', observation: 'log-line' };
+
+      sec('Summary');
+      add(retro.summary);
+      if (retro.sprint_date) add(`Date: ${retro.sprint_date} · ${retro.items_done}/${retro.items_analyzed} done`);
+
+      const findings = retro.findings || [];
+      if (findings.length > 0) {
+        sec('Findings');
+        findings.forEach(f => {
+          const label = typeLabel[f.type] || f.type.toUpperCase();
+          add(`${label}  ${f.text}`, typeCls[f.type] || '');
+        });
+      }
+
+      const codingBullets = (retro.sprint_coding_wisdom) || [];
+      if (codingBullets.length > 0) {
+        sec('Coding Wisdom');
+        codingBullets.forEach(b => add(b));
+      }
+
+      const acBullets = (retro.sprint_ac_wisdom) || [];
+      if (acBullets.length > 0) {
+        sec('AC Wisdom');
+        acBullets.forEach(b => add(b));
+      }
+
+      return lines.join('');
+    }
+
+    async function toggleSlowMode() {
+      const res = await fetch('/slow-mode/toggle', { method: 'POST' });
+      const data = await res.json();
+      updateSlowBtn(data.enabled);
+    }
+
+    async function pollSlowMode() {
+      try {
+        const res = await fetch('/slow-mode');
+        const data = await res.json();
+        updateSlowBtn(data.enabled);
+      } catch(e) {}
+    }
+
+    let slowModeOn = false;
+
+    function updateSlowBtn(enabled) {
+      slowModeOn = enabled;
+      const btn = document.getElementById('slow-mode-btn');
+      if (!btn) return;
+      btn.textContent = enabled ? '⏱ slow: on' : '⏱ slow: off';
+      btn.style.color       = enabled ? '#ffaa00' : '#555';
+      btn.style.borderColor = enabled ? '#ffaa0060' : '#222';
+    }
+
     poll();
     pollLog();
+    pollSlowMode();
     setInterval(poll, 1500);
     setInterval(pollLog, 1500);
+    setInterval(pollSprintBacklog, 3000);
     setInterval(updateTimers, 1000);
+    setInterval(pollSlowMode, 2000);
   </script>
-</body>
+<script src="shared.js"></script></body>
 </html>
+

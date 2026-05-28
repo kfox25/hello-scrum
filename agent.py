@@ -17,6 +17,9 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import anthropic
+from dotenv import load_dotenv
+
+load_dotenv()
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -34,6 +37,8 @@ AC_WISDOM_FILE     = "ac_wisdom.json"
 SPRINT_RESULT_FILE = "sprint_result.json"
 
 _log_lines = []
+_retro_active_stage = None
+_suppress_log_writes = False
 
 def log(msg=""):
     try:
@@ -41,22 +46,24 @@ def log(msg=""):
     except OSError:
         pass  # stdout pipe closed (e.g. SSE client disconnected) — continue silently
     _log_lines.append(str(msg))
-    try:
-        with open(LOG_FILE, "w", encoding="utf-8") as f:
-            json.dump(_log_lines, f)
-    except Exception:
-        pass
+    if not _suppress_log_writes:
+        try:
+            with open(LOG_FILE, "w", encoding="utf-8") as f:
+                json.dump(_log_lines, f)
+        except Exception:
+            pass
 
 def log_lines(lines):
     for line in lines:
         print(line)
     sys.stdout.flush()
     _log_lines.extend(lines)
-    try:
-        with open(LOG_FILE, "w", encoding="utf-8") as f:
-            json.dump(_log_lines, f)
-    except Exception:
-        pass
+    if not _suppress_log_writes:
+        try:
+            with open(LOG_FILE, "w", encoding="utf-8") as f:
+                json.dump(_log_lines, f)
+        except Exception:
+            pass
 
 def clear_log():
     global _log_lines
@@ -90,6 +97,20 @@ Rules:
 - To MODIFY an existing CSS property: find the exact current declaration line (e.g. "      color: #00ff99;") and replace only that line with the new value — do NOT add a new rule
 - To ADD new CSS: find a unique nearby line inside the style block as your anchor and insert alongside it — never insert after </style>
 - Keep the page clean and minimal
+
+SCOPE DISCIPLINE — this is critical:
+- Your "replace" MUST contain everything that is in your "find". Never use a patch to delete existing code as a side effect. If you are inserting new content, your replace = (everything from find) + (your new addition). If the find contains 5 lines, the replace must contain those same 5 lines plus any new lines you are adding.
+- Make patches as small as possible. Find the single line closest to your insertion point and use that as the anchor — do not grab large blocks.
+- If the story does not ask you to remove something, do not remove it. Ever.
+- Before finalising each patch, ask yourself: "Does my replace contain every character from my find?" If no, rewrite the patch.
+
+SCOPE EXAMPLE — burned into memory:
+WRONG (this will be rejected — .other-rule was deleted as a side effect):
+  find:    "  .h1 { color: red; }\n  .other-rule { display: flex; }"
+  replace: "  .h1 { color: red; text-shadow: 0 0 10px #00ff9950; }"
+RIGHT (single-line anchor, nothing deleted):
+  find:    "  .h1 { color: red; }"
+  replace: "  .h1 { color: red; text-shadow: 0 0 10px #00ff9950; }"
 
 Respond with ONLY valid JSON — no markdown, no code blocks, no extra text:
 {
@@ -141,6 +162,18 @@ Respond with ONLY valid JSON — no markdown, no extra text:
 or
 {"verdict": "reject", "reason": "one sentence describing the specific code defect"}"""
 
+CODING_WISDOM_PROMPT = """Update these coding directives for an AI agent using new sprint findings. Incorporate new patterns, drop outdated ones. Output only directives warranted by the findings — up to 8 bullets, ≤12 words each, plain text, imperative voice, specific to HTML/CSS/JS patching. Start each with •
+
+Exclude: accessibility/WCAG concerns, sprint process advice, steps enforced by the pipeline (tests, code review, deploy). Only include actionable coding mechanics.
+
+[Current directives and new findings appended at runtime]"""
+
+AC_WISDOM_PROMPT = """Update these AC-writing directives for a scrum story writer using new outcomes. Extract principles about WHAT MAKES AC GOOD — specificity, testability, verifiability. Do NOT copy AC content as directives. Incorporate new patterns, drop outdated ones. Output only directives warranted by the outcomes — up to 8 bullets, ≤12 words each, plain text, imperative voice. Start each with •
+
+Exclude: story-specific implementation details, WCAG/accessibility concerns, anything requiring external tools to verify.
+
+[Current directives and new story outcomes appended at runtime]"""
+
 AC_CHECK_SYSTEM_PROMPT = """You are Hermes, performing an acceptance criteria check for the hello-scrum web app.
 
 Assume the code is technically correct. Evaluate only whether the implementation satisfies
@@ -157,7 +190,33 @@ or
 {"verdict": "reject", "reason": "one sentence identifying which criterion was not met"}"""
 
 
+# ── Slow mode ────────────────────────────────────────────────────────────────
+
+SLOW_MODE_FILE = "slow_mode.json"
+SLOW_MODE_PAUSE = 3  # seconds to pause between stages
+
+def slow_mode_enabled():
+    try:
+        with open(SLOW_MODE_FILE, encoding="utf-8") as f:
+            return json.load(f).get("enabled", False)
+    except Exception:
+        return False
+
+def slow_pause(stage_name):
+    if not slow_mode_enabled():
+        return
+    log(f"[slow mode] pausing at {stage_name}…")
+    for _ in range(SLOW_MODE_PAUSE):
+        if not slow_mode_enabled():
+            log("[slow mode] toggled off — continuing")
+            return
+        import time as _time
+        _time.sleep(1)
+
+
 # ── Active status ─────────────────────────────────────────────────────────────
+
+_CARRY_FORWARD_KEYS = {"story", "acceptance_criteria", "change_summary", "test_pass_count", "test_total"}
 
 def write_active(item, stage, **extra):
     now = datetime.now().timestamp()
@@ -169,6 +228,9 @@ def write_active(item, stage, **extra):
     if existing.get("item_id") == item["id"]:
         stage_times = existing.get("stage_times", {})
         started     = existing.get("started", now)
+        for key in _CARRY_FORWARD_KEYS:
+            if key in existing and key not in extra:
+                extra[key] = existing[key]
     else:
         stage_times = {}
         started     = now
@@ -189,6 +251,21 @@ def write_active(item, stage, **extra):
 def clear_active():
     with open(ACTIVE_FILE, "w", encoding="utf-8") as f:
         json.dump({"item_id": None, "stage": None}, f)
+
+
+def _write_retro_active(stage):
+    global _retro_active_stage
+    _retro_active_stage = stage
+    try:
+        with open(ACTIVE_FILE, encoding="utf-8") as f:
+            existing = json.load(f)
+    except Exception:
+        existing = {}
+    stage_times = existing.get("stage_times", {}) if existing.get("item_id") == "__retro__" else {}
+    started     = existing.get("started", datetime.now().timestamp()) if existing.get("item_id") == "__retro__" else datetime.now().timestamp()
+    stage_times[stage] = datetime.now().timestamp()
+    with open(ACTIVE_FILE, "w", encoding="utf-8") as f:
+        json.dump({"item_id": "__retro__", "stage": stage, "started": started, "stage_times": stage_times}, f)
 
 
 # ── Backlog ───────────────────────────────────────────────────────────────────
@@ -215,9 +292,9 @@ def get_next_item(backlog, sprint_only=False):
 # ── App files ─────────────────────────────────────────────────────────────────
 
 def read_app_files():
-    with open(INDEX_FILE, encoding="utf-8") as f:
+    with open(INDEX_FILE, encoding="utf-8-sig") as f:
         index_html = f.read()
-    with open(VERSION_FILE, encoding="utf-8") as f:
+    with open(VERSION_FILE, encoding="utf-8-sig") as f:
         version_json = f.read()
     return index_html, version_json
 
@@ -241,13 +318,22 @@ def get_ct_timestamp():
 
 # ── Worker agent ──────────────────────────────────────────────────────────────
 
-def call_agent(idea, story, acceptance_criteria, index_html, version_json, timestamp, retro_context=None):
+def call_agent(idea, story, acceptance_criteria, index_html, version_json, timestamp, retro_context=None, scope_creep_feedback=None):
     context_parts = []
     wisdom = load_wisdom()
     if wisdom:
         context_parts.append("CODING WISDOM:\n" + "\n".join(f"- {b}" for b in wisdom))
     if retro_context:
         context_parts.append("SPRINT WISDOM:\n" + retro_context)
+    if scope_creep_feedback:
+        context_parts.append(
+            "SCOPE CREEP REJECTION — YOUR PREVIOUS PATCHES WERE REJECTED:\n"
+            f"{scope_creep_feedback}\n\n"
+            "Fix your patches:\n"
+            "1. Each 'find' must be ONE LINE ONLY — the single line you are inserting after or modifying.\n"
+            "2. Never include any CSS rule or JS block in 'find' that you are not directly changing.\n"
+            "3. 'replace' must contain EVERY character from 'find' plus your new addition."
+        )
     context_section = ("\n\n" + "\n\n".join(context_parts)) if context_parts else ""
 
     version_json = strip_changelog_for_prompt(version_json)
@@ -347,14 +433,53 @@ def apply_changes(response_text, timestamp):
     if text.startswith("```"):
         lines = text.split("\n")
         text = "\n".join(lines[1:-1])
+    elif not text.startswith("{"):
+        m = re.search(r'```(?:json)?\s*\n(.*?)```', text, re.DOTALL)
+        if m:
+            text = m.group(1).strip()
 
     data = json.loads(text)
 
-    with open(INDEX_FILE, encoding="utf-8") as f:
+    with open(INDEX_FILE, encoding="utf-8-sig") as f:
         content = f.read()
+
+    pre_patch_lf = len(content.replace('\r\n', '\n'))
+
+    # Validate all patches before applying any — catch scope creep before touching the file.
+    # Two guards:
+    # 1. find block must be small (forces minimal anchors, prevents grabbing large multi-rule blocks)
+    # 2. replace must have >= lines as find (prevents deletions within the allowed block)
+    _MAX_FIND_LINES = 3
+    for patch in data.get("patches", []):
+        f_lines = patch["find"].splitlines()
+        r_lines = patch["replace"].splitlines()
+        if len(f_lines) > _MAX_FIND_LINES:
+            raise ValueError(
+                f"Scope creep guard: find block is {len(f_lines)} lines (max {_MAX_FIND_LINES}). "
+                f"Use a minimal single-line anchor. "
+                f"Target: {repr(patch['find'][:80])}"
+            )
+        if len(r_lines) < len(f_lines):
+            net = len(f_lines) - len(r_lines)
+            raise ValueError(
+                f"Scope creep guard: replace has {net} fewer line(s) than find "
+                f"(find={len(f_lines)}, replace={len(r_lines)}). "
+                f"Target: {repr(patch['find'][:80])}"
+            )
 
     for patch in data.get("patches", []):
         content = apply_patch(content, patch["find"], patch["replace"])
+
+    # Guard 2: patched file must not be smaller than pre-patch file minus tolerance.
+    # Compares against the file as it was before patching (not HEAD) so the check works
+    # correctly whether starting from baseline or any other state.
+    patched_lf = len(content.replace('\r\n', '\n'))
+    if patched_lf < pre_patch_lf - 50:
+        raise ValueError(
+            f"Scope creep guard: patched file ({patched_lf} chars LF) is "
+            f"{pre_patch_lf - patched_lf} chars smaller than pre-patch ({pre_patch_lf} chars LF). "
+            f"Patches deleted content outside the story scope."
+        )
 
     content = auto_update_html(content, data["version_json"], timestamp)
 
@@ -461,8 +586,12 @@ def git_push(summary):
     subprocess.run(["git", "push"], check=True)
 
 
-def rollback():
-    subprocess.run(["git", "checkout", "--", INDEX_FILE, VERSION_FILE])
+def rollback(snapshot=None):
+    if snapshot is not None:
+        with open(INDEX_FILE, "w", encoding="utf-8") as f:
+            f.write(snapshot)
+    else:
+        subprocess.run(["git", "checkout", "--", INDEX_FILE, VERSION_FILE])
 
 
 # ── Retrospective ─────────────────────────────────────────────────────────────
@@ -528,6 +657,60 @@ def generate_sprint_wisdom(processed_items):
     return _retro_to_sprint_wisdom(retro), retro
 
 
+def _sprint_coding_wisdom_bullets(findings):
+    """Generate coding wisdom bullets from this sprint's retro findings only. No file I/O."""
+    if not findings:
+        return []
+    new_text = "\n".join(f"[{f['type']}] {f['text']}" for f in findings)
+    prompt = (
+        "Extract coding directives from these sprint findings. "
+        "Output only directives warranted by the findings — up to 6 bullets, ≤12 words each, "
+        "plain text, imperative voice, specific to HTML/CSS/JS patching. Start each with •\n\n"
+        "Exclude: accessibility/WCAG concerns, sprint process advice.\n\n"
+        f"Sprint findings:\n{new_text}"
+    )
+    try:
+        msg = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=300,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return [ln.strip() for ln in msg.content[0].text.strip().splitlines() if ln.strip().startswith("•")]
+    except Exception:
+        return []
+
+
+def _sprint_ac_wisdom_bullets(sprint_items):
+    """Generate AC wisdom bullets from this sprint's story outcomes only. No file I/O."""
+    outcomes = []
+    for i in sprint_items:
+        if i.get("status") in ("done", "failed", "rejected"):
+            entry = {"idea": i.get("idea", "")[:80], "ac": i.get("acceptance_criteria", []), "status": i.get("status")}
+            reason = i.get("ac_check_reason") or i.get("code_review_reason") or ""
+            if reason and i.get("status") != "done":
+                entry["rejected_for"] = reason[:120]
+            outcomes.append(entry)
+    if not outcomes:
+        return []
+    prompt = (
+        "Extract AC-writing directives from these sprint story outcomes. "
+        "Extract principles about WHAT MAKES AC GOOD — specificity, testability, verifiability. "
+        "Output only directives warranted by the outcomes — up to 6 bullets, ≤12 words each, "
+        "plain text, imperative voice. Start each with •\n\n"
+        "Exclude: story-specific implementation details, WCAG/accessibility concerns.\n\n"
+        f"Story outcomes:\n{json.dumps(outcomes, indent=2)}"
+    )
+    try:
+        msg = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=300,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return [ln.strip() for ln in msg.content[0].text.strip().splitlines() if ln.strip().startswith("•")]
+    except Exception:
+        return []
+
+
 def load_wisdom():
     """Return list of stripped bullet strings from coding_wisdom.json, or empty list."""
     try:
@@ -546,6 +729,25 @@ def run_retro(processed_items, retro=None):
     if retro is None:
         retro = _call_retro_api(processed_items)
 
+    clear_log()
+    _write_retro_active('retro')
+    log("=== RETROSPECTIVE ===")
+    log(f"Retro: {retro.get('summary', '')}")
+    log(f"Findings: {len(retro.get('findings', []))} item(s) written to retrospective.json")
+
+    _write_retro_active('sprint_coding_wisdom')
+    log("Synthesizing sprint coding wisdom...")
+    sprint_coding = _sprint_coding_wisdom_bullets(retro.get("findings", []))
+    log(f"Sprint coding wisdom: {len(sprint_coding)} bullet(s)")
+
+    _write_retro_active('sprint_ac_wisdom')
+    log("Synthesizing sprint AC wisdom...")
+    sprint_ac = _sprint_ac_wisdom_bullets(processed_items)
+    log(f"Sprint AC wisdom: {len(sprint_ac)} bullet(s)")
+
+    retro["sprint_coding_wisdom"] = sprint_coding
+    retro["sprint_ac_wisdom"]     = sprint_ac
+
     try:
         with open(RETRO_FILE, encoding="utf-8") as f:
             store = json.load(f)
@@ -557,14 +759,16 @@ def run_retro(processed_items, retro=None):
     with open(RETRO_FILE, "w", encoding="utf-8") as f:
         json.dump(store, f, indent=2)
 
-    log(f"\nRetro: {retro.get('summary', '')}")
-    log(f"Findings: {len(retro.get('findings', []))} item(s) written to retrospective.json")
-
+    log("=== WISDOM ===")
+    _write_retro_active('coding_wisdom')
     synthesize_coding_wisdom(processed_items)
+    _write_retro_active('retro_done')
 
 
 def synthesize_ac_wisdom(sprint_items=None):
     """Update AC-writing directives incrementally from this sprint's outcomes, or bootstrap from history."""
+    if _retro_active_stage and _retro_active_stage not in ('retro_done', 'ac_wisdom'):
+        _write_retro_active('ac_wisdom')
     existing_bullets = []
     try:
         with open(AC_WISDOM_FILE, encoding="utf-8") as f:
@@ -763,45 +967,68 @@ def run_one(sprint_only=False, processed=None, sprint_wisdom=None):
         for line in sprint_wisdom.splitlines():
             log(f"  {line}")
         log("")
-    log("Calling agent...")
-    write_active(item, "story", retro_context=sprint_wisdom)
-
-    if sprint_wisdom:
         item["retro_context"] = sprint_wisdom
 
-    try:
-        response, t_in, t_out = call_agent(
-            item["idea"],
-            item.get("story", ""),
-            item.get("acceptance_criteria", []),
-            index_html, version_json, timestamp,
-            retro_context=sprint_wisdom,
-        )
-        tokens_in += t_in
-        tokens_out += t_out
-    except Exception as e:
-        log(f"Agent error: {e}")
-        item["status"] = "failed"
-        item["error"] = f"Agent error: {e}"
-        ad = write_active(item, "failed", failed_at="story", error=str(e)[:160])
-        item["started"] = ad.get("started"); item["stage_times"] = ad.get("stage_times", {})
-        save_backlog(backlog)
-        return False
-
-    log("Applying changes...")
+    slow_pause("story")
     write_active(item, "code", tokens_in=tokens_in, tokens_out=tokens_out)
-    try:
-        result = apply_changes(response, timestamp)
-    except Exception as e:
-        log(f"Parse error: {e}")
-        log(f"Raw response preview: {response[:300]}")
-        item["status"] = "failed"
-        item["error"] = f"Parse error: {e} | Response preview: {response[:200]}"
-        ad = write_active(item, "failed", failed_at="code", error=str(e)[:160], tokens_in=tokens_in, tokens_out=tokens_out)
-        item["started"] = ad.get("started"); item["stage_times"] = ad.get("stage_times", {})
-        item["tokens_in"] = tokens_in; item["tokens_out"] = tokens_out
-        save_backlog(backlog)
-        return False
+    with open(INDEX_FILE, encoding="utf-8-sig") as _f:
+        _index_snapshot = _f.read()
+
+    result = None
+    scope_creep_feedback = None
+    for _attempt in range(1, 4):  # up to 3 attempts
+        if _attempt > 1:
+            log(f"Retrying (attempt {_attempt}/3) with scope discipline feedback...")
+        write_active(item, "story",
+            story=item.get("story", ""),
+            acceptance_criteria=item.get("acceptance_criteria", []),
+            retro_context=sprint_wisdom)
+        log("Calling agent...")
+        try:
+            response, t_in, t_out = call_agent(
+                item["idea"],
+                item.get("story", ""),
+                item.get("acceptance_criteria", []),
+                index_html, version_json, timestamp,
+                retro_context=sprint_wisdom,
+                scope_creep_feedback=scope_creep_feedback,
+            )
+            tokens_in += t_in
+            tokens_out += t_out
+        except Exception as e:
+            log(f"Agent error: {e}")
+            item["status"] = "failed"
+            item["error"] = f"Agent error: {e}"
+            ad = write_active(item, "failed", failed_at="story", error=str(e)[:160])
+            item["started"] = ad.get("started"); item["stage_times"] = ad.get("stage_times", {})
+            save_backlog(backlog)
+            return False
+
+        log("Applying changes...")
+        write_active(item, "code", tokens_in=tokens_in, tokens_out=tokens_out)
+        try:
+            result = apply_changes(response, timestamp)
+            break  # patches applied successfully — exit retry loop
+        except Exception as e:
+            err_str = str(e)
+            is_scope_creep = err_str.startswith("Scope creep guard")
+            if is_scope_creep and _attempt < 3:
+                scope_creep_feedback = err_str
+                log(f"Attempt {_attempt} rejected: {err_str}")
+                continue
+            if is_scope_creep:
+                log(f"Rejected (all {_attempt} attempt(s)): {err_str}")
+                item["error"] = err_str
+            else:
+                log(f"Parse error: {e}")
+                log(f"Raw response preview: {response[:300]}")
+                item["error"] = f"Parse error: {e} | Response preview: {response[:200]}"
+            item["status"] = "failed"
+            ad = write_active(item, "failed", failed_at="code", error=str(e)[:160], tokens_in=tokens_in, tokens_out=tokens_out)
+            item["started"] = ad.get("started"); item["stage_times"] = ad.get("stage_times", {})
+            item["tokens_in"] = tokens_in; item["tokens_out"] = tokens_out
+            save_backlog(backlog)
+            return False
 
     log("=== USER STORY ===")
     log(item.get('story', ''))
@@ -816,17 +1043,22 @@ def run_one(sprint_only=False, processed=None, sprint_wisdom=None):
     if diff:
         log_lines([l for l in diff.splitlines() if l])
 
+    slow_pause("code")
     log("Running tests...")
-    write_active(item, "test", tokens_in=tokens_in, tokens_out=tokens_out)
+    write_active(item, "test", tokens_in=tokens_in, tokens_out=tokens_out,
+        stage_detail="Running test suite…",
+        change_summary=result.get("summary", ""))
     passed, stdout, stderr = run_tests()
     log(stdout.strip())
     test_results = parse_test_results(stdout)
+    test_pass_count = sum(1 for t in test_results if t["status"] == "pass")
+    test_total = len(test_results)
 
     if not passed:
         log("TESTS FAILED — rolling back")
         if stderr:
             log(stderr.strip())
-        rollback()
+        rollback(_index_snapshot)
         item["status"] = "failed"
         item["diff"] = diff
         item["test_results"] = test_results
@@ -836,8 +1068,11 @@ def run_one(sprint_only=False, processed=None, sprint_wisdom=None):
         save_backlog(backlog)
         return False
 
+    slow_pause("test")
     log("Hermes — code review...")
-    write_active(item, "code_review", tokens_in=tokens_in, tokens_out=tokens_out)
+    write_active(item, "code_review", tokens_in=tokens_in, tokens_out=tokens_out,
+        stage_detail=f"Tests: {test_pass_count}/{test_total} passed · Hermes reviewing…",
+        test_pass_count=test_pass_count, test_total=test_total)
     try:
         cr_verdict, t_in, t_out = call_code_review(item["idea"], item.get("story", ""), diff)
         tokens_in += t_in
@@ -852,7 +1087,7 @@ def run_one(sprint_only=False, processed=None, sprint_wisdom=None):
     log(f"Code review: {code_review_verdict.upper()} — {code_review_reason}")
 
     if code_review_verdict == "reject":
-        rollback()
+        rollback(_index_snapshot)
         item["status"] = "failed"
         item["diff"] = diff
         item["test_results"] = test_results
@@ -866,8 +1101,10 @@ def run_one(sprint_only=False, processed=None, sprint_wisdom=None):
         save_backlog(backlog)
         return False
 
+    slow_pause("code_review")
     log("Hermes — AC check...")
-    write_active(item, "ac_check", tokens_in=tokens_in, tokens_out=tokens_out)
+    write_active(item, "ac_check", tokens_in=tokens_in, tokens_out=tokens_out,
+        stage_detail="Code review approved · Checking AC…")
     try:
         ac_verdict, t_in, t_out = call_ac_check(
             item["idea"],
@@ -889,7 +1126,7 @@ def run_one(sprint_only=False, processed=None, sprint_wisdom=None):
     log(f"Tokens : ↑{tokens_in:,} in  ↓{tokens_out:,} out")
 
     if ac_check_verdict == "reject":
-        rollback()
+        rollback(_index_snapshot)
         item["status"] = "failed"
         item["diff"] = diff
         item["test_results"] = test_results
@@ -907,8 +1144,10 @@ def run_one(sprint_only=False, processed=None, sprint_wisdom=None):
 
     hermes_verdict = "approve"
 
+    slow_pause("ac_check")
     log("Pushing to GitHub...")
-    write_active(item, "deploy", hermes_verdict="approve", tokens_in=tokens_in, tokens_out=tokens_out)
+    write_active(item, "deploy", hermes_verdict="approve", tokens_in=tokens_in, tokens_out=tokens_out,
+        stage_detail="All checks passed · Deploying…")
     item["status"] = "done"
     item["summary"] = result["summary"]
     item["diff"] = diff
@@ -919,7 +1158,6 @@ def run_one(sprint_only=False, processed=None, sprint_wisdom=None):
     item["ac_check_verdict"] = ac_check_verdict
     item["ac_check_reason"]  = ac_check_reason
     item["hermes_verdict"] = hermes_verdict
-    save_backlog(backlog)
 
     try:
         git_push(result["summary"])
@@ -933,14 +1171,15 @@ def run_one(sprint_only=False, processed=None, sprint_wisdom=None):
         save_backlog(backlog)
         return False
 
-    ad = write_active(item, "done", hermes_verdict=hermes_verdict, tokens_in=tokens_in, tokens_out=tokens_out)
+    ad = write_active(item, "done", hermes_verdict=hermes_verdict, tokens_in=tokens_in, tokens_out=tokens_out,
+        stage_detail=result.get("summary", ""))
     item["started"]     = ad.get("started")
     item["stage_times"] = ad.get("stage_times", {})
     item["tokens_in"]   = tokens_in
     item["tokens_out"]  = tokens_out
-    save_backlog(backlog)
     log(f"\nDeployed: {timestamp}")
     log(f"Live at : {REPO_URL}")
+    save_backlog(backlog)
     return True
 
 
@@ -950,7 +1189,7 @@ def main():
         return
 
     if "--run-retro" in sys.argv:
-        # Runs in a clean subprocess after sprint exits — no SSE pipe dependency
+        # Runs in a clean subprocess after sprint exits — no SSE pipe dependency.
         try:
             with open(SPRINT_RESULT_FILE, encoding="utf-8") as f:
                 result = json.load(f)
@@ -959,8 +1198,9 @@ def main():
                 backlog = load_backlog()
                 processed = [i for i in backlog["items"] if str(i["id"]) in item_ids]
                 if processed:
-                    log("\nRunning final retrospective...")
+                    log("=== RETROSPECTIVE ===")
                     run_retro(processed)
+                    log("=== SPRINT COMPLETE ===")
         except Exception as e:
             log(f"Retro error: {e}")
         finally:
@@ -997,16 +1237,42 @@ def main():
                     log("\nGenerating sprint wisdom...")
                     try:
                         sprint_wisdom, _ = generate_sprint_wisdom(processed)
+                        if sprint_wisdom:
+                            backlog = load_backlog()
+                            last_id = processed[-1]["id"]
+                            for bi in backlog["items"]:
+                                if bi["id"] == last_id:
+                                    bi["sprint_wisdom"] = sprint_wisdom
+                                    break
+                            save_backlog(backlog)
                     except Exception as e:
                         log(f"Sprint wisdom error: {e}")
                         sprint_wisdom = None
                 else:
-                    log("\nSprint complete.")
                     break
             if not item_was_processed:
                 break
+
+        # Run retro inline — eliminates subprocess startup delay for the last-story→retro transition.
+        try:
+            with open(SPRINT_RESULT_FILE, encoding="utf-8") as f:
+                result = json.load(f)
+            item_ids = set(str(x) for x in result.get("item_ids", []))
+            if item_ids:
+                backlog = load_backlog()
+                sprint_items = [i for i in backlog["items"] if str(i["id"]) in item_ids]
+                if sprint_items:
+                    run_retro(sprint_items)
+                    log("=== SPRINT COMPLETE ===")
+        except Exception as e:
+            log(f"Retro error: {e}")
+        finally:
+            try:
+                os.remove(SPRINT_RESULT_FILE)
+            except Exception:
+                pass
     else:
-        run_one()
+        run_one(sprint_only=True)
 
 
 if __name__ == "__main__":

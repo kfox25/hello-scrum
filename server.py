@@ -18,6 +18,9 @@ import time
 from datetime import datetime
 
 import anthropic
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from flask import Flask, Response, jsonify, request, send_file
 
@@ -30,9 +33,17 @@ agent_running = False
 agent_lock = threading.Lock()
 AGENT_LOG_FILE = os.path.join(BASE, "agent_log.json")
 
+STORY_ELABORATION_PROMPT = """You are a scrum story writer. Given a raw idea, write a user story and acceptance criteria.
+
+You have access to a read_file tool. Use it when the idea references existing code elements (colors, styles, components, data structures) and you need exact values to write accurate, testable acceptance criteria. For example: if the idea mentions matching a theme color, read index.html to find the actual hex value before writing the AC.
+
+After gathering any needed context, respond with JSON only (no markdown):
+{"story": "As a <role>, I want <goal> so that <benefit>.", "acceptance_criteria": ["<criterion 1>", "<criterion 2>", "<criterion 3>"]}
+Keep the story concise. Write 3-4 acceptance criteria as short, testable statements. Use exact values from the codebase when relevant."""
+
 # On startup, clear only mid-sprint states so a restarted server doesn't show
 # a stale pulsing dot — but preserve done/failed/rejected so the panel persists.
-_KEEP_STAGES = {"done", "failed", "rejected"}
+_KEEP_STAGES = {"done", "failed", "rejected", "retro_done"}
 try:
     with open(ACTIVE_FILE, encoding="utf-8") as _f:
         _s = json.load(_f).get("stage")
@@ -49,6 +60,11 @@ def shared_css():
     return send_file(os.path.join(BASE, "shared.css"))
 
 
+@app.route("/shared.js")
+def shared_js():
+    return send_file(os.path.join(BASE, "shared.js"))
+
+
 @app.route("/")
 def index():
     return send_file(os.path.join(BASE, "board.html"))
@@ -57,6 +73,36 @@ def index():
 @app.route("/index.html")
 def app_page():
     return send_file(os.path.join(BASE, "index.html"))
+
+
+@app.route("/prompts.html")
+def prompts_page():
+    return send_file(os.path.join(BASE, "prompts.html"))
+
+
+@app.route("/prompts", methods=["GET"])
+def get_prompts():
+    import re
+    with open(os.path.join(BASE, "agent.py"), encoding="utf-8") as f:
+        agent_src = f.read()
+    with open(os.path.join(BASE, "server.py"), encoding="utf-8") as f:
+        server_src = f.read()
+
+    entries = [
+        ("SYSTEM_PROMPT",              "Worker Agent",              agent_src),
+        ("RETRO_SYSTEM_PROMPT",        "Retrospective",             agent_src),
+        ("CODE_REVIEW_SYSTEM_PROMPT",  "Hermes — Code Review",      agent_src),
+        ("AC_CHECK_SYSTEM_PROMPT",     "Hermes — AC Check",         agent_src),
+        ("STORY_ELABORATION_PROMPT",   "Story Elaboration",         server_src),
+        ("CODING_WISDOM_PROMPT",       "Coding Wisdom Synthesis",   agent_src),
+        ("AC_WISDOM_PROMPT",           "AC Wisdom Synthesis",       agent_src),
+    ]
+
+    result = []
+    for name, label, src in entries:
+        m = re.search(rf'^{name}\s*=\s*"""(.*?)"""', src, re.DOTALL | re.MULTILINE)
+        result.append({"id": name, "label": label, "text": m.group(1).strip() if m else ""})
+    return jsonify({"prompts": result})
 
 
 @app.route("/audit.html")
@@ -388,8 +434,6 @@ Classify the user message and respond with JSON only (no markdown):
 
 If it describes a story idea (something a developer could build):
 {{"is_idea": true, "suggestions": ["<title 1>", "<title 2>"], "reply": "<one sentence acknowledging>"}}
-Return EXACTLY 2 suggestions in the array, no more, no less.
-
 If it asks a question about the app, sprint, backlog, or team progress:
 {{"is_query": true, "reply": "<concise conversational answer using the app state above>"}}
 
@@ -981,6 +1025,20 @@ def health():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/baseline/status", methods=["GET"])
+def baseline_status():
+    import hashlib
+    def md5(path):
+        try:
+            return hashlib.md5(open(path, "rb").read()).hexdigest()
+        except Exception:
+            return None
+    baseline_path = os.path.join(BASE, "index_baseline.html")
+    index_path    = os.path.join(BASE, "index.html")
+    at_baseline   = md5(index_path) == md5(baseline_path)
+    return jsonify({"at_baseline": at_baseline})
+
+
 @app.route("/baseline/restore", methods=["POST"])
 def baseline_restore():
     baseline_path = os.path.join(BASE, "index_baseline.html")
@@ -989,6 +1047,13 @@ def baseline_restore():
         return jsonify({"error": "index_baseline.html not found"}), 404
     import shutil
     shutil.copy2(baseline_path, index_path)
+    try:
+        subprocess.run(["git", "add", "index.html"], cwd=BASE, check=True)
+        diff = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=BASE)
+        if diff.returncode != 0:
+            subprocess.run(["git", "commit", "-m", "Restore to baseline for sprint testing"], cwd=BASE, check=True)
+    except Exception as e:
+        return jsonify({"error": f"File restored but git commit failed: {e}"}), 500
     return jsonify({"ok": True})
 
 
@@ -1008,6 +1073,85 @@ def clear_active():
     with open(ACTIVE_FILE, "w", encoding="utf-8") as f:
         json.dump({"item_id": None, "stage": None}, f)
     return jsonify({"ok": True})
+
+
+@app.route("/sprint/backlog", methods=["GET"])
+def sprint_backlog():
+    with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+        data = json.load(f)
+    items = [
+        {"id": i["id"], "idea": i.get("idea", ""), "status": i.get("status", "pending")}
+        for i in data.get("items", [])
+        if i.get("in_sprint")
+    ]
+    return jsonify({"items": items})
+
+
+@app.route("/sprint/item/<item_id>", methods=["GET"])
+def sprint_item(item_id):
+    with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+        data = json.load(f)
+    for item in data.get("items", []):
+        if item.get("id") == item_id:
+            return jsonify(item)
+    return jsonify({"error": "not found"}), 404
+
+
+@app.route("/sprint/retro", methods=["GET"])
+def sprint_retro():
+    retro_file = os.path.join(BASE, "retrospective.json")
+    try:
+        with open(retro_file, encoding="utf-8") as f:
+            data = json.load(f)
+        retros = data.get("retros", [])
+        if not retros:
+            return jsonify({})
+
+        # Return empty if the retro predates the current sprint.
+        # Compare retro file mtime against the earliest item start time —
+        # if any sprint item started after the retro was written, the retro is stale.
+        retro_mtime = os.path.getmtime(retro_file)
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+            pipeline = json.load(f)
+        sprint_items = [i for i in pipeline.get("items", []) if i.get("in_sprint")]
+        started_times = [i["started"] for i in sprint_items if i.get("started")]
+        if sprint_items and (not started_times or min(started_times) > retro_mtime):
+            return jsonify({})
+
+        return jsonify(retros[0])
+    except Exception:
+        return jsonify({})
+
+
+SLOW_MODE_FILE = os.path.join(BASE, "slow_mode.json")
+
+def _read_slow_mode():
+    try:
+        with open(SLOW_MODE_FILE, encoding="utf-8") as f:
+            return json.load(f).get("enabled", False)
+    except Exception:
+        return False
+
+def _write_slow_mode(enabled):
+    with open(SLOW_MODE_FILE, "w", encoding="utf-8") as f:
+        json.dump({"enabled": enabled}, f)
+
+@app.route("/slow-mode", methods=["GET"])
+def slow_mode_status():
+    return jsonify({"enabled": _read_slow_mode()})
+
+@app.route("/slow-mode/toggle", methods=["POST"])
+def slow_mode_toggle():
+    enabled = not _read_slow_mode()
+    _write_slow_mode(enabled)
+    return jsonify({"enabled": enabled})
+
+@app.route("/slow-mode/set", methods=["POST"])
+def slow_mode_set():
+    data = request.get_json()
+    enabled = bool((data or {}).get("enabled", False))
+    _write_slow_mode(enabled)
+    return jsonify({"enabled": enabled})
 
 
 @app.route("/backlog", methods=["GET"])
@@ -1055,17 +1199,7 @@ def elaborate_story():
             wisdom_parts.append("CODING WISDOM:\n" + "\n".join(f"- {b}" for b in coding_wisdom_bullets))
         wisdom_section = ("\n\n" + "\n\n".join(wisdom_parts)) if wisdom_parts else ""
 
-        system_prompt = (
-            "You are a scrum story writer. Given a raw idea, write a user story and acceptance criteria.\n\n"
-            "You have access to a read_file tool. Use it when the idea references existing code elements "
-            "(colors, styles, components, data structures) and you need exact values to write accurate, "
-            "testable acceptance criteria. For example: if the idea mentions matching a theme color, "
-            "read index.html to find the actual hex value before writing the AC.\n\n"
-            "After gathering any needed context, respond with JSON only (no markdown):\n"
-            '{"story": "As a <role>, I want <goal> so that <benefit>.", "acceptance_criteria": ["<criterion 1>", "<criterion 2>", "<criterion 3>"]}\n'
-            "Keep the story concise. Write 3-4 acceptance criteria as short, testable statements. "
-            "Use exact values from the codebase when relevant."
-        )
+        system_prompt = STORY_ELABORATION_PROMPT
 
         tools = [
             {

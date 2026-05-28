@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prompts — Hello Scrum</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { padding: 4.5rem 2rem 3rem; }
+
+    .page-header {
+      margin-bottom: 2rem;
+    }
+    .page-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #aaa;
+      margin-bottom: 0.25rem;
+    }
+    .page-sub {
+      font-size: 0.75rem;
+      color: #555;
+    }
+
+    .prompt-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+    .prompt-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 1.25rem;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .prompt-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #aaa;
+    }
+    .prompt-id {
+      font-size: 0.6rem;
+      color: #444;
+      font-family: monospace;
+    }
+    .prompt-body {
+      padding: 1rem 1.25rem;
+      font-size: 0.78rem;
+      line-height: 1.75;
+      color: #aaa;
+      white-space: pre-wrap;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="index.html">App</a>
+    <a href="messenger.html">Messenger</a>
+    <a href="/">Backlog</a>
+    <a href="active.html">Live Work</a>
+    <a href="audit.html">Audit</a>
+    <a href="retro.html">Retro</a>
+    <a href="workflow.html">Workflow</a>
+    <a href="notes.html">Notes</a>
+    <a href="health.html">Health</a>
+    <a href="prompts.html">Prompts</a>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-title">Agent Prompts</div>
+    <div class="page-sub">System prompts used by the pipeline</div>
+  </div>
+
+  <div id="prompts-root"></div>
+
+  <script>
+    async function load() {
+      const res  = await fetch('/prompts');
+      const data = await res.json();
+      document.getElementById('prompts-root').innerHTML = data.prompts.map(p => `
+        <div class="prompt-card">
+          <div class="prompt-header">
+            <span class="prompt-label">${p.label}</span>
+            <span class="prompt-id">${p.id}</span>
+          </div>
+          <div class="prompt-body">${escHtml(p.text)}</div>
+        </div>`).join('');
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    load();
+  </script>
+<script src="shared.js"></script></body>
+</html>

@@ -11,7 +11,7 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      padding: 4.5rem 2rem 3.5rem;
+      padding: 4.5rem 2rem 2rem;
       margin: 0;
       min-height: 100vh;
       background: #0f1117;
@@ -41,11 +41,6 @@
       color: #7a8099;
       margin-bottom: 0;
     }
-    @keyframes versionGlow {
-      0%   { box-shadow: 0 0 0 0 rgba(0, 255, 153, 0); }
-      50%  { box-shadow: 0 0 8px 0 rgba(0, 255, 153, 0.5); }
-      100% { box-shadow: 0 0 0 0 rgba(0, 255, 153, 0); }
-    }
     .version {
       font-size: 0.85rem;
       color: #00ff99;
@@ -54,7 +49,6 @@
       padding: 0.3rem 0.9rem;
       border-radius: 20px;
       margin-bottom: 0.4rem;
-      animation: versionGlow 2s ease-in-out infinite;
     }
     .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; }
     .changelog { margin-top: 1.5rem; width: 100%; max-width: 500px; }
@@ -64,46 +58,12 @@
     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }
     .changelog-entry .cd { color: #444; font-size: 0.73rem; }
     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }
-    .changelog-entry { transition: background 0.2s; }
-    .changelog-entry:hover { background: #1a1a1a; }
-    .site-footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #0f1117;
-      color: #e8eaf0;
-      text-align: center;
-      padding: 0.55rem 1rem;
-      border-top: 1px solid #1c1c1c;
-      font-size: 0.82rem;
-      z-index: 999;
-    }
-    .site-footer a {
-      color: #00ff99;
-      text-decoration: none;
-      border: 1px solid #00ff9966;
-      padding: 0.2rem 0.75rem;
-      border-radius: 14px;
-      transition: background 0.2s, border-color 0.2s;
-    }
-    .site-footer a:hover {
-      background: #0d3320;
-      border-color: #00ff99;
-    }
-    .footer-ai-label {
-      color: #555;
-      font-size: 0.75rem;
-      margin-left: 0.85rem;
-    }
-    .footer-copyright {
-      color: #555;
-      font-size: 0.75rem;
-      margin-right: 0.85rem;
-    }
-    .top-nav a.nav-active {
-      color: #00ff99;
-      border-color: #00ff99;
+    .site-tagline {
+      font-size: 1rem;
+      color: #555e7a;
+      margin: 0 0 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
     }
   </style>
 </head>
@@ -121,11 +81,11 @@
   </nav>
   <div class="hero">
     <h1>Hello Scrum</h1>
+    <p class="site-tagline">AI-powered Scrum, built in the open</p>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.79</div>
-  <div class="meta" id="story-count"></div>
-  <div class="meta">Last deployed: 2026-05-27 19:04:18 CT</div>
+  <div class="version" id="version-badge">v0.1.80</div>
+  <div class="meta">Last deployed: 2026-05-27 19:40:08 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -138,8 +98,6 @@
       fetch('/version.json')
         .then(r => r.json())
         .then(data => {
-          const badge = document.getElementById('version-badge');
-          if (badge && data.version) badge.title = 'v' + data.version;
           const entries = (data.changelog || []).slice().reverse().slice(0, 5);
           document.getElementById('changelog-entries').innerHTML = entries.map(e => {
             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;
@@ -152,31 +110,7 @@
         })
         .catch(() => {});
     }
-    function loadStoryCount() {
-      fetch('/version.json')
-        .then(r => r.json())
-        .then(data => {
-          const count = (data.changelog || []).length;
-          const el = document.getElementById('story-count');
-          if (el) el.textContent = count + ' stor' + (count === 1 ? 'y' : 'ies') + ' shipped';
-        })
-        .catch(() => {});
-    }
-    loadStoryCount();
     loadChangelog();
-    (function() {
-      var links = document.querySelectorAll('.top-nav a');
-      var current = location.pathname.split('/').pop() || 'index.html';
-      links.forEach(function(a) {
-        var href = a.getAttribute('href').split('/').pop() || 'index.html';
-        if (href === current) a.classList.add('nav-active');
-      });
-    })();
   </script>
-  <footer class="site-footer">
-    <a href="https://kfox25.github.io/hello-scrum" target="_blank" rel="noopener">GitHub Pages ↗</a>
-    <span class="footer-copyright">© 2026</span>
-    <span class="footer-ai-label">built with AI</span>
-  </footer>
 </body>
 </html>

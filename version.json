@@ -1,6 +1,6 @@
 {
-  "version": "0.1.79",
-  "deployed": "2026-05-27 19:04:18 CT",
+  "version": "0.1.80",
+  "deployed": "2026-05-27 19:40:08 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -403,6 +403,11 @@
       "version": "0.1.79",
       "date": "2026-05-27",
       "change": "Set title attribute on version badge from version.json so hover shows full version string"
+    },
+    {
+      "version": "0.1.80",
+      "date": "2026-05-27",
+      "change": "Add site tagline 'AI-powered Scrum, built in the open' below the h1 on the homepage"
     }
   ]
 }

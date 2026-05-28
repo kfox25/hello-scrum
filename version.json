@@ -1,6 +1,6 @@
 {
-  "version": "0.1.122",
-  "deployed": "2026-05-28 10:42:08 CT",
+  "version": "0.1.123",
+  "deployed": "2026-05-28 10:42:24 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -618,6 +618,11 @@
       "version": "0.1.122",
       "date": "2026-05-28",
       "change": "Add opacity: 0.7 to .tagline so it is subtly de-emphasized relative to the headline"
+    },
+    {
+      "version": "0.1.123",
+      "date": "2026-05-28",
+      "change": "Add font-style: italic to .changelog-entry .cd for subtle date styling"
     }
   ]
 }

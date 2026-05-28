@@ -1,6 +1,6 @@
 {
-  "version": "0.1.104",
-  "deployed": "2026-05-28 00:06:44 CT",
+  "version": "0.1.105",
+  "deployed": "2026-05-28 08:40:06 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -528,6 +528,11 @@
       "version": "0.1.104",
       "date": "2026-05-28",
       "change": "Add padding: 0 0.5rem to .changelog for slight side breathing room"
+    },
+    {
+      "version": "0.1.105",
+      "date": "2026-05-28",
+      "change": "Add line-height: 1.4 to .changelog-entry .ct for comfortable wrapping of long change descriptions"
     }
   ]
 }

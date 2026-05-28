@@ -1,6 +1,85 @@
 {
   "items": [
     {
+      "idea": "Add line-height: 1.4 to .changelog-entry .ct so long change descriptions wrap cleanly",
+      "story": "As a visitor, I want the changelog change text to have comfortable line height so wrapped descriptions are easy to read.",
+      "acceptance_criteria": [
+        "The .changelog-entry .ct rule has line-height: 1.4 added",
+        "No other .changelog-entry .ct styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-11-ct-line-height",
+      "in_sprint": true,
+      "status": "done",
+      "started": 1779975538.947104,
+      "stage_times": {
+        "pull": 1779975538.947104,
+        "code": 1779975545.362296,
+        "story": 1779975539.079878,
+        "failed": 1779975545.365092
+      },
+      "tokens_in": 3076,
+      "tokens_out": 288,
+      "summary": "Add line-height: 1.4 to .changelog-entry .ct for readable wrapped text",
+      "diff": "diff --git a/index.html b/index.html\nindex 1bb1e82..f0bab20 100644\n--- a/index.html\n+++ b/index.html\n@@ -75,7 +75,7 @@\n     .changelog-entry:first-of-type { border-top: none; }\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; font-style: italic; }\n-    .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n+    .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; line-height: 1.4; }\n     .changelog-entry { transition: box-shadow 0.2s ease; border-radius: 6px; }\n     .changelog-entry:hover { box-shadow: 0 0 8px #00ff9920; }\n     .site-tagline {\n@@ -117,8 +117,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.104</div>\n-  <div class=\"meta\">Last deployed: 2026-05-28 00:06:44 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.105</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 08:40:06 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 2adcdef..a56559d 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.104\",\n-  \"deployed\": \"2026-05-28 00:06:44 CT\",\n+  \"version\": \"0.1.105\",\n+  \"deployed\": \"2026-05-28 08:40:06 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -528,6 +528,11 @@\n       \"version\": \"0.1.104\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add padding: 0 0.5rem to .changelog for slight side breathing room\"\n+    },\n+    {\n+      \"version\": \"0.1.105\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add line-height: 1.4 to .changelog-entry .ct for comfortable wrapping of long change descriptions\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.105 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-28 08:40:06 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.105: Add line-height: 1.4 to .changelog-entry .ct for comfortable wrapping of long change descriptions"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-28 08:40:06 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The CSS property line-height: 1.4 is valid and will apply correctly to .changelog-entry .ct elements; version and timestamp updates are expected; changelog entry is properly formatted JSON.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The diff adds line-height: 1.4 to the .changelog-entry .ct rule without modifying other styles or selectors, satisfying all acceptance criteria.",
+      "hermes_verdict": "approve"
+    },
+    {
+      "idea": "Add opacity: 0.8 to .meta so the deployment line is subtly de-emphasized",
+      "story": "As a visitor, I want the deployment metadata line to appear slightly dimmed so it does not compete with the version badge.",
+      "acceptance_criteria": [
+        "The .meta rule has opacity: 0.8 added",
+        "No other .meta styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-11-meta-opacity",
+      "in_sprint": true,
+      "status": "pending"
+    },
+    {
       "idea": "Add gap: 0.5rem to the .hero flex container for consistent child spacing",
       "story": "As a visitor, I want the hero section elements to have consistent spacing so the layout feels balanced.",
       "acceptance_criteria": [
@@ -9,7 +88,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-10-hero-gap",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "summary": "Add gap: 0.5rem to .hero flex container for consistent child spacing",
       "diff": "diff --git a/index.html b/index.html\nindex 7192c56..2a6661f 100644\n--- a/index.html\n+++ b/index.html\n@@ -13,6 +13,7 @@\n       display: flex;\n       flex-direction: column;\n       align-items: center;\n+      gap: 0.5rem;\n       text-align: center;\n       padding: 4.5rem 2rem 2rem;\n       margin: 0;\n@@ -116,8 +117,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.101</div>\n-  <div class=\"meta\">Last deployed: 2026-05-28 00:03:31 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.102</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 00:06:15 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 0885361..24de7b1 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.101\",\n-  \"deployed\": \"2026-05-28 00:03:31 CT\",\n+  \"version\": \"0.1.102\",\n+  \"deployed\": \"2026-05-28 00:06:15 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -513,6 +513,11 @@\n       \"version\": \"0.1.101\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add letter-spacing: 0.03em to .meta deployment line for a refined look\"\n+    },\n+    {\n+      \"version\": \"0.1.102\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add gap: 0.5rem to .hero flex container for consistent child spacing\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
@@ -67,7 +146,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-10-changelog-date-italic",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "summary": "Add font-style: italic to .changelog-entry .cd",
       "diff": "diff --git a/index.html b/index.html\nindex 2a6661f..c18ce2a 100644\n--- a/index.html\n+++ b/index.html\n@@ -74,7 +74,7 @@\n     .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }\n     .changelog-entry:first-of-type { border-top: none; }\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n-    .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n+    .changelog-entry .cd { color: #444; font-size: 0.73rem; font-style: italic; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n     .changelog-entry { transition: box-shadow 0.2s ease; border-radius: 6px; }\n     .changelog-entry:hover { box-shadow: 0 0 8px #00ff9920; }\n@@ -117,8 +117,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.102</div>\n-  <div class=\"meta\">Last deployed: 2026-05-28 00:06:15 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.103</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 00:06:29 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 24de7b1..ab787a6 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.102\",\n-  \"deployed\": \"2026-05-28 00:06:15 CT\",\n+  \"version\": \"0.1.103\",\n+  \"deployed\": \"2026-05-28 00:06:29 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -518,6 +518,11 @@\n       \"version\": \"0.1.102\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add gap: 0.5rem to .hero flex container for consistent child spacing\"\n+    },\n+    {\n+      \"version\": \"0.1.103\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add font-style: italic to .changelog-entry .cd for typographic distinction\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
@@ -137,7 +216,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-10-changelog-padding",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "retro_context": "[ok] Perfect execution on a focused CSS styling task: item passed all 9 test cases, received Hermes approval, met all acceptance criteria, and required no rework.\n[note] Sprint contained only 1 item, suggesting either a very light sprint or incomplete data capture of work completed.\n[ok] Code review and acceptance criteria validation were thorough and specific, catching selector accuracy, style isolation, and changelog consistency before deployment.",
       "summary": "Add padding: 0 0.5rem to .changelog for side breathing room",
@@ -185,7 +264,20 @@
       "code_review_reason": "CSS padding property is syntactically correct, version and timestamp updates are expected with feature changes, and the changelog entry accurately documents the modification.",
       "ac_check_verdict": "approve",
       "ac_check_reason": "The .changelog rule now contains padding: 0 0.5rem, no other .changelog styles were modified, and no other selectors were added or removed.",
-      "hermes_verdict": "approve"
+      "hermes_verdict": "approve",
+      "started": 1779944804.473105,
+      "stage_times": {
+        "pull": 1779944804.473105,
+        "code": 1779944809.540287,
+        "story": 1779944804.55953,
+        "test": 1779944809.717171,
+        "code_review": 1779944809.842498,
+        "ac_check": 1779944810.917894,
+        "deploy": 1779944812.670967,
+        "done": 1779944815.603214
+      },
+      "tokens_in": 5788,
+      "tokens_out": 389
     },
     {
       "idea": "Add line-height: 1.6 to the body for better text readability",
@@ -965,7 +1057,17 @@
       ],
       "id": "sprint-5-smooth-scroll",
       "in_sprint": false,
-      "status": "pending"
+      "status": "failed",
+      "error": "Parse error: Expecting value: line 1 column 1 (char 0) | Response preview: Looking at the index.html, I can see that `scroll-behavior: smooth` is **already present** in the `html` selector. The story is already implemented. I just need to bump the version and add a changelog",
+      "started": 1779944830.374955,
+      "stage_times": {
+        "pull": 1779944830.374955,
+        "code": 1779944834.97576,
+        "story": 1779944830.419036,
+        "failed": 1779944834.977364
+      },
+      "tokens_in": 3055,
+      "tokens_out": 257
     },
     {
       "idea": "Add a glow effect to the version badge on hover",
@@ -6634,5 +6736,5 @@
       "tokens_out": 2816
     }
   ],
-  "sprint_number": 10
+  "sprint_number": 11
 }

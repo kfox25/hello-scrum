@@ -1,6 +1,6 @@
 {
-  "version": "0.1.98",
-  "deployed": "2026-05-27 23:38:08 CT",
+  "version": "0.1.99",
+  "deployed": "2026-05-28 00:02:26 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -498,6 +498,11 @@
       "version": "0.1.98",
       "date": "2026-05-27",
       "change": "Add opacity hover transition to .tagline so it brightens smoothly on hover"
+    },
+    {
+      "version": "0.1.99",
+      "date": "2026-05-28",
+      "change": "Add line-height: 1.6 to body for better text readability"
     }
   ]
 }

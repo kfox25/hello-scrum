@@ -1,6 +1,119 @@
 {
   "items": [
     {
+      "idea": "Add line-height: 1.6 to the body for better text readability",
+      "story": "As a visitor, I want the page text to have comfortable line spacing so it is easier to read.",
+      "acceptance_criteria": [
+        "The body selector has line-height: 1.6 added",
+        "No other body styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-9-body-line-height",
+      "in_sprint": true,
+      "status": "done",
+      "started": 1779943445.662658,
+      "stage_times": {
+        "pull": 1779943445.662658,
+        "code": 1779943459.408345,
+        "story": 1779943455.113742,
+        "failed": 1779943459.502775
+      },
+      "tokens_in": 7813,
+      "tokens_out": 842,
+      "sprint_wisdom": "[fail] Scope creep guard rejected patch due to unintended content deletion. The agent modified a 5046-char file but only patched 3524 chars, removing 1522 chars outside the story scope. This suggests the agent is making broader changes than the focused CSS line-height task requires.\n[note] Single item sprint with 0% completion rate and no alternative failure reasons recorded (no hermes_verdict, code_review_reason, ac_check_reason, or test_results), indicating the patch was rejected at validation stage before downstream checks.",
+      "summary": "Add line-height: 1.6 to body selector for improved text readability",
+      "diff": "diff --git a/index.html b/index.html\nindex 4b4ab06..3d9df88 100644\n--- a/index.html\n+++ b/index.html\n@@ -21,6 +21,7 @@\n       color: #e8eaf0;\n       font-family: 'Segoe UI', system-ui, sans-serif;\n       caret-color: #00ff99;\n+      line-height: 1.6;\n     }\n     .hero {\n       display: flex;\n@@ -114,8 +115,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.98</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 23:38:08 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.99</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 00:02:26 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 2267dfd..7805711 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.98\",\n-  \"deployed\": \"2026-05-27 23:38:08 CT\",\n+  \"version\": \"0.1.99\",\n+  \"deployed\": \"2026-05-28 00:02:26 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -498,6 +498,11 @@\n       \"version\": \"0.1.98\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add opacity hover transition to .tagline so it brightens smoothly on hover\"\n+    },\n+    {\n+      \"version\": \"0.1.99\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add line-height: 1.6 to body for better text readability\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.99 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-28 00:02:26 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.99: Add line-height: 1.6 to body for better text readability"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-28 00:02:26 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The diff adds a valid CSS property (line-height: 1.6) to the body element with correct syntax, and appropriately updates version.json and deployment timestamps alongside the feature change.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The body selector has line-height: 1.6 added, no other body styles are modified, and no other selectors are added or removed.",
+      "hermes_verdict": "approve"
+    },
+    {
+      "idea": "Add user-select: none to the version badge so clicks don't accidentally select text",
+      "story": "As a visitor, I want clicking the version badge to not highlight its text so the interaction feels clean.",
+      "acceptance_criteria": [
+        "The .version selector has user-select: none added",
+        "No other .version styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-9-version-user-select",
+      "in_sprint": true,
+      "status": "pending",
+      "retro_context": "[fail] Scope creep guard rejected patch due to unintended content deletion. The agent modified a 5046-char file but only patched 3524 chars, removing 1522 chars outside the story scope. This suggests the agent is making broader changes than the focused CSS line-height task requires.\n[note] Single item sprint with 0% completion rate and no alternative failure reasons recorded (no hermes_verdict, code_review_reason, ac_check_reason, or test_results), indicating the patch was rejected at validation stage before downstream checks.",
+      "started": 1779943464.065413,
+      "stage_times": {
+        "pull": 1779943464.065413,
+        "code": 1779943476.148997,
+        "story": 1779943472.508385,
+        "failed": 1779943476.218688
+      },
+      "tokens_in": 8191,
+      "tokens_out": 784,
+      "sprint_wisdom": "[fail] Both items failed due to scope creep guard rejections, indicating the patched files lost ~1500 characters of content. The agent is likely modifying files incorrectly or not preserving existing content when applying CSS changes.\n[note] Both failures occurred on simple, isolated CSS additions (line-height and user-select properties), suggesting the issue is systematic in how the agent handles file patching rather than related to task complexity."
+    },
+    {
+      "idea": "Add letter-spacing: 0.03em to the .meta deployment line for a refined look",
+      "story": "As a visitor, I want the deployment metadata line to have slight letter spacing so it feels polished.",
+      "acceptance_criteria": [
+        "The .meta rule has letter-spacing: 0.03em added",
+        "No other .meta styles are modified",
+        "No other selectors are added or removed"
+      ],
+      "id": "sprint-9-meta-letter-spacing",
+      "in_sprint": true,
+      "status": "pending",
+      "retro_context": "[fail] Both items failed due to scope creep guard rejections, indicating the patched files lost ~1500 characters of content. The agent is likely modifying files incorrectly or not preserving existing content when applying CSS changes.\n[note] Both failures occurred on simple, isolated CSS additions (line-height and user-select properties), suggesting the issue is systematic in how the agent handles file patching rather than related to task complexity.",
+      "started": 1779943480.156523,
+      "stage_times": {
+        "pull": 1779943480.156523,
+        "code": 1779943492.826613,
+        "story": 1779943488.595155,
+        "failed": 1779943492.928745
+      },
+      "tokens_in": 8125,
+      "tokens_out": 818
+    },
+    {
       "idea": "Add cursor: pointer to the version badge so it looks clickable",
       "story": "As a visitor, I want the version badge to show a pointer cursor on hover so that it is clear it is interactive.",
       "acceptance_criteria": [
@@ -9,7 +122,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-8-version-cursor",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "test_results": [
         {
@@ -81,7 +194,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-8-body-caret",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "retro_context": "[ok] Perfect execution on a small, focused change: the cursor pointer feature passed all 9 test checks, received Hermes approval, and met acceptance criteria with no errors or code review issues.\n[note] Sprint contained only 1 item with 100% completion rate, suggesting either a very light sprint or items were batch-processed separately from this run.\n[ok] Comprehensive automated test coverage is working well\u2014the test suite validates HTML structure, version consistency, deployment timestamps, changelog entries, and CSS hygiene, catching potential issues before human review.",
       "test_results": [
@@ -156,7 +269,7 @@
         "No other selectors are added or removed"
       ],
       "id": "sprint-8-tagline-hover",
-      "in_sprint": true,
+      "in_sprint": false,
       "status": "done",
       "retro_context": "[ok] Perfect execution on small, focused CSS features: both items passed all tests, Hermes approvals, and code reviews with minimal scope (single selector changes with no side effects).\n[ok] Strong test coverage and validation rigor: comprehensive checks for file integrity, version synchronization, changelog entries, CSS isolation, and color consistency caught potential issues proactively.\n[note] Both items were UX polish features targeting visual feedback (cursor appearance and text cursor color), suggesting the sprint prioritized incremental improvements to user experience.",
       "test_results": [
@@ -197,15 +310,19 @@
           "message": "no mixed color formats"
         }
       ],
-      "started": 1779942798.221017,
+      "started": 1779943088.350142,
       "stage_times": {
-        "pull": 1779942798.221017,
-        "story": 1779942798.226884,
-        "code": 1779942802.587966,
-        "failed": 1779942802.661507
+        "pull": 1779943088.350142,
+        "code": 1779943104.731171,
+        "story": 1779943099.096826,
+        "test": 1779943104.950705,
+        "code_review": 1779943105.125208,
+        "ac_check": 1779943106.3905,
+        "deploy": 1779943108.056371,
+        "done": 1779943111.321019
       },
-      "tokens_in": 2660,
-      "tokens_out": 315,
+      "tokens_in": 8806,
+      "tokens_out": 902,
       "summary": "Add opacity: 0.7 default and opacity: 1 hover with transition to .tagline for subtle alive feel",
       "diff": "diff --git a/index.html b/index.html\nindex bef7b7d..4b4ab06 100644\n--- a/index.html\n+++ b/index.html\n@@ -44,8 +44,13 @@\n       letter-spacing: 0.12em;\n       text-transform: uppercase;\n       color: #7a8099;\n+      opacity: 0.7;\n+      transition: opacity 0.2s ease;\n       margin-bottom: 0;\n     }\n+    .tagline:hover {\n+      opacity: 1;\n+    }\n     .version {\n       font-size: 0.85rem;\n       color: #00ff99;\n@@ -109,8 +114,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.97</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 23:37:54 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.98</div>\n+  <div class=\"meta\">Last deployed: 2026-05-27 23:38:08 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 7198df4..2267dfd 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.97\",\n-  \"deployed\": \"2026-05-27 23:37:54 CT\",\n+  \"version\": \"0.1.98\",\n+  \"deployed\": \"2026-05-27 23:38:08 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -493,6 +493,11 @@\n       \"version\": \"0.1.97\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Set caret-color: #00ff99 on body so text cursors match brand green\"\n+    },\n+    {\n+      \"version\": \"0.1.98\",\n+      \"date\": \"2026-05-27\",\n+      \"change\": \"Add opacity hover transition to .tagline so it brightens smoothly on hover\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "deployed": "2026-05-27 23:38:08 CT",
@@ -6226,5 +6343,5 @@
       "tokens_out": 2816
     }
   ],
-  "sprint_number": 8
+  "sprint_number": 9
 }

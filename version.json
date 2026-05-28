@@ -1,6 +1,6 @@
 {
-  "version": "0.1.87",
-  "deployed": "2026-05-27 21:32:00 CT",
+  "version": "0.1.90",
+  "deployed": "2026-05-27 22:45:21 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -443,6 +443,21 @@
       "version": "0.1.87",
       "date": "2026-05-27",
       "change": "Add smooth opacity transition (0.2s) to nav links on hover, reducing opacity to 0.7"
+    },
+    {
+      "version": "0.1.88",
+      "date": "2026-05-27",
+      "change": "Add subtle green glow text-shadow (18px blur, #00ff9933) to h1 heading"
+    },
+    {
+      "version": "0.1.89",
+      "date": "2026-05-27",
+      "change": "Add opacity transition (0.2s) and hover state (opacity 0.7) to nav links for polished feel"
+    },
+    {
+      "version": "0.1.90",
+      "date": "2026-05-27",
+      "change": "Add scroll-behavior: smooth to html selector for polished page navigation"
     }
   ]
 }

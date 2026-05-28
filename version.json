@@ -1,6 +1,6 @@
 {
-  "version": "0.1.100",
-  "deployed": "2026-05-28 00:03:17 CT",
+  "version": "0.1.101",
+  "deployed": "2026-05-28 00:03:31 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -508,6 +508,11 @@
       "version": "0.1.100",
       "date": "2026-05-28",
       "change": "Add user-select: none to .version badge to prevent text selection on click"
+    },
+    {
+      "version": "0.1.101",
+      "date": "2026-05-28",
+      "change": "Add letter-spacing: 0.03em to .meta deployment line for a refined look"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
-  "version": "0.1.121",
-  "deployed": "2026-05-28 10:41:54 CT",
+  "version": "0.1.122",
+  "deployed": "2026-05-28 10:42:08 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -613,6 +613,11 @@
       "version": "0.1.121",
       "date": "2026-05-28",
       "change": "Add caret-color: #00ff99 to body so text cursors match the brand green"
+    },
+    {
+      "version": "0.1.122",
+      "date": "2026-05-28",
+      "change": "Add opacity: 0.7 to .tagline so it is subtly de-emphasized relative to the headline"
     }
   ]
 }

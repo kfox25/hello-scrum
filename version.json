@@ -1,6 +1,6 @@
 {
-  "version": "0.1.117",
-  "deployed": "2026-05-28 09:50:04 CT",
+  "version": "0.1.118",
+  "deployed": "2026-05-28 10:16:40 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -593,6 +593,11 @@
       "version": "0.1.117",
       "date": "2026-05-28",
       "change": "Add letter-spacing: 0.03em to .meta for a refined deployment metadata look"
+    },
+    {
+      "version": "0.1.118",
+      "date": "2026-05-28",
+      "change": "Add line-height: 1.6 to body for comfortable text readability"
     }
   ]
 }

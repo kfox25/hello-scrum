@@ -1,6 +1,6 @@
 {
-  "version": "0.1.128",
-  "deployed": "2026-05-28 10:56:30 CT",
+  "version": "0.1.129",
+  "deployed": "2026-05-28 10:57:01 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -648,6 +648,11 @@
       "version": "0.1.128",
       "date": "2026-05-28",
       "change": "Add cursor: pointer to .version badge so it feels clickable"
+    },
+    {
+      "version": "0.1.129",
+      "date": "2026-05-28",
+      "change": "Add line-height: 1.4 to .changelog-entry .ct so long change descriptions wrap cleanly"
     }
   ]
 }

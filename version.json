@@ -1,6 +1,6 @@
 {
-  "version": "0.1.154",
-  "deployed": "2026-05-28 13:03:12 CT",
+  "version": "0.1.155",
+  "deployed": "2026-05-28 13:03:29 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -778,6 +778,11 @@
       "version": "0.1.154",
       "date": "2026-05-28",
       "change": "Add border-top: 1px solid #333 to footer element to visually separate it from main content"
+    },
+    {
+      "version": "0.1.155",
+      "date": "2026-05-28",
+      "change": "Set line-height: 1.15 on h1 so the main heading sits tighter"
     }
   ]
 }

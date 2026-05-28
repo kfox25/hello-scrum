@@ -1,6 +1,6 @@
 {
-  "version": "0.1.92",
-  "deployed": "2026-05-27 22:46:42 CT",
+  "version": "0.1.93",
+  "deployed": "2026-05-27 22:55:24 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -468,6 +468,11 @@
       "version": "0.1.92",
       "date": "2026-05-27",
       "change": "Add glow hover effect to version badge with box-shadow transition using #00ff99"
+    },
+    {
+      "version": "0.1.93",
+      "date": "2026-05-27",
+      "change": "Increase .meta margin-bottom to 0.75rem for more breathing room below deployment date"
     }
   ]
 }

@@ -11,15 +11,19 @@
       "id": "sprint-9-body-line-height",
       "in_sprint": true,
       "status": "done",
-      "started": 1779943445.662658,
+      "started": 1779944546.462627,
       "stage_times": {
-        "pull": 1779943445.662658,
-        "code": 1779943459.408345,
-        "story": 1779943455.113742,
-        "failed": 1779943459.502775
+        "pull": 1779944546.462627,
+        "code": 1779944551.496919,
+        "story": 1779944546.527663,
+        "test": 1779944551.634645,
+        "code_review": 1779944551.796208,
+        "ac_check": 1779944553.071883,
+        "deploy": 1779944554.430574,
+        "done": 1779944557.437421
       },
-      "tokens_in": 7813,
-      "tokens_out": 842,
+      "tokens_in": 5216,
+      "tokens_out": 377,
       "sprint_wisdom": "[fail] Scope creep guard rejected patch due to unintended content deletion. The agent modified a 5046-char file but only patched 3524 chars, removing 1522 chars outside the story scope. This suggests the agent is making broader changes than the focused CSS line-height task requires.\n[note] Single item sprint with 0% completion rate and no alternative failure reasons recorded (no hermes_verdict, code_review_reason, ac_check_reason, or test_results), indicating the patch was rejected at validation stage before downstream checks.",
       "summary": "Add line-height: 1.6 to body selector for improved text readability",
       "diff": "diff --git a/index.html b/index.html\nindex 4b4ab06..3d9df88 100644\n--- a/index.html\n+++ b/index.html\n@@ -21,6 +21,7 @@\n       color: #e8eaf0;\n       font-family: 'Segoe UI', system-ui, sans-serif;\n       caret-color: #00ff99;\n+      line-height: 1.6;\n     }\n     .hero {\n       display: flex;\n@@ -114,8 +115,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.98</div>\n-  <div class=\"meta\">Last deployed: 2026-05-27 23:38:08 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.99</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 00:02:26 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 2267dfd..7805711 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.98\",\n-  \"deployed\": \"2026-05-27 23:38:08 CT\",\n+  \"version\": \"0.1.99\",\n+  \"deployed\": \"2026-05-28 00:02:26 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -498,6 +498,11 @@\n       \"version\": \"0.1.98\",\n       \"date\": \"2026-05-27\",\n       \"change\": \"Add opacity hover transition to .tagline so it brightens smoothly on hover\"\n+    },\n+    {\n+      \"version\": \"0.1.99\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add line-height: 1.6 to body for better text readability\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
@@ -78,7 +82,7 @@
       ],
       "id": "sprint-9-version-user-select",
       "in_sprint": true,
-      "status": "pending",
+      "status": "done",
       "retro_context": "[fail] Scope creep guard rejected patch due to unintended content deletion. The agent modified a 5046-char file but only patched 3524 chars, removing 1522 chars outside the story scope. This suggests the agent is making broader changes than the focused CSS line-height task requires.\n[note] Single item sprint with 0% completion rate and no alternative failure reasons recorded (no hermes_verdict, code_review_reason, ac_check_reason, or test_results), indicating the patch was rejected at validation stage before downstream checks.",
       "started": 1779943464.065413,
       "stage_times": {
@@ -89,7 +93,53 @@
       },
       "tokens_in": 8191,
       "tokens_out": 784,
-      "sprint_wisdom": "[fail] Both items failed due to scope creep guard rejections, indicating the patched files lost ~1500 characters of content. The agent is likely modifying files incorrectly or not preserving existing content when applying CSS changes.\n[note] Both failures occurred on simple, isolated CSS additions (line-height and user-select properties), suggesting the issue is systematic in how the agent handles file patching rather than related to task complexity."
+      "sprint_wisdom": "[fail] Both items failed due to scope creep guard rejections, indicating the patched files lost ~1500 characters of content. The agent is likely modifying files incorrectly or not preserving existing content when applying CSS changes.\n[note] Both failures occurred on simple, isolated CSS additions (line-height and user-select properties), suggesting the issue is systematic in how the agent handles file patching rather than related to task complexity.",
+      "summary": "Add user-select: none to .version badge to prevent text selection on click",
+      "diff": "diff --git a/index.html b/index.html\nindex 3d9df88..aa13de7 100644\n--- a/index.html\n+++ b/index.html\n@@ -62,6 +62,7 @@\n       margin-bottom: 0.4rem;\n       transition: box-shadow 0.2s ease;\n       cursor: pointer;\n+      user-select: none;\n     }\n     .version:hover {\n       box-shadow: 0 0 10px #00ff9940;\n@@ -115,8 +116,8 @@\n     <p class=\"site-tagline\">AI-powered Scrum, built in the open</p>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.99</div>\n-  <div class=\"meta\">Last deployed: 2026-05-28 00:02:26 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.100</div>\n+  <div class=\"meta\">Last deployed: 2026-05-28 00:03:17 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 7805711..a7416e4 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.99\",\n-  \"deployed\": \"2026-05-28 00:02:26 CT\",\n+  \"version\": \"0.1.100\",\n+  \"deployed\": \"2026-05-28 00:03:17 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -503,6 +503,11 @@\n       \"version\": \"0.1.99\",\n       \"date\": \"2026-05-28\",\n       \"change\": \"Add line-height: 1.6 to body for better text readability\"\n+    },\n+    {\n+      \"version\": \"0.1.100\",\n+      \"date\": \"2026-05-28\",\n+      \"change\": \"Add user-select: none to .version badge to prevent text selection on click\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.100 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-28 00:03:17 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.100: Add user-select: none to .version badge to prevent text selection on click"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-28 00:03:17 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "CSS property user-select: none is valid and correctly applied to prevent text selection on the version badge; version.json and deployment timestamps are expected accompaniments to feature changes.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The .version selector now has user-select: none added, no other .version styles were modified, and no other selectors were added or removed.",
+      "hermes_verdict": "approve"
     },
     {
       "idea": "Add letter-spacing: 0.03em to the .meta deployment line for a refined look",

@@ -1,6 +1,6 @@
 {
-  "version": "0.1.99",
-  "deployed": "2026-05-28 00:02:26 CT",
+  "version": "0.1.100",
+  "deployed": "2026-05-28 00:03:17 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -503,6 +503,11 @@
       "version": "0.1.99",
       "date": "2026-05-28",
       "change": "Add line-height: 1.6 to body for better text readability"
+    },
+    {
+      "version": "0.1.100",
+      "date": "2026-05-28",
+      "change": "Add user-select: none to .version badge to prevent text selection on click"
     }
   ]
 }

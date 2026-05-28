@@ -1,6 +1,6 @@
 {
-  "version": "0.1.174",
-  "deployed": "2026-05-28 15:28:47 CT",
+  "version": "0.1.175",
+  "deployed": "2026-05-28 15:30:15 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -878,6 +878,11 @@
       "version": "0.1.174",
       "date": "2026-05-28",
       "change": "Set opacity: 0.7 on the footer element so it appears slightly muted"
+    },
+    {
+      "version": "0.1.175",
+      "date": "2026-05-28",
+      "change": "Add opacity: 0.7 to footer selector so it appears slightly muted"
     }
   ]
 }

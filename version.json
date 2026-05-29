@@ -1,6 +1,6 @@
 {
-  "version": "0.1.199",
-  "deployed": "2026-05-29 08:54:54 CT",
+  "version": "0.1.200",
+  "deployed": "2026-05-29 08:55:24 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1003,6 +1003,11 @@
       "version": "0.1.199",
       "date": "2026-05-29",
       "change": "Add hover tooltip to version badge showing full deployed timestamp"
+    },
+    {
+      "version": "0.1.200",
+      "date": "2026-05-29",
+      "change": "Add visible focus rings on interactive elements for keyboard accessibility"
     }
   ]
 }

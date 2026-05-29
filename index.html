@@ -77,6 +77,16 @@
     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }
     .changelog-entry .cd { color: #444; font-size: 0.73rem; }
     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }
+
+    /* Keyboard focus rings */
+    :focus-visible {
+      outline: 2px solid #00ff99;
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+    :focus:not(:focus-visible) {
+      outline: none;
+    }
   </style>
 </head>
 <body>
@@ -96,8 +106,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.199<span class="version-tooltip" id="version-tooltip">2026-05-29 08:49:05 CT</span></div>
-  <div class="meta">Last deployed: 2026-05-29 08:54:54 CT</div>
+  <div class="version" id="version-badge">v0.1.200<span class="version-tooltip" id="version-tooltip">2026-05-29 08:49:05 CT</span></div>
+  <div class="meta">Last deployed: 2026-05-29 08:55:24 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>

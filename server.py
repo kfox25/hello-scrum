@@ -1033,10 +1033,14 @@ def health_score():
 
     file_kb, file_status = None, "healthy"
     hermes_rate, hermes_status = None, "healthy"
-    sprint_status = "healthy"
+    cycle_pct, cycle_status = None, "healthy"
+    velocity_bps, velocity_status = None, "healthy"
+    css_drift, css_status = None, "healthy"
+    wisdom_flagged, wisdom_total, wisdom_status = None, None, "healthy"
     overall = 0
 
     try:
+        # ── File size ──────────────────────────────────────────────────────────
         size = os.path.getsize(os.path.join(BASE, "index.html"))
         file_kb = round(size / 1024, 1)
         file_status = "critical" if size >= 16_000 else "warning" if size >= 8_000 else "healthy"
@@ -1045,27 +1049,97 @@ def health_score():
         with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
             items = json.load(f).get("items", [])
 
+        # ── Hermes approve rate ────────────────────────────────────────────────
         reviewed = [i for i in items if i.get("hermes_verdict")]
         if len(reviewed) >= 5:
             hermes_rate = round(sum(1 for i in reviewed if i["hermes_verdict"] == "approve") / len(reviewed) * 100)
             hermes_status = "critical" if hermes_rate < 40 else "warning" if hermes_rate < 70 else "healthy"
             overall = max(overall, lvl(hermes_status))
 
-        sprint_pending = [i for i in items if i.get("in_sprint") and i.get("status") == "pending"]
-        if not sprint_pending:
-            sprint_status = "warning"
-            overall = max(overall, lvl(sprint_status))
+        # ── Cycle time regression ──────────────────────────────────────────────
+        done_sorted = sorted(
+            [i for i in items if i.get("status") == "done" and i.get("started") and i.get("stage_times")],
+            key=lambda x: x["started"],
+        )
+        if len(done_sorted) >= 10:
+            def _cycle(i):
+                end = i["stage_times"].get("done") or i["stage_times"].get("deploy")
+                return (end - i["started"]) if end and end > i["started"] else None
+            recent_c = [c for c in (_cycle(i) for i in done_sorted[-5:]) if c]
+            prior_c  = [c for c in (_cycle(i) for i in done_sorted[-10:-5]) if c]
+            if recent_c and prior_c:
+                recent_avg = sum(recent_c) / len(recent_c)
+                prior_avg  = sum(prior_c)  / len(prior_c)
+                if prior_avg > 0 and recent_avg > prior_avg * 1.5:
+                    cycle_pct = round((recent_avg / prior_avg - 1) * 100)
+                    cycle_status = "warning"
+                    overall = max(overall, lvl(cycle_status))
+
+        # ── File size velocity (bytes/story since last baseline restore) ───────
+        try:
+            baseline_size = os.path.getsize(os.path.join(BASE, "index_baseline.html"))
+            growth = size - baseline_size
+            git_log = subprocess.run(
+                ["git", "log", "--format=%at", "--grep=Restore to baseline", "-1"],
+                capture_output=True, text=True, cwd=BASE, timeout=5,
+            )
+            restore_ts = float(git_log.stdout.strip()) if git_log.stdout.strip() else 0
+            done_since = [i for i in items if i.get("status") == "done" and i.get("started", 0) > restore_ts]
+            count = max(len(done_since), 1)
+            velocity_bps = round(growth / count)
+            velocity_status = "critical" if velocity_bps > 800 else "warning" if velocity_bps > 400 else "healthy"
+            overall = max(overall, lvl(velocity_status))
+        except Exception:
+            pass
+
+        # ── CSS drift (duplicate rules in index.html) ──────────────────────────
+        try:
+            with open(os.path.join(BASE, "index.html"), encoding="utf-8") as f:
+                html = f.read()
+            sm = re.search(r'<style>([\s\S]*?)</style>', html)
+            style = sm.group(1) if sm else ""
+            dup_h1   = len(re.findall(r'(?<![.\-\w])h1\s*[,{]', style))
+            dup_body = len(re.findall(r'\bbody\s*\{', style))
+            css_drift = (dup_h1 > 1) or (dup_body > 1)
+            if css_drift:
+                css_status = "warning"
+                overall = max(overall, lvl(css_status))
+        except Exception:
+            pass
+
+        # ── Wisdom quality ─────────────────────────────────────────────────────
+        try:
+            _hex_re   = re.compile(r'#[0-9a-fA-F]{3,6}\b')
+            _ver_re   = re.compile(r'v\d+\.\d+')
+            _specific = ['index.html', '.hero', '.tagline', 'hello scrum', 'board.html']
+            all_bullets, flagged = [], 0
+            for fname in ["coding_wisdom.json", "ac_wisdom.json"]:
+                with open(os.path.join(BASE, fname), encoding="utf-8") as f:
+                    bullets = json.load(f).get("bullets", [])
+                all_bullets.extend(bullets)
+                for b in bullets:
+                    if (_hex_re.search(b) or _ver_re.search(b) or
+                            any(s in b.lower() for s in _specific)):
+                        flagged += 1
+            wisdom_total   = len(all_bullets)
+            wisdom_flagged = flagged
+            if wisdom_total >= 4 and flagged / wisdom_total > 0.5:
+                wisdom_status = "warning"
+                overall = max(overall, lvl(wisdom_status))
+        except Exception:
+            pass
 
     except Exception:
         pass
 
     return jsonify({
         "status": ["healthy", "warning", "critical"][overall],
-        "file_kb": file_kb,
-        "file_status": file_status,
-        "hermes_rate": hermes_rate,
-        "hermes_status": hermes_status,
-        "sprint_status": sprint_status,
+        "file_kb": file_kb,       "file_status": file_status,
+        "hermes_rate": hermes_rate, "hermes_status": hermes_status,
+        "cycle_pct": cycle_pct,   "cycle_status": cycle_status,
+        "velocity_bps": velocity_bps, "velocity_status": velocity_status,
+        "css_drift": css_drift,   "css_status": css_status,
+        "wisdom_flagged": wisdom_flagged, "wisdom_total": wisdom_total, "wisdom_status": wisdom_status,
     })
 
 

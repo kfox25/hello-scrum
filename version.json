@@ -1,6 +1,6 @@
 {
-  "version": "0.1.190",
-  "deployed": "2026-05-28 22:52:00 CT",
+  "version": "0.1.193",
+  "deployed": "2026-05-28 23:42:38 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -958,6 +958,21 @@
       "version": "0.1.190",
       "date": "2026-05-28",
       "change": "Add letter-spacing: 0.05em to .version badge for improved breathing room"
+    },
+    {
+      "version": "0.1.191",
+      "date": "2026-05-28",
+      "change": "Add text-align: center to .hero section"
+    },
+    {
+      "version": "0.1.192",
+      "date": "2026-05-28",
+      "change": "Increase .changelog h2 font-size to 1rem and lighten color to #ccc for readability"
+    },
+    {
+      "version": "0.1.193",
+      "date": "2026-05-28",
+      "change": "Respect prefers-reduced-motion: disable version badge pulse animation and nav link transitions for users with motion sensitivity"
     }
   ]
 }

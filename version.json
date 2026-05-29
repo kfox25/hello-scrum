@@ -1,6 +1,6 @@
 {
-  "version": "0.1.197",
-  "deployed": "2026-05-29 08:48:50 CT",
+  "version": "0.1.198",
+  "deployed": "2026-05-29 08:49:05 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -993,6 +993,11 @@
       "version": "0.1.197",
       "date": "2026-05-29",
       "change": "Reduce opacity of .meta deployment line to de-emphasize it visually"
+    },
+    {
+      "version": "0.1.198",
+      "date": "2026-05-29",
+      "change": "Add padding-bottom to .changelog h2 to separate heading from entries"
     }
   ]
 }

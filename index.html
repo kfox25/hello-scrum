@@ -60,6 +60,14 @@
       .version { animation: none; }
       .top-nav a { transition: none; }
     }
+    :focus-visible {
+      outline: 2px solid #00ff99;
+      outline-offset: 3px;
+      border-radius: 3px;
+    }
+    :focus:not(:focus-visible) {
+      outline: none;
+    }
     .changelog { margin-top: 1.5rem; width: 100%; max-width: 500px; }
     .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; }
     .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }
@@ -86,8 +94,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.195</div>
-  <div class="meta">Last deployed: 2026-05-29 08:47:59 CT</div>
+  <div class="version" id="version-badge">v0.1.196</div>
+  <div class="meta">Last deployed: 2026-05-29 08:48:23 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>

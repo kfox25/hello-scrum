@@ -194,9 +194,9 @@
     <a href="audit.html">Audit</a>
     <a href="retro.html">Retro</a>
     <a href="workflow.html">Workflow</a>
+    <a href="prompts.html">Prompts</a>
     <a href="notes.html">Notes</a>
     <a href="health.html">Health</a>
-    <a href="prompts.html">Prompts</a>
   </nav>
 
   <div class="status-row">
@@ -420,6 +420,32 @@
     }
 
 
+    async function loadHealthWidget() {
+      try {
+        const res = await fetch('/health/score');
+        const d   = await res.json();
+        const statusColor = d.status === 'healthy'  ? '#00ff99'
+                          : d.status === 'warning'  ? '#ffcc00'
+                          : '#ff4444';
+        function dotCls(s) { return s === 'healthy' ? 'green' : s === 'warning' ? 'yellow' : 'red'; }
+        function row(label, status) {
+          return `<div class="hw-row"><div class="hw-dot ${dotCls(status)}"></div><span>${esc(label)}</span></div>`;
+        }
+        const fileLabel   = d.file_kb    != null ? `File ${d.file_kb} KB`     : 'File —';
+        const hermesLabel = d.hermes_rate != null ? `Hermes ${d.hermes_rate}%` : 'Hermes —';
+        const sprintLabel = d.sprint_status === 'warning' ? 'Sprint empty'     : 'Sprint ready';
+        const widget = document.createElement('div');
+        widget.id = 'health-widget';
+        widget.innerHTML = `
+          <div class="hw-status" style="color:${statusColor}">● ${d.status}</div>
+          ${row(fileLabel,   d.file_status   || 'healthy')}
+          ${row(hermesLabel, d.hermes_status || 'healthy')}
+          ${row(sprintLabel, d.sprint_status || 'healthy')}
+        `;
+        document.body.appendChild(widget);
+      } catch(e) {}
+    }
+
     async function checkBaselineStatus() {
       try {
         const res = await fetch('/baseline/status');
@@ -446,6 +472,7 @@
     loadReadiness();
     loadImpediments();
     loadAll();
+    loadHealthWidget();
   </script>
 <script src="shared.js"></script></body>
 </html>

@@ -1,6 +1,6 @@
 (async function () {
   try {
-    const res  = await fetch('/health');
+    const res  = await fetch('/health/score');
     const data = await res.json();
     const color = data.status === 'healthy'  ? '#00ff99'
                 : data.status === 'warning'  ? '#ffcc00'

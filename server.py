@@ -1026,6 +1026,49 @@ def health():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/health/score", methods=["GET"])
+def health_score():
+    """Composite health status for the nav indicator."""
+    def lvl(s): return {"healthy": 0, "warning": 1, "critical": 2}.get(s, 0)
+
+    file_kb, file_status = None, "healthy"
+    hermes_rate, hermes_status = None, "healthy"
+    sprint_status = "healthy"
+    overall = 0
+
+    try:
+        size = os.path.getsize(os.path.join(BASE, "index.html"))
+        file_kb = round(size / 1024, 1)
+        file_status = "critical" if size >= 16_000 else "warning" if size >= 8_000 else "healthy"
+        overall = max(overall, lvl(file_status))
+
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+            items = json.load(f).get("items", [])
+
+        reviewed = [i for i in items if i.get("hermes_verdict")]
+        if len(reviewed) >= 5:
+            hermes_rate = round(sum(1 for i in reviewed if i["hermes_verdict"] == "approve") / len(reviewed) * 100)
+            hermes_status = "critical" if hermes_rate < 40 else "warning" if hermes_rate < 70 else "healthy"
+            overall = max(overall, lvl(hermes_status))
+
+        sprint_pending = [i for i in items if i.get("in_sprint") and i.get("status") == "pending"]
+        if not sprint_pending:
+            sprint_status = "warning"
+            overall = max(overall, lvl(sprint_status))
+
+    except Exception:
+        pass
+
+    return jsonify({
+        "status": ["healthy", "warning", "critical"][overall],
+        "file_kb": file_kb,
+        "file_status": file_status,
+        "hermes_rate": hermes_rate,
+        "hermes_status": hermes_status,
+        "sprint_status": sprint_status,
+    })
+
+
 @app.route("/baseline/status", methods=["GET"])
 def baseline_status():
     import hashlib

@@ -25,3 +25,36 @@ body {
   text-decoration: none;
 }
 .top-nav a:hover { background: #0d3320; border-color: #00ff99; }
+
+#health-widget {
+  position: fixed;
+  top: 3.6rem;
+  right: 1rem;
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 6px;
+  padding: 0.45rem 0.75rem;
+  font-family: monospace;
+  z-index: 99;
+  min-width: 120px;
+}
+.hw-status {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.35rem;
+}
+.hw-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.62rem;
+  color: #555;
+  margin-top: 0.18rem;
+}
+.hw-dot {
+  width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+}
+.hw-dot.green  { background: #00ff99; }
+.hw-dot.yellow { background: #ffcc00; }
+.hw-dot.red    { background: #ff4444; }

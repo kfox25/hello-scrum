@@ -651,6 +651,7 @@ def messenger_choose():
             "status": "pending",
             "in_sprint": False,
             "opportunity": True,
+            "source": "watercooler",
         }
         backlog.setdefault("items", []).insert(0, new_item)
         with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:

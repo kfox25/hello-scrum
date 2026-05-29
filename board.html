@@ -459,8 +459,8 @@
         storyLine = `<div class="card-story">${escHtml(item.story)}</div>`;
       }
 
-      const wcTag = item.meeting_update
-        ? `<span class="watercooler-tag" title="${escHtml(item.meeting_update)}">&#8592; watercooler</span>`
+      const wcTag = (item.meeting_update || item.source === 'watercooler')
+        ? `<span class="watercooler-tag" title="${escHtml(item.meeting_update || 'Added from watercooler')}">&#8592; watercooler</span>`
         : '';
       const lastAC = hasAC ? item.acceptance_criteria.length - 1 : -1;
       const acHtml = hasAC
@@ -490,7 +490,7 @@
           ${acHtml}
           ${expandBtn}
         </div>
-        ${item.meeting_update ? `<span class="watercooler-tag watercooler-collapsed" title="${escHtml(item.meeting_update)}">watercooler</span>` : ''}
+        ${(item.meeting_update || item.source === 'watercooler') ? `<span class="watercooler-tag watercooler-collapsed" title="${escHtml(item.meeting_update || 'Added from watercooler')}">watercooler</span>` : ''}
         <span class="badge badge-${item.status}">${item.status}</span>
         ${retryBtn}
         ${deleteBtn}

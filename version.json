@@ -1,6 +1,6 @@
 {
-  "version": "0.1.187",
-  "deployed": "2026-05-28 18:54:29 CT",
+  "version": "0.1.188",
+  "deployed": "2026-05-28 21:46:26 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -943,6 +943,11 @@
       "version": "0.1.187",
       "date": "2026-05-28",
       "change": "Set opacity: 0.7 on the footer element so it appears slightly muted"
+    },
+    {
+      "version": "0.1.188",
+      "date": "2026-05-28",
+      "change": "Add custom scrollbar styling with brand green (#00ff99) thumb and dark track for visual cohesion"
     }
   ]
 }

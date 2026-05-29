@@ -1,6 +1,6 @@
 {
-  "version": "0.1.193",
-  "deployed": "2026-05-28 23:42:38 CT",
+  "version": "0.1.195",
+  "deployed": "2026-05-29 08:47:59 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -973,6 +973,16 @@
       "version": "0.1.193",
       "date": "2026-05-28",
       "change": "Respect prefers-reduced-motion: disable version badge pulse animation and nav link transitions for users with motion sensitivity"
+    },
+    {
+      "version": "0.1.194",
+      "date": "2026-05-28",
+      "change": "Improve keyboard focus indicators: add distinct :focus-visible outlines using accent color with offset for all interactive elements and nav links"
+    },
+    {
+      "version": "0.1.195",
+      "date": "2026-05-29",
+      "change": "Add hover tooltip to version badge dynamically populated from version.json deployed field showing full release date and time"
     }
   ]
 }

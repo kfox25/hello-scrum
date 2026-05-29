@@ -48,45 +48,16 @@
       border: 1px solid #00ff9966;
       padding: 0.3rem 0.9rem;
       border-radius: 20px;
-      cursor: default;
-      position: relative;
       margin-bottom: 0.4rem;
     }
-    .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; opacity: 0.5; }
-    .version-tooltip {
-      display: none;
-      position: absolute;
-      bottom: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1a2a1a;
-      color: #00ff99;
-      border: 1px solid #00ff9966;
-      border-radius: 8px;
-      padding: 0.35rem 0.8rem;
-      font-size: 0.78rem;
-      white-space: nowrap;
-      z-index: 100;
-      pointer-events: none;
-    }
-    .version:hover .version-tooltip { display: block; }
+    .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; }
     .changelog { margin-top: 1.5rem; width: 100%; max-width: 500px; }
-    .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; padding-bottom: 0.5rem; }
+    .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; }
     .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }
     .changelog-entry:first-of-type { border-top: none; }
     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }
     .changelog-entry .cd { color: #444; font-size: 0.73rem; }
     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }
-
-    /* Keyboard focus rings */
-    :focus-visible {
-      outline: 2px solid #00ff99;
-      outline-offset: 3px;
-      border-radius: 4px;
-    }
-    :focus:not(:focus-visible) {
-      outline: none;
-    }
   </style>
 </head>
 <body>
@@ -106,8 +77,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.202<span class="version-tooltip" id="version-tooltip">2026-05-29 08:49:05 CT</span></div>
-  <div class="meta">Last deployed: 2026-05-29 08:55:57 CT</div>
+  <div class="version" id="version-badge">v0.1.66</div>
+  <div class="meta">Last deployed: 2026-05-25 22:39:40 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -121,10 +92,6 @@
         .then(r => r.json())
         .then(data => {
           const entries = (data.changelog || []).slice().reverse().slice(0, 5);
-          if (data.deployed) {
-            const tip = document.getElementById('version-tooltip');
-            if (tip) tip.textContent = data.deployed;
-          }
           document.getElementById('changelog-entries').innerHTML = entries.map(e => {
             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;
             return `<div class="changelog-entry">

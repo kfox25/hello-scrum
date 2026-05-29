@@ -48,28 +48,11 @@
       border: 1px solid #00ff9966;
       padding: 0.3rem 0.9rem;
       border-radius: 20px;
-      animation: versionPulse 2.5s ease-in-out infinite;
       margin-bottom: 0.4rem;
     }
-    .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; opacity: 0.5; }
-    @keyframes versionPulse {
-      0%, 100% { box-shadow: 0 0 4px #00ff9940; }
-      50% { box-shadow: 0 0 14px #00ff99cc; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .version { animation: none; }
-      .top-nav a { transition: none; }
-    }
-    :focus-visible {
-      outline: 2px solid #00ff99;
-      outline-offset: 3px;
-      border-radius: 3px;
-    }
-    :focus:not(:focus-visible) {
-      outline: none;
-    }
+    .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; }
     .changelog { margin-top: 1.5rem; width: 100%; max-width: 500px; }
-    .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; padding-bottom: 0.5rem; }
+    .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; }
     .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }
     .changelog-entry:first-of-type { border-top: none; }
     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }
@@ -94,8 +77,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.198</div>
-  <div class="meta">Last deployed: 2026-05-29 08:49:05 CT</div>
+  <div class="version" id="version-badge">v0.1.66</div>
+  <div class="meta">Last deployed: 2026-05-25 22:39:40 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -121,32 +104,6 @@
         .catch(() => {});
     }
     loadChangelog();
-
-    function loadVersionTooltip() {
-      fetch('/version.json')
-        .then(r => r.json())
-        .then(data => {
-          if (data.deployed) {
-            const raw = data.deployed;
-            const badge = document.getElementById('version-badge');
-            try {
-              const parts = raw.match(/(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})\s+(\S+)/);
-              if (parts) {
-                const dt = new Date(`${parts[1]}-${parts[2]}-${parts[3]}T${parts[4]}:${parts[5]}:${parts[6]}`);
-                const opts = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
-                const formatted = dt.toLocaleString('en-US', opts).replace(',', '') + ' ' + parts[7];
-                badge.title = formatted;
-              } else {
-                badge.title = raw;
-              }
-            } catch(e) {
-              badge.title = raw;
-            }
-          }
-        })
-        .catch(() => {});
-    }
-    loadVersionTooltip();
   </script>
 <script src="shared.js"></script>
 </body>

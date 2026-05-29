@@ -1,6 +1,6 @@
 {
-  "version": "0.1.200",
-  "deployed": "2026-05-29 08:55:24 CT",
+  "version": "0.1.201",
+  "deployed": "2026-05-29 08:55:41 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1008,6 +1008,11 @@
       "version": "0.1.200",
       "date": "2026-05-29",
       "change": "Add visible focus rings on interactive elements for keyboard accessibility"
+    },
+    {
+      "version": "0.1.201",
+      "date": "2026-05-29",
+      "change": "Reduce opacity of .meta deployment line to de-emphasize it"
     }
   ]
 }

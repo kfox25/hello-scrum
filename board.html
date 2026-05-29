@@ -782,6 +782,16 @@
 
 
     // ── Baseline restore ──────────────────────────────────────────────────────
+    async function checkBaselineStatus() {
+      try {
+        const res = await fetch('/baseline/status');
+        const d = await res.json();
+        const btn = document.getElementById('restore-btn');
+        btn.disabled = d.at_baseline;
+        btn.style.opacity = d.at_baseline ? '0.35' : '';
+        btn.style.cursor = d.at_baseline ? 'default' : '';
+      } catch(e) {}
+    }
     document.getElementById('restore-btn').addEventListener('click', async () => {
       const btn = document.getElementById('restore-btn');
       btn.textContent = 'restoring…'; btn.disabled = true;
@@ -789,9 +799,10 @@
         const r = await fetch('/baseline/restore', { method: 'POST' });
         const d = await r.json();
         btn.textContent = d.ok ? 'restored ✓' : 'failed';
-        setTimeout(() => { btn.textContent = 'Restore to Baseline'; btn.disabled = false; }, 2000);
+        setTimeout(() => { btn.textContent = 'Restore to Baseline'; checkBaselineStatus(); }, 2000);
       } catch(e) { btn.textContent = 'error'; btn.disabled = false; }
     });
+    checkBaselineStatus();
 
     // ── Init ──────────────────────────────────────────────────────────────────
     fetch('/sprint/status').then(r => r.json()).then(d => {

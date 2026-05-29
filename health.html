@@ -107,24 +107,6 @@
     }
     .trend-legend { font-size: 0.65rem; color: #999; }
 
-    /* ── wisdom bullets ── */
-    .bullet-list {
-      background: #111;
-      border: 1px solid #222;
-      border-radius: 8px;
-      padding: 0.75rem 1rem;
-    }
-    .bullet-item {
-      font-size: 0.78rem; color: #999; line-height: 1.6;
-      padding: 0.3rem 0; border-top: 1px solid #1c1c1c;
-      display: flex; gap: 0.5rem; align-items: flex-start;
-    }
-    .bullet-item:first-child { border-top: none; }
-    .bullet-flag {
-      font-size: 0.62rem; background: #0a1525; color: #4488ff;
-      border: 1px solid #4488ff30; border-radius: 3px;
-      padding: 1px 5px; white-space: nowrap; flex-shrink: 0; margin-top: 2px;
-    }
 
     /* ── rejection bars ── */
     .pattern-list {
@@ -270,16 +252,6 @@
     </div>
   </div>
 
-  <div class="detail-row">
-    <div class="section">
-      <h2>Coding Wisdom</h2>
-      <div class="bullet-list" id="system-wisdom-bullets"></div>
-    </div>
-    <div class="section">
-      <h2>AC Wisdom</h2>
-      <div class="bullet-list" id="story-wisdom-bullets"></div>
-    </div>
-  </div>
 
 
   <script>
@@ -444,34 +416,20 @@
         css.map(c => checkRow(c.name, c.pass, c.detail)).join('') ||
         '<div class="check-row"><div class="check-name" style="color:#999">No data</div></div>';
 
-      // ── Wisdom Quality ─────────────────────────────────────────────────────
-      function renderWisdom(containerId, wq) {
-        if (!wq || wq.error) {
-          document.getElementById(containerId).innerHTML =
-            `<div class="bullet-item" style="color:#999">${wq?.error || 'Unavailable'}</div>`;
-          return;
-        }
-        const flagMap = {};
-        for (const f of wq.flagged || []) flagMap[f.bullet] = f.reasons;
-        const html = (wq.bullets || []).map(b => {
-          const reasons = flagMap[b];
-          const flag = reasons ? `<span class="bullet-flag">${esc(reasons.join(', '))}</span>` : '';
-          return `<div class="bullet-item">${flag}<span>${esc(b.replace(/^[•\-]\s*/, ''))}</span></div>`;
-        }).join('') || '<div class="bullet-item" style="color:#999">No bullets</div>';
-        const meta = `<div class="bullet-item" style="border-top:1px solid #1c1c1c;margin-top:0.2rem">
-          <span style="font-size:0.65rem;color:#555">
-            ${wq.count} bullets · ${fmtDate(wq.synthesized_at)} · ${wq.finding_count ?? '?'} findings
-          </span>
-        </div>`;
-        document.getElementById(containerId).innerHTML = html + meta;
-      }
 
-      const wq = diag.wisdom_quality || {};
-      renderWisdom('system-wisdom-bullets', wq.coding);
-      renderWisdom('story-wisdom-bullets', wq.ac);
     }
 
 
+    async function checkBaselineStatus() {
+      try {
+        const res = await fetch('/baseline/status');
+        const d = await res.json();
+        const btn = document.getElementById('restore-btn');
+        btn.disabled = d.at_baseline;
+        btn.style.opacity = d.at_baseline ? '0.35' : '';
+        btn.style.cursor = d.at_baseline ? 'default' : '';
+      } catch(e) {}
+    }
     document.getElementById('restore-btn').addEventListener('click', async () => {
       const btn = document.getElementById('restore-btn');
       btn.textContent = 'restoring…'; btn.disabled = true;
@@ -479,9 +437,10 @@
         const r = await fetch('/baseline/restore', { method: 'POST' });
         const d = await r.json();
         btn.textContent = d.ok ? 'restored ✓' : 'failed';
-        setTimeout(() => { btn.textContent = 'Restore to Baseline'; btn.disabled = false; }, 2000);
+        setTimeout(() => { btn.textContent = 'Restore to Baseline'; checkBaselineStatus(); }, 2000);
       } catch(e) { btn.textContent = 'error'; btn.disabled = false; }
     });
+    checkBaselineStatus();
 
     document.getElementById('readiness-refresh').addEventListener('click', loadReadiness);
     loadReadiness();

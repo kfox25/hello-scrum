@@ -198,7 +198,8 @@ def health_diagnostics():
         def chk(name, ok, detail=None):
             css_checks.append({"name": name, "pass": ok, "detail": detail})
 
-        css_after = bool(re.search(r'[a-zA-Z.#][^<{]*\{[^}]*\}', after))
+        after_no_script = re.sub(r'<script[\s\S]*?</script>', '', after)
+        css_after = bool(re.search(r'[a-zA-Z.#][^<{]*\{[^}]*\}', after_no_script))
         chk("No CSS outside style block", not css_after,
             "CSS found after </style>" if css_after else None)
 

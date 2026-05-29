@@ -1,6 +1,6 @@
 {
-  "version": "0.1.188",
-  "deployed": "2026-05-28 21:46:26 CT",
+  "version": "0.1.189",
+  "deployed": "2026-05-28 21:46:42 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -948,6 +948,11 @@
       "version": "0.1.188",
       "date": "2026-05-28",
       "change": "Add custom scrollbar styling with brand green (#00ff99) thumb and dark track for visual cohesion"
+    },
+    {
+      "version": "0.1.189",
+      "date": "2026-05-28",
+      "change": "Change tagline text color to softer grey (#aaa) for reduced visual harshness"
     }
   ]
 }

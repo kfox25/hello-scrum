@@ -482,9 +482,13 @@ def messenger_meeting():
 
         all_stories = [i for i in items if not i.get("opportunity")]
         opportunities = [i for i in items if i.get("opportunity")]
-        # Active stories first so they are never cut off by the slice limit
+        # Active stories always included; done/failed capped at 15 most recent to avoid
+        # old test runs poisoning the messenger search
         active   = [i for i in all_stories if i.get("in_sprint") or i.get("status") == "pending"]
-        inactive = [i for i in all_stories if i not in active]
+        inactive = sorted(
+            [i for i in all_stories if i not in active],
+            key=lambda x: x.get("started") or 0, reverse=True
+        )[:5]
         ordered  = active + inactive
         stories_context = "\n".join(
             f"- [{i['id']}] {i.get('idea', '')}"
@@ -570,7 +574,7 @@ Rules:
         for ns in result.get("new_stories", []):
             ns_kw = kw(ns)
             best_score, best_item, best_is_opp = 0.0, None, False
-            for i in all_stories + opportunities:
+            for i in active + inactive + opportunities:
                 story_kw = kw(i.get("idea", ""))
                 union = ns_kw | story_kw
                 if not union:

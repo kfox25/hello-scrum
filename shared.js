@@ -1,3 +1,12 @@
+(function () {
+  const path = window.location.pathname;
+  document.querySelectorAll('.top-nav a').forEach(link => {
+    const lp = new URL(link.href, location.href).pathname;
+    if (lp === path || (path === '/' && lp === '/') || (path.endsWith(lp) && lp !== '/'))
+      link.classList.add('active');
+  });
+})();
+
 (async function () {
   try {
     const res  = await fetch('/health/score');

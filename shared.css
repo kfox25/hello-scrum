@@ -25,6 +25,7 @@ body {
   text-decoration: none;
 }
 .top-nav a:hover { background: #0d3320; border-color: #00ff99; }
+.top-nav a.active { background: #0d3320; border-color: #00ff9980; color: #fff; }
 .top-nav a[href="health.html"] { color: #555; border-color: #55555540; }
 
 #health-widget {

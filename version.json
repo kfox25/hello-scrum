@@ -1,6 +1,6 @@
 {
-  "version": "0.1.196",
-  "deployed": "2026-05-29 08:48:23 CT",
+  "version": "0.1.197",
+  "deployed": "2026-05-29 08:48:50 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -988,6 +988,11 @@
       "version": "0.1.196",
       "date": "2026-05-29",
       "change": "Add visible focus ring using green accent color for keyboard accessibility on all interactive elements, suppressed on mouse click via :focus-visible"
+    },
+    {
+      "version": "0.1.197",
+      "date": "2026-05-29",
+      "change": "Reduce opacity of .meta deployment line to de-emphasize it visually"
     }
   ]
 }

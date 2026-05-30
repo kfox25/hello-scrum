@@ -254,9 +254,11 @@
         <div class="ac-inputs" id="resultRisks"></div>
 
         <div class="result-actions">
+          <button class="btn" onclick="addToSprint(this)">Add to Sprint →</button>
           <button class="btn btn-copy" onclick="copyResult()">Copy</button>
           <button class="restart-link" onclick="restart()">start over</button>
           <span class="copy-confirm" id="copyConfirm">copied</span>
+          <span class="copy-confirm" id="sprintConfirm"></span>
         </div>
       </div>
 
@@ -397,6 +399,34 @@
       } finally {
         btn.disabled = false;
         setStatus('statusQuestions', '', '');
+      }
+    }
+
+    async function addToSprint(btn) {
+      const story = document.getElementById('resultStory').value.trim();
+      const ac    = [...document.querySelectorAll('#resultAC textarea')].map(el => el.value.trim()).filter(Boolean);
+      if (!story) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Adding...';
+      try {
+        const res = await fetch('/inception/add-to-sprint', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ intent: currentIntent, story, acceptance_criteria: ac }),
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        const el = document.getElementById('sprintConfirm');
+        el.textContent = 'added to sprint ✓';
+        el.style.display = 'inline';
+        btn.textContent = 'Add to Sprint →';
+        btn.disabled = false;
+        setTimeout(() => { el.style.display = 'none'; }, 3000);
+      } catch (e) {
+        btn.textContent = 'Error — retry';
+        btn.disabled = false;
       }
     }
 

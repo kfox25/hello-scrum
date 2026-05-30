@@ -1302,6 +1302,39 @@ def save_backlog():
     return jsonify({"ok": True})
 
 
+@app.route("/inception/add-to-sprint", methods=["POST"])
+def inception_add_to_sprint():
+    try:
+        data = request.get_json()
+        intent = (data or {}).get("intent", "").strip()
+        story  = (data or {}).get("story", "").strip()
+        ac     = (data or {}).get("acceptance_criteria", [])
+        if not story:
+            return jsonify({"error": "No story provided"}), 400
+
+        item_id = re.sub(r"[^a-z0-9]+", "-", intent.lower())[:48].strip("-") or str(int(time.time() * 1000))
+
+        new_item = {
+            "id": item_id,
+            "idea": intent,
+            "story": story,
+            "acceptance_criteria": ac,
+            "status": "pending",
+            "in_sprint": True,
+            "source": "inception",
+        }
+
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+            backlog = json.load(f)
+        backlog.setdefault("items", []).insert(0, new_item)
+        with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
+            json.dump(backlog, f, indent=2)
+
+        return jsonify({"ok": True, "id": item_id})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/inception/clarify", methods=["POST"])
 def inception_clarify():
     try:

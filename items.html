@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google" content="notranslate" />
+  <title>Item Lifecycle — Hello Scrum</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { padding: 4rem 2rem 3rem 10rem; }
+
+    .page-title {
+      color: #00ff99; font-size: 2rem; font-family: monospace;
+      letter-spacing: 0.08em; padding: 0.75rem 0 0.1rem;
+    }
+    .page-subtitle {
+      color: #3a7a5a; font-size: 0.78rem; letter-spacing: 0.15em;
+      text-transform: uppercase; margin-bottom: 1rem;
+    }
+
+    .page-layout {
+      display: flex; gap: 2rem; align-items: flex-start;
+      border-top: 1px solid #222; padding-top: 1rem;
+    }
+    .col { flex: 1; min-width: 0; padding-bottom: 2rem; }
+
+    .col-header { margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #222; }
+    h2 { margin: 0 0 0.2rem; font-size: 1.1rem; }
+    h2.messenger { color: #00ff99; }
+    h2.watercooler { color: #4488ff; }
+    h2.inception { color: #cc88ff; }
+    .subtitle { color: #888; font-size: 0.8rem; margin-top: 0.2rem; }
+
+    /* Pipeline */
+    .pipeline { position: relative; }
+    .pipeline::before {
+      content: '';
+      position: absolute;
+      left: 1.6rem; top: 1.5rem; bottom: 1.5rem;
+      width: 2px;
+      background: linear-gradient(to bottom, #00ff9940, #00ff9920, #00ff9940);
+    }
+    .col:nth-child(2) .pipeline::before { background: linear-gradient(to bottom, #4488ff40, #4488ff20, #4488ff40); }
+    .col:nth-child(3) .pipeline::before { background: linear-gradient(to bottom, #cc88ff40, #cc88ff20, #cc88ff40); }
+
+    .step { display: flex; gap: 1.1rem; margin-bottom: 0.5rem; position: relative; }
+    .step-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+    .step-num {
+      width: 3.2rem; height: 3.2rem; border-radius: 50%;
+      background: #1a1a1a; border: 2px solid #2a2a2a;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; color: #555; flex-shrink: 0;
+      position: relative; z-index: 1;
+    }
+    .step.ai     .step-num { border-color: #00ff9960; color: #00ff99; background: #0a1f12; }
+    .step.human  .step-num { border-color: #ffcc0060; color: #ffcc00; background: #1a1a00; }
+    .step.system .step-num { border-color: #4488ff60; color: #4488ff; background: #0a0f1f; }
+    .step.purple .step-num { border-color: #cc88ff60; color: #cc88ff; background: #1a0a1f; }
+    .connector { width: 2px; flex: 1; min-height: 1.25rem; background: #1a1a1a; margin: 0 auto; }
+
+    .step-card {
+      background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px;
+      padding: 0.75rem 1rem; flex: 1; margin-bottom: 0;
+    }
+    .step.ai     .step-card { border-color: #00ff9920; }
+    .step.human  .step-card { border-color: #ffcc0020; }
+    .step.system .step-card { border-color: #4488ff20; }
+    .step.purple .step-card { border-color: #cc88ff20; }
+
+    .step-name {
+      font-size: 0.9rem; font-weight: 600; color: #e0e0e0;
+      margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .step-desc { font-size: 0.8rem; color: #888; line-height: 1.5; }
+    .step-fields {
+      margin: 0.4rem 0 0; padding: 0.4rem 0.6rem;
+      background: #111; border-radius: 4px; border: 1px solid #222;
+      font-size: 0.73rem; color: #555; font-family: monospace; line-height: 1.7;
+    }
+    .field-key { color: #4488ff80; }
+    .field-val { color: #888; }
+
+    .badge {
+      font-size: 0.65rem; padding: 0.15rem 0.45rem; border-radius: 3px;
+      font-weight: 500; letter-spacing: 0.04em;
+    }
+    .badge-ai     { background: #0a1f12; color: #00ff99; border: 1px solid #00ff9940; }
+    .badge-human  { background: #1a1a00; color: #ffcc00; border: 1px solid #ffcc0040; }
+    .badge-system { background: #0a0f1f; color: #4488ff; border: 1px solid #4488ff40; }
+    .badge-purple { background: #1a0a1f; color: #cc88ff; border: 1px solid #cc88ff40; }
+
+    /* Comparison table */
+    .comparison { margin-top: 2rem; border-top: 1px solid #222; padding-top: 1.5rem; }
+    .comparison h3 { color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 0.75rem; }
+    .cmp-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; max-width: 860px; }
+    .cmp-table th {
+      text-align: left; color: #444; font-size: 0.65rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 0.4rem 0.75rem; border-bottom: 1px solid #222;
+    }
+    .cmp-table td {
+      padding: 0.45rem 0.75rem; color: #777;
+      border-bottom: 1px solid #161616; vertical-align: top; line-height: 1.4;
+    }
+    .cmp-table tr:last-child td { border-bottom: none; }
+    .cmp-table td:first-child { color: #555; white-space: nowrap; font-size: 0.72rem; }
+    .cmp-table td.messenger  { color: #00ff9980; }
+    .cmp-table td.watercooler { color: #4488ff80; }
+    .cmp-table td.inception  { color: #cc88ff80; }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="index.html">App</a>
+    <a href="intake.html">Intake</a>
+    <a href="/">Backlog</a>
+    <a href="active.html">Live Work</a>
+    <a href="audit.html">Audit</a>
+    <a href="retro.html">Retro</a>
+    <a href="workflow.html">Workflow</a>
+    <a href="prompts.html">Prompts</a>
+    <a href="notes.html">Notes</a>
+    <a href="health.html">Health</a>
+  </nav>
+
+  <div class="page-title">Item Lifecycle</div>
+  <div class="page-subtitle">End-to-end — from idea to deployed code</div>
+
+  <div class="page-layout">
+
+    <!-- Column 1: Teams Messenger -->
+    <div class="col">
+      <div class="col-header">
+        <h2 class="messenger">Teams Messenger</h2>
+        <div class="subtitle">Message → classify → opportunity → elaboration → sprint</div>
+      </div>
+      <div class="pipeline">
+
+        <div class="step human">
+          <div class="step-left"><div class="step-num">1</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Send message <span class="badge badge-human">Human</span></div>
+            <div class="step-desc">Human sends a freeform message in the Teams Messenger panel.</div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left"><div class="step-num">2</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Classify idea <span class="badge badge-ai">Haiku</span></div>
+            <div class="step-desc">AI classifies the message. If it's a story idea, returns 2 suggested titles for the human to choose from.</div>
+          </div>
+        </div>
+
+        <div class="step human">
+          <div class="step-left"><div class="step-num">3</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Choose title <span class="badge badge-human">Human</span></div>
+            <div class="step-desc">Human selects one of the two suggested titles. This becomes the <code>idea</code> field.</div>
+            <div class="step-fields">
+              <span class="field-key">idea:</span> <span class="field-val">"Change homepage title color to red"</span><br>
+              <span class="field-key">status:</span> <span class="field-val">pending</span><br>
+              <span class="field-key">opportunity:</span> <span class="field-val">true</span><br>
+              <span class="field-key">source:</span> <span class="field-val">watercooler</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step human">
+          <div class="step-left"><div class="step-num">4</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Drag to Backlog <span class="badge badge-human">Human</span></div>
+            <div class="step-desc">Human drags item from Opportunity column to Backlog on board.html. Auto-elaboration fires immediately.</div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left"><div class="step-num">5</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Auto-elaboration <span class="badge badge-ai">Haiku</span></div>
+            <div class="step-desc">Haiku generates a user story and acceptance criteria from the idea. Saved to item automatically.</div>
+            <div class="step-fields">
+              <span class="field-key">story:</span> <span class="field-val">"As a product manager, I want..."</span><br>
+              <span class="field-key">acceptance_criteria:</span> <span class="field-val">["h1 displays red", ...]</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step human">
+          <div class="step-left"><div class="step-num">6</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Drag to Sprint <span class="badge badge-human">Human</span></div>
+            <div class="step-desc">Human drags item to Sprint column. Item is now queued for execution.</div>
+            <div class="step-fields">
+              <span class="field-key">in_sprint:</span> <span class="field-val">true</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left"><div class="step-num">7</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Sprint executes <span class="badge badge-ai">Sonnet</span></div>
+            <div class="step-desc">Agent implements the <strong>story</strong> guided by the acceptance criteria. Writes patches to index.html.</div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left"><div class="step-num">8</div></div>
+          <div class="step-card">
+            <div class="step-name">Hermes review <span class="badge badge-ai">Hermes</span></div>
+            <div class="step-desc">Hermes checks code review + AC compliance. Approve → deployed. Reject → failed.</div>
+            <div class="step-fields">
+              <span class="field-key">status:</span> <span class="field-val">done | failed</span><br>
+              <span class="field-key">hermes_verdict:</span> <span class="field-val">approve | reject</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Column 2: Watercooler -->
+    <div class="col">
+      <div class="col-header">
+        <h2 class="watercooler">Watercooler</h2>
+        <div class="subtitle">Direct entry → opportunity → elaboration → sprint</div>
+      </div>
+      <div class="pipeline">
+
+        <div class="step human">
+          <div class="step-left"><div class="step-num">1</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Type idea <span class="badge badge-human">Human</span></div>
+            <div class="step-desc">Human types a freeform idea directly into the Watercooler panel and submits.</div>
+          </div>
+        </div>
+
+        <div class="step system">
+          <div class="step-left"><div class="step-num">2</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Item created <span class="badge badge-system">System</span></div>
+            <div class="step-desc">Item added directly to Opportunity Backlog. No AI classification step — the typed text becomes the idea.</div>
+            <div class="step-fields">
+              <span class="field-key">idea:</span> <span class="field-val">"Add letter-spacing to version badge"</span><br>
+              <span class="field-key">status:</span> <span class="field-val">pending</span><br>
+              <span class="field-key">opportunity:</span> <span class="field-val">true</span><br>
+              <span class="field-key">source:</span> <span class="field-val">watercooler</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step human">
+          <div class="step-left"><div class="step-num">3</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Drag to Backlog <span class="badge badge-human">Human</span></div>
+            <div class="step-desc">Human drags item from Opportunity to Backlog. Auto-elaboration fires immediately.</div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left"><div class="step-num">4</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Auto-elaboration <span class="badge badge-ai">Haiku</span></div>
+            <div class="step-desc">Haiku generates a user story and acceptance criteria from the idea. Saved to item automatically.</div>
+            <div class="step-fields">
+              <span class="field-key">story:</span> <span class="field-val">"As a developer, I want..."</span><br>
+              <span class="field-key">acceptance_criteria:</span> <span class="field-val">["letter-spacing applied", ...]</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step human">
+          <div class="step-left"><div class="step-num">5</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Drag to Sprint <span class="badge badge-human">Human</span></div>
+            <div class="step-desc">Human drags item to Sprint column.</div>
+            <div class="step-fields">
+              <span class="field-key">in_sprint:</span> <span class="field-val">true</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left"><div class="step-num">6</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Sprint executes <span class="badge badge-ai">Sonnet</span></div>
+            <div class="step-desc">Agent implements the <strong>story</strong> guided by the acceptance criteria.</div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left"><div class="step-num">7</div></div>
+          <div class="step-card">
+            <div class="step-name">Hermes review <span class="badge badge-ai">Hermes</span></div>
+            <div class="step-desc">Hermes checks code review + AC compliance. Approve → deployed. Reject → failed.</div>
+            <div class="step-fields">
+              <span class="field-key">status:</span> <span class="field-val">done | failed</span><br>
+              <span class="field-key">hermes_verdict:</span> <span class="field-val">approve | reject</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Column 3: Inception -->
+    <div class="col">
+      <div class="col-header">
+        <h2 class="inception">Inception</h2>
+        <div class="subtitle">Intent → Unit → Stories → Bolts → sprint</div>
+      </div>
+      <div class="pipeline">
+
+        <div class="step human">
+          <div class="step-left"><div class="step-num">1</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Enter intent <span class="badge badge-human">Human</span></div>
+            <div class="step-desc">Human enters a high-level intent on the Inception page.</div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left"><div class="step-num">2</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Clarifying questions <span class="badge badge-ai">Haiku</span></div>
+            <div class="step-desc">AI generates 3 targeted questions to remove ambiguity from the intent.</div>
+          </div>
+        </div>
+
+        <div class="step human">
+          <div class="step-left"><div class="step-num">3</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Answer questions <span class="badge badge-human">Human</span></div>
+            <div class="step-desc">Human answers all 3 questions to scope the work precisely.</div>
+          </div>
+        </div>
+
+        <div class="step purple">
+          <div class="step-left"><div class="step-num">4</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Elaborate <span class="badge badge-purple">Sonnet</span></div>
+            <div class="step-desc">AI decomposes the intent into a full Unit with Stories, Bolts, NFRs, and Risks.</div>
+            <div class="step-fields">
+              <span class="field-key">unit:</span> <span class="field-val">{name, domain}</span><br>
+              <span class="field-key">stories:</span> <span class="field-val">[{story, idea, ac}]</span><br>
+              <span class="field-key">bolts:</span> <span class="field-val">[{name, story_indices}]</span><br>
+              <span class="field-key">nfrs, risks</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step human">
+          <div class="step-left"><div class="step-num">5</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Review &amp; edit <span class="badge badge-human">Human</span></div>
+            <div class="step-desc">Human reviews stories, agent tasks, and AC. Edits any field before adding to sprint.</div>
+          </div>
+        </div>
+
+        <div class="step human">
+          <div class="step-left"><div class="step-num">6</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Add to Sprint <span class="badge badge-human">Human</span></div>
+            <div class="step-desc">Human adds a bolt (or all stories) to the sprint. Each story becomes one sprint item with all fields stored.</div>
+            <div class="step-fields">
+              <span class="field-key">idea:</span> <span class="field-val">"Add leaderboard HTML to index.html"</span><br>
+              <span class="field-key">story:</span> <span class="field-val">"As a developer, I want..."</span><br>
+              <span class="field-key">acceptance_criteria:</span> <span class="field-val">[...]</span><br>
+              <span class="field-key">in_sprint:</span> <span class="field-val">true</span><br>
+              <span class="field-key">source:</span> <span class="field-val">inception</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left"><div class="step-num">7</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Sprint executes <span class="badge badge-ai">Sonnet</span></div>
+            <div class="step-desc">Agent implements the <strong>story</strong> guided by the acceptance criteria. The <code>idea</code> provides implementation context.</div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left"><div class="step-num">8</div></div>
+          <div class="step-card">
+            <div class="step-name">Hermes review <span class="badge badge-ai">Hermes</span></div>
+            <div class="step-desc">Hermes checks code review + AC compliance. Approve → deployed. Reject → failed.</div>
+            <div class="step-fields">
+              <span class="field-key">status:</span> <span class="field-val">done | failed</span><br>
+              <span class="field-key">hermes_verdict:</span> <span class="field-val">approve | reject</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Comparison table -->
+  <div class="comparison">
+    <h3>Comparison</h3>
+    <table class="cmp-table">
+      <thead>
+        <tr>
+          <th>Aspect</th>
+          <th>Teams Messenger</th>
+          <th>Watercooler</th>
+          <th>Inception</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Entry point</td>
+          <td class="messenger">Teams Messenger panel</td>
+          <td class="watercooler">Watercooler panel</td>
+          <td class="inception">Inception page</td>
+        </tr>
+        <tr>
+          <td>AI at entry</td>
+          <td class="messenger">Haiku classifies + suggests 2 titles</td>
+          <td class="watercooler">None — direct to backlog</td>
+          <td class="inception">Haiku asks clarifying questions</td>
+        </tr>
+        <tr>
+          <td>Story + AC source</td>
+          <td class="messenger">Auto-elaboration on drag to Backlog</td>
+          <td class="watercooler">Auto-elaboration on drag to Backlog</td>
+          <td class="inception">Sonnet elaboration in Inception</td>
+        </tr>
+        <tr>
+          <td>Human review of story</td>
+          <td class="messenger">No — auto-generated, goes straight in</td>
+          <td class="watercooler">No — auto-generated, goes straight in</td>
+          <td class="inception">Yes — human edits before adding to sprint</td>
+        </tr>
+        <tr>
+          <td>Sprint entry</td>
+          <td class="messenger">Manual drag to Sprint column</td>
+          <td class="watercooler">Manual drag to Sprint column</td>
+          <td class="inception">Add to Sprint button (per bolt or all)</td>
+        </tr>
+        <tr>
+          <td>Agent executes on</td>
+          <td class="messenger">story + ac</td>
+          <td class="watercooler">story + ac</td>
+          <td class="inception">story + ac (idea provides context)</td>
+        </tr>
+        <tr>
+          <td>NFRs + Risks</td>
+          <td class="messenger">Not captured</td>
+          <td class="watercooler">Not captured</td>
+          <td class="inception">Generated, shown in Inception</td>
+        </tr>
+        <tr>
+          <td>Unit / domain context</td>
+          <td class="messenger">None</td>
+          <td class="watercooler">None</td>
+          <td class="inception">Unit name + DDD domain label</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script src="shared.js"></script>
+</body>
+</html>

@@ -35,14 +35,16 @@ AGENT_LOG_FILE = os.path.join(BASE, "agent_log.json")
 
 INCEPTION_CLARIFY_PROMPT = """You are an AI-DLC Inception assistant. Given a high-level intent, generate exactly 3 targeted clarifying questions that will produce sharper user stories and acceptance criteria. Focus on: who the primary user is, what specific outcome success looks like, and any constraints or existing context to be aware of. Return JSON only (no markdown): {"questions": ["question 1", "question 2", "question 3"]}"""
 
-INCEPTION_ELABORATE_PROMPT = """You are an AI-DLC Inception assistant. Given a high-level intent and clarifying answers, produce all four Inception artifacts. Return JSON only (no markdown):
-{"story": "As a <role>, I want <goal> so that <benefit>.", "acceptance_criteria": ["criterion 1", "criterion 2", "criterion 3"], "nfrs": ["NFR 1", "NFR 2"], "risks": ["Risk 1", "Risk 2"]}
+INCEPTION_ELABORATE_PROMPT = """You are an AI-DLC Inception assistant. Given a high-level intent and clarifying answers, decompose into one Unit with 2-3 Stories and 1-2 suggested Bolts (sprint groupings). Return JSON only (no markdown):
+{"unit": {"name": "Short Feature Name", "domain": "Bounded Context Label"}, "stories": [{"story": "As a <role>, I want <goal> so that <benefit>.", "idea": "One-line implementation instruction for the agent", "acceptance_criteria": ["testable criterion 1", "testable criterion 2", "testable criterion 3"]}, {"story": "As a <role>, I want <goal> so that <benefit>.", "idea": "One-line implementation instruction for the agent", "acceptance_criteria": ["testable criterion 1", "testable criterion 2"]}], "bolts": [{"name": "Bolt 1", "story_indices": [0, 1], "rationale": "Why these stories run together in one sprint"}, {"name": "Bolt 2", "story_indices": [2], "rationale": "Why this runs as a separate sprint"}], "nfrs": ["NFR 1", "NFR 2"], "risks": ["Risk 1", "Risk 2"]}
 
 Rules:
-- story: one concise user story sentence
-- acceptance_criteria: 3-4 short, testable statements using details from the clarification answers
-- nfrs: 2-3 non-functional requirements (performance, security, scalability, accessibility, etc.) relevant to this story
-- risks: 2-3 risk descriptions relevant to this story (technical risks, business risks, compliance concerns)"""
+- unit.name: 2-4 word feature name
+- unit.domain: DDD bounded context label (e.g. "Sprint Performance", "Developer Experience", "Backlog Management")
+- stories: 2-3 user stories; each has a human-readable story, a short agent-facing idea, and 2-4 testable AC
+- bolts: 1-2 suggested sprint groupings; story_indices is a 0-based array referencing the stories array; a bolt runs its stories sequentially
+- nfrs: 2-3 non-functional requirements for the whole unit
+- risks: 2-3 risks for the whole unit"""
 
 STORY_ELABORATION_PROMPT = """You are a scrum story writer. Given a raw idea, write a user story and acceptance criteria.
 
@@ -154,9 +156,9 @@ def retro_page():
     return send_file(os.path.join(BASE, "retro.html"))
 
 
-@app.route("/messenger.html")
+@app.route("/intake.html")
 def messenger_page():
-    return send_file(os.path.join(BASE, "messenger.html"))
+    return send_file(os.path.join(BASE, "intake.html"))
 
 
 @app.route("/notes.html")
@@ -684,7 +686,8 @@ def apply_story_update():
 def messenger_choose():
     try:
         data = request.get_json()
-        story = (data or {}).get("story", "").strip()
+        story  = (data or {}).get("story", "").strip()
+        source = (data or {}).get("source", "watercooler")
         if not story:
             return jsonify({"reply": "No story provided."})
 
@@ -696,7 +699,7 @@ def messenger_choose():
             "status": "pending",
             "in_sprint": False,
             "opportunity": True,
-            "source": "watercooler",
+            "source": source,
         }
         backlog.setdefault("items", []).insert(0, new_item)
         with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
@@ -1332,6 +1335,57 @@ def save_backlog():
     return jsonify({"ok": True})
 
 
+@app.route("/inception/add-stories-to-sprint", methods=["POST"])
+def inception_add_stories_to_sprint():
+    try:
+        data = request.get_json()
+        stories = (data or {}).get("stories", [])
+        if not stories:
+            return jsonify({"error": "No stories provided"}), 400
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+            backlog = json.load(f)
+        added = []
+        for s in stories:
+            idea  = s.get("idea", "").strip()
+            story = s.get("story", "").strip()
+            ac    = s.get("acceptance_criteria", [])
+            if not idea:
+                continue
+            item_id = re.sub(r"[^a-z0-9]+", "-", idea.lower())[:48].strip("-") or str(int(time.time() * 1000))
+            backlog.setdefault("items", []).insert(0, {
+                "id": item_id,
+                "idea": idea,
+                "story": story,
+                "acceptance_criteria": ac,
+                "status": "pending",
+                "in_sprint": True,
+                "source": "inception",
+            })
+            added.append(item_id)
+        with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
+            json.dump(backlog, f, indent=2)
+        return jsonify({"ok": True, "count": len(added), "ids": added})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/backlog/mark-pending", methods=["POST"])
+def mark_pending():
+    try:
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+            backlog = json.load(f)
+        count = 0
+        for item in backlog.get("items", []):
+            if item.get("status") in ("done", "failed"):
+                item["status"] = "pending"
+                count += 1
+        with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
+            json.dump(backlog, f, indent=2)
+        return jsonify({"ok": True, "count": count})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/inception/add-to-sprint", methods=["POST"])
 def inception_add_to_sprint():
     try:
@@ -1411,8 +1465,8 @@ def inception_elaborate():
 
         client = anthropic.Anthropic()
         response = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=800,
+            model="claude-sonnet-4-6",
+            max_tokens=2000,
             system=INCEPTION_ELABORATE_PROMPT,
             messages=[{"role": "user", "content": intent + qna_section + wisdom_section}],
         )
@@ -1560,6 +1614,17 @@ def start_sprint():
         except Exception:
             pass
         try:
+            with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+                _bl = json.load(f)
+            _snum = _bl.get("sprint_number", 1)
+            for _item in _bl.get("items", []):
+                if _item.get("in_sprint") and _item.get("status") == "pending":
+                    _item["sprint_number"] = _snum
+            with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
+                json.dump(_bl, f, indent=2)
+        except Exception as _e:
+            print(f"[sprint stamp error] {_e}", flush=True)
+        try:
             proc = subprocess.Popen(
                 ["python", "agent.py", "--sprint"],
                 stdout=subprocess.PIPE,
@@ -1577,6 +1642,14 @@ def start_sprint():
         finally:
             agent_running = False
             line_queue.put(None)  # sentinel — SSE stream can close now
+            try:
+                with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+                    _bl = json.load(f)
+                _bl["sprint_number"] = _bl.get("sprint_number", 1) + 1
+                with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
+                    json.dump(_bl, f, indent=2)
+            except Exception as _e:
+                print(f"[sprint increment error] {_e}", flush=True)
             # Run retro in a separate daemon thread so SSE closes immediately
             sprint_result = os.path.join(BASE, "sprint_result.json")
             if os.path.exists(sprint_result):

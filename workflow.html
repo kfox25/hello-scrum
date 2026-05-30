@@ -8,12 +8,31 @@
   <link rel="stylesheet" href="shared.css">
   <style>
     body { padding: 4rem 2rem 2rem 10rem; }
+
+    .page-title {
+      color: #00ff99; font-size: 1.8rem; font-family: monospace;
+      letter-spacing: 0.08em; margin-bottom: 0.25rem;
+    }
+    .page-sub { color: #555; font-size: 0.8rem; margin-bottom: 2rem; }
+
+    .workflow-grid {
+      display: grid; grid-template-columns: 240px 240px; gap: 1rem; max-width: 500px;
+    }
+    .workflow-card {
+      background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px;
+      padding: 1.25rem 1.5rem; width: 240px; text-decoration: none;
+      display: flex; flex-direction: column; gap: 0.4rem;
+      transition: border-color 0.15s;
+    }
+    .workflow-card:hover { border-color: #00ff9940; }
+    .workflow-card-title { color: #00ff99; font-size: 0.95rem; font-family: monospace; font-weight: 600; }
+    .workflow-card-sub   { color: #555; font-size: 0.75rem; line-height: 1.4; }
   </style>
 </head>
 <body>
   <nav class="top-nav">
     <a href="index.html">App</a>
-    <a href="messenger.html">Messenger</a>
+    <a href="intake.html">Intake</a>
     <a href="/">Backlog</a>
     <a href="active.html">Live Work</a>
     <a href="audit.html">Audit</a>
@@ -24,6 +43,27 @@
     <a href="health.html">Health</a>
   </nav>
 
+  <div class="page-title">Workflows</div>
+  <div class="page-sub">Reference guides for how hello-scrum operates</div>
+
+  <div class="workflow-grid">
+    <a class="workflow-card" href="chad.html">
+      <div class="workflow-card-title">Chad</div>
+      <div class="workflow-card-sub">Additional operating model reference</div>
+    </a>
+    <a class="workflow-card" href="ai-dlc.html">
+      <div class="workflow-card-title">AI-DLC</div>
+      <div class="workflow-card-sub">AI-Driven Development Lifecycle — phases, artifacts, and hello-scrum mapping</div>
+    </a>
+    <a class="workflow-card" href="items.html">
+      <div class="workflow-card-title">Items</div>
+      <div class="workflow-card-sub">End-to-end lifecycle for items starting from Teams Messenger, Watercooler, and Inception</div>
+    </a>
+    <a class="workflow-card" href="jeff.html">
+      <div class="workflow-card-title">Agent Operating Model</div>
+      <div class="workflow-card-sub">Sutherland's daily operating rhythm, stack, roles, and Scrum eras</div>
+    </a>
+  </div>
 
   <script src="shared.js"></script>
 </body>

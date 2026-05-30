@@ -69,13 +69,16 @@
       color: #ffaa00;
       border: 1px solid #ffaa0060;
     }
-    #restore-btn {
+    .bottom-actions {
       position: fixed; bottom: 1.5rem; right: 1.5rem;
+      display: flex; gap: 0.5rem;
+    }
+    #restore-btn, #pending-btn {
       font-family: monospace; font-size: 0.75rem;
       background: #0b1f14; color: #00ff99; border: 1px solid #00ff9940;
       padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer;
     }
-    #restore-btn:hover { background: #0d2a1a; }
+    #restore-btn:hover, #pending-btn:hover { background: #0d2a1a; }
     #start-slow-btn:hover:not(:disabled) { background: #221800; border-color: #ffaa00; }
     #complete-btn {
       background: #1a1a1a;
@@ -165,6 +168,14 @@
 .watercooler-tag {
       font-size: 0.62rem; padding: 0.1rem 0.4rem; border-radius: 3px; flex-shrink: 0;
       background: #0a1525; color: #4499cc; border: 1px solid #4499cc30;
+    }
+    .messenger-tag {
+      font-size: 0.62rem; padding: 0.1rem 0.4rem; border-radius: 3px; flex-shrink: 0;
+      background: #0f1a25; color: #5588ff; border: 1px solid #5588ff30;
+    }
+    .inception-tag {
+      font-size: 0.62rem; padding: 0.1rem 0.4rem; border-radius: 3px; flex-shrink: 0;
+      background: #1a0a1f; color: #cc88ff; border: 1px solid #cc88ff30;
     }
     .watercooler-collapsed { }
     .card.expanded .watercooler-collapsed { display: none; }
@@ -276,7 +287,7 @@
 <body>
   <nav class="top-nav">
     <a href="index.html">App</a>
-    <a href="messenger.html">Messenger</a>
+    <a href="intake.html">Intake</a>
     <a href="/">Backlog</a>
     <a href="active.html">Live Work</a>
     <a href="audit.html">Audit</a>
@@ -354,7 +365,10 @@
   </div>
 
 
-  <button id="restore-btn">Restore to Baseline</button>
+  <div class="bottom-actions">
+    <button id="restore-btn">Restore to Baseline</button>
+    <button id="pending-btn">Mark Pending</button>
+  </div>
 
   <script>
     let backlogData = null;
@@ -369,6 +383,11 @@
       const res = await fetch('/backlog?t=' + Date.now());
       backlogData = await res.json();
       renderBoard();
+      const hasResettable = (backlogData.items || []).some(i => i.status === 'done' || i.status === 'failed');
+      const pbtn = document.getElementById('pending-btn');
+      pbtn.disabled = !hasResettable;
+      pbtn.style.opacity = hasResettable ? '' : '0.35';
+      pbtn.style.cursor = hasResettable ? '' : 'default';
     }
 
     async function persistBacklog() {
@@ -459,9 +478,14 @@
         storyLine = `<div class="card-story">${escHtml(item.story)}</div>`;
       }
 
-      const wcTag = (item.meeting_update || item.source === 'watercooler')
+      const sourceTag = item.source === 'messenger'
+        ? `<span class="messenger-tag">&#8592; messenger</span>`
+        : item.source === 'inception'
+        ? `<span class="inception-tag">&#8592; inception</span>`
+        : (item.meeting_update || item.source === 'watercooler')
         ? `<span class="watercooler-tag" title="${escHtml(item.meeting_update || 'Added from watercooler')}">&#8592; watercooler</span>`
         : '';
+      const wcTag = sourceTag;
       const lastAC = hasAC ? item.acceptance_criteria.length - 1 : -1;
       const acHtml = hasAC
         ? `<div class="card-ac">${item.acceptance_criteria.map((c, idx) => `
@@ -490,7 +514,7 @@
           ${acHtml}
           ${expandBtn}
         </div>
-        ${(item.meeting_update || item.source === 'watercooler') ? `<span class="watercooler-tag watercooler-collapsed" title="${escHtml(item.meeting_update || 'Added from watercooler')}">watercooler</span>` : ''}
+        ${item.source === 'messenger' ? `<span class="messenger-tag watercooler-collapsed">messenger</span>` : item.source === 'inception' ? `<span class="inception-tag watercooler-collapsed">inception</span>` : (item.meeting_update || item.source === 'watercooler') ? `<span class="watercooler-tag watercooler-collapsed" title="${escHtml(item.meeting_update || '')}">watercooler</span>` : ''}
         <span class="badge badge-${item.status}">${item.status}</span>
         ${retryBtn}
         ${deleteBtn}
@@ -803,6 +827,17 @@
       } catch(e) { btn.textContent = 'error'; btn.disabled = false; }
     });
     checkBaselineStatus();
+
+    document.getElementById('pending-btn').addEventListener('click', async () => {
+      const btn = document.getElementById('pending-btn');
+      btn.textContent = 'marking…'; btn.disabled = true;
+      try {
+        const r = await fetch('/backlog/mark-pending', { method: 'POST' });
+        const d = await r.json();
+        btn.textContent = d.ok ? `reset ${d.count} ✓` : 'failed';
+        setTimeout(() => { btn.textContent = 'Mark Pending'; btn.disabled = false; loadBacklog(); }, 2000);
+      } catch(e) { btn.textContent = 'error'; btn.disabled = false; }
+    });
 
     // ── Init ──────────────────────────────────────────────────────────────────
     fetch('/sprint/status').then(r => r.json()).then(d => {

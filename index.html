@@ -71,6 +71,16 @@
     .lb-table td.pass-na { color: #444; text-align: right; }
     .lb-table tr:hover td { background: #0d1a0d; }
     .lb-empty { color: #444; font-size: 0.82rem; margin-top: 0.5rem; }
+    .rank-leaderboard { margin-top: 2rem; width: 100%; max-width: 620px; }
+    .rank-leaderboard h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.75rem 0; }
+    .rank-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .rank-table th { color: #7a8099; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.35rem 0.6rem; border-bottom: 1px solid #1c2a1c; text-align: left; }
+    .rank-table th.num { text-align: right; }
+    .rank-table td { padding: 0.38rem 0.6rem; border-top: 1px solid #151515; color: #ccc; }
+    .rank-table td.num { text-align: right; color: #e8eaf0; }
+    .rank-table td.rank-num { text-align: right; color: #00ff99; font-weight: 700; }
+    .rank-table tr:hover td { background: #0d1a0d; }
+    .rank-empty { color: #444; font-size: 0.82rem; margin-top: 0.5rem; }
   </style>
 </head>
 <body>
@@ -90,8 +100,22 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.207</div>
-  <div class="meta">Last deployed: 2026-05-30 18:36:25 CT</div>
+  <div class="version" id="version-badge">v0.1.208</div>
+  <div class="meta">Last deployed: 2026-05-30 18:37:04 CT</div>
+  <div class="rank-leaderboard">
+    <h2>Sprint Leaderboard — Stories Completed</h2>
+    <table class="rank-table">
+      <thead>
+        <tr>
+          <th class="num">Rank</th>
+          <th>Sprint</th>
+          <th class="num">Stories Completed</th>
+        </tr>
+      </thead>
+      <tbody id="rank-body"></tbody>
+    </table>
+    <div class="rank-empty" id="rank-empty" style="display:none">No sprint data found.</div>
+  </div>
   <div class="leaderboard">
     <h2>Sprint Leaderboard — Pass Rate</h2>
     <table class="lb-table">
@@ -191,6 +215,58 @@
       }).join('');
     }
     loadLeaderboard();
+
+    function loadRankLeaderboard() {
+      var items = [];
+      try {
+        var raw = localStorage.getItem('scrumItems') || localStorage.getItem('backlogItems') || '[]';
+        items = JSON.parse(raw);
+        if (!Array.isArray(items)) items = [];
+      } catch(e) { items = []; }
+
+      var sprints = {};
+      items.forEach(function(item) {
+        var sprint = item.sprint || item.sprintId || item.sprintName;
+        if (!sprint) return;
+        var key = String(sprint);
+        if (!sprints[key]) sprints[key] = { done: 0 };
+        var status = (item.status || '').toLowerCase();
+        if (status === 'done' || status === 'complete' || status === 'completed') sprints[key].done++;
+      });
+
+      var keys = Object.keys(sprints).filter(function(k) { return items.some(function(i) { return String(i.sprint || i.sprintId || i.sprintName) === k; }); });
+      var rankBody = document.getElementById('rank-body');
+      var rankEmpty = document.getElementById('rank-empty');
+
+      if (keys.length === 0) {
+        rankEmpty.style.display = '';
+        rankBody.innerHTML = '';
+        return;
+      }
+      rankEmpty.style.display = 'none';
+
+      // Sort by done count descending, then sprint name ascending for ties
+      keys.sort(function(a, b) {
+        var diff = sprints[b].done - sprints[a].done;
+        if (diff !== 0) return diff;
+        return a.localeCompare(b, undefined, {numeric: true});
+      });
+
+      var html = '';
+      var rank = 1;
+      for (var i = 0; i < keys.length; i++) {
+        if (i > 0 && sprints[keys[i]].done !== sprints[keys[i-1]].done) {
+          rank = i + 1;
+        }
+        html += '<tr>' +
+          '<td class="rank-num">' + rank + '</td>' +
+          '<td>' + escHtml(keys[i]) + '</td>' +
+          '<td class="num">' + sprints[keys[i]].done + '</td>' +
+          '</tr>';
+      }
+      rankBody.innerHTML = html;
+    }
+    loadRankLeaderboard();
   </script>
 <script src="shared.js"></script>
 </body>

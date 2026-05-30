@@ -1,6 +1,6 @@
 {
-  "version": "0.1.207",
-  "deployed": "2026-05-30 18:36:25 CT",
+  "version": "0.1.208",
+  "deployed": "2026-05-30 18:37:04 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1043,6 +1043,11 @@
       "version": "0.1.207",
       "date": "2026-05-30",
       "change": "Add sprint leaderboard with pass-rate column: shows done/failed/total per sprint with color-coded pass percentage; displays '\u2014' when no done or failed items exist"
+    },
+    {
+      "version": "0.1.208",
+      "date": "2026-05-30",
+      "change": "Add stories-completed rank leaderboard: sprints sorted highest-to-lowest by completed count, with rank position (tied sprints share rank), showing sprint number and stories completed count"
     }
   ]
 }

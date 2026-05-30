@@ -58,6 +58,19 @@
     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }
     .changelog-entry .cd { color: #444; font-size: 0.73rem; }
     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }
+    .leaderboard { margin-top: 2rem; width: 100%; max-width: 620px; }
+    .leaderboard h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.75rem 0; }
+    .lb-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .lb-table th { color: #7a8099; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.35rem 0.6rem; border-bottom: 1px solid #1c2a1c; text-align: left; }
+    .lb-table th.num { text-align: right; }
+    .lb-table td { padding: 0.38rem 0.6rem; border-top: 1px solid #151515; color: #ccc; }
+    .lb-table td.num { text-align: right; color: #e8eaf0; }
+    .lb-table td.pass-high { color: #00ff99; text-align: right; font-weight: 600; }
+    .lb-table td.pass-mid { color: #f0c040; text-align: right; font-weight: 600; }
+    .lb-table td.pass-low { color: #ff5555; text-align: right; font-weight: 600; }
+    .lb-table td.pass-na { color: #444; text-align: right; }
+    .lb-table tr:hover td { background: #0d1a0d; }
+    .lb-empty { color: #444; font-size: 0.82rem; margin-top: 0.5rem; }
   </style>
 </head>
 <body>
@@ -77,8 +90,24 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.66</div>
-  <div class="meta">Last deployed: 2026-05-25 22:39:40 CT</div>
+  <div class="version" id="version-badge">v0.1.207</div>
+  <div class="meta">Last deployed: 2026-05-30 18:36:25 CT</div>
+  <div class="leaderboard">
+    <h2>Sprint Leaderboard — Pass Rate</h2>
+    <table class="lb-table">
+      <thead>
+        <tr>
+          <th>Sprint</th>
+          <th class="num">Done</th>
+          <th class="num">Failed</th>
+          <th class="num">Total</th>
+          <th class="num">Pass Rate</th>
+        </tr>
+      </thead>
+      <tbody id="lb-body"></tbody>
+    </table>
+    <div class="lb-empty" id="lb-empty" style="display:none">No sprint data found.</div>
+  </div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -104,6 +133,64 @@
         .catch(() => {});
     }
     loadChangelog();
+
+    function loadLeaderboard() {
+      // Gather items from localStorage keys used by the app
+      var items = [];
+      try {
+        var raw = localStorage.getItem('scrumItems') || localStorage.getItem('backlogItems') || '[]';
+        items = JSON.parse(raw);
+        if (!Array.isArray(items)) items = [];
+      } catch(e) { items = []; }
+
+      // Group by sprint
+      var sprints = {};
+      items.forEach(function(item) {
+        var sprint = item.sprint || item.sprintId || item.sprintName;
+        if (!sprint) return;
+        var key = String(sprint);
+        if (!sprints[key]) sprints[key] = { done: 0, failed: 0 };
+        var status = (item.status || '').toLowerCase();
+        if (status === 'done' || status === 'complete' || status === 'completed') sprints[key].done++;
+        if (status === 'failed' || status === 'fail' || status === 'blocked-failed') sprints[key].failed++;
+      });
+
+      var keys = Object.keys(sprints);
+      var tbody = document.getElementById('lb-body');
+      var emptyEl = document.getElementById('lb-empty');
+
+      if (keys.length === 0) {
+        emptyEl.style.display = '';
+        tbody.innerHTML = '';
+        return;
+      }
+      emptyEl.style.display = 'none';
+
+      // Sort sprint keys naturally
+      keys.sort(function(a, b) { return a.localeCompare(b, undefined, {numeric: true}); });
+
+      tbody.innerHTML = keys.map(function(k) {
+        var s = sprints[k];
+        var total = s.done + s.failed;
+        var passCell, passClass;
+        if (total === 0) {
+          passCell = '&mdash;';
+          passClass = 'pass-na';
+        } else {
+          var pct = Math.round((s.done / total) * 100);
+          passCell = pct + '%';
+          passClass = pct === 100 ? 'pass-high' : pct >= 50 ? 'pass-mid' : 'pass-low';
+        }
+        return '<tr>' +
+          '<td>' + escHtml(k) + '</td>' +
+          '<td class="num">' + s.done + '</td>' +
+          '<td class="num">' + s.failed + '</td>' +
+          '<td class="num">' + total + '</td>' +
+          '<td class="' + passClass + '">' + passCell + '</td>' +
+          '</tr>';
+      }).join('');
+    }
+    loadLeaderboard();
   </script>
 <script src="shared.js"></script>
 </body>

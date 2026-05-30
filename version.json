@@ -1,6 +1,6 @@
 {
-  "version": "0.1.206",
-  "deployed": "2026-05-30 11:55:28 CT",
+  "version": "0.1.207",
+  "deployed": "2026-05-30 18:36:25 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1038,6 +1038,11 @@
       "version": "0.1.206",
       "date": "2026-05-30",
       "change": "Change homepage h1 title color to red (#ff0000) to increase landing page visibility"
+    },
+    {
+      "version": "0.1.207",
+      "date": "2026-05-30",
+      "change": "Add sprint leaderboard with pass-rate column: shows done/failed/total per sprint with color-coded pass percentage; displays '\u2014' when no done or failed items exist"
     }
   ]
 }

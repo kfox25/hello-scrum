@@ -33,6 +33,11 @@ agent_running = False
 agent_lock = threading.Lock()
 AGENT_LOG_FILE = os.path.join(BASE, "agent_log.json")
 
+INCEPTION_CLARIFY_PROMPT = """You are an AI-DLC Inception assistant. Given a high-level intent, generate exactly 3 targeted clarifying questions that will produce sharper user stories and acceptance criteria. Focus on: who the primary user is, what specific outcome success looks like, and any constraints or existing context to be aware of. Return JSON only (no markdown): {"questions": ["question 1", "question 2", "question 3"]}"""
+
+INCEPTION_ELABORATE_PROMPT = """You are a scrum story writer. Given a high-level intent and clarifying answers, write a precise user story and acceptance criteria that reflect the full context provided. Return JSON only (no markdown): {"story": "As a <role>, I want <goal> so that <benefit>.", "acceptance_criteria": ["criterion 1", "criterion 2", "criterion 3", "criterion 4"]}
+Write 3-4 short, testable acceptance criteria. Use specific details from the clarification answers where relevant."""
+
 STORY_ELABORATION_PROMPT = """You are a scrum story writer. Given a raw idea, write a user story and acceptance criteria.
 
 You have access to a read_file tool. Use it when the idea references existing code elements (colors, styles, components, data structures) and you need exact values to write accurate, testable acceptance criteria. For example: if the idea mentions matching a theme color, read index.html to find the actual hex value before writing the AC.
@@ -1289,6 +1294,64 @@ def save_backlog():
     with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
     return jsonify({"ok": True})
+
+
+@app.route("/inception/clarify", methods=["POST"])
+def inception_clarify():
+    try:
+        data = request.get_json()
+        intent = (data or {}).get("intent", "").strip()
+        if not intent:
+            return jsonify({"error": "No intent provided"}), 400
+        client = anthropic.Anthropic()
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=400,
+            system=INCEPTION_CLARIFY_PROMPT,
+            messages=[{"role": "user", "content": intent}],
+        )
+        text = next((b.text for b in response.content if hasattr(b, "text")), "")
+        start, end = text.find("{"), text.rfind("}") + 1
+        return jsonify(json.loads(text[start:end]))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/inception/elaborate", methods=["POST"])
+def inception_elaborate():
+    try:
+        data = request.get_json()
+        intent = (data or {}).get("intent", "").strip()
+        qna = (data or {}).get("qna", [])
+        if not intent:
+            return jsonify({"error": "No intent provided"}), 400
+
+        qna_section = ""
+        if qna:
+            qna_section = "\n\nCLARIFICATION:\n" + "\n".join(
+                f"Q: {item['q']}\nA: {item['a']}" for item in qna if item.get("a", "").strip()
+            )
+
+        ac_wisdom_bullets = []
+        try:
+            with open(os.path.join(BASE, "ac_wisdom.json"), encoding="utf-8") as f:
+                ac_wisdom_bullets = [b.lstrip("•").strip() for b in json.load(f).get("bullets", []) if b.strip()]
+        except Exception:
+            pass
+        wisdom_section = ("\n\nAC WISDOM:\n" + "\n".join(f"- {b}" for b in ac_wisdom_bullets)) if ac_wisdom_bullets else ""
+
+        client = anthropic.Anthropic()
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=800,
+            system=INCEPTION_ELABORATE_PROMPT,
+            messages=[{"role": "user", "content": intent + qna_section + wisdom_section}],
+        )
+        text = next((b.text for b in response.content if hasattr(b, "text")), "")
+        start, end = text.find("{"), text.rfind("}") + 1
+        return jsonify(json.loads(text[start:end]))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/backlog/elaborate", methods=["POST"])

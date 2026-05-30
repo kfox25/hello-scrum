@@ -1,5 +1,31 @@
 (function () {
+  const WORKFLOW_PAGES = ['workflow.html', 'hello-scrum.html', 'ai-dlc.html', 'jeff.html', 'chad.html'];
   const path = window.location.pathname;
+  if (WORKFLOW_PAGES.some(p => path.endsWith(p))) {
+    const nav = document.createElement('div');
+    nav.className = 'wf-nav';
+    nav.innerHTML =
+      '<a href="hello-scrum.html">Hello Scrum</a>' +
+      '<a href="ai-dlc.html">AWS AI-DLC</a>' +
+      '<a href="jeff.html">Jeff</a>' +
+      '<a href="chad.html">Chad</a>';
+    nav.querySelectorAll('a').forEach(a => {
+      if (path.endsWith(a.getAttribute('href'))) a.classList.add('active');
+    });
+    document.body.appendChild(nav);
+  }
+})();
+
+(function () {
+  const path = window.location.pathname;
+
+  const btn = document.createElement('a');
+  btn.href = '/inception.html';
+  btn.textContent = 'Inception';
+  btn.className = 'inception-btn';
+  if (path.endsWith('inception.html')) btn.classList.add('active');
+  document.body.appendChild(btn);
+
   document.querySelectorAll('.top-nav a').forEach(link => {
     const lp = new URL(link.href, location.href).pathname;
     if (lp === path || (path === '/' && lp === '/') || (path.endsWith(lp) && lp !== '/'))

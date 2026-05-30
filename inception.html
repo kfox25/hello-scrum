@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google" content="notranslate" />
+  <title>Inception — Hello Scrum</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { padding: 4rem 2rem 3rem; min-height: 100vh; display: flex; flex-direction: column; }
+
+    .page-header { margin-bottom: 2rem; }
+    h1 { color: #00ff99; font-size: 1.8rem; margin-bottom: 0.25rem; }
+    .page-sub { color: #555; font-size: 0.85rem; }
+
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 1.5rem;
+      max-width: 720px;
+    }
+
+    .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #555;
+      margin-bottom: 0.5rem;
+    }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      color: #e0e0e0;
+      font-family: monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      padding: 0.75rem;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    textarea:focus, input[type="text"]:focus { outline: none; border-color: #00ff9940; }
+    textarea::placeholder, input::placeholder { color: #333; }
+
+    .btn {
+      background: #0a1f12;
+      color: #00ff99;
+      border: 1px solid #00ff9940;
+      padding: 0.55rem 1.25rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 0.85rem;
+    }
+    .btn:hover { border-color: #00ff99; background: #0d2a1a; }
+    .btn:disabled { opacity: 0.4; cursor: default; border-color: #00ff9920; }
+
+    .btn-copy {
+      background: #0a0f1f;
+      color: #4488ff;
+      border: 1px solid #4488ff40;
+    }
+    .btn-copy:hover { border-color: #4488ff; background: #0d1530; }
+
+    /* ── State: intent ── */
+    #stateIntent { display: flex; flex-direction: column; gap: 1rem; }
+
+    /* ── State: questions ── */
+    #stateQuestions { display: none; flex-direction: column; gap: 1.5rem; }
+
+    .qna-item { display: flex; flex-direction: column; gap: 0.4rem; }
+    .question-text {
+      font-size: 0.88rem;
+      color: #ccc;
+      line-height: 1.55;
+      padding: 0.6rem 0.75rem;
+      background: #0a1f12;
+      border: 1px solid #00ff9920;
+      border-radius: 4px;
+    }
+    .question-text::before {
+      content: 'Q  ';
+      color: #00ff99;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .qna-actions { display: flex; gap: 0.75rem; align-items: center; margin-top: 0.5rem; }
+
+    /* ── State: result ── */
+    #stateResult { display: none; flex-direction: column; gap: 1.25rem; }
+
+    .story-block {
+      background: #111;
+      border: 1px solid #00ff9920;
+      border-radius: 4px;
+      padding: 0.85rem 1rem;
+      font-size: 0.9rem;
+      color: #ccc;
+      line-height: 1.6;
+    }
+
+    .ac-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+    .ac-list li {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      padding: 0.5rem 0.85rem;
+      font-size: 0.85rem;
+      color: #999;
+      line-height: 1.5;
+      display: flex;
+      gap: 0.6rem;
+      align-items: baseline;
+    }
+    .ac-list li::before {
+      content: '✓';
+      color: #00ff9960;
+      flex-shrink: 0;
+      font-size: 0.75rem;
+    }
+
+    .result-actions { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+    .copy-confirm { font-size: 0.78rem; color: #00ff9980; display: none; }
+
+    .spinner {
+      display: inline-block;
+      width: 0.75rem; height: 0.75rem;
+      border: 2px solid #00ff9930;
+      border-top-color: #00ff99;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 0.4rem;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .status-line {
+      font-size: 0.78rem;
+      color: #555;
+      min-height: 1.2rem;
+    }
+    .status-line.active { color: #00ff9980; }
+    .status-line.error { color: #ff4444; }
+
+    .intent-display {
+      font-size: 0.8rem;
+      color: #444;
+      font-style: italic;
+      padding: 0.4rem 0.75rem;
+      border-left: 2px solid #2a2a2a;
+      margin-bottom: 0.25rem;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #555;
+      margin-bottom: 0.6rem;
+    }
+
+    .restart-link {
+      font-size: 0.78rem;
+      color: #444;
+      cursor: pointer;
+      text-decoration: underline;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: monospace;
+    }
+    .restart-link:hover { color: #888; }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="index.html">App</a>
+    <a href="messenger.html">Messenger</a>
+    <a href="/">Backlog</a>
+    <a href="active.html">Live Work</a>
+    <a href="audit.html">Audit</a>
+    <a href="retro.html">Retro</a>
+    <a href="workflow.html">Workflow</a>
+    <a href="prompts.html">Prompts</a>
+    <a href="notes.html">Notes</a>
+    <a href="health.html">Health</a>
+  </nav>
+
+  <div class="page-header">
+    <h1>Inception</h1>
+    <div class="page-sub">AI-DLC clarifying questions → sharper story + AC</div>
+  </div>
+
+  <!-- State 1: Intent input -->
+  <div id="stateIntent">
+    <div class="card">
+      <div class="label">Intent</div>
+      <textarea id="intentInput" rows="3" placeholder="Describe what you want to build or change at a high level..."></textarea>
+      <div style="display:flex;gap:0.75rem;align-items:center;margin-top:1rem;">
+        <button class="btn" id="btnStart" onclick="startClarify()">Start →</button>
+        <div class="status-line" id="statusIntent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- State 2: Clarifying questions -->
+  <div id="stateQuestions">
+    <div class="card">
+      <div class="intent-display" id="intentDisplay"></div>
+      <div class="section-label">Clarifying Questions</div>
+      <div id="qnaList" style="display:flex;flex-direction:column;gap:1rem;"></div>
+      <div style="display:flex;gap:0.75rem;align-items:center;margin-top:1.5rem;">
+        <button class="btn" id="btnElaborate" onclick="elaborate()">Elaborate →</button>
+        <button class="restart-link" onclick="restart()">start over</button>
+        <div class="status-line" id="statusQuestions"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- State 3: Result -->
+  <div id="stateResult">
+    <div class="card">
+      <div class="intent-display" id="resultIntentDisplay"></div>
+
+      <div class="section-label">Story</div>
+      <div class="story-block" id="resultStory"></div>
+
+      <div class="section-label" style="margin-top:1rem;">Acceptance Criteria</div>
+      <ul class="ac-list" id="resultAC"></ul>
+
+      <div class="result-actions" style="margin-top:1.5rem;">
+        <button class="btn btn-copy" onclick="copyResult()">Copy</button>
+        <button class="restart-link" onclick="restart()">start over</button>
+        <span class="copy-confirm" id="copyConfirm">copied</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentIntent = '';
+    let currentQuestions = [];
+
+    function setState(name) {
+      document.getElementById('stateIntent').style.display    = name === 'intent'    ? 'flex' : 'none';
+      document.getElementById('stateQuestions').style.display = name === 'questions' ? 'flex' : 'none';
+      document.getElementById('stateResult').style.display    = name === 'result'    ? 'flex' : 'none';
+    }
+
+    function setStatus(id, msg, type) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.className = 'status-line' + (type ? ' ' + type : '');
+    }
+
+    async function startClarify() {
+      const intent = document.getElementById('intentInput').value.trim();
+      if (!intent) return;
+      currentIntent = intent;
+
+      const btn = document.getElementById('btnStart');
+      btn.disabled = true;
+      setStatus('statusIntent', 'Generating questions...', 'active');
+
+      try {
+        const res = await fetch('/inception/clarify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ intent }),
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        currentQuestions = data.questions || [];
+        buildQnA(currentQuestions);
+        document.getElementById('intentDisplay').textContent = intent;
+        setState('questions');
+      } catch (e) {
+        setStatus('statusIntent', 'Error: ' + e.message, 'error');
+      } finally {
+        btn.disabled = false;
+        setStatus('statusIntent', '', '');
+      }
+    }
+
+    function buildQnA(questions) {
+      const list = document.getElementById('qnaList');
+      list.innerHTML = '';
+      questions.forEach((q, i) => {
+        list.innerHTML += `
+          <div class="qna-item">
+            <div class="question-text">${escHtml(q)}</div>
+            <input type="text" id="answer-${i}" placeholder="Your answer..." />
+          </div>`;
+      });
+    }
+
+    async function elaborate() {
+      const qna = currentQuestions.map((q, i) => ({
+        q,
+        a: (document.getElementById('answer-' + i)?.value || '').trim(),
+      }));
+
+      const btn = document.getElementById('btnElaborate');
+      btn.disabled = true;
+      setStatus('statusQuestions', 'Elaborating...', 'active');
+
+      try {
+        const res = await fetch('/inception/elaborate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ intent: currentIntent, qna }),
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        document.getElementById('resultIntentDisplay').textContent = currentIntent;
+        document.getElementById('resultStory').textContent = data.story || '';
+        const acList = document.getElementById('resultAC');
+        acList.innerHTML = (data.acceptance_criteria || [])
+          .map(ac => `<li>${escHtml(ac)}</li>`)
+          .join('');
+        setState('result');
+      } catch (e) {
+        setStatus('statusQuestions', 'Error: ' + e.message, 'error');
+      } finally {
+        btn.disabled = false;
+        setStatus('statusQuestions', '', '');
+      }
+    }
+
+    function copyResult() {
+      const story = document.getElementById('resultStory').textContent;
+      const ac = [...document.querySelectorAll('#resultAC li')].map(li => '- ' + li.textContent).join('\n');
+      navigator.clipboard.writeText(`${story}\n\nAcceptance Criteria:\n${ac}`);
+      const confirm = document.getElementById('copyConfirm');
+      confirm.style.display = 'inline';
+      setTimeout(() => { confirm.style.display = 'none'; }, 2000);
+    }
+
+    function restart() {
+      currentIntent = '';
+      currentQuestions = [];
+      document.getElementById('intentInput').value = '';
+      document.getElementById('qnaList').innerHTML = '';
+      setState('intent');
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    setState('intent');
+  </script>
+  <script src="shared.js"></script>
+</body>
+</html>

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google" content="notranslate" />
+  <title>AI-DLC — Hello Scrum</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { padding: 4rem 2rem 3rem 10rem; min-height: 100vh; display: flex; flex-direction: column; }
+
+    .page-title {
+      text-align: center;
+      color: #00ff99;
+      font-size: 1.8rem;
+      font-family: monospace;
+      letter-spacing: 0.08em;
+      padding: 0.5rem 0 0.1rem;
+      flex-shrink: 0;
+    }
+    .page-subtitle {
+      text-align: center;
+      color: #3a7a5a;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .page-layout {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      border-top: 1px solid #222;
+      padding-top: 1rem;
+    }
+    .top-row { display: flex; gap: 2rem; }
+    .col { flex: 1; min-width: 0; padding-bottom: 1rem; }
+    .col-narrow { width: 340px; flex-shrink: 0; padding-bottom: 1rem; }
+
+    .bottom-section {
+      border-top: 1px solid #222;
+      padding-top: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .map-cards { display: flex; gap: 1rem; padding-bottom: 1rem; }
+
+    .col-header { margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #222; }
+    h2 { color: #00ff99; font-size: 1.1rem; margin: 0 0 0.2rem; }
+    .col-sub { color: #555; font-size: 0.78rem; margin-top: 0.2rem; }
+
+    /* ── Core loop ── */
+    .loop-wrap {
+      position: relative;
+      max-width: 320px;
+      margin: 0 auto 2rem;
+    }
+    .loop-steps {
+      position: relative;
+    }
+    .loop-steps::before {
+      content: '';
+      position: absolute;
+      left: 1.5rem;
+      top: 1.5rem;
+      bottom: 1.5rem;
+      width: 2px;
+      background: linear-gradient(to bottom, #00ff9940, #ffcc0040, #00ff9940);
+    }
+
+    .ls { display: flex; gap: 1rem; margin-bottom: 0.4rem; position: relative; }
+    .ls-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+    .ls-num {
+      width: 3rem; height: 3rem; border-radius: 50%;
+      background: #1a1a1a; border: 2px solid #2a2a2a;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; color: #555; flex-shrink: 0; position: relative; z-index: 1;
+    }
+    .ls.ai   .ls-num { border-color: #00ff9960; color: #00ff99; background: #0a1f12; }
+    .ls.human .ls-num { border-color: #ffcc0060; color: #ffcc00; background: #1a1a00; }
+    .ls-connector { width: 2px; flex: 1; min-height: 1.2rem; background: #1a1a1a; margin: 0 auto; }
+
+    .ls-card {
+      background: #1a1a1a; border: 1px solid #2a2a2a;
+      border-radius: 8px; padding: 0.75rem 1rem; flex: 1; margin-bottom: 1.2rem;
+    }
+    .ls.ai   .ls-card { border-color: #00ff9925; }
+    .ls.human .ls-card { border-color: #ffcc0025; }
+
+    .ls-name { font-size: 0.9rem; color: #e0e0e0; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.5rem; }
+    .ls-desc { font-size: 0.8rem; color: #666; line-height: 1.55; }
+
+    .badge {
+      font-size: 0.6rem; padding: 0.12rem 0.4rem; border-radius: 3px;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .badge-ai    { background: #0d2a1a; color: #00ff99; border: 1px solid #00ff9940; }
+    .badge-human { background: #1a1a00; color: #ffcc00; border: 1px solid #ffcc0040; }
+    .badge-sys   { background: #0a0f1f; color: #4488ff; border: 1px solid #4488ff40; }
+    .badge-repeat { background: #1a0a1f; color: #cc88ff; border: 1px solid #cc88ff40; }
+
+    .loop-label {
+      text-align: center; font-size: 0.7rem; color: #333;
+      letter-spacing: 0.1em; text-transform: uppercase; margin-top: -0.5rem; margin-bottom: 1rem;
+    }
+
+    /* ── Phases ── */
+    .phases { display: flex; flex-direction: column; gap: 1.1rem; }
+
+    .phase-card {
+      background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; overflow: hidden;
+    }
+    .phase-header {
+      padding: 0.7rem 1.1rem; border-bottom: 1px solid #222;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .phase-num {
+      width: 2.8rem; height: 2.8rem; border-radius: 50%;
+      background: #1a1a1a; border: 2px solid #2a2a2a;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; color: #555; flex-shrink: 0;
+    }
+    .phase-num.inception   { border-color: #00ff9960; color: #00ff99; background: #0a1f12; }
+    .phase-num.construction { border-color: #ffcc0060; color: #ffcc00; background: #1a1a00; }
+    .phase-num.operations  { border-color: #4488ff60; color: #4488ff; background: #0a0f1f; }
+
+    .phase-title { font-size: 1rem; color: #e0e0e0; }
+    .phase-ceremony {
+      margin-left: auto; font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 3px;
+      text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0;
+      background: #111; color: #888; border: 1px solid #444;
+    }
+
+    .phase-body { padding: 0.75rem 1.1rem; font-size: 0.82rem; color: #777; line-height: 1.6; }
+    .phase-body p { margin-bottom: 0.5rem; }
+    .phase-body p:last-child { margin-bottom: 0; }
+
+    .phase-rows { display: flex; flex-direction: column; }
+    .phase-row {
+      display: flex; gap: 0.6rem; padding: 0.45rem 1.1rem;
+      border-bottom: 1px solid #161616; align-items: flex-start;
+    }
+    .phase-row:last-child { border-bottom: none; }
+    .phase-row-text { font-size: 0.82rem; color: #777; line-height: 1.5; }
+    .phase-row-text strong { color: #aaa; font-weight: 600; }
+
+    /* ── Mapping table ── */
+    .map-table {
+      width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-top: 0.5rem;
+    }
+    .map-table th {
+      text-align: left; color: #444; font-size: 0.65rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 0.4rem 0.75rem; border-bottom: 1px solid #222;
+    }
+    .map-table td {
+      padding: 0.4rem 0.75rem; color: #666;
+      border-bottom: 1px solid #161616; vertical-align: top;
+    }
+    .map-table tr:last-child td { border-bottom: none; }
+    .map-table td:first-child { color: #00ff99; white-space: nowrap; }
+    .map-table td:nth-child(2) { color: #888; }
+
+    /* ── Terms ── */
+    .terms { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.75rem; }
+    .term-row { display: flex; gap: 0.75rem; align-items: baseline; font-size: 0.82rem; }
+    .term-old { color: #444; text-decoration: line-through; min-width: 90px; }
+    .term-arrow { color: #333; }
+    .term-new { color: #cc88ff; }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="index.html">App</a>
+    <a href="messenger.html">Messenger</a>
+    <a href="/">Backlog</a>
+    <a href="active.html">Live Work</a>
+    <a href="audit.html">Audit</a>
+    <a href="retro.html">Retro</a>
+    <a href="workflow.html">Workflow</a>
+    <a href="prompts.html">Prompts</a>
+    <a href="notes.html">Notes</a>
+    <a href="health.html">Health</a>
+  </nav>
+
+  <div class="page-title">AI-DLC</div>
+  <div class="page-subtitle">AI-Driven Development Life Cycle · AWS / Raja SP · Jul 2025</div>
+
+  <div class="page-layout">
+  <div class="top-row">
+
+    <!-- Left: three phases -->
+    <div class="col">
+      <div class="col-header">
+        <h2>Three Phases</h2>
+        <div class="col-sub">Each phase enriches context for the next</div>
+      </div>
+
+      <div class="phases">
+
+        <div class="phase-card">
+          <div class="phase-header">
+            <span class="phase-num inception">I</span>
+            <span class="phase-title">Inception</span>
+            <span class="phase-ceremony">Mob Elaboration</span>
+          </div>
+          <div class="phase-body">
+            <p>Captures an Intent and decomposes it into Units and Bolts. Mob Elaboration runs in a single room with a shared screen — entire team (PO, devs, QA, stakeholders) reviewing and refining AI outputs in real time. Condenses weeks of sequential planning into hours.</p>
+          </div>
+          <div class="phase-rows">
+            <div class="phase-row">
+              <span class="badge badge-ai">Agent</span>
+              <span class="phase-row-text"><strong>AI asks clarifying questions</strong> — surfaces ambiguity in the original intent before elaborating (e.g. "Who are the primary users? What key business outcomes should this achieve?")</span>
+            </div>
+            <div class="phase-row">
+              <span class="badge badge-ai">Agent</span>
+              <span class="phase-row-text"><strong>AI elaborates intent</strong> — generates user stories, NFRs, risk descriptions, and composes stories into Units using loose coupling / high cohesion principles.</span>
+            </div>
+            <div class="phase-row">
+              <span class="badge badge-human">Human</span>
+              <span class="phase-row-text"><strong>Mob reviews + corrects</strong> — adjusts over/under-engineered parts, adds real-world constraints (e.g. GDPR), validates units align with business objectives.</span>
+            </div>
+            <div class="phase-row">
+              <span class="badge badge-ai">Agent</span>
+              <span class="phase-row-text"><strong>AI generates PRFAQ</strong> (optional) — summarizes business intent, functionality, expected benefits. Also proposes suggested Bolts for executing each Unit.</span>
+            </div>
+            <div class="phase-row">
+              <span class="badge badge-human">Human</span>
+              <span class="phase-row-text"><strong>PO validates outputs</strong> — approves PRFAQ, risk descriptions, measurement criteria, and the Bolt breakdown before Construction begins.</span>
+            </div>
+          </div>
+          <div class="phase-body" style="border-top:1px solid #222;margin-top:0;padding-top:0.5rem;">
+            <p style="margin:0;font-size:0.75rem;color:#444;"><strong style="color:#555;">Outputs:</strong> PRFAQ · User Stories · NFR definitions · Risk descriptions · Measurement criteria · Suggested Bolts</p>
+          </div>
+        </div>
+
+        <div class="phase-card">
+          <div class="phase-header">
+            <span class="phase-num construction">II</span>
+            <span class="phase-title">Construction</span>
+            <span class="phase-ceremony">Mob Construction</span>
+          </div>
+          <div class="phase-body">
+            <p>Transforms Units into tested, operations-ready Deployment Units. Progresses through four sub-stages: Domain Design → Logical Design → Code → Test. Developers validate AI outputs at each stage — human oversight functions as a loss function, catching errors before they compound downstream.</p>
+          </div>
+          <div class="phase-rows">
+            <div class="phase-row">
+              <span class="badge badge-ai">Agent</span>
+              <span class="phase-row-text"><strong>Domain Design</strong> — AI models business logic using DDD: aggregates, value objects, entities, domain events, repositories, factories. Independent of infrastructure.</span>
+            </div>
+            <div class="phase-row">
+              <span class="badge badge-human">Human</span>
+              <span class="phase-row-text"><strong>Devs validate domain model</strong> — refine business logic, handle real-world edge cases (e.g. how to handle new customers with no purchase history).</span>
+            </div>
+            <div class="phase-row">
+              <span class="badge badge-ai">Agent</span>
+              <span class="phase-row-text"><strong>Logical Design</strong> — AI applies NFRs (scalability, fault tolerance) to domain model, recommends patterns (CQRS, Circuit Breakers, event-driven) and AWS services. Generates ADRs for review.</span>
+            </div>
+            <div class="phase-row">
+              <span class="badge badge-human">Human</span>
+              <span class="phase-row-text"><strong>Devs approve trade-offs</strong> — accept or override AI's architectural decisions (e.g. accept Lambda for scalability but override storage to DynamoDB).</span>
+            </div>
+            <div class="phase-row">
+              <span class="badge badge-ai">Agent</span>
+              <span class="phase-row-text"><strong>Code + tests generated</strong> — AI implements from Logical Design, maps to AWS services, auto-generates functional, security, and performance tests.</span>
+            </div>
+            <div class="phase-row">
+              <span class="badge badge-human">Human</span>
+              <span class="phase-row-text"><strong>Devs review code + test scenarios</strong> — adjust for quality and compliance before AI executes the test suite.</span>
+            </div>
+            <div class="phase-row">
+              <span class="badge badge-ai">Agent</span>
+              <span class="phase-row-text"><strong>AI executes tests + proposes fixes</strong> — runs all suites, analyzes results, correlates failures with code or config changes, proposes specific fixes.</span>
+            </div>
+            <div class="phase-row">
+              <span class="badge badge-human">Human</span>
+              <span class="phase-row-text"><strong>Devs validate + approve fixes</strong> — confirm AI findings, authorize reruns. Brown-field adds a prior step: AI reverse-engineers static + dynamic models of existing code first.</span>
+            </div>
+          </div>
+          <div class="phase-body" style="border-top:1px solid #222;margin-top:0;padding-top:0.5rem;">
+            <p style="margin:0;font-size:0.75rem;color:#444;"><strong style="color:#555;">Outputs:</strong> Domain Design · Logical Design · ADRs · Code · Test suites · Deployment Unit</p>
+          </div>
+        </div>
+
+        <div class="phase-card">
+          <div class="phase-header">
+            <span class="phase-num operations">III</span>
+            <span class="phase-title">Operations</span>
+            <span class="phase-ceremony">Team Oversight</span>
+          </div>
+          <div class="phase-body">
+            <p>AI analyzes telemetry (metrics, logs, traces) to detect anomalies and predict SLA violations proactively. Integrates with incident runbooks to propose actionable resolutions. Developers serve as validators — AI acts, humans approve.</p>
+          </div>
+          <div class="phase-rows">
+            <div class="phase-row">
+              <span class="badge badge-ai">Agent</span>
+              <span class="phase-row-text"><strong>AI packages Deployment Units</strong> — container images, serverless functions (Lambda), IaC (Terraform/CFN/CDK). Generates validation plan and report.</span>
+            </div>
+            <div class="phase-row">
+              <span class="badge badge-human">Human</span>
+              <span class="phase-row-text"><strong>Devs approve + initiate rollout</strong> — review deployment config, approve to staging then production.</span>
+            </div>
+            <div class="phase-row">
+              <span class="badge badge-ai">Agent</span>
+              <span class="phase-row-text"><strong>AI monitors telemetry</strong> — detects latency spikes, error rate anomalies, and predicts SLA violations (e.g. recommends DynamoDB throughput increase during traffic spike).</span>
+            </div>
+            <div class="phase-row">
+              <span class="badge badge-ai">Agent</span>
+              <span class="phase-row-text"><strong>AI integrates with runbooks</strong> — proposes resource scaling, performance tuning, or fault isolation. Executes resolutions only after developer approval.</span>
+            </div>
+            <div class="phase-row">
+              <span class="badge badge-human">Human</span>
+              <span class="phase-row-text"><strong>Devs validate + approve</strong> — confirm AI recommendations align with SLAs and compliance requirements, monitor resolution outcomes.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right: core loop + terms -->
+    <div class="col-narrow">
+
+      <div class="col-header">
+        <h2>Core Loop</h2>
+        <div class="col-sub">AI initiates — humans validate. Repeats at every level.</div>
+      </div>
+
+      <div class="loop-wrap">
+        <div class="loop-steps">
+
+          <div class="ls ai">
+            <div class="ls-left">
+              <div class="ls-num">1</div>
+              <div class="ls-connector"></div>
+            </div>
+            <div class="ls-card">
+              <div class="ls-name">AI Generates Plan <span class="badge badge-ai">Agent</span></div>
+              <div class="ls-desc">AI initiates by producing a Level 1 plan for the current intent. Decomposed recursively to Level 2, Level 3 — each level under human oversight before the next is generated.</div>
+            </div>
+          </div>
+
+          <div class="ls ai">
+            <div class="ls-left">
+              <div class="ls-num">2</div>
+              <div class="ls-connector"></div>
+            </div>
+            <div class="ls-card">
+              <div class="ls-name">AI Seeks Clarification <span class="badge badge-ai">Agent</span></div>
+              <div class="ls-desc">AI asks targeted questions before implementing — surfacing ambiguity in intent, constraints, or trade-offs. Only humans have the contextual business knowledge to answer.</div>
+            </div>
+          </div>
+
+          <div class="ls human">
+            <div class="ls-left">
+              <div class="ls-num">3</div>
+              <div class="ls-connector"></div>
+            </div>
+            <div class="ls-card">
+              <div class="ls-name">Human Validates <span class="badge badge-human">Human</span></div>
+              <div class="ls-desc">Team reviews, corrects, and approves AI's plan. Acts as a loss function — catching errors before they compound. Critical decisions never delegated to AI.</div>
+            </div>
+          </div>
+
+          <div class="ls ai">
+            <div class="ls-left">
+              <div class="ls-num">4</div>
+            </div>
+            <div class="ls-card">
+              <div class="ls-name">AI Implements <span class="badge badge-ai">Agent</span></div>
+              <div class="ls-desc">With validated context, AI executes — stories, domain models, code, tests, IaC. All artifacts persisted as "context memory" referenced throughout the lifecycle.</div>
+            </div>
+          </div>
+
+        </div>
+        <div class="loop-label"><span class="badge badge-repeat">repeats</span> at every level of decomposition</div>
+      </div>
+
+      <div class="col-header">
+        <h2>Artifacts</h2>
+        <div class="col-sub">Work hierarchy from intent to deployment</div>
+      </div>
+
+      <div class="phases" style="gap:0.6rem;">
+        <div class="phase-card">
+          <div class="phase-header" style="padding:0.5rem 0.9rem;">
+            <span class="phase-num inception" style="width:2rem;height:2rem;font-size:0.75rem;">I</span>
+            <span class="phase-title" style="font-size:0.9rem;">Intent</span>
+          </div>
+          <div class="phase-body" style="padding:0.5rem 0.9rem;">
+            <p style="margin:0;">High-level statement of purpose — a business goal, feature, or technical outcome. Starting point for all AI-driven decomposition.</p>
+          </div>
+        </div>
+        <div class="phase-card">
+          <div class="phase-header" style="padding:0.5rem 0.9rem;">
+            <span class="phase-num inception" style="width:2rem;height:2rem;font-size:0.75rem;">U</span>
+            <span class="phase-title" style="font-size:0.9rem;">Unit <span style="color:#555;font-size:0.75rem;font-weight:400;">≈ Epic / Subdomain</span></span>
+          </div>
+          <div class="phase-body" style="padding:0.5rem 0.9rem;">
+            <p style="margin:0;">Cohesive, self-contained block of work derived from an Intent. Loosely coupled — enables parallel Bolt execution by independent teams.</p>
+          </div>
+        </div>
+        <div class="phase-card">
+          <div class="phase-header" style="padding:0.5rem 0.9rem;">
+            <span class="phase-num construction" style="width:2rem;height:2rem;font-size:0.75rem;">B</span>
+            <span class="phase-title" style="font-size:0.9rem;">Bolt <span style="color:#555;font-size:0.75rem;font-weight:400;">≈ Sprint (hours–days)</span></span>
+          </div>
+          <div class="phase-body" style="padding:0.5rem 0.9rem;">
+            <p style="margin:0;">Smallest iteration — implements one Unit or subset of its stories. Multiple Bolts per Unit, running in parallel or sequentially.</p>
+          </div>
+        </div>
+        <div class="phase-card">
+          <div class="phase-header" style="padding:0.5rem 0.9rem;">
+            <span class="phase-num construction" style="width:2rem;height:2rem;font-size:0.65rem;">DD</span>
+            <span class="phase-title" style="font-size:0.9rem;">Domain Design</span>
+          </div>
+          <div class="phase-body" style="padding:0.5rem 0.9rem;">
+            <p style="margin:0;">DDD model of business logic — aggregates, value objects, entities, domain events, repositories. Infrastructure-independent.</p>
+          </div>
+        </div>
+        <div class="phase-card">
+          <div class="phase-header" style="padding:0.5rem 0.9rem;">
+            <span class="phase-num construction" style="width:2rem;height:2rem;font-size:0.65rem;">LD</span>
+            <span class="phase-title" style="font-size:0.9rem;">Logical Design</span>
+          </div>
+          <div class="phase-body" style="padding:0.5rem 0.9rem;">
+            <p style="margin:0;">Domain Design + NFRs + cloud patterns (CQRS, Circuit Breakers). Produces ADRs for developer validation before code is written.</p>
+          </div>
+        </div>
+        <div class="phase-card">
+          <div class="phase-header" style="padding:0.5rem 0.9rem;">
+            <span class="phase-num operations" style="width:2rem;height:2rem;font-size:0.65rem;">DU</span>
+            <span class="phase-title" style="font-size:0.9rem;">Deployment Unit</span>
+          </div>
+          <div class="phase-body" style="padding:0.5rem 0.9rem;">
+            <p style="margin:0;">Packaged executable — container image, Lambda function, or IaC stack. Tested for functional, security, and NFR compliance before deploy.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-header" style="margin-top:1.25rem;">
+        <h2>Renamed Terms</h2>
+        <div class="col-sub">Familiar concepts, AI-native names</div>
+      </div>
+
+      <div class="terms">
+        <div class="term-row">
+          <span class="term-old">Epic</span>
+          <span class="term-arrow">→</span>
+          <span class="term-new">Unit</span>
+        </div>
+        <div class="term-row">
+          <span class="term-old">Sprint</span>
+          <span class="term-arrow">→</span>
+          <span class="term-new">Bolt (hours–days)</span>
+        </div>
+        <div class="term-row">
+          <span class="term-old">Refinement</span>
+          <span class="term-arrow">→</span>
+          <span class="term-new">Mob Elaboration</span>
+        </div>
+        <div class="term-row">
+          <span class="term-old">Development</span>
+          <span class="term-arrow">→</span>
+          <span class="term-new">Mob Construction</span>
+        </div>
+        <div class="term-row">
+          <span class="term-old">Story points</span>
+          <span class="term-arrow">→</span>
+          <span class="term-new">Business Value</span>
+        </div>
+        <div class="term-row">
+          <span class="term-old">Velocity</span>
+          <span class="term-arrow">→</span>
+          <span class="term-new">Value Delivered</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- end top-row -->
+
+  <!-- Bottom: Hello Scrum mapping -->
+  <div class="bottom-section">
+    <div class="col-header" style="margin-bottom:0.75rem;">
+      <h2>Hello Scrum Mapping</h2>
+      <div class="col-sub">Where AI-DLC concepts live today</div>
+    </div>
+    <div class="map-cards">
+
+      <div class="phase-card" style="flex:1;min-width:0;">
+        <div class="phase-header">
+          <span class="phase-num inception">I</span>
+          <span class="phase-title">Inception</span>
+        </div>
+        <table class="map-table">
+          <thead><tr><th>AI-DLC</th><th>Hello Scrum</th></tr></thead>
+          <tbody>
+            <tr><td>Intent</td><td>Messenger message</td></tr>
+            <tr><td>AI clarifying questions</td><td>— (Haiku generates AC, never asks Kevin)</td></tr>
+            <tr><td>Units from Intent</td><td>— (stories are flat, no subdomain decomposition)</td></tr>
+            <tr><td>Mob Elaboration (team)</td><td>Solo — Kevin reviews and drags</td></tr>
+            <tr><td>PRFAQ</td><td>— not present</td></tr>
+            <tr><td>NFR definitions</td><td>— not present</td></tr>
+            <tr><td>Risk register</td><td>— not present</td></tr>
+            <tr><td>Persistent context</td><td>backlog.json, ac_wisdom.json</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="phase-card" style="flex:1;min-width:0;">
+        <div class="phase-header">
+          <span class="phase-num construction">II</span>
+          <span class="phase-title">Construction</span>
+        </div>
+        <table class="map-table">
+          <thead><tr><th>AI-DLC</th><th>Hello Scrum</th></tr></thead>
+          <tbody>
+            <tr><td>Domain Design (DDD)</td><td>— Sonnet codes directly from AC, no domain model</td></tr>
+            <tr><td>Logical Design + ADRs</td><td>— no design step before coding</td></tr>
+            <tr><td>Level 1 / Level 2 plan</td><td>— no hierarchical decomposition</td></tr>
+            <tr><td>Org standards applied</td><td>Coding Wisdom injected into every prompt</td></tr>
+            <tr><td>AI proposes fixes for tests</td><td>Hermes rejects → rollback (no iterative fix)</td></tr>
+            <tr><td>Functional + security tests</td><td>9 DoD checks (structural, not functional)</td></tr>
+            <tr><td>Human validates quality</td><td>Hermes review + AC check (automated proxy)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="phase-card" style="flex:1;min-width:0;">
+        <div class="phase-header">
+          <span class="phase-num operations">III</span>
+          <span class="phase-title">Operations</span>
+        </div>
+        <table class="map-table">
+          <thead><tr><th>AI-DLC</th><th>Hello Scrum</th></tr></thead>
+          <tbody>
+            <tr><td>Deployment Unit packaging</td><td>git commit + push → GitHub Pages (~30s)</td></tr>
+            <tr><td>Telemetry analysis</td><td>— not present</td></tr>
+            <tr><td>Anomaly / SLA prediction</td><td>— not present</td></tr>
+            <tr><td>Runbook integration</td><td>— not present</td></tr>
+            <tr><td>Context carries forward</td><td>Retro → coding_wisdom.json → next sprint</td></tr>
+            <tr><td>Team oversight</td><td>health.html, audit.html</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="phase-card" style="flex:1;min-width:0;">
+        <div class="phase-header">
+          <span class="phase-num" style="border-color:#cc88ff60;color:#cc88ff;background:#1a0a1f;">?</span>
+          <span class="phase-title">Gaps</span>
+        </div>
+        <div class="phase-rows">
+          <div class="phase-row">
+            <span class="badge badge-repeat">Missing</span>
+            <span class="phase-row-text"><strong>AI never initiates</strong> — Kevin starts every conversation. AI-DLC reverses this: AI generates the Level 1 plan first.</span>
+          </div>
+          <div class="phase-row">
+            <span class="badge badge-repeat">Missing</span>
+            <span class="phase-row-text"><strong>No domain modelling</strong> — AI codes from AC directly, skipping Domain Design → Logical Design. This limits architectural quality.</span>
+          </div>
+          <div class="phase-row">
+            <span class="badge badge-repeat">Missing</span>
+            <span class="phase-row-text"><strong>No NFRs, risks, or PRFAQ</strong> — Inception produces stories and AC only. No non-functional requirements, no risk register.</span>
+          </div>
+          <div class="phase-row">
+            <span class="badge badge-repeat">Missing</span>
+            <span class="phase-row-text"><strong>No telemetry or runbooks</strong> — Operations phase is deploy-and-observe. No AI-driven anomaly detection or proactive scaling.</span>
+          </div>
+          <div class="phase-row">
+            <span class="badge badge-repeat">Missing</span>
+            <span class="phase-row-text"><strong>No mob / single-player</strong> — AI-DLC assumes a team. Hello Scrum is a solo operating model with automated review proxies standing in for humans.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  </div>
+<script src="shared.js"></script>
+</body>
+</html>

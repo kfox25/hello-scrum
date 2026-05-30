@@ -1,10 +1,17 @@
 [
   {
+    "id": 1748527200000,
+    "title": "AI-DLC",
+    "body": "",
+    "created": "2026-05-29T12:00:00.000Z",
+    "updated": "2026-05-29T12:00:00.000Z"
+  },
+  {
     "id": 1779743290210,
     "title": "Questions",
-    "body": "which nodes should be human in the loop? \n\nwhat priority model will ai scrum teams use? w-sjf, kano, 2x2, MoSCoW\n\n",
+    "body": "Group of fellow travellers working on scrum, agile, ai\n\nwhich nodes should be human-in-the-loop? \n\nwhich priority model will ai scrum teams use? w-sjf, kano, 2x2, MoSCoW?\n\nshould we use several agents (coding agent, qa agent, etc) or just one agent that does everything?\n\nwhich health signals should be tracked and evaluated for a health score?\n\nDoD?\n",
     "created": "2026-05-25T21:08:10.210Z",
-    "updated": "2026-05-25T21:10:12.410Z"
+    "updated": "2026-05-29T14:21:07.849Z"
   },
   {
     "id": 1779691417021,

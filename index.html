@@ -52,6 +52,60 @@
     }
     .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; }
     .changelog { margin-top: 1.5rem; width: 100%; max-width: 500px; }
+
+  /* Leaderboard styles */
+  .leaderboard-section {
+    width: 100%;
+    max-width: 520px;
+    margin: 2rem auto 0;
+  }
+  .leaderboard-section h2 {
+    font-size: 0.85rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin: 0 0 0.75rem 0;
+  }
+  .lb-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .lb-table thead th {
+    color: #7a8099;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.35rem 0.6rem;
+    border-bottom: 1px solid #1c1c1c;
+    text-align: center;
+  }
+  .lb-table thead th:first-child { text-align: left; }
+  .lb-table tbody tr {
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .lb-table tbody tr:last-child { border-bottom: none; }
+  .lb-table tbody td {
+    padding: 0.45rem 0.6rem;
+    text-align: center;
+    color: #e8eaf0;
+  }
+  .lb-table tbody td:first-child { text-align: left; }
+  .lb-rank {
+    font-weight: 700;
+    color: #00ff99;
+    min-width: 1.5rem;
+    display: inline-block;
+  }
+  .lb-rank.gold   { color: #ffd700; }
+  .lb-rank.silver { color: #c0c0c0; }
+  .lb-rank.bronze { color: #cd7f32; }
+  .lb-empty {
+    color: #555;
+    font-size: 0.85rem;
+    padding: 0.75rem 0;
+    text-align: center;
+  }
     .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; }
     .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }
     .changelog-entry:first-of-type { border-top: none; }
@@ -72,13 +126,18 @@
     <a href="prompts.html">Prompts</a>
     <a href="notes.html">Notes</a>
     <a href="health.html">Health</a>
+    <a href="leaderboard.html">Leaderboard</a>
   </nav>
   <div class="hero">
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.66</div>
-  <div class="meta">Last deployed: 2026-05-25 22:39:40 CT</div>
+  <div class="version" id="version-badge">v0.1.209</div>
+  <div class="meta">Last deployed: 2026-05-30 18:56:14 CT</div>
+  <div class="leaderboard-section">
+    <h2>🏆 Sprint Leaderboard — Stories Completed</h2>
+    <div id="leaderboard-container"><div class="lb-empty">No sprint data yet.</div></div>
+  </div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -104,6 +163,67 @@
         .catch(() => {});
     }
     loadChangelog();
+    renderLeaderboard();
+
+    function renderLeaderboard() {
+      try {
+        const raw = localStorage.getItem('scrumItems');
+        const items = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(items) || items.length === 0) return;
+
+        // Build map: sprintNumber -> completedCount (only items with a sprint)
+        const sprintMap = {};
+        items.forEach(function(item) {
+          const sp = item.sprint !== undefined && item.sprint !== null && item.sprint !== '' ? String(item.sprint) : null;
+          if (!sp) return;
+          if (!sprintMap[sp]) sprintMap[sp] = { total: 0, completed: 0 };
+          sprintMap[sp].total++;
+          if (item.status === 'Done') sprintMap[sp].completed++;
+        });
+
+        const sprints = Object.keys(sprintMap);
+        if (sprints.length === 0) return;
+
+        // Sort by completed desc, then sprint number asc
+        sprints.sort(function(a, b) {
+          const diff = sprintMap[b].completed - sprintMap[a].completed;
+          if (diff !== 0) return diff;
+          return parseFloat(a) - parseFloat(b);
+        });
+
+        // Assign ranks with tie handling
+        let rank = 1;
+        const ranked = sprints.map(function(sp, idx) {
+          if (idx > 0 && sprintMap[sp].completed === sprintMap[sprints[idx - 1]].completed) {
+            // same rank as previous
+          } else {
+            rank = idx + 1;
+          }
+          return { sprint: sp, completed: sprintMap[sp].completed, rank: rank };
+        });
+
+        let html = '<table class="lb-table"><thead><tr>';
+        html += '<th>Rank</th><th>Sprint</th><th>Stories Completed</th>';
+        html += '</tr></thead><tbody>';
+
+        ranked.forEach(function(row) {
+          let rankClass = '';
+          if (row.rank === 1) rankClass = 'gold';
+          else if (row.rank === 2) rankClass = 'silver';
+          else if (row.rank === 3) rankClass = 'bronze';
+          html += '<tr>';
+          html += '<td><span class="lb-rank ' + rankClass + '">#' + escHtml(row.rank) + '</span></td>';
+          html += '<td>Sprint ' + escHtml(row.sprint) + '</td>';
+          html += '<td>' + escHtml(row.completed) + '</td>';
+          html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        document.getElementById('leaderboard-container').innerHTML = html;
+      } catch(e) {
+        // fail silently
+      }
+    }
   </script>
 <script src="shared.js"></script>
 </body>

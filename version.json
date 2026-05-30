@@ -1,6 +1,6 @@
 {
-  "version": "0.1.208",
-  "deployed": "2026-05-30 18:37:04 CT",
+  "version": "0.1.209",
+  "deployed": "2026-05-30 18:56:14 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1048,6 +1048,11 @@
       "version": "0.1.208",
       "date": "2026-05-30",
       "change": "Add stories-completed rank leaderboard: sprints sorted highest-to-lowest by completed count, with rank position (tied sprints share rank), showing sprint number and stories completed count"
+    },
+    {
+      "version": "0.1.209",
+      "date": "2026-05-30",
+      "change": "Sprint leaderboard on home page: every sprint with items ranked by stories-completed count, tied sprints share rank, gold/silver/bronze highlights for top 3"
     }
   ]
 }

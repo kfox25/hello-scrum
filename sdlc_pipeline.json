@@ -1,81 +1,6 @@
 {
   "items": [
     {
-      "id": "as-a-scrum-master-i-want-to-see-the-pass-rate-fo",
-      "idea": "As a scrum master, I want to see the pass rate for each sprint on the leaderboard so that I can assess quality alongside throughput.",
-      "story": "As a scrum master, I want to see the pass rate for each sprint on the leaderboard so that I can assess quality alongside throughput.",
-      "acceptance_criteria": [
-        "Each leaderboard row shows a pass-rate percentage derived only from items in that sprint.",
-        "A sprint with zero failed items shows a pass rate of 100%.",
-        "A sprint where all items failed shows a pass rate of 0%.",
-        "A sprint that has no done or failed items displays '\u2014' in the pass-rate column rather than a numeric value."
-      ],
-      "status": "done",
-      "in_sprint": true,
-      "source": "inception",
-      "sprint_number": 59,
-      "summary": "Add sprint leaderboard with pass-rate column to homepage showing done, failed, total, and color-coded pass rate per sprint",
-      "diff": "diff --git a/index.html b/index.html\nindex a7fb39d..69ea9f9 100644\n--- a/index.html\n+++ b/index.html\n@@ -58,6 +58,19 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n+    .leaderboard { margin-top: 2rem; width: 100%; max-width: 620px; }\n+    .leaderboard h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.75rem 0; }\n+    .lb-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }\n+    .lb-table th { color: #7a8099; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.35rem 0.6rem; border-bottom: 1px solid #1c2a1c; text-align: left; }\n+    .lb-table th.num { text-align: right; }\n+    .lb-table td { padding: 0.38rem 0.6rem; border-top: 1px solid #151515; color: #ccc; }\n+    .lb-table td.num { text-align: right; color: #e8eaf0; }\n+    .lb-table td.pass-high { color: #00ff99; text-align: right; font-weight: 600; }\n+    .lb-table td.pass-mid { color: #f0c040; text-align: right; font-weight: 600; }\n+    .lb-table td.pass-low { color: #ff5555; text-align: right; font-weight: 600; }\n+    .lb-table td.pass-na { color: #444; text-align: right; }\n+    .lb-table tr:hover td { background: #0d1a0d; }\n+    .lb-empty { color: #444; font-size: 0.82rem; margin-top: 0.5rem; }\n   </style>\n </head>\n <body>\n@@ -77,8 +90,24 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.207</div>\n+  <div class=\"meta\">Last deployed: 2026-05-30 18:36:25 CT</div>\n+  <div class=\"leaderboard\">\n+    <h2>Sprint Leaderboard \u00e2\u20ac\u201d Pass Rate</h2>\n+    <table class=\"lb-table\">\n+      <thead>\n+        <tr>\n+          <th>Sprint</th>\n+          <th class=\"num\">Done</th>\n+          <th class=\"num\">Failed</th>\n+          <th class=\"num\">Total</th>\n+          <th class=\"num\">Pass Rate</th>\n+        </tr>\n+      </thead>\n+      <tbody id=\"lb-body\"></tbody>\n+    </table>\n+    <div class=\"lb-empty\" id=\"lb-empty\" style=\"display:none\">No sprint data found.</div>\n+  </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -104,6 +133,64 @@\n         .catch(() => {});\n     }\n     loadChangelog();\n+\n+    function loadLeaderboard() {\n+      // Gather items from localStorage keys used by the app\n+      var items = [];\n+      try {\n+        var raw = localStorage.getItem('scrumItems') || localStorage.getItem('backlogItems') || '[]';\n+        items = JSON.parse(raw);\n+        if (!Array.isArray(items)) items = [];\n+      } catch(e) { items = []; }\n+\n+      // Group by sprint\n+      var sprints = {};\n+      items.forEach(function(item) {\n+        var sprint = item.sprint || item.sprintId || item.sprintName;\n+        if (!sprint) return;\n+        var key = String(sprint);\n+        if (!sprints[key]) sprints[key] = { done: 0, failed: 0 };\n+        var status = (item.status || '').toLowerCase();\n+        if (status === 'done' || status === 'complete' || status === 'completed') sprints[key].done++;\n+        if (status === 'failed' || status === 'fail' || status === 'blocked-failed') sprints[key].failed++;\n+      });\n+\n+      var keys = Object.keys(sprints);\n+      var tbody = document.getElementById('lb-body');\n+      var emptyEl = document.getElementById('lb-empty');\n+\n+      if (keys.length === 0) {\n+        emptyEl.style.display = '';\n+        tbody.innerHTML = '';\n+        return;\n+      }\n+      emptyEl.style.display = 'none';\n+\n+      // Sort sprint keys naturally\n+      keys.sort(function(a, b) { return a.localeCompare(b, undefined, {numeric: true}); });\n+\n+      tbody.innerHTML = keys.map(function(k) {\n+        var s = sprints[k];\n+        var total = s.done + s.failed;\n+        var passCell, passClass;\n+        if (total === 0) {\n+          passCell = '&mdash;';\n+          passClass = 'pass-na';\n+        } else {\n+          var pct = Math.round((s.done / total) * 100);\n+          passCell = pct + '%';\n+          passClass = pct === 100 ? 'pass-high' : pct >= 50 ? 'pass-mid' : 'pass-low';\n+        }\n+        return '<tr>' +\n+          '<td>' + escHtml(k) + '</td>' +\n+          '<td class=\"num\">' + s.done + '</td>' +\n+          '<td class=\"num\">' + s.failed + '</td>' +\n+          '<td class=\"num\">' + total + '</td>' +\n+          '<td class=\"' + passClass + '\">' + passCell + '</td>' +\n+          '</tr>';\n+      }).join('');\n+    }\n+    loadLeaderboard();\n   </script>\n <script src=\"shared.js\"></script>\n </body>\ndiff --git a/version.json b/version.json\nindex 7f87a16..49b0989 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.206\",\n-  \"deployed\": \"2026-05-30 11:55:28 CT\",\n+  \"version\": \"0.1.207\",\n+  \"deployed\": \"2026-05-30 18:36:25 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -1038,6 +1038,11 @@\n       \"version\": \"0.1.206\",\n       \"date\": \"2026-05-30\",\n       \"change\": \"Change homepage h1 title color to red (#ff0000) to increase landing page visibility\"\n+    },\n+    {\n+      \"version\": \"0.1.207\",\n+      \"date\": \"2026-05-30\",\n+      \"change\": \"Add sprint leaderboard with pass-rate column: shows done/failed/total per sprint with color-coded pass percentage; displays '\\u2014' when no done or failed items exist\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
-      "test_results": [
-        {
-          "status": "pass",
-          "message": "index.html exists and contains title"
-        },
-        {
-          "status": "pass",
-          "message": "version 0.1.207 matches between version.json and index.html"
-        },
-        {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-30 18:36:25 CT' present in index.html"
-        },
-        {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.207: Add sprint leaderboard with pass-rate column: shows done/failed/total per sprint with color-coded pass percentage; displays '\u2014' when no done or failed items exist"
-        },
-        {
-          "status": "pass",
-          "message": "no CSS outside style block"
-        },
-        {
-          "status": "pass",
-          "message": "no duplicate h1 rules (1 found)"
-        },
-        {
-          "status": "pass",
-          "message": "no -webkit-text-fill-color in style block"
-        },
-        {
-          "status": "pass",
-          "message": "no duplicate body rules (1 found)"
-        },
-        {
-          "status": "pass",
-          "message": "no mixed color formats"
-        }
-      ],
-      "deployed": "2026-05-30 18:36:25 CT",
-      "code_review_verdict": "approve",
-      "code_review_reason": "All HTML, CSS, and JavaScript syntax is correct; the leaderboard function properly reads from localStorage, groups items by sprint, calculates pass rates, and renders the table with appropriate escaping via escHtml(); no runtime errors or selector issues detected.",
-      "ac_check_verdict": "approve",
-      "ac_check_reason": "The implementation correctly calculates pass rate from done and failed items per sprint, displays 100% when zero failed items exist, 0% when all items failed, and shows '\u2014' when no done or failed items are present in a sprint.",
-      "hermes_verdict": "approve",
-      "started": 1780184185.105566,
-      "stage_times": {
-        "pull": 1780184185.105566,
-        "code": 1780184211.59495,
-        "story": 1780184185.209103,
-        "test": 1780184211.758818,
-        "code_review": 1780184212.113639,
-        "ac_check": 1780184213.428159,
-        "deploy": 1780184214.949543,
-        "done": 1780184220.100266
-      },
-      "tokens_in": 7788,
-      "tokens_out": 2082,
-      "sprint_wisdom": "[ok] Perfect execution on a complete feature delivery: comprehensive test coverage (9/9 passing), clean code review approval, correct AC implementation, and proper version/changelog management all aligned.\n[ok] High-quality acceptance criteria implementation with edge case handling (displaying '\u2014' for empty sprints, proper pass rate calculation for 0% and 100% scenarios).\n[note] Sprint contained only 1 item; limited data for pattern analysis across typical multi-item sprints."
-    },
-    {
       "id": "as-a-scrum-master-i-want-to-see-all-sprints-rank",
       "idea": "As a scrum master, I want to see all sprints ranked by stories completed so that I can identify my most productive sprints at a glance.",
       "story": "As a scrum master, I want to see all sprints ranked by stories completed so that I can identify my most productive sprints at a glance.",
@@ -88,7 +13,44 @@
       "status": "pending",
       "in_sprint": true,
       "source": "inception",
-      "sprint_number": 59
+      "sprint_number": 61,
+      "error": "Parse error: Extra data: line 27 column 1 (char 1043) | Response preview: ```json\n{\n  \"patches\": [\n    {\n      \"find\": \"    <a href=\\\"notes.html\\\">Notes</a>\\n    <a href=\\\"health.html\\\">Health</a>\\n  </nav>\",\n      \"replace\": \"    <a href=\\\"notes.html\\\">Notes</a>\\n    <a hr",
+      "started": 1780185139.522998,
+      "stage_times": {
+        "pull": 1780185139.522998,
+        "code": 1780185170.77349,
+        "story": 1780185139.564003,
+        "failed": 1780185170.776487
+      },
+      "tokens_in": 2560,
+      "tokens_out": 2458,
+      "sprint_wisdom": "[fail] JSON parse error due to malformed patch structure\u2014the generated JSON contains truncated or improperly escaped content, causing parsing to fail at line 27. The patch replacement value appears to be cut off mid-string.\n[note] Single item sprint with 0% completion rate indicates either scope was too ambitious or the agent encountered blocking issues early. No test results or code review feedback captured, suggesting the failure occurred before reaching validation stages."
+    },
+    {
+      "id": "as-a-scrum-master-i-want-to-see-the-pass-rate-fo",
+      "idea": "As a scrum master, I want to see the pass rate for each sprint on the leaderboard so that I can assess quality alongside throughput.",
+      "story": "As a scrum master, I want to see the pass rate for each sprint on the leaderboard so that I can assess quality alongside throughput.",
+      "acceptance_criteria": [
+        "Each leaderboard row shows a pass-rate percentage derived only from items in that sprint.",
+        "A sprint with zero failed items shows a pass rate of 100%.",
+        "A sprint where all items failed shows a pass rate of 0%.",
+        "A sprint that has no done or failed items displays '\u2014' in the pass-rate column rather than a numeric value."
+      ],
+      "status": "pending",
+      "in_sprint": true,
+      "source": "inception",
+      "sprint_number": 61,
+      "retro_context": "[fail] JSON parse error due to malformed patch structure\u2014the generated JSON contains truncated or improperly escaped content, causing parsing to fail at line 27. The patch replacement value appears to be cut off mid-string.\n[note] Single item sprint with 0% completion rate indicates either scope was too ambitious or the agent encountered blocking issues early. No test results or code review feedback captured, suggesting the failure occurred before reaching validation stages.",
+      "error": "Parse error: Extra data: line 27 column 1 (char 964) | Response preview: ```json\n{\n  \"patches\": [\n    {\n      \"find\": \"<a href=\\\"audit.html\\\">Audit</a>\",\n      \"replace\": \"<a href=\\\"audit.html\\\">Audit</a>\\n    <a href=\\\"leaderboard.html\\\">Leaderboard</a>\"\n    }\n  ],\n  \"ver",
+      "started": 1780185174.596185,
+      "stage_times": {
+        "pull": 1780185174.596185,
+        "code": 1780185188.428046,
+        "story": 1780185174.615215,
+        "failed": 1780185188.431037
+      },
+      "tokens_in": 2651,
+      "tokens_out": 898
     },
     {
       "ac_check_reason": "All three acceptance criteria are met: a leaderboard section displays the last 5 sprints ranked by stories completed in descending order, each row shows sprint identifier, stories completed count, and pass rate percentage with visual distinction via color-coded badges (green/yellow/red), and the leaderboard updates on page load by fetching current data from version.json.",
@@ -119,7 +81,7 @@
         "test": 1780152047.472465
       },
       "started": 1780152018.269849,
-      "status": "done",
+      "status": "pending",
       "story": "As a solo developer, I want to view a leaderboard showing my sprint performance stats so that I can track my stories completed and pass rates across recent sprints.",
       "summary": "Add sprint leaderboard section to index.html: top-5 sprints by stories completed, pass rate badges, loads from version.json on page load",
       "test_results": [
@@ -12758,5 +12720,5 @@
       "tokens_out": 2816
     }
   ],
-  "sprint_number": 59
+  "sprint_number": 61
 }

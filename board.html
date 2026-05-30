@@ -478,7 +478,7 @@
         storyLine = `<div class="card-story">${escHtml(item.story)}</div>`;
       }
 
-      const sourceTag = item.source === 'messenger'
+      const sourceTag = item.source === 'team_chat'
         ? `<span class="messenger-tag">&#8592; team chat</span>`
         : item.source === 'inception'
         ? `<span class="inception-tag">&#8592; inception</span>`
@@ -514,7 +514,7 @@
           ${acHtml}
           ${expandBtn}
         </div>
-        ${item.source === 'messenger' ? `<span class="messenger-tag watercooler-collapsed">team chat</span>` : item.source === 'inception' ? `<span class="inception-tag watercooler-collapsed">inception</span>` : (item.meeting_update || item.source === 'watercooler') ? `<span class="watercooler-tag watercooler-collapsed" title="${escHtml(item.meeting_update || '')}">watercooler</span>` : ''}
+        ${item.source === 'team_chat' ? `<span class="messenger-tag watercooler-collapsed">team chat</span>` : item.source === 'inception' ? `<span class="inception-tag watercooler-collapsed">inception</span>` : (item.meeting_update || item.source === 'watercooler') ? `<span class="watercooler-tag watercooler-collapsed" title="${escHtml(item.meeting_update || '')}">watercooler</span>` : ''}
         <span class="badge badge-${item.status}">${item.status}</span>
         ${retryBtn}
         ${deleteBtn}

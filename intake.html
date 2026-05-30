@@ -396,7 +396,7 @@
         const res  = await fetch('/messenger/choose', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ story, source: 'messenger' }),
+          body: JSON.stringify({ story, source: 'team_chat' }),
         });
         const data = await res.json();
         appendMessage('hello-scrum', data.reply || 'Added.', true);

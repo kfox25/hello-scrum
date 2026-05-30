@@ -227,19 +227,6 @@
       color: #888;
     }
 
-    .note-iframe-wrap {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      min-height: 0;
-    }
-    .note-iframe {
-      flex: 1;
-      border: none;
-      background: #111;
-      width: 100%;
-    }
   </style>
 </head>
 <body>
@@ -283,9 +270,6 @@
       Select a note or create a new one
     </div>
 
-    <div class="note-iframe-wrap" id="iframeWrap" style="display:none;">
-      <iframe class="note-iframe" id="noteFrame" src=""></iframe>
-    </div>
   </div>
 
   <script>
@@ -330,35 +314,9 @@
       });
     }
 
-    const NOTE_LINKS = {
-      "chad's workflow": "chad.html",
-      "scrum ai": "jeff.html",
-      "jeff's workflow": "jeff.html",
-      "hello scrum workflow": "hello-scrum.html",
-      "ai-dlc": "ai-dlc.html",
-    };
-
     function openNote(id) {
       activeId = id;
       const note = notes.find(n => n.id === id);
-      const link = NOTE_LINKS[(note.title || '').toLowerCase().trim()];
-      if (link) {
-        document.getElementById('editor').style.display = 'none';
-        document.getElementById('emptyState').style.display = 'none';
-        document.getElementById('iframeWrap').style.display = 'flex';
-        document.querySelector('header').style.display = 'none';
-        const frame = document.getElementById('noteFrame');
-        frame.onload = function() {
-          try {
-            const s = frame.contentDocument.createElement('style');
-            s.textContent = '.top-nav { display: none !important; } html { scrollbar-width: none; } html::-webkit-scrollbar { display: none; }';
-            frame.contentDocument.head.appendChild(s);
-          } catch(e) {}
-        };
-        frame.src = link;
-        render();
-        return;
-      }
       document.getElementById('iframeWrap').style.display = 'none';
       document.querySelector('header').style.display = '';
       document.getElementById('noteTitle').value = note.title || '';

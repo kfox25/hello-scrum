@@ -58,69 +58,6 @@
     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }
     .changelog-entry .cd { color: #444; font-size: 0.73rem; }
     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }
-
-    /* Leaderboard */
-    .leaderboard {
-      width: 100%;
-      max-width: 560px;
-      margin-top: 2rem;
-    }
-    .leaderboard h2 {
-      font-size: 0.75rem;
-      color: #555;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      margin: 0 0 0.75rem 0;
-    }
-    .lb-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .lb-table thead tr {
-      border-bottom: 1px solid #2a2a2a;
-    }
-    .lb-table th {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #555;
-      padding: 0.3rem 0.5rem;
-      text-align: left;
-    }
-    .lb-table th:not(:first-child) { text-align: center; }
-    .lb-table td {
-      font-size: 0.85rem;
-      padding: 0.45rem 0.5rem;
-      border-top: 1px solid #1c1c1c;
-      color: #c0c4d0;
-      text-align: left;
-    }
-    .lb-table td:not(:first-child) { text-align: center; }
-    .lb-table tbody tr:hover { background: #14161e; }
-    .lb-rank {
-      font-size: 0.75rem;
-      color: #555;
-      width: 1.5rem;
-      display: inline-block;
-      text-align: right;
-      margin-right: 0.4rem;
-    }
-    .lb-rank-1 { color: #ffd700; }
-    .lb-rank-2 { color: #c0c0c0; }
-    .lb-rank-3 { color: #cd7f32; }
-    .lb-pass {
-      display: inline-block;
-      padding: 0.15rem 0.55rem;
-      border-radius: 12px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      background: #0b1f14;
-      border: 1px solid #00ff9944;
-      color: #00ff99;
-    }
-    .lb-pass.low { background: #1f0b0b; border-color: #ff444444; color: #ff6666; }
-    .lb-pass.mid { background: #1a1a0b; border-color: #ffcc0044; color: #ffcc00; }
-    .lb-empty { font-size: 0.82rem; color: #555; padding: 1rem 0; }
   </style>
 </head>
 <body>
@@ -140,25 +77,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.204</div>
-  <div class="meta">Last deployed: 2026-05-30 09:23:40 CT</div>
-  <div class="leaderboard">
-    <h2>&#127942; Sprint Leaderboard</h2>
-    <table class="lb-table">
-      <thead>
-        <tr>
-          <th>Rank</th>
-          <th>Sprint</th>
-          <th>Completed</th>
-          <th>Pass Rate</th>
-        </tr>
-      </thead>
-      <tbody id="lb-body">
-        <tr><td colspan="4" class="lb-empty">Loading sprint data…</td></tr>
-      </tbody>
-    </table>
-  </div>
-
+  <div class="version" id="version-badge">v0.1.66</div>
+  <div class="meta">Last deployed: 2026-05-25 22:39:40 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -184,51 +104,6 @@
         .catch(() => {});
     }
     loadChangelog();
-
-    function buildLeaderboard() {
-      fetch('/version.json')
-        .then(r => r.json())
-        .then(data => {
-          const changelog = data.changelog || [];
-          // Build synthetic sprint stats from changelog entries grouped by date
-          const byDate = {};
-          changelog.forEach(e => {
-            const d = e.date || 'unknown';
-            if (!byDate[d]) byDate[d] = { date: d, completed: 0, passed: 0 };
-            byDate[d].completed += 1;
-            // Treat entries with keywords as passed
-            const txt = (e.change || '').toLowerCase();
-            if (!txt.includes('fix') && !txt.includes('revert') && !txt.includes('broken')) {
-              byDate[d].passed += 1;
-            }
-          });
-          const sprints = Object.values(byDate)
-            .sort((a, b) => b.completed - a.completed)
-            .slice(0, 5);
-          const tbody = document.getElementById('lb-body');
-          if (!sprints.length) {
-            tbody.innerHTML = '<tr><td colspan="4" class="lb-empty">No sprint data available yet.</td></tr>';
-            return;
-          }
-          tbody.innerHTML = sprints.map((s, i) => {
-            const rank = i + 1;
-            const rankClass = rank <= 3 ? ' lb-rank-' + rank : '';
-            const passRate = s.completed > 0 ? Math.round((s.passed / s.completed) * 100) : 0;
-            const passClass = passRate >= 80 ? '' : passRate >= 50 ? ' mid' : ' low';
-            return `<tr>
-              <td><span class="lb-rank${rankClass}">#${rank}</span></td>
-              <td>${escHtml(s.date)}</td>
-              <td>${s.completed}</td>
-              <td><span class="lb-pass${passClass}">${passRate}%</span></td>
-            </tr>`;
-          }).join('');
-        })
-        .catch(() => {
-          const tbody = document.getElementById('lb-body');
-          if (tbody) tbody.innerHTML = '<tr><td colspan="4" class="lb-empty">Could not load sprint data.</td></tr>';
-        });
-    }
-    buildLeaderboard();
   </script>
 <script src="shared.js"></script>
 </body>

@@ -22,9 +22,9 @@
   const nav = document.createElement('div');
   nav.className = 'phase-nav';
   [
+    { label: 'Inception',    href: 'inception.html'    },
     { label: 'Construction', href: 'construction.html' },
     { label: 'Operations',   href: 'operations.html'   },
-    { label: 'Inception',    href: 'inception.html'    },
   ].forEach(({ label, href }) => {
     const a = document.createElement('a');
     a.href = '/' + href;

@@ -11,7 +11,7 @@
 
     .page-header { margin-bottom: 2rem; }
     h1 { color: #00ff99; font-size: 1.8rem; margin-bottom: 0.25rem; }
-    .page-sub { color: #555; font-size: 0.85rem; }
+    .page-sub { color: #888; font-size: 0.85rem; }
 
     .card {
       background: #1a1a1a;
@@ -25,7 +25,7 @@
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: #555;
+      color: #888;
       margin-bottom: 0.5rem;
     }
 
@@ -43,7 +43,7 @@
       resize: vertical;
     }
     textarea:focus, input[type="text"]:focus { outline: none; border-color: #00ff9940; }
-    textarea::placeholder, input::placeholder { color: #333; }
+    textarea::placeholder, input::placeholder { color: #666; }
 
     .btn {
       background: #0a1f12;
@@ -92,40 +92,45 @@
     .qna-actions { display: flex; gap: 0.75rem; align-items: center; margin-top: 0.5rem; }
 
     /* ── State: result ── */
-    #stateResult { display: none; flex-direction: column; gap: 1.25rem; }
+    #stateResult { display: none; }
+    #stateResult .result-layout { width: 100%; }
 
-    .story-block {
-      background: #111;
-      border: 1px solid #00ff9920;
-      border-radius: 4px;
-      padding: 0.85rem 1rem;
-      font-size: 0.9rem;
-      color: #ccc;
-      line-height: 1.6;
-    }
+    .result-layout { display: flex; gap: 1.5rem; align-items: flex-start; }
+    .result-left  { flex: 0 0 300px; max-width: none; display: flex; flex-direction: column; gap: 0.75rem; }
+    .result-right { flex: 1; min-width: 0; max-width: none; display: flex; flex-direction: column; gap: 0.75rem; }
 
-    .ac-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.4rem; }
-    .ac-list li {
-      background: #111;
-      border: 1px solid #2a2a2a;
-      border-radius: 4px;
-      padding: 0.5rem 0.85rem;
-      font-size: 0.85rem;
-      color: #999;
-      line-height: 1.5;
+    .qna-readonly { display: flex; flex-direction: column; gap: 0.6rem; }
+    .qna-readonly-item { font-size: 0.82rem; line-height: 1.5; }
+    .qna-q { color: #00ff9980; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.15rem; }
+    .qna-a { color: #bbb; }
+
+    .ac-inputs { display: flex; flex-direction: column; gap: 0.4rem; }
+    .ac-input-row {
       display: flex;
-      gap: 0.6rem;
-      align-items: baseline;
+      gap: 0.5rem;
+      align-items: center;
     }
-    .ac-list li::before {
-      content: '✓';
-      color: #00ff9960;
-      flex-shrink: 0;
-      font-size: 0.75rem;
-    }
+    .ac-input-row textarea { flex: 1; min-width: 0; resize: none; rows: 2; }
+    .ac-check { color: #00ff9960; font-size: 0.75rem; flex-shrink: 0; }
 
-    .result-actions { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+    .result-actions { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-top: 0.5rem; }
     .copy-confirm { font-size: 0.78rem; color: #00ff9980; display: none; }
+
+    .btn-clear {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      background: #1a0a0a;
+      color: #ff4444;
+      border: 1px solid #ff444430;
+      padding: 0.4rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 0.85rem;
+      z-index: 100;
+    }
+    .btn-clear:hover { border-color: #ff4444; background: #2a0a0a; }
 
     .spinner {
       display: inline-block;
@@ -141,7 +146,7 @@
 
     .status-line {
       font-size: 0.78rem;
-      color: #555;
+      color: #888;
       min-height: 1.2rem;
     }
     .status-line.active { color: #00ff9980; }
@@ -149,7 +154,7 @@
 
     .intent-display {
       font-size: 0.8rem;
-      color: #444;
+      color: #777;
       font-style: italic;
       padding: 0.4rem 0.75rem;
       border-left: 2px solid #2a2a2a;
@@ -160,13 +165,13 @@
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: #555;
+      color: #888;
       margin-bottom: 0.6rem;
     }
 
     .restart-link {
       font-size: 0.78rem;
-      color: #444;
+      color: #777;
       cursor: pointer;
       text-decoration: underline;
       background: none;
@@ -224,31 +229,64 @@
 
   <!-- State 3: Result -->
   <div id="stateResult">
-    <div class="card">
-      <div class="intent-display" id="resultIntentDisplay"></div>
+    <div class="result-layout">
 
-      <div class="section-label">Story</div>
-      <div class="story-block" id="resultStory"></div>
-
-      <div class="section-label" style="margin-top:1rem;">Acceptance Criteria</div>
-      <ul class="ac-list" id="resultAC"></ul>
-
-      <div class="result-actions" style="margin-top:1.5rem;">
-        <button class="btn btn-copy" onclick="copyResult()">Copy</button>
-        <button class="restart-link" onclick="restart()">start over</button>
-        <span class="copy-confirm" id="copyConfirm">copied</span>
+      <!-- Left: context (readonly) -->
+      <div class="card result-left">
+        <div class="section-label">Intent</div>
+        <div class="intent-display" id="resultIntentDisplay"></div>
+        <div class="section-label" style="margin-top:1rem;">Clarifications</div>
+        <div class="qna-readonly" id="resultQnA"></div>
       </div>
+
+      <!-- Right: editable output -->
+      <div class="card result-right">
+        <div class="section-label">Story</div>
+        <textarea id="resultStory" rows="5"></textarea>
+
+        <div class="section-label" style="margin-top:1rem;">Acceptance Criteria</div>
+        <div class="ac-inputs" id="resultAC"></div>
+
+        <div class="section-label" style="margin-top:1rem;">Non-Functional Requirements</div>
+        <div class="ac-inputs" id="resultNFRs"></div>
+
+        <div class="section-label" style="margin-top:1rem;">Risks</div>
+        <div class="ac-inputs" id="resultRisks"></div>
+
+        <div class="result-actions">
+          <button class="btn btn-copy" onclick="copyResult()">Copy</button>
+          <button class="restart-link" onclick="restart()">start over</button>
+          <span class="copy-confirm" id="copyConfirm">copied</span>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <script>
-    let currentIntent = '';
+    const LS = 'inception-';
+    let currentIntent   = '';
     let currentQuestions = [];
+
+    function save() {
+      localStorage.setItem(LS+'intent',    currentIntent);
+      localStorage.setItem(LS+'questions', JSON.stringify(currentQuestions));
+      const answers = currentQuestions.map((_, i) => document.getElementById('answer-'+i)?.value || '');
+      localStorage.setItem(LS+'answers', JSON.stringify(answers));
+      localStorage.setItem(LS+'story', document.getElementById('resultStory').value);
+      const ac    = [...document.querySelectorAll('#resultAC textarea')].map(el => el.value);
+      const nfrs  = [...document.querySelectorAll('#resultNFRs textarea')].map(el => el.value);
+      const risks = [...document.querySelectorAll('#resultRisks textarea')].map(el => el.value);
+      localStorage.setItem(LS+'ac',    JSON.stringify(ac));
+      localStorage.setItem(LS+'nfrs',  JSON.stringify(nfrs));
+      localStorage.setItem(LS+'risks', JSON.stringify(risks));
+    }
 
     function setState(name) {
       document.getElementById('stateIntent').style.display    = name === 'intent'    ? 'flex' : 'none';
       document.getElementById('stateQuestions').style.display = name === 'questions' ? 'flex' : 'none';
-      document.getElementById('stateResult').style.display    = name === 'result'    ? 'flex' : 'none';
+      document.getElementById('stateResult').style.display    = name === 'result'    ? 'block' : 'none';
+      localStorage.setItem(LS+'state', name);
     }
 
     function setStatus(id, msg, type) {
@@ -257,10 +295,53 @@
       el.className = 'status-line' + (type ? ' ' + type : '');
     }
 
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function buildQnA(questions, answers) {
+      const list = document.getElementById('qnaList');
+      list.innerHTML = '';
+      questions.forEach((q, i) => {
+        list.innerHTML += `
+          <div class="qna-item">
+            <div class="question-text">${escHtml(q)}</div>
+            <input type="text" id="answer-${i}" placeholder="Your answer..." value="${escHtml(answers?.[i] || '')}" oninput="save()" />
+          </div>`;
+      });
+    }
+
+    function makeRows(items, prefix) {
+      const list = items.length ? items : [''];
+      return list.map(a => `
+        <div class="ac-input-row">
+          <span class="ac-check">${prefix}</span>
+          <textarea rows="1" oninput="save()">${escHtml(a)}</textarea>
+        </div>`).join('');
+    }
+
+    function buildResult(questions, answers, story, ac, nfrs, risks) {
+      document.getElementById('resultIntentDisplay').textContent = currentIntent;
+      document.getElementById('resultStory').value = story;
+
+      const qnaEl = document.getElementById('resultQnA');
+      qnaEl.innerHTML = questions.map((q, i) => `
+        <div class="qna-readonly-item">
+          <div class="qna-q">Q${i+1}</div>
+          <div style="color:#888;font-size:0.8rem;margin-bottom:0.2rem;">${escHtml(q)}</div>
+          <div class="qna-a">${escHtml(answers?.[i] || '—')}</div>
+        </div>`).join('');
+
+      document.getElementById('resultAC').innerHTML    = makeRows(ac,    '✓');
+      document.getElementById('resultNFRs').innerHTML  = makeRows(nfrs,  '◈');
+      document.getElementById('resultRisks').innerHTML = makeRows(risks, '⚑');
+    }
+
     async function startClarify() {
       const intent = document.getElementById('intentInput').value.trim();
       if (!intent) return;
       currentIntent = intent;
+      save();
 
       const btn = document.getElementById('btnStart');
       btn.disabled = true;
@@ -276,9 +357,10 @@
         if (data.error) throw new Error(data.error);
 
         currentQuestions = data.questions || [];
-        buildQnA(currentQuestions);
+        buildQnA(currentQuestions, []);
         document.getElementById('intentDisplay').textContent = intent;
         setState('questions');
+        save();
       } catch (e) {
         setStatus('statusIntent', 'Error: ' + e.message, 'error');
       } finally {
@@ -287,23 +369,9 @@
       }
     }
 
-    function buildQnA(questions) {
-      const list = document.getElementById('qnaList');
-      list.innerHTML = '';
-      questions.forEach((q, i) => {
-        list.innerHTML += `
-          <div class="qna-item">
-            <div class="question-text">${escHtml(q)}</div>
-            <input type="text" id="answer-${i}" placeholder="Your answer..." />
-          </div>`;
-      });
-    }
-
     async function elaborate() {
-      const qna = currentQuestions.map((q, i) => ({
-        q,
-        a: (document.getElementById('answer-' + i)?.value || '').trim(),
-      }));
+      const answers = currentQuestions.map((_, i) => (document.getElementById('answer-'+i)?.value || '').trim());
+      const qna = currentQuestions.map((q, i) => ({ q, a: answers[i] }));
 
       const btn = document.getElementById('btnElaborate');
       btn.disabled = true;
@@ -318,13 +386,12 @@
         const data = await res.json();
         if (data.error) throw new Error(data.error);
 
-        document.getElementById('resultIntentDisplay').textContent = currentIntent;
-        document.getElementById('resultStory').textContent = data.story || '';
-        const acList = document.getElementById('resultAC');
-        acList.innerHTML = (data.acceptance_criteria || [])
-          .map(ac => `<li>${escHtml(ac)}</li>`)
-          .join('');
+        const ac    = data.acceptance_criteria || [];
+        const nfrs  = data.nfrs  || [];
+        const risks = data.risks || [];
+        buildResult(currentQuestions, answers, data.story || '', ac, nfrs, risks);
         setState('result');
+        save();
       } catch (e) {
         setStatus('statusQuestions', 'Error: ' + e.message, 'error');
       } finally {
@@ -334,28 +401,68 @@
     }
 
     function copyResult() {
-      const story = document.getElementById('resultStory').textContent;
-      const ac = [...document.querySelectorAll('#resultAC li')].map(li => '- ' + li.textContent).join('\n');
-      navigator.clipboard.writeText(`${story}\n\nAcceptance Criteria:\n${ac}`);
-      const confirm = document.getElementById('copyConfirm');
-      confirm.style.display = 'inline';
-      setTimeout(() => { confirm.style.display = 'none'; }, 2000);
+      const story = document.getElementById('resultStory').value;
+      const ac    = [...document.querySelectorAll('#resultAC textarea')].map(el => '- ' + el.value).join('\n');
+      const nfrs  = [...document.querySelectorAll('#resultNFRs textarea')].map(el => '- ' + el.value).join('\n');
+      const risks = [...document.querySelectorAll('#resultRisks textarea')].map(el => '- ' + el.value).join('\n');
+      navigator.clipboard.writeText(`${story}\n\nAcceptance Criteria:\n${ac}\n\nNon-Functional Requirements:\n${nfrs}\n\nRisks:\n${risks}`);
+      const el = document.getElementById('copyConfirm');
+      el.style.display = 'inline';
+      setTimeout(() => { el.style.display = 'none'; }, 2000);
     }
 
-    function restart() {
+    function clearData() {
+      const intent = localStorage.getItem(LS+'intent') || 'Add a leaderboard section to the Hello Scrum app showing sprint performance stats';
       currentIntent = '';
       currentQuestions = [];
-      document.getElementById('intentInput').value = '';
+      ['questions','answers','story','ac','state'].forEach(k => localStorage.removeItem(LS+k));
+      localStorage.setItem(LS+'intent', intent);
+      document.getElementById('intentInput').value = intent;
       document.getElementById('qnaList').innerHTML = '';
+      document.getElementById('resultStory').value = '';
+      document.getElementById('resultAC').innerHTML    = '';
+      document.getElementById('resultNFRs').innerHTML  = '';
+      document.getElementById('resultRisks').innerHTML = '';
       setState('intent');
     }
 
-    function escHtml(s) {
-      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
+    function restart() { clearData(); }
 
-    setState('intent');
+    // Restore from localStorage on load
+    (function init() {
+      const intent    = localStorage.getItem(LS+'intent') || 'Add a leaderboard section to the Hello Scrum app showing sprint performance stats';
+      const state     = localStorage.getItem(LS+'state') || 'intent';
+      const questions = JSON.parse(localStorage.getItem(LS+'questions') || '[]');
+      const answers   = JSON.parse(localStorage.getItem(LS+'answers')   || '[]');
+      const story     = localStorage.getItem(LS+'story') || '';
+      const ac        = JSON.parse(localStorage.getItem(LS+'ac')        || '[]');
+      const nfrs      = JSON.parse(localStorage.getItem(LS+'nfrs')     || '[]');
+      const risks     = JSON.parse(localStorage.getItem(LS+'risks')    || '[]');
+
+      currentIntent    = intent;
+      currentQuestions = questions;
+
+      document.getElementById('intentInput').value = intent;
+
+      if (state === 'questions' && questions.length) {
+        buildQnA(questions, answers);
+        document.getElementById('intentDisplay').textContent = intent;
+        setState('questions');
+      } else if (state === 'result' && story) {
+        buildResult(questions, answers, story, ac, nfrs, risks);
+        setState('result');
+      } else {
+        setState('intent');
+      }
+    })();
+
+    document.getElementById('intentInput').addEventListener('input', () => {
+      localStorage.setItem(LS+'intent', document.getElementById('intentInput').value);
+    });
+
+    document.getElementById('resultStory').addEventListener('input', save);
   </script>
+  <button class="btn-clear" onclick="clearData()">Clear</button>
   <script src="shared.js"></script>
 </body>
 </html>

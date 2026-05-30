@@ -35,8 +35,14 @@ AGENT_LOG_FILE = os.path.join(BASE, "agent_log.json")
 
 INCEPTION_CLARIFY_PROMPT = """You are an AI-DLC Inception assistant. Given a high-level intent, generate exactly 3 targeted clarifying questions that will produce sharper user stories and acceptance criteria. Focus on: who the primary user is, what specific outcome success looks like, and any constraints or existing context to be aware of. Return JSON only (no markdown): {"questions": ["question 1", "question 2", "question 3"]}"""
 
-INCEPTION_ELABORATE_PROMPT = """You are a scrum story writer. Given a high-level intent and clarifying answers, write a precise user story and acceptance criteria that reflect the full context provided. Return JSON only (no markdown): {"story": "As a <role>, I want <goal> so that <benefit>.", "acceptance_criteria": ["criterion 1", "criterion 2", "criterion 3", "criterion 4"]}
-Write 3-4 short, testable acceptance criteria. Use specific details from the clarification answers where relevant."""
+INCEPTION_ELABORATE_PROMPT = """You are an AI-DLC Inception assistant. Given a high-level intent and clarifying answers, produce all four Inception artifacts. Return JSON only (no markdown):
+{"story": "As a <role>, I want <goal> so that <benefit>.", "acceptance_criteria": ["criterion 1", "criterion 2", "criterion 3"], "nfrs": ["NFR 1", "NFR 2"], "risks": ["Risk 1", "Risk 2"]}
+
+Rules:
+- story: one concise user story sentence
+- acceptance_criteria: 3-4 short, testable statements using details from the clarification answers
+- nfrs: 2-3 non-functional requirements (performance, security, scalability, accessibility, etc.) relevant to this story
+- risks: 2-3 risk descriptions relevant to this story (technical risks, business risks, compliance concerns)"""
 
 STORY_ELABORATION_PROMPT = """You are a scrum story writer. Given a raw idea, write a user story and acceptance criteria.
 

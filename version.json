@@ -1,6 +1,6 @@
 {
-  "version": "0.1.202",
-  "deployed": "2026-05-29 08:55:57 CT",
+  "version": "0.1.204",
+  "deployed": "2026-05-30 09:23:40 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1018,6 +1018,16 @@
       "version": "0.1.202",
       "date": "2026-05-29",
       "change": "Add padding-bottom to .changelog h2 to separate heading from entries"
+    },
+    {
+      "version": "0.1.203",
+      "date": "2026-05-29",
+      "change": "Add leaderboard teaser section to index.html with sprint velocity preview and nav link"
+    },
+    {
+      "version": "0.1.204",
+      "date": "2026-05-30",
+      "change": "Add sprint performance leaderboard section showing last 5 sprints ranked by stories completed with pass rate badges"
     }
   ]
 }

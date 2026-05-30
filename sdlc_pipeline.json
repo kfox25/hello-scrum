@@ -1,153 +1,17 @@
 {
   "items": [
     {
-      "id": "1780062848475",
-      "idea": "Add hover tooltip to version badge showing full release date",
-      "in_sprint": true,
-      "source": "watercooler",
-      "status": "done",
-      "story": "As a developer, I want to see the full release date and time when I hover over the version badge so that I can quickly verify when the current version was deployed.",
+      "id": "add-a-leaderboard-section-to-the-hello-scrum-app",
+      "idea": "Add a leaderboard section to the Hello Scrum app showing sprint performance stats",
+      "story": "As a solo developer, I want to view a leaderboard showing my sprint performance stats so that I can track my stories completed and pass rates across recent sprints.",
       "acceptance_criteria": [
-        "A tooltip appears when the user hovers over the version badge displaying the complete deployed timestamp",
-        "The tooltip displays the date and time in the same format as stored in version.json (e.g., '2026-05-29 08:49:05 CT')",
-        "The tooltip remains visible while the user's cursor is over the version badge and disappears when the cursor moves away",
-        "The tooltip does not interfere with other page elements or extend beyond the viewport boundaries"
+        "A leaderboard section displays on the Hello Scrum app page showing the last 5 sprints ranked by stories completed in descending order.",
+        "Each sprint row shows a sprint identifier (date or sequential number), number of stories completed, pass rate percentage (stories passed Hermes / total stories), and the pass rate is visually distinct from other metrics.",
+        "The leaderboard updates to reflect current data when the page loads or is refreshed."
       ],
-      "summary": "Add hover tooltip to version badge showing full deployed timestamp",
-      "diff": "diff --git a/index.html b/index.html\nindex 5b7543d..337ef89 100644\n--- a/index.html\n+++ b/index.html\n@@ -48,9 +48,28 @@\n       border: 1px solid #00ff9966;\n       padding: 0.3rem 0.9rem;\n       border-radius: 20px;\n+      cursor: default;\n+      position: relative;\n       margin-bottom: 0.4rem;\n     }\n     .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; }\n+    .version-tooltip {\n+      display: none;\n+      position: absolute;\n+      bottom: calc(100% + 8px);\n+      left: 50%;\n+      transform: translateX(-50%);\n+      background: #1a2a1a;\n+      color: #00ff99;\n+      border: 1px solid #00ff9966;\n+      border-radius: 8px;\n+      padding: 0.35rem 0.8rem;\n+      font-size: 0.78rem;\n+      white-space: nowrap;\n+      z-index: 100;\n+      pointer-events: none;\n+    }\n+    .version:hover .version-tooltip { display: block; }\n     .changelog { margin-top: 1.5rem; width: 100%; max-width: 500px; }\n     .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; }\n     .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }\n@@ -77,8 +96,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.199<span class=\"version-tooltip\" id=\"version-tooltip\">2026-05-29 08:49:05 CT</span></div>\n+  <div class=\"meta\">Last deployed: 2026-05-29 08:54:54 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -92,6 +111,10 @@\n         .then(r => r.json())\n         .then(data => {\n           const entries = (data.changelog || []).slice().reverse().slice(0, 5);\n+          if (data.deployed) {\n+            const tip = document.getElementById('version-tooltip');\n+            if (tip) tip.textContent = data.deployed;\n+          }\n           document.getElementById('changelog-entries').innerHTML = entries.map(e => {\n             const ver = String(e.version).startsWith('v') ? e.version : 'v' + e.version;\n             return `<div class=\"changelog-entry\">\ndiff --git a/version.json b/version.json\nindex c53c3b0..fddf793 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.198\",\n-  \"deployed\": \"2026-05-29 08:49:05 CT\",\n+  \"version\": \"0.1.199\",\n+  \"deployed\": \"2026-05-29 08:54:54 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -998,6 +998,11 @@\n       \"version\": \"0.1.198\",\n       \"date\": \"2026-05-29\",\n       \"change\": \"Add padding-bottom to .changelog h2 to separate heading from entries\"\n+    },\n+    {\n+      \"version\": \"0.1.199\",\n+      \"date\": \"2026-05-29\",\n+      \"change\": \"Add hover tooltip to version badge showing full deployed timestamp\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
-      "test_results": [
-        {
-          "status": "pass",
-          "message": "index.html exists and contains title"
-        },
-        {
-          "status": "pass",
-          "message": "version 0.1.199 matches between version.json and index.html"
-        },
-        {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-29 08:54:54 CT' present in index.html"
-        },
-        {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.199: Add hover tooltip to version badge showing full deployed timestamp"
-        },
-        {
-          "status": "pass",
-          "message": "no CSS outside style block"
-        },
-        {
-          "status": "pass",
-          "message": "no duplicate h1 rules (1 found)"
-        },
-        {
-          "status": "pass",
-          "message": "no -webkit-text-fill-color in style block"
-        },
-        {
-          "status": "pass",
-          "message": "no duplicate body rules (1 found)"
-        },
-        {
-          "status": "pass",
-          "message": "no mixed color formats"
-        }
-      ],
-      "deployed": "2026-05-29 08:54:54 CT",
-      "code_review_verdict": "approve",
-      "code_review_reason": "The CSS tooltip styling is valid, the HTML structure correctly nests the span element, the JavaScript safely checks for element existence before updating textContent, and all changes are scoped to the version badge feature.",
-      "ac_check_verdict": "approve",
-      "ac_check_reason": "All acceptance criteria are met: tooltip appears on hover with the deployed timestamp in the correct format, remains visible during hover and disappears on mouse away, uses absolute positioning with z-index and pointer-events handling to avoid interference with other elements.",
-      "hermes_verdict": "approve",
-      "started": 1780062894.423041,
-      "stage_times": {
-        "pull": 1780062894.423041,
-        "code": 1780062912.647006,
-        "story": 1780062904.540066,
-        "test": 1780062912.78501,
-        "code_review": 1780062912.972206,
-        "ac_check": 1780062914.505714,
-        "deploy": 1780062916.157353,
-        "done": 1780062919.650472
-      },
-      "tokens_in": 8557,
-      "tokens_out": 1669,
-      "sprint_wisdom": "[ok] Perfect execution on feature delivery: all acceptance criteria met, Hermes approved, code review passed, and comprehensive test suite (9 tests) passed without errors. This demonstrates a well-defined and properly scoped user story.\n[ok] Strong quality practices observed: changelog updated, version consistency verified across files, CSS/HTML validation performed, and accessibility/styling concerns (z-index, pointer-events, color formats) properly handled.\n[note] Sprint completed 1 item with 100% success rate; this small batch size allows for high confidence in delivery quality but provides limited data for pattern analysis across multiple items."
-    },
-    {
-      "id": "1780062847151",
-      "idea": "Add focus ring to interactive elements for keyboard accessibility",
+      "status": "pending",
       "in_sprint": true,
-      "source": "watercooler",
-      "status": "done",
-      "story": "As a keyboard user, I want visible focus rings on interactive elements so that I can clearly see which element is focused when navigating with the keyboard.",
-      "acceptance_criteria": [
-        "When a user tabs to a navigation link, a visible focus indicator appears around that link.",
-        "When a user tabs to a button or clickable element, a visible focus indicator appears around that element.",
-        "The focus indicator remains visible while the element retains keyboard focus.",
-        "The focus indicator is removed when focus moves to a different element or disappears from the page."
-      ],
-      "retro_context": "[ok] Perfect execution on feature delivery: all acceptance criteria met, Hermes approved, code review passed, and comprehensive test suite (9 tests) passed without errors. This demonstrates a well-defined and properly scoped user story.\n[ok] Strong quality practices observed: changelog updated, version consistency verified across files, CSS/HTML validation performed, and accessibility/styling concerns (z-index, pointer-events, color formats) properly handled.\n[note] Sprint completed 1 item with 100% success rate; this small batch size allows for high confidence in delivery quality but provides limited data for pattern analysis across multiple items.",
-      "summary": "Add keyboard focus rings via :focus-visible for accessible navigation",
-      "diff": "diff --git a/index.html b/index.html\nindex 337ef89..7c9f43c 100644\n--- a/index.html\n+++ b/index.html\n@@ -77,6 +77,16 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n+\n+    /* Keyboard focus rings */\n+    :focus-visible {\n+      outline: 2px solid #00ff99;\n+      outline-offset: 3px;\n+      border-radius: 4px;\n+    }\n+    :focus:not(:focus-visible) {\n+      outline: none;\n+    }\n   </style>\n </head>\n <body>\n@@ -96,8 +106,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.199<span class=\"version-tooltip\" id=\"version-tooltip\">2026-05-29 08:49:05 CT</span></div>\n-  <div class=\"meta\">Last deployed: 2026-05-29 08:54:54 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.200<span class=\"version-tooltip\" id=\"version-tooltip\">2026-05-29 08:49:05 CT</span></div>\n+  <div class=\"meta\">Last deployed: 2026-05-29 08:55:24 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex fddf793..58e3558 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.199\",\n-  \"deployed\": \"2026-05-29 08:54:54 CT\",\n+  \"version\": \"0.1.200\",\n+  \"deployed\": \"2026-05-29 08:55:24 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -1003,6 +1003,11 @@\n       \"version\": \"0.1.199\",\n       \"date\": \"2026-05-29\",\n       \"change\": \"Add hover tooltip to version badge showing full deployed timestamp\"\n+    },\n+    {\n+      \"version\": \"0.1.200\",\n+      \"date\": \"2026-05-29\",\n+      \"change\": \"Add visible focus rings on interactive elements for keyboard accessibility\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
-      "test_results": [
-        {
-          "status": "pass",
-          "message": "index.html exists and contains title"
-        },
-        {
-          "status": "pass",
-          "message": "version 0.1.200 matches between version.json and index.html"
-        },
-        {
-          "status": "pass",
-          "message": "deployed timestamp '2026-05-29 08:55:24 CT' present in index.html"
-        },
-        {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.200: Add visible focus rings on interactive elements for keyboard accessibility"
-        },
-        {
-          "status": "pass",
-          "message": "no CSS outside style block"
-        },
-        {
-          "status": "pass",
-          "message": "no duplicate h1 rules (1 found)"
-        },
-        {
-          "status": "pass",
-          "message": "no -webkit-text-fill-color in style block"
-        },
-        {
-          "status": "pass",
-          "message": "no duplicate body rules (1 found)"
-        },
-        {
-          "status": "pass",
-          "message": "no mixed color formats"
-        }
-      ],
-      "deployed": "2026-05-29 08:55:24 CT",
-      "code_review_verdict": "approve",
-      "code_review_reason": "CSS focus-visible styling is syntactically correct and will function as written to show focus rings on keyboard navigation.",
-      "ac_check_verdict": "approve",
-      "ac_check_reason": "The implementation adds :focus-visible styling with a visible 2px solid outline in the accent color (#00ff99) that applies to all interactive elements, correctly suppresses focus rings for mouse users with :focus:not(:focus-visible), and satisfies all four acceptance criteria for keyboard navigation focus indicators.",
-      "hermes_verdict": "approve",
-      "started": 1780062924.246113,
-      "stage_times": {
-        "pull": 1780062924.246113,
-        "code": 1780062930.0318,
-        "story": 1780062924.25933,
-        "test": 1780062930.17404,
-        "code_review": 1780062930.411081,
-        "ac_check": 1780062931.456465,
-        "deploy": 1780062934.344025,
-        "done": 1780062937.502129
-      },
-      "tokens_in": 5422,
-      "tokens_out": 479,
-      "sprint_wisdom": "[ok] Perfect execution across all quality gates: both items passed all test suites (9/9 tests each), received Hermes approval, and met all acceptance criteria on first submission with no errors or rework.\n[ok] Strong accessibility focus: both features directly address user experience gaps (tooltip visibility and keyboard navigation), demonstrating intentional product prioritization around inclusive design.\n[note] Consistent code quality standards enforced: both items passed identical CSS validation checks (no external styles, no duplicate rules, no deprecated properties, consistent color formats), indicating well-established coding patterns."
+      "source": "inception"
     },
     {
       "acceptance_criteria": [
@@ -159,11 +23,10 @@
       "diff": "diff --git a/index.html b/index.html\nindex 7c9f43c..3e15d76 100644\n--- a/index.html\n+++ b/index.html\n@@ -52,7 +52,7 @@\n       position: relative;\n       margin-bottom: 0.4rem;\n     }\n-    .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; }\n+    .meta { font-size: 0.8rem; color: #555; margin: 0.15rem 0; opacity: 0.5; }\n     .version-tooltip {\n       display: none;\n       position: absolute;\n@@ -106,8 +106,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.200<span class=\"version-tooltip\" id=\"version-tooltip\">2026-05-29 08:49:05 CT</span></div>\n-  <div class=\"meta\">Last deployed: 2026-05-29 08:55:24 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.201<span class=\"version-tooltip\" id=\"version-tooltip\">2026-05-29 08:49:05 CT</span></div>\n+  <div class=\"meta\">Last deployed: 2026-05-29 08:55:41 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 58e3558..2153f4c 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.200\",\n-  \"deployed\": \"2026-05-29 08:55:24 CT\",\n+  \"version\": \"0.1.201\",\n+  \"deployed\": \"2026-05-29 08:55:41 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -1008,6 +1008,11 @@\n       \"version\": \"0.1.200\",\n       \"date\": \"2026-05-29\",\n       \"change\": \"Add visible focus rings on interactive elements for keyboard accessibility\"\n+    },\n+    {\n+      \"version\": \"0.1.201\",\n+      \"date\": \"2026-05-29\",\n+      \"change\": \"Reduce opacity of .meta deployment line to de-emphasize it\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "id": "meta-opacity",
       "idea": "Reduce the opacity of the .meta deployment line to de-emphasize it",
-      "in_sprint": true,
+      "in_sprint": false,
       "retro_context": "[ok] Perfect execution across all quality gates: both items passed all test suites (9/9 tests each), received Hermes approval, and met all acceptance criteria on first submission with no errors or rework.\n[ok] Strong accessibility focus: both features directly address user experience gaps (tooltip visibility and keyboard navigation), demonstrating intentional product prioritization around inclusive design.\n[note] Consistent code quality standards enforced: both items passed identical CSS validation checks (no external styles, no duplicate rules, no deprecated properties, consistent color formats), indicating well-established coding patterns.",
       "sprint_wisdom": "[ok] Perfect execution across all items: 3/3 completed with zero failures, all Hermes verdicts approved, and comprehensive test coverage (9 tests passing per item). The agent consistently delivers working code that passes code review, acceptance criteria, and automated testing.\n[ok] Strong accessibility focus this sprint: two of three items directly addressed keyboard navigation and visual feedback for users with different interaction modes (hover tooltips, focus rings). Both were properly scoped, well-tested, and approved without revision.\n[note] All items involved CSS-only or minimal JavaScript changes to existing components. No complex feature additions or architectural changes were attempted, which may contribute to the 100% success rate but limits scope of validation.",
-      "status": "done",
-      "story": null,
+      "status": "pending",
       "test_results": [
         {
           "status": "pass",
@@ -203,24 +66,7 @@
         }
       ],
       "tokens_in": 5192,
-      "tokens_out": 389,
-      "summary": "Reduce opacity of .meta deployment line to de-emphasize it",
-      "code_review_verdict": "approve",
-      "code_review_reason": "The CSS opacity property is valid and will work as written; version.json and deployment timestamps are expected to change with features; no syntax errors or runtime defects present.",
-      "ac_check_verdict": "approve",
-      "ac_check_reason": "The .meta selector now has opacity: 0.5 applied, no other .meta styles were modified, and no other selectors were added or removed.",
-      "hermes_verdict": "approve",
-      "started": 1780062941.31667,
-      "stage_times": {
-        "pull": 1780062941.31667,
-        "code": 1780062945.827631,
-        "story": 1780062941.351019,
-        "test": 1780062945.944971,
-        "code_review": 1780062946.059234,
-        "ac_check": 1780062947.516446,
-        "deploy": 1780062948.841666,
-        "done": 1780062952.005022
-      }
+      "tokens_out": 389
     },
     {
       "acceptance_criteria": [
@@ -228,54 +74,53 @@
         "No other .changelog h2 styles are modified",
         "No other selectors are added or removed"
       ],
-      "deployed": "2026-05-29 08:49:05 CT",
-      "diff": "diff --git a/index.html b/index.html\nindex 2c651ed..7ef386b 100644\n--- a/index.html\n+++ b/index.html\n@@ -69,7 +69,7 @@\n       outline: none;\n     }\n     .changelog { margin-top: 1.5rem; width: 100%; max-width: 500px; }\n-    .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; }\n+    .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; padding-bottom: 0.5rem; }\n     .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }\n     .changelog-entry:first-of-type { border-top: none; }\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n@@ -94,8 +94,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.197</div>\n-  <div class=\"meta\">Last deployed: 2026-05-29 08:48:50 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.198</div>\n+  <div class=\"meta\">Last deployed: 2026-05-29 08:49:05 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex ed0ead7..c53c3b0 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.197\",\n-  \"deployed\": \"2026-05-29 08:48:50 CT\",\n+  \"version\": \"0.1.198\",\n+  \"deployed\": \"2026-05-29 08:49:05 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -993,6 +993,11 @@\n       \"version\": \"0.1.197\",\n       \"date\": \"2026-05-29\",\n       \"change\": \"Reduce opacity of .meta deployment line to de-emphasize it visually\"\n+    },\n+    {\n+      \"version\": \"0.1.198\",\n+      \"date\": \"2026-05-29\",\n+      \"change\": \"Add padding-bottom to .changelog h2 to separate heading from entries\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "deployed": "2026-05-29 08:55:57 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex 3e15d76..0d1eaa8 100644\n--- a/index.html\n+++ b/index.html\n@@ -71,7 +71,7 @@\n     }\n     .version:hover .version-tooltip { display: block; }\n     .changelog { margin-top: 1.5rem; width: 100%; max-width: 500px; }\n-    .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; }\n+    .changelog h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.5rem 0; padding-bottom: 0.5rem; }\n     .changelog-entry { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid #1c1c1c; flex-wrap: wrap; }\n     .changelog-entry:first-of-type { border-top: none; }\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n@@ -106,8 +106,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.201<span class=\"version-tooltip\" id=\"version-tooltip\">2026-05-29 08:49:05 CT</span></div>\n-  <div class=\"meta\">Last deployed: 2026-05-29 08:55:41 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.202<span class=\"version-tooltip\" id=\"version-tooltip\">2026-05-29 08:49:05 CT</span></div>\n+  <div class=\"meta\">Last deployed: 2026-05-29 08:55:57 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 2153f4c..995aa3e 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.201\",\n-  \"deployed\": \"2026-05-29 08:55:41 CT\",\n+  \"version\": \"0.1.202\",\n+  \"deployed\": \"2026-05-29 08:55:57 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -1013,6 +1013,11 @@\n       \"version\": \"0.1.201\",\n       \"date\": \"2026-05-29\",\n       \"change\": \"Reduce opacity of .meta deployment line to de-emphasize it\"\n+    },\n+    {\n+      \"version\": \"0.1.202\",\n+      \"date\": \"2026-05-29\",\n+      \"change\": \"Add padding-bottom to .changelog h2 to separate heading from entries\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "id": "changelog-h2-padding",
       "idea": "Add padding-bottom to .changelog h2 to separate the heading from entries",
-      "in_sprint": true,
-      "retro_context": "[ok] All three items passed comprehensive test validation across syntax, versioning, changelog consistency, and CSS hygiene checks\u2014indicating strong quality gates and consistent adherence to code standards.\n[ok] 100% approval rate from Hermes and code review, with detailed acceptance criteria validation for each item, suggesting well-defined requirements and clear implementation scope.\n[note] Sprint focused on UI/UX refinements (accessibility, visual hierarchy, tooltips) rather than feature development\u2014appropriate for user-facing quality improvements.",
+      "in_sprint": false,
+      "retro_context": "[ok] Perfect execution across all items: 3/3 completed with zero failures, all Hermes verdicts approved, and comprehensive test coverage (9 tests passing per item). The agent consistently delivers working code that passes code review, acceptance criteria, and automated testing.\n[ok] Strong accessibility focus this sprint: two of three items directly addressed keyboard navigation and visual feedback for users with different interaction modes (hover tooltips, focus rings). Both were properly scoped, well-tested, and approved without revision.\n[note] All items involved CSS-only or minimal JavaScript changes to existing components. No complex feature additions or architectural changes were attempted, which may contribute to the 100% success rate but limits scope of validation.",
       "status": "pending",
-      "story": null,
       "test_results": [
         {
-          "message": "index.html exists and contains title",
-          "status": "pass"
+          "status": "pass",
+          "message": "index.html exists and contains title"
         },
         {
-          "message": "version 0.1.198 matches between version.json and index.html",
-          "status": "pass"
+          "status": "pass",
+          "message": "version 0.1.202 matches between version.json and index.html"
         },
         {
-          "message": "deployed timestamp '2026-05-29 08:49:05 CT' present in index.html",
-          "status": "pass"
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-29 08:55:57 CT' present in index.html"
         },
         {
-          "message": "changelog has entry for v0.1.198: Add padding-bottom to .changelog h2 to separate heading from entries",
-          "status": "pass"
+          "status": "pass",
+          "message": "changelog has entry for v0.1.202: Add padding-bottom to .changelog h2 to separate heading from entries"
         },
         {
-          "message": "no CSS outside style block",
-          "status": "pass"
+          "status": "pass",
+          "message": "no CSS outside style block"
         },
         {
-          "message": "no duplicate h1 rules (1 found)",
-          "status": "pass"
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
         },
         {
-          "message": "no -webkit-text-fill-color in style block",
-          "status": "pass"
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
         },
         {
-          "message": "no duplicate body rules (1 found)",
-          "status": "pass"
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
         },
         {
-          "message": "no mixed color formats",
-          "status": "pass"
+          "status": "pass",
+          "message": "no mixed color formats"
         }
       ],
-      "tokens_in": 5610,
-      "tokens_out": 451
+      "tokens_in": 5585,
+      "tokens_out": 433
     },
     {
       "ac_check_reason": "The .version selector has letter-spacing: 0.05em applied, no other .version styles were modified, and no other selectors were added or removed.",

@@ -1,6 +1,6 @@
 {
-  "version": "0.1.209",
-  "deployed": "2026-05-30 18:56:14 CT",
+  "version": "0.1.210",
+  "deployed": "2026-05-30 18:56:47 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1053,6 +1053,11 @@
       "version": "0.1.209",
       "date": "2026-05-30",
       "change": "Sprint leaderboard on home page: every sprint with items ranked by stories-completed count, tied sprints share rank, gold/silver/bronze highlights for top 3"
+    },
+    {
+      "version": "0.1.210",
+      "date": "2026-05-30",
+      "change": "Leaderboard now shows pass-rate column per sprint: 100% when no failures, 0% when all failed, em-dash when no done or failed items"
     }
   ]
 }

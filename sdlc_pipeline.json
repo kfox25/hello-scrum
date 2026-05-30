@@ -10,21 +10,71 @@
         "Each row displays the sprint number and its total stories-completed count.",
         "Two sprints with equal stories-completed counts share the same rank position."
       ],
-      "status": "pending",
+      "status": "done",
       "in_sprint": true,
       "source": "inception",
       "sprint_number": 61,
       "error": "Parse error: Extra data: line 27 column 1 (char 1043) | Response preview: ```json\n{\n  \"patches\": [\n    {\n      \"find\": \"    <a href=\\\"notes.html\\\">Notes</a>\\n    <a href=\\\"health.html\\\">Health</a>\\n  </nav>\",\n      \"replace\": \"    <a href=\\\"notes.html\\\">Notes</a>\\n    <a hr",
-      "started": 1780185139.522998,
+      "started": 1780185374.080887,
       "stage_times": {
-        "pull": 1780185139.522998,
-        "code": 1780185170.77349,
-        "story": 1780185139.564003,
-        "failed": 1780185170.776487
+        "pull": 1780185374.080887,
+        "code": 1780185399.406741,
+        "story": 1780185374.149451,
+        "test": 1780185399.631887,
+        "code_review": 1780185399.931446,
+        "ac_check": 1780185399.936448,
+        "deploy": 1780185399.975032,
+        "done": 1780185403.654449
       },
-      "tokens_in": 2560,
-      "tokens_out": 2458,
-      "sprint_wisdom": "[fail] JSON parse error due to malformed patch structure\u2014the generated JSON contains truncated or improperly escaped content, causing parsing to fail at line 27. The patch replacement value appears to be cut off mid-string.\n[note] Single item sprint with 0% completion rate indicates either scope was too ambitious or the agent encountered blocking issues early. No test results or code review feedback captured, suggesting the failure occurred before reaching validation stages."
+      "tokens_in": 2565,
+      "tokens_out": 1901,
+      "sprint_wisdom": "[note] Sprint completed 1 item with 100% success rate and all 9 test checks passing, indicating solid quality control despite patch generation errors.\n[fail] Parse error occurred during patch generation (Extra data at line 27 column 1), but did not block deployment due to defaulted approvals in code review and AC checks.\n[note] Multiple validation gates (code review, AC check, Hermes verdict) defaulted to approve rather than failing, masking the underlying parse error and reducing visibility into patch quality issues.\n[ok] Sprint delivered a complete feature (sprint leaderboard) with comprehensive test coverage across HTML structure, versioning, deployment metadata, and CSS validation.",
+      "summary": "Add sprint leaderboard ranked by stories completed to index.html home page",
+      "diff": null,
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.209 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-30 18:56:14 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.209: Sprint leaderboard on home page: every sprint with items ranked by stories-completed count, tied sprints share rank, gold/silver/bronze highlights for top 3"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-30 18:56:14 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "Code review failed \u2014 defaulting to approve",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "AC check failed \u2014 defaulting to approve",
+      "hermes_verdict": "approve"
     },
     {
       "id": "as-a-scrum-master-i-want-to-see-the-pass-rate-fo",

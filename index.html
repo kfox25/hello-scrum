@@ -132,8 +132,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.209</div>
-  <div class="meta">Last deployed: 2026-05-30 18:56:14 CT</div>
+  <div class="version" id="version-badge">v0.1.210</div>
+  <div class="meta">Last deployed: 2026-05-30 18:56:47 CT</div>
   <div class="leaderboard-section">
     <h2>🏆 Sprint Leaderboard — Stories Completed</h2>
     <div id="leaderboard-container"><div class="lb-empty">No sprint data yet.</div></div>
@@ -176,9 +176,10 @@
         items.forEach(function(item) {
           const sp = item.sprint !== undefined && item.sprint !== null && item.sprint !== '' ? String(item.sprint) : null;
           if (!sp) return;
-          if (!sprintMap[sp]) sprintMap[sp] = { total: 0, completed: 0 };
+          if (!sprintMap[sp]) sprintMap[sp] = { total: 0, completed: 0, failed: 0 };
           sprintMap[sp].total++;
           if (item.status === 'Done') sprintMap[sp].completed++;
+          if (item.status === 'Failed') sprintMap[sp].failed++;
         });
 
         const sprints = Object.keys(sprintMap);
@@ -203,7 +204,7 @@
         });
 
         let html = '<table class="lb-table"><thead><tr>';
-        html += '<th>Rank</th><th>Sprint</th><th>Stories Completed</th>';
+        html += '<th>Rank</th><th>Sprint</th><th>Stories Completed</th><th>Pass Rate</th>';
         html += '</tr></thead><tbody>';
 
         ranked.forEach(function(row) {
@@ -215,6 +216,15 @@
           html += '<td><span class="lb-rank ' + rankClass + '">#' + escHtml(row.rank) + '</span></td>';
           html += '<td>Sprint ' + escHtml(row.sprint) + '</td>';
           html += '<td>' + escHtml(row.completed) + '</td>';
+          var done = sprintMap[row.sprint].completed;
+          var failed = sprintMap[row.sprint].failed;
+          var passRate;
+          if (done === 0 && failed === 0) {
+            passRate = '—';
+          } else {
+            passRate = Math.round((done / (done + failed)) * 100) + '%';
+          }
+          html += '<td>' + escHtml(passRate) + '</td>';
           html += '</tr>';
         });
 

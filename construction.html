@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google" content="notranslate" />
+  <title>Construction — Hello Scrum</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { padding: 4rem 2rem 3rem; min-height: 100vh; display: flex; flex-direction: column; }
+
+    .page-header { margin-bottom: 2rem; }
+    h1 { color: #00ff99; font-size: 1.8rem; margin-bottom: 0.25rem; }
+    .page-sub { color: #888; font-size: 0.85rem; }
+
+    .layout { display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap; }
+
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #888;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Phase steps */
+    .phase-steps { display: flex; flex-direction: column; gap: 0; width: 340px; }
+    .phase-step {
+      display: flex;
+      gap: 1rem;
+      position: relative;
+    }
+    .step-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      width: 2.5rem;
+    }
+    .step-dot {
+      width: 2rem; height: 2rem; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-family: monospace; flex-shrink: 0;
+      position: relative; z-index: 1;
+    }
+    .step-dot.ai    { border: 2px solid #00ff9960; color: #00ff99; background: #0a1f12; }
+    .step-dot.human { border: 2px solid #ffcc0060; color: #ffcc00; background: #1a1a00; }
+    .step-line { width: 2px; flex: 1; min-height: 1rem; background: #222; margin: 0 auto; }
+
+    .step-body { flex: 1; padding-bottom: 1.25rem; }
+    .step-title { font-size: 0.88rem; color: #e0e0e0; margin-bottom: 0.2rem; }
+    .step-desc  { font-size: 0.8rem; color: #666; line-height: 1.5; }
+
+    .badge {
+      display: inline-block; font-size: 0.6rem; padding: 0.1rem 0.4rem;
+      border-radius: 3px; text-transform: uppercase; letter-spacing: 0.05em;
+      margin-left: 0.4rem; vertical-align: middle;
+    }
+    .badge-ai     { background: #0d2a1a; color: #00ff99; border: 1px solid #00ff9940; }
+    .badge-human  { background: #1a1a00; color: #ffcc00; border: 1px solid #ffcc0040; }
+    .badge-system { background: #0a0f1f; color: #4488ff; border: 1px solid #4488ff40; }
+
+    /* Links panel */
+    .links-card { flex: 1; min-width: 240px; }
+    .page-links { display: flex; flex-direction: column; gap: 0.5rem; }
+    .page-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.9rem;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      text-decoration: none;
+      color: #ccc;
+      font-size: 0.85rem;
+      font-family: monospace;
+    }
+    .page-link:hover { border-color: #00ff9940; color: #00ff99; }
+    .page-link-icon { font-size: 1rem; flex-shrink: 0; width: 1.25rem; text-align: center; }
+    .page-link-sub { font-size: 0.75rem; color: #555; display: block; margin-top: 0.1rem; }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0.9rem;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      color: #666;
+      font-family: monospace;
+    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #2a2a2a; flex-shrink: 0; }
+    .status-dot.active { background: #00ff99; box-shadow: 0 0 6px #00ff9960; }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="index.html">App</a>
+    <a href="messenger.html">Messenger</a>
+    <a href="/">Backlog</a>
+    <a href="active.html">Live Work</a>
+    <a href="audit.html">Audit</a>
+    <a href="retro.html">Retro</a>
+    <a href="workflow.html">Workflow</a>
+    <a href="prompts.html">Prompts</a>
+    <a href="notes.html">Notes</a>
+    <a href="health.html">Health</a>
+  </nav>
+
+  <div class="page-header">
+    <h1>Construction</h1>
+    <div class="page-sub">AI-DLC Phase II · Mob Construction · Domain Design → Code → Deploy</div>
+  </div>
+
+  <div class="layout">
+
+    <div class="card" style="width:340px;flex-shrink:0;">
+      <div class="section-label">Phase Steps</div>
+      <div class="phase-steps">
+
+        <div class="phase-step">
+          <div class="step-left">
+            <div class="step-dot ai">1</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">Domain Design <span class="badge badge-ai">Agent</span></div>
+            <div class="step-desc">AI models business logic using DDD — aggregates, entities, domain events. Infrastructure-independent.</div>
+          </div>
+        </div>
+
+        <div class="phase-step">
+          <div class="step-left">
+            <div class="step-dot human">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">Validate Domain <span class="badge badge-human">Human</span></div>
+            <div class="step-desc">Devs refine business logic, handle edge cases, confirm alignment with real-world constraints.</div>
+          </div>
+        </div>
+
+        <div class="phase-step">
+          <div class="step-left">
+            <div class="step-dot ai">3</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">Logical Design <span class="badge badge-ai">Agent</span></div>
+            <div class="step-desc">AI applies NFRs and recommends architectural patterns (CQRS, Circuit Breakers). Generates ADRs.</div>
+          </div>
+        </div>
+
+        <div class="phase-step">
+          <div class="step-left">
+            <div class="step-dot human">4</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">Approve Trade-offs <span class="badge badge-human">Human</span></div>
+            <div class="step-desc">Devs accept or override design decisions before any code is written.</div>
+          </div>
+        </div>
+
+        <div class="phase-step">
+          <div class="step-left">
+            <div class="step-dot ai">5</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">Code + Tests <span class="badge badge-ai">Agent</span></div>
+            <div class="step-desc">AI generates code and test suite from Logical Design. Applies org standards from Coding Wisdom.</div>
+          </div>
+        </div>
+
+        <div class="phase-step">
+          <div class="step-left">
+            <div class="step-dot ai">6</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">Review + Deploy <span class="badge badge-system">System</span></div>
+            <div class="step-desc">Hermes code review + AC check. DoD tests. Git commit → GitHub Pages. Audit trail saved.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card links-card">
+      <div class="section-label">Sprint Status</div>
+      <div class="page-links" style="margin-bottom:1.5rem;">
+        <div class="status-row" id="sprintStatus">
+          <div class="status-dot" id="statusDot"></div>
+          <span id="statusText">Checking sprint...</span>
+        </div>
+      </div>
+
+      <div class="section-label">Go To</div>
+      <div class="page-links">
+        <a class="page-link" href="/">
+          <span class="page-link-icon">▤</span>
+          <span>Backlog<span class="page-link-sub">Plan and queue your next Bolt</span></span>
+        </a>
+        <a class="page-link" href="active.html">
+          <span class="page-link-icon">◉</span>
+          <span>Live Work<span class="page-link-sub">Watch the agent build in real time</span></span>
+        </a>
+        <a class="page-link" href="audit.html">
+          <span class="page-link-icon">≡</span>
+          <span>Audit<span class="page-link-sub">Full pipeline trace — diffs, tokens, verdicts</span></span>
+        </a>
+        <a class="page-link" href="workflow.html">
+          <span class="page-link-icon">⇢</span>
+          <span>Workflow<span class="page-link-sub">Pipeline diagram and step details</span></span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    (async function() {
+      try {
+        const res = await fetch('/active.json?t=' + Date.now());
+        const data = await res.json();
+        const dot  = document.getElementById('statusDot');
+        const text = document.getElementById('statusText');
+        const stage = data.stage;
+        if (stage && stage !== 'done' && stage !== 'failed' && stage !== 'rejected' && data.item_id) {
+          dot.classList.add('active');
+          text.textContent = 'Sprint running — ' + stage.replace(/_/g, ' ');
+          text.style.color = '#00ff99';
+        } else {
+          text.textContent = 'No sprint running';
+        }
+      } catch(e) {
+        document.getElementById('statusText').textContent = 'Could not fetch status';
+      }
+    })();
+  </script>
+  <script src="shared.js"></script>
+</body>
+</html>

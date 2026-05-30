@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google" content="notranslate" />
+  <title>Operations — Hello Scrum</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { padding: 4rem 2rem 3rem; min-height: 100vh; display: flex; flex-direction: column; }
+
+    .page-header { margin-bottom: 2rem; }
+    h1 { color: #00ff99; font-size: 1.8rem; margin-bottom: 0.25rem; }
+    .page-sub { color: #888; font-size: 0.85rem; }
+
+    .layout { display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap; }
+
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #888;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Phase steps */
+    .phase-steps { display: flex; flex-direction: column; gap: 0; width: 340px; }
+    .phase-step { display: flex; gap: 1rem; position: relative; }
+    .step-left {
+      display: flex; flex-direction: column;
+      align-items: center; flex-shrink: 0; width: 2.5rem;
+    }
+    .step-dot {
+      width: 2rem; height: 2rem; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-family: monospace; flex-shrink: 0; position: relative; z-index: 1;
+    }
+    .step-dot.ai    { border: 2px solid #00ff9960; color: #00ff99; background: #0a1f12; }
+    .step-dot.human { border: 2px solid #ffcc0060; color: #ffcc00; background: #1a1a00; }
+    .step-line { width: 2px; flex: 1; min-height: 1rem; background: #222; margin: 0 auto; }
+    .step-body { flex: 1; padding-bottom: 1.25rem; }
+    .step-title { font-size: 0.88rem; color: #e0e0e0; margin-bottom: 0.2rem; }
+    .step-desc  { font-size: 0.8rem; color: #666; line-height: 1.5; }
+
+    .badge {
+      display: inline-block; font-size: 0.6rem; padding: 0.1rem 0.4rem;
+      border-radius: 3px; text-transform: uppercase; letter-spacing: 0.05em; margin-left: 0.4rem; vertical-align: middle;
+    }
+    .badge-ai     { background: #0d2a1a; color: #00ff99; border: 1px solid #00ff9940; }
+    .badge-human  { background: #1a1a00; color: #ffcc00; border: 1px solid #ffcc0040; }
+    .badge-system { background: #0a0f1f; color: #4488ff; border: 1px solid #4488ff40; }
+
+    /* Links panel */
+    .links-card { flex: 1; min-width: 240px; }
+    .page-links { display: flex; flex-direction: column; gap: 0.5rem; }
+    .page-link {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.65rem 0.9rem;
+      background: #111; border: 1px solid #2a2a2a; border-radius: 6px;
+      text-decoration: none; color: #ccc; font-size: 0.85rem; font-family: monospace;
+    }
+    .page-link:hover { border-color: #00ff9940; color: #00ff99; }
+    .page-link-icon { font-size: 1rem; flex-shrink: 0; width: 1.25rem; text-align: center; }
+    .page-link-sub { font-size: 0.75rem; color: #555; display: block; margin-top: 0.1rem; }
+
+    /* Health snapshot */
+    .health-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.6rem 0.9rem;
+      background: #111; border: 1px solid #2a2a2a; border-radius: 6px;
+      font-size: 0.82rem; font-family: monospace; margin-bottom: 0.5rem;
+    }
+    .health-label { color: #555; flex: 1; }
+    .health-value { color: #888; }
+    .health-value.good { color: #00ff99; }
+    .health-value.warn { color: #ffcc00; }
+    .health-value.crit { color: #ff4444; }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="index.html">App</a>
+    <a href="messenger.html">Messenger</a>
+    <a href="/">Backlog</a>
+    <a href="active.html">Live Work</a>
+    <a href="audit.html">Audit</a>
+    <a href="retro.html">Retro</a>
+    <a href="workflow.html">Workflow</a>
+    <a href="prompts.html">Prompts</a>
+    <a href="notes.html">Notes</a>
+    <a href="health.html">Health</a>
+  </nav>
+
+  <div class="page-header">
+    <h1>Operations</h1>
+    <div class="page-sub">AI-DLC Phase III · Deploy · Monitor · Retro · Wisdom</div>
+  </div>
+
+  <div class="layout">
+
+    <div class="card" style="width:340px;flex-shrink:0;">
+      <div class="section-label">Phase Steps</div>
+      <div class="phase-steps">
+
+        <div class="phase-step">
+          <div class="step-left">
+            <div class="step-dot ai">1</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">Deploy <span class="badge badge-system">System</span></div>
+            <div class="step-desc">Agent packages and deploys. Git commit → GitHub Pages live in ~30 seconds.</div>
+          </div>
+        </div>
+
+        <div class="phase-step">
+          <div class="step-left">
+            <div class="step-dot human">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">Validate Deploy <span class="badge badge-human">Human</span></div>
+            <div class="step-desc">Review the deployed result. Confirm it meets the original intent. Restore to baseline if not.</div>
+          </div>
+        </div>
+
+        <div class="phase-step">
+          <div class="step-left">
+            <div class="step-dot ai">3</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">Retrospective <span class="badge badge-ai">Agent</span></div>
+            <div class="step-desc">Haiku reviews the sprint — what passed, what failed, patterns observed. Writes findings to retrospective.json.</div>
+          </div>
+        </div>
+
+        <div class="phase-step">
+          <div class="step-left">
+            <div class="step-dot ai">4</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">Wisdom Synthesis <span class="badge badge-ai">Agent</span></div>
+            <div class="step-desc">Haiku merges new findings into Coding Wisdom and AC Wisdom — directives that improve the next Inception and Construction.</div>
+          </div>
+        </div>
+
+        <div class="phase-step">
+          <div class="step-left">
+            <div class="step-dot ai">5</div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">Health Check <span class="badge badge-system">System</span></div>
+            <div class="step-desc">Health score evaluated — file size, Hermes rate, CSS drift, wisdom quality. Flags impediments for next sprint.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card links-card">
+      <div class="section-label">Health Snapshot</div>
+      <div id="healthSnapshot" style="margin-bottom:1.5rem;">
+        <div class="health-row"><span class="health-label">Loading...</span></div>
+      </div>
+
+      <div class="section-label">Go To</div>
+      <div class="page-links">
+        <a class="page-link" href="health.html">
+          <span class="page-link-icon">♥</span>
+          <span>Health<span class="page-link-sub">Full health score and flagged impediments</span></span>
+        </a>
+        <a class="page-link" href="retro.html">
+          <span class="page-link-icon">↺</span>
+          <span>Retro<span class="page-link-sub">Sprint retrospective and wisdom panels</span></span>
+        </a>
+        <a class="page-link" href="audit.html">
+          <span class="page-link-icon">≡</span>
+          <span>Audit<span class="page-link-sub">Full pipeline audit trail</span></span>
+        </a>
+        <a class="page-link" href="/">
+          <span class="page-link-icon">▤</span>
+          <span>Backlog<span class="page-link-sub">Start the next Inception cycle</span></span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    (async function() {
+      try {
+        const res  = await fetch('/health/score');
+        const data = await res.json();
+        const el   = document.getElementById('healthSnapshot');
+
+        const statusColor = data.status === 'healthy'  ? 'good'
+                          : data.status === 'warning'  ? 'warn'
+                          : data.status === 'critical' ? 'crit' : '';
+
+        const rows = [
+          { label: 'Overall Status', value: data.status || '—', cls: statusColor },
+          { label: 'Health Score',   value: data.score != null ? data.score + ' / 100' : '—', cls: statusColor },
+          { label: 'Hermes Rate',    value: data.hermes_rate != null ? Math.round(data.hermes_rate * 100) + '% pass' : '—', cls: '' },
+          { label: 'Sprints Run',    value: data.sprints != null ? data.sprints : '—', cls: '' },
+        ];
+
+        el.innerHTML = rows.map(r => `
+          <div class="health-row">
+            <span class="health-label">${r.label}</span>
+            <span class="health-value ${r.cls}">${r.value}</span>
+          </div>`).join('');
+      } catch(e) {
+        document.getElementById('healthSnapshot').innerHTML =
+          '<div class="health-row"><span class="health-label" style="color:#555">Could not fetch health score</span></div>';
+      }
+    })();
+  </script>
+  <script src="shared.js"></script>
+</body>
+</html>

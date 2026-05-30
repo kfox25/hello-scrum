@@ -54,16 +54,19 @@ body {
 .wf-nav a:hover  { border-color: #00ff9940; color: #ccc; }
 .wf-nav a.active { border-color: #00ff9960; color: #00ff99; background: #0a1f12; }
 
-.inception-btn {
+.phase-nav {
   position: fixed; top: 1rem; left: 1rem; z-index: 100;
+  display: flex; gap: 0.5rem;
+}
+.phase-nav a {
   font-family: monospace; font-size: 0.85rem;
   background: #1a1a1a; color: #00ff99;
   border: 1px solid #00ff9940; padding: 0.4rem 1rem;
   border-radius: 4px; text-decoration: none;
 }
-.inception-btn:hover        { background: #0d3320; border-color: #00ff99; }
-.inception-btn:active       { background: #0a2a18; border-color: #00ff99; color: #fff; }
-.inception-btn.active       { background: #0d3320; border-color: #00ff9980; color: #fff; }
+.phase-nav a:hover  { background: #0d3320; border-color: #00ff99; }
+.phase-nav a:active { background: #0a2a18; border-color: #00ff99; color: #fff; }
+.phase-nav a.active { background: #0d3320; border-color: #00ff9980; color: #fff; }
 
 #health-widget {
   position: fixed;

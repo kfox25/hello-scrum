@@ -19,12 +19,20 @@
 (function () {
   const path = window.location.pathname;
 
-  const btn = document.createElement('a');
-  btn.href = '/inception.html';
-  btn.textContent = 'Inception';
-  btn.className = 'inception-btn';
-  if (path.endsWith('inception.html')) btn.classList.add('active');
-  document.body.appendChild(btn);
+  const nav = document.createElement('div');
+  nav.className = 'phase-nav';
+  [
+    { label: 'Construction', href: 'construction.html' },
+    { label: 'Operations',   href: 'operations.html'   },
+    { label: 'Inception',    href: 'inception.html'    },
+  ].forEach(({ label, href }) => {
+    const a = document.createElement('a');
+    a.href = '/' + href;
+    a.textContent = label;
+    if (path.endsWith(href)) a.classList.add('active');
+    nav.appendChild(a);
+  });
+  document.body.appendChild(nav);
 
   document.querySelectorAll('.top-nav a').forEach(link => {
     const lp = new URL(link.href, location.href).pathname;

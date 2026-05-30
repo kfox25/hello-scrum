@@ -179,6 +179,36 @@ def health_page():
     return send_file(os.path.join(BASE, "health.html"))
 
 
+@app.route("/inception.html")
+def inception_page():
+    return send_file(os.path.join(BASE, "inception.html"))
+
+
+@app.route("/construction.html")
+def construction_page():
+    return send_file(os.path.join(BASE, "construction.html"))
+
+
+@app.route("/operations.html")
+def operations_page():
+    return send_file(os.path.join(BASE, "operations.html"))
+
+
+@app.route("/hello-scrum.html")
+def hello_scrum_page():
+    return send_file(os.path.join(BASE, "hello-scrum.html"))
+
+
+@app.route("/jeff.html")
+def jeff_page():
+    return send_file(os.path.join(BASE, "jeff.html"))
+
+
+@app.route("/ai-dlc.html")
+def ai_dlc_page():
+    return send_file(os.path.join(BASE, "ai-dlc.html"))
+
+
 @app.route("/health/diagnostics")
 def health_diagnostics():
     out = {}

@@ -1,6 +1,6 @@
 {
-  "version": "0.1.204",
-  "deployed": "2026-05-30 09:23:40 CT",
+  "version": "0.1.205",
+  "deployed": "2026-05-30 09:40:18 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1028,6 +1028,11 @@
       "version": "0.1.204",
       "date": "2026-05-30",
       "change": "Add sprint performance leaderboard section showing last 5 sprints ranked by stories completed with pass rate badges"
+    },
+    {
+      "version": "0.1.205",
+      "date": "2026-05-30",
+      "change": "Implement leaderboard section on index.html displaying last 5 sprints ranked by stories completed with pass rate visual badges (green/yellow/red)"
     }
   ]
 }

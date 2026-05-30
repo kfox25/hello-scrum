@@ -33,7 +33,26 @@ agent_running = False
 agent_lock = threading.Lock()
 AGENT_LOG_FILE = os.path.join(BASE, "agent_log.json")
 
-INCEPTION_CLARIFY_PROMPT = """You are an AI-DLC Inception assistant. Given a high-level intent, generate exactly 3 targeted clarifying questions that will produce sharper user stories and acceptance criteria. Focus on: who the primary user is, what specific outcome success looks like, and any constraints or existing context to be aware of. Return JSON only (no markdown): {"questions": ["question 1", "question 2", "question 3"]}"""
+INCEPTION_CLARIFY_PROMPT = """You are an AI-DLC Requirements Analysis assistant. Given a high-level intent, perform a structured requirements analysis.
+
+First, assess the intent: classify its type (Feature/Enhancement/New Project/Refactor/Bug Fix), scope (Small/Medium/Large), and complexity (Simple/Moderate/Complex).
+
+Then generate 4-6 targeted questions to fully clarify requirements before elaboration. Use these categories as appropriate:
+- Users: primary users, personas, or stakeholders
+- Functional: specific outcomes, features, or behaviours that define success
+- Non-Functional: performance, scale, security, or reliability needs
+- Constraints: dependencies, existing context, or boundaries of scope
+
+Where useful, include 3-4 mutually exclusive options (A, B, C) the human can choose from. Leave options empty [] when a free-form answer is more appropriate.
+
+Return JSON only (no markdown):
+{
+  "assessment": {"type": "Feature", "scope": "Medium", "complexity": "Moderate"},
+  "questions": [
+    {"id": 1, "category": "Users", "question": "Who are the primary users?", "options": ["A: End users / consumers", "B: Internal team / developers", "C: Both"]},
+    {"id": 2, "category": "Functional", "question": "What does success look like for this feature?", "options": []}
+  ]
+}"""
 
 INCEPTION_ELABORATE_PROMPT = """You are an AI-DLC Inception assistant. Given a high-level intent and clarifying answers, decompose into one Unit with 2-3 Stories and 1-2 suggested Bolts (sprint groupings). Return JSON only (no markdown):
 {"unit": {"name": "Short Feature Name", "domain": "Bounded Context Label"}, "stories": [{"story": "As a <role>, I want <goal> so that <benefit>.", "idea": "One-line implementation instruction for the agent", "acceptance_criteria": ["testable criterion 1", "testable criterion 2", "testable criterion 3"]}, {"story": "As a <role>, I want <goal> so that <benefit>.", "idea": "One-line implementation instruction for the agent", "acceptance_criteria": ["testable criterion 1", "testable criterion 2"]}], "bolts": [{"name": "Bolt 1", "story_indices": [0, 1], "rationale": "Why these stories run together in one sprint"}, {"name": "Bolt 2", "story_indices": [2], "rationale": "Why this runs as a separate sprint"}], "nfrs": ["NFR 1", "NFR 2"], "risks": ["Risk 1", "Risk 2"]}
@@ -726,6 +745,39 @@ def coding_wisdom_json():
     return jsonify({"bullets": [], "synthesized_at": None, "finding_count": 0})
 
 
+@app.route("/docs/<name>")
+def serve_doc(name):
+    import re as _re
+    if not _re.match(r'^[\w\-]+\.md$', name):
+        return "Not found", 404
+    path = os.path.join(BASE, "docs", name)
+    if not os.path.exists(path):
+        return "Not found", 404
+    with open(path, encoding="utf-8") as f:
+        raw = f.read()
+    escaped = raw.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    html = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>{name}</title>
+<style>
+body{{font-family:monospace;background:#0d0d0d;color:#ccc;padding:3rem 2rem 3rem 10rem;max-width:860px;line-height:1.7}}
+h1{{color:#00ff99;font-size:1.6rem;margin-bottom:0.25rem}}
+h2{{color:#00ff99;font-size:1.1rem;margin-top:2rem;border-bottom:1px solid #222;padding-bottom:0.3rem}}
+h3{{color:#88cc99;font-size:0.95rem;margin-top:1.25rem}}
+a{{color:#4488ff}}
+pre{{background:#111;border:1px solid #222;border-radius:4px;padding:1rem;overflow-x:auto;white-space:pre-wrap}}
+code{{background:#111;border-radius:3px;padding:0.1rem 0.35rem;font-size:0.88rem}}
+table{{border-collapse:collapse;width:100%}}
+th,td{{border:1px solid #333;padding:0.4rem 0.75rem;text-align:left}}
+th{{background:#1a1a1a;color:#00ff99}}
+hr{{border:none;border-top:1px solid #222;margin:2rem 0}}
+blockquote{{border-left:3px solid #333;margin:0;padding-left:1rem;color:#888}}
+</style></head><body>
+<a href="/workflow.html" style="font-size:0.78rem;color:#555;text-decoration:none">← Workflow</a>
+<pre style="white-space:pre-wrap;border:none;background:none;padding:0;margin-top:1.5rem">{escaped}</pre>
+</body></html>"""
+    return html
+
+
 @app.route("/notes.json")
 def notes_json():
     path = os.path.join(BASE, "notes.json")
@@ -1346,15 +1398,14 @@ def inception_add_stories_to_sprint():
             backlog = json.load(f)
         added = []
         for s in stories:
-            idea  = s.get("idea", "").strip()
             story = s.get("story", "").strip()
             ac    = s.get("acceptance_criteria", [])
-            if not idea:
+            if not story:
                 continue
-            item_id = re.sub(r"[^a-z0-9]+", "-", idea.lower())[:48].strip("-") or str(int(time.time() * 1000))
+            item_id = re.sub(r"[^a-z0-9]+", "-", story.lower())[:48].strip("-") or str(int(time.time() * 1000))
             backlog.setdefault("items", []).insert(0, {
                 "id": item_id,
-                "idea": idea,
+                "idea": story,
                 "story": story,
                 "acceptance_criteria": ac,
                 "status": "pending",
@@ -1429,7 +1480,7 @@ def inception_clarify():
         client = anthropic.Anthropic()
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
-            max_tokens=400,
+            max_tokens=800,
             system=INCEPTION_CLARIFY_PROMPT,
             messages=[{"role": "user", "content": intent}],
         )

@@ -203,6 +203,25 @@
     .status-line.active { color: #00ff9980; }
     .status-line.error  { color: #ff4444; }
 
+    .req-assessment {
+      font-size: 0.75rem; color: #4488ff; background: #0a0f1f;
+      border: 1px solid #1a2a4a; border-radius: 4px;
+      padding: 0.45rem 0.75rem; margin-bottom: 0.25rem; display: none;
+    }
+    .q-category {
+      font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: #4488ff; margin-bottom: 0.15rem;
+    }
+    .option-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.3rem 0 0.1rem; }
+    .option-chip {
+      font-size: 0.75rem; color: #888; border: 1px solid #333;
+      background: #111; border-radius: 3px; padding: 0.25rem 0.6rem;
+      cursor: pointer; font-family: monospace; white-space: nowrap;
+      transition: color 0.1s, border-color 0.1s, background 0.1s;
+    }
+    .option-chip:hover { color: #ccc; border-color: #555; background: #1a1a1a; }
+    .option-chip.selected { color: #00ff99; border-color: #00ff9960; background: #0a1f12; }
+
     .intent-display {
       font-size: 0.8rem; color: #777; font-style: italic;
       padding: 0.4rem 0.75rem; border-left: 2px solid #2a2a2a; margin-bottom: 0.25rem;
@@ -252,11 +271,12 @@
     </div>
   </div>
 
-  <!-- State 2: Clarifying questions -->
+  <!-- State 2: Requirements Analysis -->
   <div id="stateQuestions">
     <div class="card">
       <div class="intent-display" id="intentDisplay"></div>
-      <div class="section-label">Clarifying Questions</div>
+      <div class="req-assessment" id="reqAssessment"></div>
+      <div class="section-label">Requirements Analysis</div>
       <div id="qnaList" style="display:flex;flex-direction:column;gap:1rem;"></div>
       <div style="display:flex;gap:0.75rem;align-items:center;margin-top:1.5rem;">
         <button class="btn" id="btnElaborate" onclick="elaborate()">Elaborate →</button>
@@ -274,7 +294,7 @@
       <div class="card result-left">
         <div class="section-label">Intent</div>
         <div class="intent-display" id="resultIntentDisplay"></div>
-        <div class="section-label" style="margin-top:1rem;">Clarifications</div>
+        <div class="section-label" style="margin-top:1rem;">Requirements Analysis</div>
         <div class="qna-readonly" id="resultQnA"></div>
       </div>
 
@@ -327,7 +347,7 @@
   </div>
 
   <script>
-    const LS = 'inception2-';
+    const LS = 'inception3-';
     let currentIntent    = '';
     let currentQuestions = [];
     let currentUnit      = null;
@@ -344,7 +364,6 @@
       if (!currentUnit) return null;
       const stories = [...document.querySelectorAll('.story-block')].map(el => ({
         story: el.querySelector('.story-text')?.value || '',
-        idea:  el.querySelector('.story-idea')?.value || '',
         acceptance_criteria: [...el.querySelectorAll('.ac-input-row textarea')].map(t => t.value),
       }));
       const nfrs  = [...document.querySelectorAll('#resultNFRs textarea')].map(t => t.value);
@@ -378,15 +397,33 @@
 
     function buildQnA(questions, answers) {
       const list = document.getElementById('qnaList');
-      list.innerHTML = questions.map((q, i) => `
-        <div class="qna-item">
-          <div class="question-text">${escHtml(q)}</div>
+      list.innerHTML = questions.map((q, i) => {
+        const qText = typeof q === 'string' ? q : q.question;
+        const opts  = (typeof q === 'object' && q.options?.length) ? q.options : [];
+        const cat   = (typeof q === 'object' && q.category) ? q.category : '';
+        const optHtml = opts.length ? `<div class="option-chips">${opts.map(o =>
+          `<span class="option-chip" onclick="pickOption(${i},this)">${escHtml(o)}</span>`
+        ).join('')}</div>` : '';
+        return `<div class="qna-item">
+          ${cat ? `<div class="q-category">${escHtml(cat)}</div>` : ''}
+          <div class="question-text">${escHtml(qText)}</div>
+          ${optHtml}
           <input type="text" id="answer-${i}" placeholder="Your answer..." oninput="save()" />
-        </div>`).join('');
+        </div>`;
+      }).join('');
       questions.forEach((_, i) => {
         const el = document.getElementById('answer-' + i);
         if (el) el.value = answers?.[i] || '';
       });
+    }
+
+    function pickOption(idx, chip) {
+      const input = document.getElementById('answer-' + idx);
+      if (!input) return;
+      input.value = chip.textContent;
+      input.dispatchEvent(new Event('input'));
+      chip.closest('.option-chips').querySelectorAll('.option-chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
     }
 
     function makeRows(items, prefix) {
@@ -405,21 +442,20 @@
       document.getElementById('unitName').textContent   = unit.name   || '';
       document.getElementById('unitDomain').textContent = unit.domain || '';
 
-      document.getElementById('resultQnA').innerHTML = questions.map((q, i) => `
-        <div class="qna-readonly-item">
-          <div class="qna-q">Q${i+1}</div>
-          <div style="color:#888;font-size:0.8rem;margin-bottom:0.2rem;">${escHtml(q)}</div>
+      document.getElementById('resultQnA').innerHTML = questions.map((q, i) => {
+        const qText = typeof q === 'string' ? q : q.question;
+        const cat   = (typeof q === 'object' && q.category) ? q.category : `Q${i+1}`;
+        return `<div class="qna-readonly-item">
+          <div class="qna-q">${escHtml(cat)}</div>
+          <div style="color:#888;font-size:0.8rem;margin-bottom:0.2rem;">${escHtml(qText)}</div>
           <div class="qna-a">${escHtml(answers?.[i] || '—')}</div>
-        </div>`).join('');
+        </div>`;
+      }).join('');
 
       document.getElementById('storiesContainer').innerHTML = (unit.stories || []).map((s, i) => `
         <div class="story-block">
           <div class="section-label" style="margin-bottom:0.4rem;">Story ${i+1}</div>
           <textarea class="story-text" rows="3" oninput="save()">${escHtml(s.story || '')}</textarea>
-          <div style="margin-top:0.5rem;">
-            <div style="font-size:0.65rem;color:#3a7a5a;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.3rem;">Agent Task</div>
-            <textarea class="story-idea" rows="1" oninput="save()">${escHtml(s.idea || '')}</textarea>
-          </div>
           <div style="margin-top:0.5rem;">
             <div style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.3rem;">Acceptance Criteria</div>
             <div class="ac-inputs">${makeRows(s.acceptance_criteria || [], '✓')}</div>
@@ -454,15 +490,18 @@
 
       const btn = document.getElementById('btnStart');
       btn.disabled = true;
-      setStatus('statusIntent', 'Generating questions...', 'active');
+      setStatus('statusIntent', 'Analyzing requirements...', 'active');
       try {
         const res  = await fetch('/inception/clarify', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({intent}) });
         const data = await res.json();
         if (data.error) throw new Error(data.error);
         currentQuestions = data.questions || [];
-        const _raw = JSON.parse(localStorage.getItem(LS+'answers') || 'null');
-        const savedAnswers = (_raw && _raw.some(a => a.trim())) ? _raw : DEFAULT_ANSWERS;
-        buildQnA(currentQuestions, savedAnswers);
+        const assessment = data.assessment || {};
+        const assessEl = document.getElementById('reqAssessment');
+        const parts = [assessment.type, assessment.scope, assessment.complexity].filter(Boolean);
+        if (parts.length) { assessEl.textContent = parts.join(' · '); assessEl.style.display = 'block'; }
+        else { assessEl.style.display = 'none'; }
+        buildQnA(currentQuestions, []);
         document.getElementById('intentDisplay').textContent = intent;
         setState('questions');
         save();
@@ -476,7 +515,7 @@
 
     async function elaborate() {
       const answers = currentQuestions.map((_, i) => (document.getElementById('answer-'+i)?.value || '').trim());
-      const qna     = currentQuestions.map((q, i) => ({ q, a: answers[i] }));
+      const qna     = currentQuestions.map((q, i) => ({ q: typeof q === 'string' ? q : q.question, a: answers[i] }));
 
       const btn = document.getElementById('btnElaborate');
       btn.disabled = true;
@@ -508,9 +547,8 @@
       const target = indices != null ? indices.map(i => blocks[i]).filter(Boolean) : blocks;
       return target.map(el => ({
         story: el.querySelector('.story-text')?.value.trim() || '',
-        idea:  el.querySelector('.story-idea')?.value.trim() || '',
         acceptance_criteria: [...el.querySelectorAll('.ac-input-row textarea')].map(t => t.value.trim()).filter(Boolean),
-      })).filter(s => s.idea);
+      })).filter(s => s.story);
     }
 
     async function addBoltToSprint(btn, boltIdx) {
@@ -562,7 +600,6 @@
       const lines = [`Unit: ${unit.name} · ${unit.domain}`, ''];
       (unit.stories || []).forEach((s, i) => {
         lines.push(`Story ${i+1}: ${s.story}`);
-        lines.push(`  Task: ${s.idea}`);
         (s.acceptance_criteria || []).forEach(a => lines.push(`  ✓ ${a}`));
         lines.push('');
       });
@@ -595,22 +632,17 @@
     function restart() { clearData(); }
 
     const DEFAULT_INTENT = 'Add a leaderboard section to the Hello Scrum app showing sprint performance stats';
-    const DEFAULT_ANSWERS = [
-      'Solo developer / scrum master. Single user, no roles, no per-person rankings — sprint-level stats only.',
-      'Stories completed per sprint and pass rate (done ÷ done+failed). Ranked by stories completed descending. No story points, no burndown.',
-      'Data comes from /sdlc_pipeline.json — items have sprint_number stamped on them. Updated at sprint-end. No external integration needed.',
-    ];
 
     (function init() {
       const intent    = localStorage.getItem(LS+'intent')    || DEFAULT_INTENT;
       const state     = localStorage.getItem(LS+'state')     || 'intent';
-      const questions = JSON.parse(localStorage.getItem(LS+'questions') || '[]');
-      const answers   = JSON.parse(localStorage.getItem(LS+'answers')   || 'null') || DEFAULT_ANSWERS;
+      const rawQ      = JSON.parse(localStorage.getItem(LS+'questions') || '[]');
+      const questions = Array.isArray(rawQ) && rawQ.length && typeof rawQ[0] === 'object' ? rawQ : [];
+      const answers   = JSON.parse(localStorage.getItem(LS+'answers')   || '[]');
       const unit      = JSON.parse(localStorage.getItem(LS+'unit')      || 'null');
 
       currentIntent = intent; currentQuestions = questions;
       document.getElementById('intentInput').value = intent;
-      if (!answers.some(a => a.trim())) localStorage.setItem(LS+'answers', JSON.stringify(DEFAULT_ANSWERS));
       localStorage.setItem(LS+'intent', intent);
 
       if (state === 'questions' && questions.length) {

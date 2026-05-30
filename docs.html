@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google" content="notranslate" />
+  <title>AI-DLC Reference — Hello Scrum</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { padding: 4rem 2rem 2rem 10rem; }
+    .page-title { color: #00ff99; font-size: 1.8rem; font-family: monospace; letter-spacing: 0.08em; margin-bottom: 0.25rem; }
+    .page-sub { color: #555; font-size: 0.8rem; margin-bottom: 2.5rem; }
+
+    .doc-section { margin-bottom: 2rem; }
+    .section-label {
+      font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em;
+      color: #444; margin-bottom: 0.75rem; padding-bottom: 0.4rem;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .doc-grid {
+      display: grid; grid-template-columns: repeat(3, 220px); gap: 0.75rem;
+    }
+    .doc-card {
+      background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 6px;
+      padding: 1rem 1.25rem; text-decoration: none;
+      display: flex; flex-direction: column; gap: 0.3rem;
+      transition: border-color 0.15s;
+    }
+    .doc-card:hover { border-color: #00ff9940; }
+    .doc-card-title { color: #00ff99; font-size: 0.88rem; font-family: monospace; font-weight: 600; }
+    .doc-card-sub { color: #444; font-size: 0.72rem; line-height: 1.4; }
+    .doc-card-tag {
+      font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em;
+      color: #333; margin-top: 0.15rem;
+    }
+    .tag-inception  { color: #5588ff44; }
+    .tag-construction { color: #ff885544; }
+    .tag-common     { color: #55885544; }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="index.html">App</a>
+    <a href="intake.html">Intake</a>
+    <a href="/">Backlog</a>
+    <a href="active.html">Live Work</a>
+    <a href="audit.html">Audit</a>
+    <a href="retro.html">Retro</a>
+    <a href="workflow.html">Workflow</a>
+    <a href="prompts.html">Prompts</a>
+    <a href="notes.html">Notes</a>
+    <a href="health.html">Health</a>
+  </nav>
+
+  <div class="page-title">AI-DLC Reference</div>
+  <div class="page-sub">Source: <a href="https://github.com/awslabs/aidlc-workflows" style="color:#4488ff">awslabs/aidlc-workflows</a> · White paper by Raja SP, AWS</div>
+
+  <!-- Foundation -->
+  <div class="doc-section">
+    <div class="section-label">Foundation</div>
+    <div class="doc-grid">
+      <a class="doc-card" href="/docs/aidlc-whitepaper.md">
+        <div class="doc-card-title">White Paper</div>
+        <div class="doc-card-sub">Full AI-DLC white paper — principles, phases, artifacts, terminology</div>
+        <div class="doc-card-tag">Raja SP · AWS</div>
+      </a>
+      <a class="doc-card" href="/docs/aidlc-core-workflow.md">
+        <div class="doc-card-title">Core Workflow</div>
+        <div class="doc-card-sub">Three-phase structure, state tracking, audit trail, always vs conditional stages</div>
+        <div class="doc-card-tag tag-common">GitHub</div>
+      </a>
+      <a class="doc-card" href="/docs/aidlc-terminology.md">
+        <div class="doc-card-title">Terminology</div>
+        <div class="doc-card-sub">Phase vs stage, all stage definitions, architecture terms, depth levels</div>
+        <div class="doc-card-tag tag-common">GitHub · common</div>
+      </a>
+      <a class="doc-card" href="/docs/aidlc-working-with.md">
+        <div class="doc-card-title">Working with AI-DLC</div>
+        <div class="doc-card-sub">Practical guide — Q&A flow, context management, never vibe code</div>
+        <div class="doc-card-tag tag-common">GitHub · docs</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Inception -->
+  <div class="doc-section">
+    <div class="section-label">Inception Phase</div>
+    <div class="doc-grid">
+      <a class="doc-card" href="/docs/aidlc-requirements-analysis.md">
+        <div class="doc-card-title">Requirements Analysis</div>
+        <div class="doc-card-sub">Stage 3 — structured Q&A, assessment, gates, hello-scrum mapping</div>
+        <div class="doc-card-tag tag-inception">Inception · always</div>
+      </a>
+      <a class="doc-card" href="/docs/aidlc-user-stories.md">
+        <div class="doc-card-title">User Stories</div>
+        <div class="doc-card-sub">Stage 4 — converting requirements into stories with AC and personas</div>
+        <div class="doc-card-tag tag-inception">Inception · conditional</div>
+      </a>
+      <a class="doc-card" href="/docs/aidlc-inception-application-design.md">
+        <div class="doc-card-title">Application Design</div>
+        <div class="doc-card-sub">Stage 6 — components, methods, services, dependency mapping</div>
+        <div class="doc-card-tag tag-inception">Inception · conditional</div>
+      </a>
+      <a class="doc-card" href="/docs/aidlc-units-generation.md">
+        <div class="doc-card-title">Units Generation</div>
+        <div class="doc-card-sub">Stage 7 — decomposing stories into units with dependency matrix</div>
+        <div class="doc-card-tag tag-inception">Inception · conditional</div>
+      </a>
+      <a class="doc-card" href="/docs/aidlc-inception-reverse-engineering.md">
+        <div class="doc-card-title">Reverse Engineering</div>
+        <div class="doc-card-sub">Stage 2 — brownfield only, analyze existing codebase before requirements</div>
+        <div class="doc-card-tag tag-inception">Inception · brownfield</div>
+      </a>
+      <a class="doc-card" href="/docs/aidlc-inception-workspace-detection.md">
+        <div class="doc-card-title">Workspace Detection</div>
+        <div class="doc-card-sub">Stage 1 — always runs, detects green/brownfield, resumes existing projects</div>
+        <div class="doc-card-tag tag-inception">Inception · always</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Construction -->
+  <div class="doc-section">
+    <div class="section-label">Construction Phase</div>
+    <div class="doc-grid">
+      <a class="doc-card" href="/docs/aidlc-construction-functional-design.md">
+        <div class="doc-card-title">Functional Design</div>
+        <div class="doc-card-sub">Business logic design — tech-agnostic, domain entities, business rules</div>
+        <div class="doc-card-tag tag-construction">Construction · per-unit</div>
+      </a>
+      <a class="doc-card" href="/docs/aidlc-construction-nfr-requirements.md">
+        <div class="doc-card-title">NFR Requirements</div>
+        <div class="doc-card-sub">Scalability, performance, security, reliability — tech stack decisions</div>
+        <div class="doc-card-tag tag-construction">Construction · per-unit</div>
+      </a>
+      <a class="doc-card" href="/docs/aidlc-construction-nfr-design.md">
+        <div class="doc-card-title">NFR Design</div>
+        <div class="doc-card-sub">Resilience, scalability, security patterns — logical components</div>
+        <div class="doc-card-tag tag-construction">Construction · per-unit</div>
+      </a>
+      <a class="doc-card" href="/docs/aidlc-construction-infrastructure-design.md">
+        <div class="doc-card-title">Infrastructure Design</div>
+        <div class="doc-card-sub">Mapping logical components to cloud services — compute, storage, networking</div>
+        <div class="doc-card-tag tag-construction">Construction · per-unit</div>
+      </a>
+      <a class="doc-card" href="/docs/aidlc-construction-code-generation.md">
+        <div class="doc-card-title">Code Generation</div>
+        <div class="doc-card-sub">Part 1: plan, Part 2: generate — hello-scrum agent mapping</div>
+        <div class="doc-card-tag tag-construction">Construction · always</div>
+      </a>
+      <a class="doc-card" href="/docs/aidlc-construction-build-and-test.md">
+        <div class="doc-card-title">Build and Test</div>
+        <div class="doc-card-sub">Unit, integration, performance, security testing — hello-scrum pipeline mapping</div>
+        <div class="doc-card-tag tag-construction">Construction · always</div>
+      </a>
+    </div>
+  </div>
+
+  <script src="shared.js"></script>
+</body>
+</html>

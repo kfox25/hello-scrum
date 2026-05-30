@@ -986,7 +986,7 @@ def run_one(sprint_only=False, processed=None, sprint_wisdom=None):
         log("Calling agent...")
         try:
             response, t_in, t_out = call_agent(
-                item["idea"],
+                item.get("idea", item.get("story", "")),
                 item.get("story", ""),
                 item.get("acceptance_criteria", []),
                 index_html, version_json, timestamp,

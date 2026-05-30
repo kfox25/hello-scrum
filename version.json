@@ -1,6 +1,6 @@
 {
-  "version": "0.1.205",
-  "deployed": "2026-05-30 09:40:18 CT",
+  "version": "0.1.206",
+  "deployed": "2026-05-30 11:55:28 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1033,6 +1033,11 @@
       "version": "0.1.205",
       "date": "2026-05-30",
       "change": "Implement leaderboard section on index.html displaying last 5 sprints ranked by stories completed with pass rate visual badges (green/yellow/red)"
+    },
+    {
+      "version": "0.1.206",
+      "date": "2026-05-30",
+      "change": "Change homepage h1 title color to red (#ff0000) to increase landing page visibility"
     }
   ]
 }

@@ -479,7 +479,7 @@
       }
 
       const sourceTag = item.source === 'messenger'
-        ? `<span class="messenger-tag">&#8592; messenger</span>`
+        ? `<span class="messenger-tag">&#8592; team chat</span>`
         : item.source === 'inception'
         ? `<span class="inception-tag">&#8592; inception</span>`
         : (item.meeting_update || item.source === 'watercooler')
@@ -514,7 +514,7 @@
           ${acHtml}
           ${expandBtn}
         </div>
-        ${item.source === 'messenger' ? `<span class="messenger-tag watercooler-collapsed">messenger</span>` : item.source === 'inception' ? `<span class="inception-tag watercooler-collapsed">inception</span>` : (item.meeting_update || item.source === 'watercooler') ? `<span class="watercooler-tag watercooler-collapsed" title="${escHtml(item.meeting_update || '')}">watercooler</span>` : ''}
+        ${item.source === 'messenger' ? `<span class="messenger-tag watercooler-collapsed">team chat</span>` : item.source === 'inception' ? `<span class="inception-tag watercooler-collapsed">inception</span>` : (item.meeting_update || item.source === 'watercooler') ? `<span class="watercooler-tag watercooler-collapsed" title="${escHtml(item.meeting_update || '')}">watercooler</span>` : ''}
         <span class="badge badge-${item.status}">${item.status}</span>
         ${retryBtn}
         ${deleteBtn}

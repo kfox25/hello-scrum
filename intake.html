@@ -234,10 +234,10 @@
   </nav>
 
   <div class="layout">
-    <!-- LEFT: Teams Messenger -->
+    <!-- LEFT: Team Chat -->
     <div class="left-panel">
       <div class="panel-header">
-        <h2>Teams Messenger</h2>
+        <h2>Team Chat</h2>
       </div>
       <div class="chat-header"><span>#general</span> &mdash; team channel</div>
       <div class="messages" id="messages"></div>
@@ -275,7 +275,7 @@
       return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
-    // ── Left panel: Teams Messenger ──────────────────────────────────────────
+    // ── Left panel: Team Chat ────────────────────────────────────────────────
     const messagesEl = document.getElementById('messages');
     const composeEl  = document.getElementById('compose');
     const sendBtn    = document.getElementById('send-btn');

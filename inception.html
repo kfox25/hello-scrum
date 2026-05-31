@@ -267,6 +267,8 @@
       <div style="display:flex;gap:0.75rem;align-items:center;margin-top:1rem;">
         <button class="btn" id="btnStart" onclick="startClarify()">Start →</button>
         <div class="status-line" id="statusIntent"></div>
+        <button class="btn btn-copy" style="margin-left:auto;" onclick="copyPanel1()">Copy</button>
+        <span class="copy-confirm" id="copyConfirm1">copied</span>
       </div>
     </div>
   </div>
@@ -274,14 +276,17 @@
   <!-- State 2: Requirements Analysis -->
   <div id="stateQuestions">
     <div class="card">
+      <div class="section-label">Intent</div>
       <div class="intent-display" id="intentDisplay"></div>
       <div class="req-assessment" id="reqAssessment"></div>
-      <div class="section-label">Requirements Analysis</div>
+      <div class="section-label" style="margin-top:1rem;">Requirements Analysis</div>
       <div id="qnaList" style="display:flex;flex-direction:column;gap:1rem;"></div>
       <div style="display:flex;gap:0.75rem;align-items:center;margin-top:1.5rem;">
         <button class="btn" id="btnElaborate" onclick="elaborate()">Elaborate →</button>
         <button class="restart-link" onclick="restart()">start over</button>
         <div class="status-line" id="statusQuestions"></div>
+        <button class="btn btn-copy" style="margin-left:auto;" onclick="copyPanel2()">Copy</button>
+        <span class="copy-confirm" id="copyConfirm2">copied</span>
       </div>
     </div>
   </div>
@@ -613,6 +618,38 @@
       const el = document.getElementById('copyConfirm');
       el.style.display = 'inline';
       setTimeout(() => { el.style.display = 'none'; }, 2000);
+    }
+
+    function flashCopied(id) {
+      const el = document.getElementById(id);
+      el.style.display = 'inline';
+      setTimeout(() => { el.style.display = 'none'; }, 2000);
+    }
+
+    function copyPanel1() {
+      const intent = document.getElementById('intentInput').value.trim();
+      navigator.clipboard.writeText('Intent:\n' + intent);
+      flashCopied('copyConfirm1');
+    }
+
+    function copyPanel2() {
+      const intent = document.getElementById('intentDisplay').textContent.trim();
+      const assessment = document.getElementById('reqAssessment').textContent.trim();
+      const lines = ['Intent: ' + intent];
+      if (assessment) lines.push('Assessment: ' + assessment);
+      lines.push('');
+      currentQuestions.forEach((q, i) => {
+        const qText = typeof q === 'string' ? q : q.question;
+        const cat   = (typeof q === 'object' && q.category) ? q.category : 'Q' + (i + 1);
+        const opts  = (typeof q === 'object' && q.options?.length) ? q.options : [];
+        const ans   = document.getElementById('answer-' + i)?.value || '';
+        lines.push('[' + cat + '] ' + qText);
+        opts.forEach(o => lines.push('  ' + o));
+        lines.push('Answer: ' + (ans || '(blank)'));
+        lines.push('');
+      });
+      navigator.clipboard.writeText(lines.join('\n'));
+      flashCopied('copyConfirm2');
     }
 
     function clearData() {

@@ -430,13 +430,18 @@ def apply_patch(content, find, replace):
 
 def apply_changes(response_text, timestamp):
     text = response_text.strip()
-    if text.startswith("```"):
-        lines = text.split("\n")
-        text = "\n".join(lines[1:-1])
+
+    # Extract the LAST code-fenced JSON block (agent may think aloud between multiple blocks)
+    blocks = re.findall(r'```(?:json)?\s*\n(.*?)```', text, re.DOTALL)
+    if blocks:
+        text = blocks[-1].strip()
     elif not text.startswith("{"):
-        m = re.search(r'```(?:json)?\s*\n(.*?)```', text, re.DOTALL)
-        if m:
-            text = m.group(1).strip()
+        pass  # fall through to rfind below
+
+    # Strip any trailing prose after the closing brace
+    start, end = text.find("{"), text.rfind("}") + 1
+    if start != -1 and end > start:
+        text = text[start:end]
 
     data = json.loads(text)
 
@@ -517,9 +522,14 @@ Diff:
         system=CODE_REVIEW_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": prompt}],
     )
+    if not message.content:
+        raise ValueError("Empty response from Hermes code review")
     text = message.content[0].text.strip()
     if text.startswith("```"):
         text = "\n".join(text.split("\n")[1:-1])
+    start, end = text.find("{"), text.rfind("}") + 1
+    if start != -1 and end > start:
+        text = text[start:end]
     return json.loads(text), message.usage.input_tokens, message.usage.output_tokens
 
 
@@ -543,9 +553,14 @@ Test results:
         system=AC_CHECK_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": prompt}],
     )
+    if not message.content:
+        raise ValueError("Empty response from Hermes AC check")
     text = message.content[0].text.strip()
     if text.startswith("```"):
         text = "\n".join(text.split("\n")[1:-1])
+    start, end = text.find("{"), text.rfind("}") + 1
+    if start != -1 and end > start:
+        text = text[start:end]
     return json.loads(text), message.usage.input_tokens, message.usage.output_tokens
 
 

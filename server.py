@@ -458,7 +458,7 @@ def messenger_send():
 
         # Build compact app state snapshot for query answering
         try:
-            with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+            with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
                 backlog = json.load(f)
             items = backlog.get("items", [])
             in_sprint  = [i for i in items if i.get("in_sprint") and i.get("status") == "pending"]
@@ -538,7 +538,7 @@ def messenger_meeting():
         if not transcript:
             return jsonify({"error": "No transcript provided"}), 400
 
-        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
             backlog = json.load(f)
         items = backlog.get("items", [])
 
@@ -679,7 +679,7 @@ def apply_story_update():
         proposed_idea = (data or {}).get("proposed_idea", "").strip()
         changes       = (data or {}).get("changes", "")
 
-        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
             backlog = json.load(f)
         item = next((i for i in backlog.get("items", []) if i["id"] == story_id), None)
         if not item:
@@ -710,7 +710,7 @@ def messenger_choose():
         if not story:
             return jsonify({"reply": "No story provided."})
 
-        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
             backlog = json.load(f)
         new_item = {
             "id": str(int(time.time() * 1000)),
@@ -815,7 +815,7 @@ def serve_html(filename):
 def health_impediments():
     impediments = []
     try:
-        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
             backlog = json.load(f)
         items = backlog.get("items", [])
 
@@ -978,7 +978,7 @@ def health_impediments():
 @app.route("/health/velocity")
 def health_velocity():
     try:
-        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
             backlog = json.load(f)
         items = backlog.get("items", [])
 
@@ -1147,7 +1147,7 @@ def health_score():
         file_status = "critical" if size >= 16_000 else "warning" if size >= 8_000 else "healthy"
         overall = max(overall, lvl(file_status))
 
-        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
             items = json.load(f).get("items", [])
 
         # ── Hermes approve rate ────────────────────────────────────────────────
@@ -1296,7 +1296,7 @@ def clear_active():
 
 @app.route("/sprint/backlog", methods=["GET"])
 def sprint_backlog():
-    with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+    with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
         data = json.load(f)
     items = [
         {"id": i["id"], "idea": i.get("idea", ""), "status": i.get("status", "pending")}
@@ -1308,7 +1308,7 @@ def sprint_backlog():
 
 @app.route("/sprint/item/<item_id>", methods=["GET"])
 def sprint_item(item_id):
-    with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+    with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
         data = json.load(f)
     for item in data.get("items", []):
         if item.get("id") == item_id:
@@ -1330,7 +1330,7 @@ def sprint_retro():
         # Compare retro file mtime against the earliest item start time —
         # if any sprint item started after the retro was written, the retro is stale.
         retro_mtime = os.path.getmtime(retro_file)
-        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
             pipeline = json.load(f)
         sprint_items = [i for i in pipeline.get("items", []) if i.get("in_sprint")]
         started_times = [i["started"] for i in sprint_items if i.get("started")]
@@ -1375,7 +1375,7 @@ def slow_mode_set():
 
 @app.route("/backlog", methods=["GET"])
 def get_backlog():
-    with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+    with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
         return jsonify(json.load(f))
 
 
@@ -1394,16 +1394,17 @@ def inception_add_stories_to_sprint():
         stories = (data or {}).get("stories", [])
         if not stories:
             return jsonify({"error": "No stories provided"}), 400
-        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
             backlog = json.load(f)
         added = []
+        new_items = []
         for s in stories:
             story = s.get("story", "").strip()
             ac    = s.get("acceptance_criteria", [])
             if not story:
                 continue
             item_id = re.sub(r"[^a-z0-9]+", "-", story.lower())[:48].strip("-") or str(int(time.time() * 1000))
-            backlog.setdefault("items", []).insert(0, {
+            new_items.append({
                 "id": item_id,
                 "idea": story,
                 "story": story,
@@ -1413,6 +1414,7 @@ def inception_add_stories_to_sprint():
                 "source": "inception",
             })
             added.append(item_id)
+        backlog.setdefault("items", [])[:0] = new_items
         with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
             json.dump(backlog, f, indent=2)
         return jsonify({"ok": True, "count": len(added), "ids": added})
@@ -1423,7 +1425,7 @@ def inception_add_stories_to_sprint():
 @app.route("/backlog/mark-pending", methods=["POST"])
 def mark_pending():
     try:
-        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
             backlog = json.load(f)
         count = 0
         for item in backlog.get("items", []):
@@ -1459,7 +1461,7 @@ def inception_add_to_sprint():
             "source": "inception",
         }
 
-        with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
             backlog = json.load(f)
         backlog.setdefault("items", []).insert(0, new_item)
         with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
@@ -1665,7 +1667,7 @@ def start_sprint():
         except Exception:
             pass
         try:
-            with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+            with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
                 _bl = json.load(f)
             _snum = _bl.get("sprint_number", 1)
             for _item in _bl.get("items", []):
@@ -1694,7 +1696,7 @@ def start_sprint():
             agent_running = False
             line_queue.put(None)  # sentinel — SSE stream can close now
             try:
-                with open(SDLC_PIPELINE_FILE, encoding="utf-8") as f:
+                with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
                     _bl = json.load(f)
                 _bl["sprint_number"] = _bl.get("sprint_number", 1) + 1
                 with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:

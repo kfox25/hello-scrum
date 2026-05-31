@@ -232,17 +232,19 @@
           </div>
           <div class="step-card">
             <div class="step-name">Reverse Engineering <span class="agent-badge badge-ai">Haiku</span></div>
-            <div class="step-desc">Analyzes the existing codebase and produces a structured architectural overview. Runs automatically on brownfield projects; results cached in reverse_engineering.json by item count.</div>
+            <div class="step-desc">Analyzes the existing codebase and produces a structured architectural overview. Brownfield only. Cached in reverse_engineering.json by item count — Re-run button forces fresh analysis.</div>
             <ul class="step-bullets">
-              <li>Extracts all API routes from server.py</li>
-              <li>Produces architecture summary, components, key endpoints, business transactions</li>
-              <li>Cached — skips re-run if data unchanged</li>
-              <li>Artifacts injected into Requirements Analysis and Elaboration prompts</li>
+              <li>Haiku produces: architecture summary, components, technical patterns</li>
+              <li>Server-side overrides: key endpoints, business transactions, code structure, business dictionary</li>
+              <li>Business dictionary: 14 Hello Scrum domain terms (Bolt, Hermes, Sprint, Inception, Unit…)</li>
+              <li>Code structure: 11 core app files only — reference/workflow pages excluded</li>
+              <li>All artifacts injected into Requirements Analysis and Elaboration prompts</li>
             </ul>
             <div class="produces">
               <span class="produces-item">architecture summary</span>
               <span class="produces-item">components</span>
-              <span class="produces-item">key endpoints</span>
+              <span class="produces-item">business dictionary</span>
+              <span class="produces-item">code structure</span>
               <span class="produces-item">reverse_engineering.json</span>
             </div>
           </div>
@@ -406,14 +408,16 @@
         </div>
         <div class="flow-line">
           <span>Inception</span> → workspace_context.json<br>
+          <span>Inception</span> → reverse_engineering.json (cached)<br>
           <span>workspace_context.json</span> → clarify prompt (Haiku)<br>
-          <span>workspace_context.json</span> → elaborate prompt (Sonnet)<br>
+          <span>reverse_engineering.json</span> → clarify prompt — architecture, business dictionary<br>
+          <span>reverse_engineering.json</span> → elaborate prompt — components, transactions, dictionary<br>
           <span>workspace_context.json</span> → agent prompt every story (Sonnet)<br>
           <span>retrospective.json</span> → coding_wisdom → agent prompt<br>
           <span>ac_wisdom.json</span> → elaborate prompt
         </div>
         <div class="prose-body" style="margin-top:0.75rem;">
-          <p>workspace_context.json is regenerated on every inception run, so it always reflects the current state of sdlc_pipeline.json — live field names, status values, source values.</p>
+          <p>workspace_context.json regenerates every inception run — live field names, status values, source values. reverse_engineering.json is cached by item count and reused until Re-run is clicked or data changes.</p>
         </div>
       </div>
 
@@ -427,6 +431,11 @@
             <tr><th>Stage</th><th>Model</th><th>Why</th></tr>
           </thead>
           <tbody>
+            <tr>
+              <td>Reverse Engineering</td>
+              <td>claude-haiku-4-5</td>
+              <td>Architectural analysis from codebase summary</td>
+            </tr>
             <tr>
               <td>Requirements Analysis</td>
               <td>claude-haiku-4-5</td>

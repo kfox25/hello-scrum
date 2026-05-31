@@ -8,7 +8,7 @@
   "file_counts": {
     "python": 8,
     "javascript": 1,
-    "html": 20
+    "html": 21
   },
   "key_files": [
     {
@@ -32,7 +32,7 @@
       "purpose": "Baseline reset state for index.html"
     }
   ],
-  "item_count": 210,
+  "item_count": 212,
   "data_model": {
     "item_fields": [
       "id",
@@ -43,12 +43,6 @@
       "in_sprint",
       "source",
       "sprint_number",
-      "error",
-      "started",
-      "stage_times",
-      "tokens_in",
-      "tokens_out",
-      "sprint_wisdom",
       "summary",
       "diff",
       "test_results",
@@ -57,9 +51,16 @@
       "code_review_reason",
       "ac_check_verdict",
       "ac_check_reason",
-      "hermes_verdict"
+      "hermes_verdict",
+      "started",
+      "stage_times",
+      "tokens_in",
+      "tokens_out",
+      "sprint_wisdom"
     ],
     "status_values": [
+      "done",
+      "failed",
       "pending"
     ],
     "source_values": [

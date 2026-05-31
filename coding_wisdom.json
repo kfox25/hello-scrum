@@ -1,14 +1,14 @@
 {
   "bullets": [
-    "\u2022 Validate JSON structure before submission; reject malformed or incomplete responses.",
-    "\u2022 Include complete file content for all new files referenced in patches.",
-    "\u2022 Verify all patch file references exist with corresponding diff content.",
-    "\u2022 Detect and remove content exceeding JSON closing brace position.",
-    "\u2022 Reject patches referencing undefined files; require inline implementations.",
-    "\u2022 Implement new files atomically within single patch submission.",
-    "\u2022 Synchronize version numbers across all modified files and changelog entries.",
-    "\u2022 Validate CSS changes against sprint baseline standards; flag deviations."
+    "\u2022 Enforce strict linting: no CSS outside style blocks, no duplicate rules, no mixed color formats.",
+    "\u2022 Remove deprecated webkit properties; use standard CSS equivalents only.",
+    "\u2022 Implement graceful empty data handling in feature progressions.",
+    "\u2022 Maintain comprehensive test coverage; aim for 9+ tests per item.",
+    "\u2022 Validate JSON structure before submission; reject malformed responses.",
+    "\u2022 Include complete file content for all new files referenced.",
+    "\u2022 Verify patch file references exist with corresponding diff content.",
+    "\u2022 Implement new files atomically within single patch submission."
   ],
-  "synthesized_at": "2026-05-30 22:02:54",
-  "finding_count": 660
+  "synthesized_at": "2026-05-30 22:48:27",
+  "finding_count": 664
 }

@@ -1,14 +1,14 @@
 {
   "bullets": [
-    "\u2022 Define directly observable user-perceived values, not calculation methods.",
-    "\u2022 Specify single, independent verifiable outcome per criterion; avoid compound conditions.",
-    "\u2022 State what appears when data is absent or incomplete.",
-    "\u2022 Clarify tie-breaking or equality rules explicitly for ranked displays.",
-    "\u2022 Exclude sorting algorithms, data aggregation logic, system architecture.",
-    "\u2022 Require measurable, testable assertions about visible content only.",
-    "\u2022 Distinguish edge cases: zero values, empty states, boundary conditions.",
-    "\u2022 Specify displayed values; omit internal representation or format assumptions."
+    "\u2022 Specify what appears when data source is empty or missing entirely.",
+    "\u2022 Name each displayed value; omit data structure or fetch implementation.",
+    "\u2022 Define sort order explicitly, including tie-breaking rules by field.",
+    "\u2022 State edge cases: zero counts, absent attributes, boundary conditions.",
+    "\u2022 Require one testable assertion per criterion; avoid compound logic.",
+    "\u2022 Describe user-visible outcome, never internal calculation or transformation method.",
+    "\u2022 Clarify when content displays versus when placeholder text replaces it.",
+    "\u2022 Assert only observable table structure, row content, and order."
   ],
-  "synthesized_at": "2026-05-30 18:37:44",
-  "item_count": 3
+  "synthesized_at": "2026-05-30 22:48:29",
+  "item_count": 185
 }

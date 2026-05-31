@@ -1,0 +1,89 @@
+{
+  "architecture_summary": "AI-driven Scrum framework where Claude agent automates sprint stories through a pipeline from inception to deployment.",
+  "components": [
+    {
+      "name": "Flask API Server",
+      "file": "server.py",
+      "role": "Routes 65 endpoints serving HTML, JSON, static assets"
+    },
+    {
+      "name": "Claude Coding Agent",
+      "file": "agent.py",
+      "role": "Executes pull\u2192story\u2192code\u2192test\u2192review\u2192deploy pipeline"
+    },
+    {
+      "name": "Kanban Sprint Board",
+      "file": "board.html",
+      "role": "Drag-and-drop UI for story status management"
+    },
+    {
+      "name": "SDLC Pipeline Store",
+      "file": "sdlc_pipeline.json",
+      "role": "Persistent JSON data store for 212 work items"
+    },
+    {
+      "name": "Test Fixture App",
+      "file": "index.html",
+      "role": "Target application modified by agent during CI/CD"
+    }
+  ],
+  "key_endpoints": [
+    {
+      "method": "GET",
+      "path": "/sdlc_pipeline.json",
+      "purpose": "Retrieve all work items and pipeline state"
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "purpose": "Serve main dashboard application"
+    },
+    {
+      "method": "GET",
+      "path": "/active.json",
+      "purpose": "Get current sprint active stories"
+    },
+    {
+      "method": "GET",
+      "path": "/board.html",
+      "purpose": "Serve Kanban sprint board UI"
+    },
+    {
+      "method": "GET",
+      "path": "/health.html",
+      "purpose": "System health and status dashboard"
+    },
+    {
+      "method": "GET",
+      "path": "/prompts",
+      "purpose": "Retrieve agent prompt templates"
+    },
+    {
+      "method": "GET",
+      "path": "/version.json",
+      "purpose": "Application version information"
+    },
+    {
+      "method": "GET",
+      "path": "/retro.html",
+      "purpose": "Sprint retrospective and metrics view"
+    }
+  ],
+  "business_transactions": [
+    "Run automated sprint",
+    "Add story to backlog",
+    "Execute code review stage",
+    "Deploy completed stories",
+    "Check acceptance criteria",
+    "Generate sprint retrospective"
+  ],
+  "technical_patterns": [
+    "Flask REST API",
+    "JSON file-based persistence",
+    "Claude AI agent orchestration",
+    "Multi-stage pipeline execution",
+    "Drag-and-drop Kanban UI"
+  ],
+  "item_count": 212,
+  "cached": false
+}

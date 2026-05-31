@@ -1,89 +1,173 @@
 {
-  "architecture_summary": "AI-driven Scrum framework where Claude agent automates sprint stories through a pipeline from inception to deployment.",
+  "architecture_summary": "AI-powered Scrum management system with Claude agent automating story development through a JSON-based SDLC pipeline.",
   "components": [
     {
-      "name": "Flask API Server",
+      "name": "Flask Server",
       "file": "server.py",
-      "role": "Routes 65 endpoints serving HTML, JSON, static assets"
+      "role": "REST API with 66 routes serving pages and data"
     },
     {
-      "name": "Claude Coding Agent",
+      "name": "Claude Agent",
       "file": "agent.py",
-      "role": "Executes pull\u2192story\u2192code\u2192test\u2192review\u2192deploy pipeline"
+      "role": "Autonomous developer executing story-to-code pipeline"
     },
     {
-      "name": "Kanban Sprint Board",
+      "name": "Sprint Board",
       "file": "board.html",
-      "role": "Drag-and-drop UI for story status management"
+      "role": "Drag-and-drop Kanban interface for sprint items"
     },
     {
-      "name": "SDLC Pipeline Store",
+      "name": "Data Store",
       "file": "sdlc_pipeline.json",
-      "role": "Persistent JSON data store for 212 work items"
+      "role": "JSON persistence for 212 pipeline items"
     },
     {
-      "name": "Test Fixture App",
+      "name": "Test Fixture",
       "file": "index.html",
-      "role": "Target application modified by agent during CI/CD"
+      "role": "Sample app modified by agent during workflow"
     }
   ],
   "key_endpoints": [
     {
-      "method": "GET",
-      "path": "/sdlc_pipeline.json",
-      "purpose": "Retrieve all work items and pipeline state"
+      "method": "POST",
+      "path": "/sprint/start",
+      "purpose": "Launch sprint \u2014 agent runs all in-sprint stories"
     },
     {
       "method": "GET",
-      "path": "/",
-      "purpose": "Serve main dashboard application"
+      "path": "/backlog",
+      "purpose": "Fetch full pipeline including backlog and sprint items"
+    },
+    {
+      "method": "POST",
+      "path": "/inception/elaborate",
+      "purpose": "Generate unit, stories, bolts from intent + Q&A"
+    },
+    {
+      "method": "POST",
+      "path": "/inception/add-stories-to-sprint",
+      "purpose": "Add inception stories to sprint"
+    },
+    {
+      "method": "POST",
+      "path": "/inception/workspace",
+      "purpose": "Scan codebase and save workspace_context.json"
+    },
+    {
+      "method": "POST",
+      "path": "/inception/reverse-engineer",
+      "purpose": "Analyze codebase and produce architectural artifacts"
+    },
+    {
+      "method": "POST",
+      "path": "/baseline/restore",
+      "purpose": "Reset index.html to baseline and commit"
+    },
+    {
+      "method": "POST",
+      "path": "/backlog/mark-pending",
+      "purpose": "Reset in-sprint done/failed items to pending"
     },
     {
       "method": "GET",
       "path": "/active.json",
-      "purpose": "Get current sprint active stories"
+      "purpose": "Current sprint item, stage, and progress"
     },
     {
       "method": "GET",
-      "path": "/board.html",
-      "purpose": "Serve Kanban sprint board UI"
-    },
-    {
-      "method": "GET",
-      "path": "/health.html",
-      "purpose": "System health and status dashboard"
-    },
-    {
-      "method": "GET",
-      "path": "/prompts",
-      "purpose": "Retrieve agent prompt templates"
-    },
-    {
-      "method": "GET",
-      "path": "/version.json",
-      "purpose": "Application version information"
-    },
-    {
-      "method": "GET",
-      "path": "/retro.html",
-      "purpose": "Sprint retrospective and metrics view"
+      "path": "/health/score",
+      "purpose": "Composite health score for nav indicator"
     }
   ],
   "business_transactions": [
-    "Run automated sprint",
-    "Add story to backlog",
-    "Execute code review stage",
-    "Deploy completed stories",
-    "Check acceptance criteria",
-    "Generate sprint retrospective"
+    "Run inception \u2014 intent to stories",
+    "Start sprint \u2014 agent executes stories",
+    "Review retrospective findings",
+    "Add idea via Team Chat or Watercooler",
+    "Check system health and impediments",
+    "Restore baseline before sprint",
+    "View sprint leaderboard"
   ],
   "technical_patterns": [
-    "Flask REST API",
-    "JSON file-based persistence",
-    "Claude AI agent orchestration",
-    "Multi-stage pipeline execution",
-    "Drag-and-drop Kanban UI"
+    "JSON file as database",
+    "Claude Sonnet 4 coding agent",
+    "Multi-stage approval workflow",
+    "REST API with Flask",
+    "Drag-drop Kanban interface"
   ],
+  "code_structure": [
+    {
+      "file": "agent.py",
+      "purpose": "Claude coding agent \u2014 pull/story/code/test/review/deploy pipeline",
+      "type": "agent"
+    },
+    {
+      "file": "server.py",
+      "purpose": "Flask API server \u2014 all routes, sprint start, inception endpoints",
+      "type": "server"
+    },
+    {
+      "file": "active.html",
+      "purpose": "Live sprint view \u2014 current story, stage, streaming log",
+      "type": "frontend"
+    },
+    {
+      "file": "audit.html",
+      "purpose": "Audit log \u2014 story diffs and agent decisions",
+      "type": "frontend"
+    },
+    {
+      "file": "board.html",
+      "purpose": "Kanban sprint board \u2014 drag-and-drop, start sprint, mark pending",
+      "type": "frontend"
+    },
+    {
+      "file": "health.html",
+      "purpose": "System health dashboard \u2014 score, impediments, velocity",
+      "type": "frontend"
+    },
+    {
+      "file": "inception.html",
+      "purpose": "AI-DLC inception flow \u2014 intent to stories to sprint",
+      "type": "frontend"
+    },
+    {
+      "file": "index.html",
+      "purpose": "Test fixture app modified by the agent each sprint",
+      "type": "frontend"
+    },
+    {
+      "file": "intake.html",
+      "purpose": "Team Chat + Watercooler \u2014 idea capture and intake",
+      "type": "frontend"
+    },
+    {
+      "file": "prompts.html",
+      "purpose": "Prompt viewer \u2014 all agent and inception prompts",
+      "type": "frontend"
+    },
+    {
+      "file": "retro.html",
+      "purpose": "Sprint retrospective \u2014 findings and wisdom display",
+      "type": "frontend"
+    }
+  ],
+  "business_dictionary": {
+    "Bolt": "A suggested sprint grouping from inception \u2014 one Bolt = one Sprint run",
+    "Hermes": "The AI reviewer (Haiku) that runs code_review and ac_check gates after each story",
+    "Inception": "The AI-DLC process that decomposes an intent into Unit, Stories, Bolts via inception.html",
+    "Unit": "An Epic \u2014 a bounded context grouping of related stories produced by inception",
+    "Sprint": "A sequential batch of stories executed by the agent in one run",
+    "Story": "A user story with acceptance criteria that the agent implements as patches to index.html",
+    "Idea": "The raw instruction text for a story \u2014 mirrors story text for inception items",
+    "Opportunity": "An idea in the opportunity backlog \u2014 not yet elaborated into a story",
+    "in_sprint": "Boolean \u2014 true means the item is queued for the current sprint run",
+    "sprint_number": "Integer identifying which sprint batch an item ran in \u2014 used by the leaderboard",
+    "source": "Origin of an item: 'inception', 'team_chat', or 'watercooler'",
+    "Retro": "Retrospective \u2014 runs automatically after each sprint, produces findings and wisdom",
+    "Wisdom": "Synthesized coding/AC directives from past retros \u2014 injected into future agent prompts",
+    "Workspace": "The codebase snapshot saved by inception for downstream context injection"
+  },
   "item_count": 212,
   "cached": false
 }

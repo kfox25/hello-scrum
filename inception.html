@@ -543,7 +543,8 @@
           <textarea class="story-text" rows="3" oninput="save()">${escHtml(s.story || '')}</textarea>
           <div style="margin-top:0.5rem;">
             <div style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.3rem;">Acceptance Criteria</div>
-            <div class="ac-inputs">${makeRows(s.acceptance_criteria || [], '✓')}</div>
+            <div class="ac-inputs" id="ac-list-${i}">${makeRows(s.acceptance_criteria || [], '✓')}</div>
+            <button class="btn btn-sm" style="margin-top:0.4rem;font-size:0.72rem;" onclick="addAcRow(${i})">+ criterion</button>
           </div>
         </div>`).join('');
 
@@ -780,6 +781,16 @@
       });
       navigator.clipboard.writeText(lines.join('\n'));
       flashCopied('copyConfirm2');
+    }
+
+    function addAcRow(storyIdx) {
+      const list = document.getElementById('ac-list-' + storyIdx);
+      if (!list) return;
+      const row = document.createElement('div');
+      row.className = 'ac-input-row';
+      row.innerHTML = '<span class="ac-check">✓</span><textarea rows="1" oninput="save()"></textarea>';
+      list.appendChild(row);
+      row.querySelector('textarea').focus();
     }
 
     function clearData() {

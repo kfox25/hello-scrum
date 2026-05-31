@@ -77,26 +77,12 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.217</div>
-  <div class="meta">Last deployed: 2026-05-30 22:47:27 CT</div>
+  <div class="version" id="version-badge">v0.1.66</div>
+  <div class="meta">Last deployed: 2026-05-25 22:39:40 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
   </div>
-  <section id="sprint-leaderboard" style="width:100%;max-width:560px;margin:2rem auto 0;">
-    <h2 style="font-size:0.75rem;color:#555;text-transform:uppercase;letter-spacing:0.15em;margin:0 0 0.75rem 0;">Sprint Velocity Leaderboard</h2>
-    <table id="leaderboard-table" style="width:100%;border-collapse:collapse;font-size:0.88rem;">
-      <thead>
-        <tr style="border-bottom:1px solid #2a2a2a;">
-          <th style="text-align:left;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;">Rank</th>
-          <th style="text-align:left;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;">Sprint</th>
-          <th style="text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;">Done</th>
-          <th style="text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;">Pass Rate</th>
-        </tr>
-      </thead>
-      <tbody id="leaderboard-body"></tbody>
-    </table>
-  </section>
   <script>
     function escHtml(s) {
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -118,64 +104,6 @@
         .catch(() => {});
     }
     loadChangelog();
-    function loadLeaderboard() {
-      const section = document.getElementById('sprint-leaderboard');
-      const table = document.getElementById('leaderboard-table');
-      let emptyMsg = document.getElementById('leaderboard-empty');
-      if (!emptyMsg) {
-        emptyMsg = document.createElement('p');
-        emptyMsg.id = 'leaderboard-empty';
-        emptyMsg.style.cssText = 'color:#7a8099;font-size:0.88rem;margin:0.5rem 0;';
-        emptyMsg.textContent = 'No sprint data available';
-        if (section) section.appendChild(emptyMsg);
-      }
-      emptyMsg.style.display = 'none';
-      if (table) table.style.display = '';
-      fetch('/sdlc_pipeline.json')
-        .then(r => r.json())
-        .then(data => {
-          const items = (data && Array.isArray(data.items)) ? data.items : [];
-          const sprintMap = {};
-          items.forEach(item => {
-            const sn = item.sprint_number;
-            if (sn === undefined || sn === null) return;
-            if (!sprintMap[sn]) sprintMap[sn] = { done: 0, failed: 0, total: 0 };
-            sprintMap[sn].total++;
-            if (item.status === 'done') sprintMap[sn].done++;
-            if (item.status === 'failed') sprintMap[sn].failed++;
-          });
-          if (Object.keys(sprintMap).length === 0) {
-            if (table) table.style.display = 'none';
-            if (emptyMsg) emptyMsg.style.display = '';
-            return;
-          }
-          const rows = Object.keys(sprintMap).map(sn => ({
-            sprint: Number(sn),
-            done: sprintMap[sn].done,
-            total: sprintMap[sn].total
-          }));
-          rows.sort((a, b) => b.done - a.done || a.sprint - b.sprint);
-          const tbody = document.getElementById('leaderboard-body');
-          if (!tbody) return;
-          tbody.innerHTML = rows.map((row, i) => {
-            const passRate = row.total > 0 ? Math.round((row.done / row.total) * 100) : 0;
-            const rank = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
-            return `<tr style="border-top:1px solid #1c1c1c;">
-              <td style="padding:0.38rem 0.6rem;color:#7a8099;">${rank}</td>
-              <td style="padding:0.38rem 0.6rem;color:#e8eaf0;">#${escHtml(row.sprint)}</td>
-              <td style="padding:0.38rem 0.6rem;text-align:right;color:#00ff99;font-weight:600;">${escHtml(row.done)}</td>
-              <td style="padding:0.38rem 0.6rem;text-align:right;color:#aaa;">${passRate}%</td>
-            </tr>`;
-          }).join('');
-        })
-        .catch(() => {
-          const table2 = document.getElementById('leaderboard-table');
-          const emptyMsg2 = document.getElementById('leaderboard-empty');
-          if (table2) table2.style.display = 'none';
-          if (emptyMsg2) emptyMsg2.style.display = '';
-        });
-    }
-    loadLeaderboard();
   </script>
 <script src="shared.js"></script>
 </body>

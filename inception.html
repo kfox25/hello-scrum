@@ -565,7 +565,10 @@
 
       document.getElementById('storiesContainer').innerHTML = (unit.stories || []).map((s, i) => `
         <div class="story-block">
-          <div class="section-label" style="margin-bottom:0.4rem;">Story ${i+1}</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;">
+            <div class="section-label" style="margin-bottom:0;">Story ${i+1}</div>
+            <button class="btn btn-sm" style="font-size:0.7rem;color:#ff4444;border-color:#ff444430;background:#1a0a0a;padding:0.15rem 0.6rem;" onclick="deleteStory(this)">✕ remove</button>
+          </div>
           <textarea class="story-text" rows="3" oninput="save()">${escHtml(s.story || '')}</textarea>
           <div style="margin-top:0.5rem;">
             <div style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.3rem;">Acceptance Criteria</div>
@@ -807,6 +810,11 @@
       });
       navigator.clipboard.writeText(lines.join('\n'));
       flashCopied('copyConfirm2');
+    }
+
+    function deleteStory(btn) {
+      const block = btn.closest('.story-block');
+      if (block) { block.remove(); save(); }
     }
 
     function addAcRow(storyIdx) {

@@ -33,27 +33,27 @@ agent_running = False
 agent_lock = threading.Lock()
 AGENT_LOG_FILE = os.path.join(BASE, "agent_log.json")
 
-INCEPTION_REVERSE_ENGINEER_PROMPT = """You are an AI-DLC Reverse Engineering assistant. Analyze this existing codebase summary and produce a structured architectural overview.
+INCEPTION_REVERSE_ENGINEER_PROMPT = """You are an AI-DLC Reverse Engineering assistant. Analyze this codebase summary and produce a concise architectural overview.
 
-Return JSON only (no markdown):
+Return JSON only (no markdown). Keep all strings short — one sentence max per field.
 {
-  "architecture_summary": "2-3 sentence description of what the system does and how it is structured",
+  "architecture_summary": "one sentence describing what this system is",
   "components": [
-    {"name": "component name", "file": "filename", "role": "what it does", "responsibilities": ["key responsibility 1", "key responsibility 2"]}
+    {"name": "short name", "file": "filename", "role": "one sentence role"}
   ],
   "key_endpoints": [
-    {"method": "GET|POST", "path": "/path", "purpose": "what this endpoint does"}
+    {"method": "GET", "path": "/path", "purpose": "short purpose"}
   ],
-  "business_transactions": ["transaction 1", "transaction 2"],
-  "technical_patterns": ["pattern 1", "pattern 2"]
+  "business_transactions": ["Run a sprint", "Add a story to backlog"],
+  "technical_patterns": ["SSE streaming", "JSON file as data store"]
 }
 
 Rules:
-- architecture_summary: plain language, 2-3 sentences
-- components: 3-6 most important components only
-- key_endpoints: 6-10 most important endpoints only
-- business_transactions: the main things the system enables a user to do (e.g. "Run a sprint", "Add a story")
-- technical_patterns: notable patterns in the codebase (e.g. "SSE streaming for sprint output", "JSON file as data store")"""
+- architecture_summary: 1 sentence only
+- components: 4-5 most important, role is max 10 words
+- key_endpoints: 8 most important only, purpose is max 8 words
+- business_transactions: 4-6 items, each 3-5 words
+- technical_patterns: 3-5 items, each 3-5 words"""
 
 INCEPTION_CLARIFY_PROMPT = """You are an AI-DLC Requirements Analysis assistant. Given a high-level intent, perform a structured requirements analysis.
 
@@ -1629,13 +1629,15 @@ API routes (sample):
         client = anthropic.Anthropic()
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
-            max_tokens=1200,
+            max_tokens=1800,
             system=INCEPTION_REVERSE_ENGINEER_PROMPT,
             messages=[{"role": "user", "content": summary}],
         )
         text = next((b.text for b in response.content if hasattr(b, "text")), "")
-        start, end = text.find("{"), text.rfind("}") + 1
-        result = json.loads(text[start:end])
+        start = text.find("{")
+        if start == -1:
+            raise ValueError("No JSON object in reverse engineering response")
+        result, _ = json.JSONDecoder().raw_decode(text, start)
         result["item_count"] = workspace.get("item_count")
         result["cached"] = False
 

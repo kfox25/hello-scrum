@@ -126,7 +126,7 @@
             sprintMap[sn].total++;
             if (item.status === 'done') { sprintMap[sn].velocity++; sprintMap[sn].done++; }
             if (item.code_review_verdict != null && item.code_review_verdict !== '') { sprintMap[sn].reviewTotal++; if (item.code_review_verdict === 'approve') sprintMap[sn].reviewApprove++; }
-            if (item.test_results != null && item.test_results !== '') { sprintMap[sn].testTotal++; const tr = String(item.test_results).toLowerCase(); if (tr.includes('pass') || tr.includes('success') || tr.includes('ok')) sprintMap[sn].testPass++; }
+            if (Array.isArray(item.test_results) && item.test_results.length) { sprintMap[sn].testTotal++; if (item.test_results.some(t => t.status === 'pass')) sprintMap[sn].testPass++; }
           }
           const sprints = Object.values(sprintMap);
           if (!sprints.length) {

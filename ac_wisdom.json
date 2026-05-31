@@ -1,14 +1,15 @@
 {
   "bullets": [
-    "\u2022 Specify what appears when data source is empty or missing entirely.",
-    "\u2022 Name each displayed value; omit data structure or fetch implementation.",
-    "\u2022 Define sort order explicitly, including tie-breaking rules by field.",
-    "\u2022 State edge cases: zero counts, absent attributes, boundary conditions.",
-    "\u2022 Require one testable assertion per criterion; avoid compound logic.",
-    "\u2022 Describe user-visible outcome, never internal calculation or transformation method.",
-    "\u2022 Clarify when content displays versus when placeholder text replaces it.",
-    "\u2022 Assert only observable table structure, row content, and order."
+    "\u2022 Name each displayed column; specify what data populates it, not how.",
+    "\u2022 State exact output format: percentages as whole numbers with '%' suffix.",
+    "\u2022 Define fallback text when data is absent, zero, or unqualified.",
+    "\u2022 Specify sort order: primary field direction, then tie-breaking field and direction.",
+    "\u2022 Assert one observable outcome per column, row, or conditional display state.",
+    "\u2022 Require percentage denominators and numerators: which stories, which field values qualify.",
+    "\u2022 Display '\u2014' when metric lacks qualifying data; omit calculations for empty sets.",
+    "\u2022 Define exact message text for empty or unavailable data states.",
+    "\u2022 When AC references test_results, specify it is an array of {status, message} objects \u2014 check status === 'pass', never stringify the array."
   ],
-  "synthesized_at": "2026-05-30 22:48:29",
-  "item_count": 185
+  "synthesized_at": "2026-05-31 11:10:59",
+  "item_count": 187
 }

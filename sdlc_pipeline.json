@@ -11,25 +11,26 @@
         "Sprints are ordered from highest to lowest stories-completed count, with rank position (1, 2, 3) visible for each row.",
         "Each row displays the sprint number, rank, and total stories-completed count."
       ],
-      "status": "pending",
+      "status": "done",
       "in_sprint": true,
       "source": "inception",
       "sprint_number": 64,
-      "started": 1780196045.826781,
+      "started": 1780196499.420752,
       "stage_times": {
-        "pull": 1780196045.826781,
-        "code": 1780196069.063943,
-        "story": 1780196045.884359,
-        "test": 1780196069.26514,
-        "code_review": 1780196069.567941,
-        "ac_check": 1780196070.627345,
-        "rejected": 1780196071.961912
+        "pull": 1780196499.420752,
+        "code": 1780196515.154726,
+        "story": 1780196499.469546,
+        "test": 1780196515.366178,
+        "code_review": 1780196515.629683,
+        "ac_check": 1780196516.97548,
+        "deploy": 1780196518.904623,
+        "done": 1780196522.926695
       },
-      "tokens_in": 5021,
-      "tokens_out": 1978,
-      "sprint_wisdom": "[fail] JSON parse error in patch application (Extra data at line 27 column 1) indicates malformed patch syntax or response structure; the patch definition likely contains unescaped characters or incomplete JSON formatting\n[fail] Acceptance criteria cannot be verified because the core implementation file (leaderboard.html) was not included in the patch; only navigation link updates were provided, leaving the actual ranking feature unimplemented\n[note] All syntax and version control tests passed successfully, indicating metadata consistency and proper file structure; the failure is implementation-level rather than quality-of-life",
-      "summary": "Add sprint leaderboard ranked by stories completed to index.html home page",
-      "diff": "diff --git a/index.html b/index.html\nindex a7fb39d..2d4bf25 100644\n--- a/index.html\n+++ b/index.html\n@@ -72,13 +72,14 @@\n     <a href=\"prompts.html\">Prompts</a>\n     <a href=\"notes.html\">Notes</a>\n     <a href=\"health.html\">Health</a>\n+    <a href=\"leaderboard.html\">Leaderboard</a>\n   </nav>\n   <div class=\"hero\">\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.212</div>\n+  <div class=\"meta\">Last deployed: 2026-05-30 21:54:05 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 47caab5..04fb5af 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.211\",\n-  \"deployed\": \"2026-05-30 19:24:49 CT\",\n+  \"version\": \"0.1.212\",\n+  \"deployed\": \"2026-05-30 21:54:05 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -1063,6 +1063,11 @@\n       \"version\": \"0.1.211\",\n       \"date\": \"2026-05-30\",\n       \"change\": \"Added sprint leaderboard to index.html with pass-rate column: 100% for zero failures, 0% for all failed, em-dash when no done/failed items\"\n+    },\n+    {\n+      \"version\": \"0.1.212\",\n+      \"date\": \"2026-05-30\",\n+      \"change\": \"Added leaderboard.html: ranks all sprints by stories-completed count (highest to lowest), shared rank for ties, nav link added\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "tokens_in": 7052,
+      "tokens_out": 1248,
+      "sprint_wisdom": "[ok] Perfect execution: 1 item completed with zero failures, full Hermes approval, all acceptance criteria met, and 9/9 tests passing indicates strong code quality and requirements clarity.\n[note] Single-item sprint suggests focused scope; the sprint leaderboard feature was well-scoped with clear acceptance criteria (data source, grouping logic, sorting, display format) that enabled comprehensive validation.\n[ok] Comprehensive test coverage validated both technical correctness (syntax, CSS rules, versioning consistency) and functional requirements (data fetching, DOM manipulation, changelog updates), reducing production risk.",
+      "summary": "Add inline sprint leaderboard ranking sprints by stories completed from sdlc_pipeline.json",
+      "diff": "diff --git a/index.html b/index.html\nindex a7fb39d..f935f40 100644\n--- a/index.html\n+++ b/index.html\n@@ -77,12 +77,16 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.214</div>\n+  <div class=\"meta\">Last deployed: 2026-05-30 22:01:39 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n   </div>\n+  <section id=\"sprint-leaderboard\" style=\"width:100%;max-width:560px;margin:2rem auto 0;\">\n+    <h2 style=\"font-size:0.75rem;color:#555;text-transform:uppercase;letter-spacing:0.15em;margin:0 0 0.75rem 0;\">Sprint Leaderboard \u00e2\u20ac\u201d Stories Completed</h2>\n+    <div id=\"leaderboard-body\" style=\"width:100%;\"></div>\n+  </section>\n   <script>\n     function escHtml(s) {\n       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');\n@@ -104,6 +108,45 @@\n         .catch(() => {});\n     }\n     loadChangelog();\n+\n+    function loadLeaderboard() {\n+      fetch('/sdlc_pipeline.json')\n+        .then(r => r.json())\n+        .then(items => {\n+          const sprintMap = {};\n+          items.forEach(item => {\n+            const sn = item.sprint_number;\n+            if (sn === undefined || sn === null) return;\n+            const st = (item.status || '').toLowerCase();\n+            if (st !== 'done' && st !== 'failed') return;\n+            if (!sprintMap[sn]) sprintMap[sn] = { sprint: sn, completed: 0 };\n+            if (st === 'done') sprintMap[sn].completed++;\n+          });\n+          const rows = Object.values(sprintMap);\n+          rows.sort((a, b) => b.completed - a.completed || a.sprint - b.sprint);\n+          const container = document.getElementById('leaderboard-body');\n+          if (rows.length === 0) {\n+            container.innerHTML = '<p style=\"color:#555;font-size:0.85rem;\">No sprint data available.</p>';\n+            return;\n+          }\n+          const medals = ['\u00f0\u0178\u00a5\u2021','\u00f0\u0178\u00a5\u02c6','\u00f0\u0178\u00a5\u2030'];\n+          container.innerHTML = rows.map((r, i) => {\n+            const rank = i + 1;\n+            const medal = medals[i] || '';\n+            return `<div style=\"display:flex;align-items:center;gap:0.75rem;padding:0.45rem 0.6rem;border-top:1px solid #1c1c1c;font-size:0.88rem;\">\n+              <span style=\"width:2rem;text-align:center;font-size:1rem;\">${medal || rank}</span>\n+              <span style=\"color:#7a8099;min-width:4.5rem;\">Sprint ${escHtml(String(r.sprint))}</span>\n+              <span style=\"color:#e8eaf0;flex:1;\">Rank #${rank}</span>\n+              <span style=\"color:#00ff99;font-weight:700;\">${r.completed} completed</span>\n+            </div>`;\n+          }).join('');\n+        })\n+        .catch(() => {\n+          const container = document.getElementById('leaderboard-body');\n+          if (container) container.innerHTML = '<p style=\"color:#555;font-size:0.85rem;\">Could not load sprint data.</p>';\n+        });\n+    }\n+    loadLeaderboard();\n   </script>\n <script src=\"shared.js\"></script>\n </body>\ndiff --git a/version.json b/version.json\nindex 47caab5..fb5253b 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.211\",\n-  \"deployed\": \"2026-05-30 19:24:49 CT\",\n+  \"version\": \"0.1.214\",\n+  \"deployed\": \"2026-05-30 22:01:39 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -1063,6 +1063,21 @@\n       \"version\": \"0.1.211\",\n       \"date\": \"2026-05-30\",\n       \"change\": \"Added sprint leaderboard to index.html with pass-rate column: 100% for zero failures, 0% for all failed, em-dash when no done/failed items\"\n+    },\n+    {\n+      \"version\": \"0.1.212\",\n+      \"date\": \"2026-05-30\",\n+      \"change\": \"Added leaderboard.html: ranks all sprints by stories-completed count (highest to lowest), shared rank for ties, nav link added\"\n+    },\n+    {\n+      \"version\": \"0.1.213\",\n+      \"date\": \"2026-05-30\",\n+      \"change\": \"Leaderboard now shows pass-rate percentage per sprint (100% if zero failures, 0% if all failed, \\u2014 if no done/failed items)\"\n+    },\n+    {\n+      \"version\": \"0.1.214\",\n+      \"date\": \"2026-05-30\",\n+      \"change\": \"Added inline Sprint Leaderboard section ranking sprints by stories completed, loaded from sdlc_pipeline.json\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "test_results": [
         {
           "status": "pass",
@@ -37,15 +38,15 @@
         },
         {
           "status": "pass",
-          "message": "version 0.1.212 matches between version.json and index.html"
+          "message": "version 0.1.214 matches between version.json and index.html"
         },
         {
           "status": "pass",
-          "message": "deployed timestamp '2026-05-30 21:54:05 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-30 22:01:39 CT' present in index.html"
         },
         {
           "status": "pass",
-          "message": "changelog has entry for v0.1.212: Added leaderboard.html: ranks all sprints by stories-completed count (highest to lowest), shared rank for ties, nav link added"
+          "message": "changelog has entry for v0.1.214: Added inline Sprint Leaderboard section ranking sprints by stories completed, loaded from sdlc_pipeline.json"
         },
         {
           "status": "pass",
@@ -68,8 +69,13 @@
           "message": "no mixed color formats"
         }
       ],
-      "deployed": "2026-05-30 18:56:14 CT",
-      "hermes_reason": "The diff does not include the leaderboard.html file itself, so acceptance criteria regarding sprint ranking, row display, sprint numbers, stories-completed counts, and tie handling cannot be verified."
+      "deployed": "2026-05-30 22:01:39 CT",
+      "hermes_reason": "The diff does not include the leaderboard.html file itself, so acceptance criteria regarding sprint ranking, row display, sprint numbers, stories-completed counts, and tie handling cannot be verified.",
+      "code_review_verdict": "approve",
+      "code_review_reason": "The code is syntactically correct, the fetch logic properly handles the data transformation and sorting, the DOM manipulation targets existing elements correctly, and the inline styles are valid CSS.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "All acceptance criteria are met: leaderboard is inline in index.html, fetches from /sdlc_pipeline.json, groups by sprint_number, includes only done/failed items, sorts descending by completed count with visible rank positions (1,2,3 or medals), and displays sprint number, rank, and stories-completed count per row.",
+      "hermes_verdict": "approve"
     },
     {
       "id": "as-a-scrum-master-i-want-to-see-the-pass-rate-fo",

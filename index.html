@@ -77,8 +77,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.214</div>
-  <div class="meta">Last deployed: 2026-05-30 22:01:39 CT</div>
+  <div class="version" id="version-badge">v0.1.215</div>
+  <div class="meta">Last deployed: 2026-05-30 22:02:06 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -114,6 +114,15 @@
         .then(r => r.json())
         .then(items => {
           const sprintMap = {};
+          const sprintMapFull = {};
+          items.forEach(item => {
+            const sn2 = item.sprint_number;
+            if (sn2 === undefined || sn2 === null) return;
+            if (!sprintMapFull[sn2]) sprintMapFull[sn2] = { done: 0, failed: 0 };
+            const st2 = (item.status || '').toLowerCase();
+            if (st2 === 'done') sprintMapFull[sn2].done++;
+            else if (st2 === 'failed') sprintMapFull[sn2].failed++;
+          });
           items.forEach(item => {
             const sn = item.sprint_number;
             if (sn === undefined || sn === null) return;
@@ -133,11 +142,15 @@
           container.innerHTML = rows.map((r, i) => {
             const rank = i + 1;
             const medal = medals[i] || '';
+            const fd = sprintMapFull[r.sprint] || { done: 0, failed: 0 };
+            const total = fd.done + fd.failed;
+            const passRate = total === 0 ? '—' : (fd.done === total ? '100%' : (fd.failed === total ? '0%' : Math.round((fd.done / total) * 100) + '%'));
             return `<div style="display:flex;align-items:center;gap:0.75rem;padding:0.45rem 0.6rem;border-top:1px solid #1c1c1c;font-size:0.88rem;">
               <span style="width:2rem;text-align:center;font-size:1rem;">${medal || rank}</span>
               <span style="color:#7a8099;min-width:4.5rem;">Sprint ${escHtml(String(r.sprint))}</span>
               <span style="color:#e8eaf0;flex:1;">Rank #${rank}</span>
               <span style="color:#00ff99;font-weight:700;">${r.completed} completed</span>
+              <span style="color:#7a8099;font-size:0.8rem;min-width:4.5rem;text-align:right;">Pass: ${passRate}</span>
             </div>`;
           }).join('');
         })

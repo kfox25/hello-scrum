@@ -1,6 +1,6 @@
 {
-  "version": "0.1.214",
-  "deployed": "2026-05-30 22:01:39 CT",
+  "version": "0.1.215",
+  "deployed": "2026-05-30 22:02:06 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1078,6 +1078,11 @@
       "version": "0.1.214",
       "date": "2026-05-30",
       "change": "Added inline Sprint Leaderboard section ranking sprints by stories completed, loaded from sdlc_pipeline.json"
+    },
+    {
+      "version": "0.1.215",
+      "date": "2026-05-30",
+      "change": "Added pass-rate percentage column to Sprint Leaderboard, derived from done and failed items per sprint"
     }
   ]
 }

@@ -479,11 +479,11 @@
       }
 
       const sourceTag = item.source === 'team_chat'
-        ? `<span class="messenger-tag">&#8592; team chat</span>`
+        ? `<span class="messenger-tag">&#8592; Team Chat</span>`
         : item.source === 'inception'
-        ? `<span class="inception-tag">&#8592; inception</span>`
+        ? `<span class="inception-tag">&#8592; Inception</span>`
         : (item.meeting_update || item.source === 'watercooler')
-        ? `<span class="watercooler-tag" title="${escHtml(item.meeting_update || 'Added from watercooler')}">&#8592; watercooler</span>`
+        ? `<span class="watercooler-tag" title="${escHtml(item.meeting_update || 'Added from watercooler')}">&#8592; Watercooler</span>`
         : '';
       const wcTag = sourceTag;
       const lastAC = hasAC ? item.acceptance_criteria.length - 1 : -1;
@@ -514,7 +514,7 @@
           ${acHtml}
           ${expandBtn}
         </div>
-        ${item.source === 'team_chat' ? `<span class="messenger-tag watercooler-collapsed">team chat</span>` : item.source === 'inception' ? `<span class="inception-tag watercooler-collapsed">inception</span>` : (item.meeting_update || item.source === 'watercooler') ? `<span class="watercooler-tag watercooler-collapsed" title="${escHtml(item.meeting_update || '')}">watercooler</span>` : ''}
+        ${item.source === 'team_chat' ? `<span class="messenger-tag watercooler-collapsed">Team Chat</span>` : item.source === 'inception' ? `<span class="inception-tag watercooler-collapsed">Inception</span>` : (item.meeting_update || item.source === 'watercooler') ? `<span class="watercooler-tag watercooler-collapsed" title="${escHtml(item.meeting_update || '')}">Watercooler</span>` : ''}
         <span class="badge badge-${item.status}">${item.status}</span>
         ${retryBtn}
         ${deleteBtn}

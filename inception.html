@@ -334,6 +334,8 @@
       <div class="card result-left">
         <div class="section-label">Intent</div>
         <div class="intent-display" id="resultIntentDisplay"></div>
+        <div class="section-label" style="margin-top:1rem;">Workspace Detection</div>
+        <div id="resultWorkspace" style="font-size:0.78rem;color:#555;line-height:1.6;"></div>
         <div class="section-label" style="margin-top:1rem;">Requirements Analysis</div>
         <div class="qna-readonly" id="resultQnA"></div>
       </div>
@@ -524,6 +526,24 @@
       currentUnit = unit;
 
       document.getElementById('resultIntentDisplay').textContent = currentIntent;
+
+      const wsEl = document.getElementById('resultWorkspace');
+      if (currentWorkspace) {
+        const dm = currentWorkspace.data_model || {};
+        const fields   = (dm.item_fields   || []).join(', ');
+        const statuses = (dm.status_values || []).join(' | ');
+        const sources  = (dm.source_values || []).join(' | ');
+        const pipeline = (currentWorkspace.pipeline_stages || []).join(' → ');
+        wsEl.innerHTML =
+          `<div style="margin-bottom:0.3rem;"><span style="color:#444;">type</span> &nbsp;<span style="color:#888;">${escHtml(currentWorkspace.project_type || '')}</span></div>` +
+          `<div style="margin-bottom:0.3rem;"><span style="color:#444;">fields</span> &nbsp;<span style="color:#666;">${escHtml(fields)}</span></div>` +
+          `<div style="margin-bottom:0.3rem;"><span style="color:#444;">status</span> &nbsp;<span style="color:#666;">${escHtml(statuses)}</span></div>` +
+          `<div style="margin-bottom:0.3rem;"><span style="color:#444;">source</span> &nbsp;<span style="color:#666;">${escHtml(sources)}</span></div>` +
+          `<div><span style="color:#444;">pipeline</span> &nbsp;<span style="color:#666;font-family:monospace;font-size:0.75rem;">${escHtml(pipeline)}</span></div>`;
+      } else {
+        wsEl.textContent = '—';
+      }
+
       document.getElementById('unitName').textContent   = unit.name   || '';
       document.getElementById('unitDomain').textContent = unit.domain || '';
 

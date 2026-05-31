@@ -1,11 +1,12 @@
 (function () {
-  const WORKFLOW_PAGES = ['workflow.html', 'hello-scrum.html', 'ai-dlc.html', 'jeff.html', 'chad.html', 'items.html', 'docs.html'];
+  const WORKFLOW_PAGES = ['workflow.html', 'hello-scrum.html', 'hello-scrum-aidlc.html', 'ai-dlc.html', 'jeff.html', 'chad.html', 'items.html', 'docs.html'];
   const path = window.location.pathname;
   if (WORKFLOW_PAGES.some(p => path.endsWith(p))) {
     const nav = document.createElement('div');
     nav.className = 'wf-nav';
     nav.innerHTML =
       '<a href="hello-scrum.html">Hello Scrum</a>' +
+      '<a href="hello-scrum-aidlc.html">Hello Scrum AI-DLC</a>' +
       '<a href="ai-dlc.html">AWS AI-DLC</a>' +
       '<a href="docs.html">AI-DLC Docs</a>' +
       '<a href="jeff.html">Jeff</a>' +

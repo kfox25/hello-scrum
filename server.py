@@ -220,6 +220,11 @@ def hello_scrum_page():
     return send_file(os.path.join(BASE, "hello-scrum.html"))
 
 
+@app.route("/hello-scrum-aidlc.html")
+def hello_scrum_aidlc_page():
+    return send_file(os.path.join(BASE, "hello-scrum-aidlc.html"))
+
+
 @app.route("/jeff.html")
 def jeff_page():
     return send_file(os.path.join(BASE, "jeff.html"))

@@ -7,8 +7,7 @@
     "\u2022 Assert one observable outcome per column, row, or conditional display state.",
     "\u2022 Require percentage denominators and numerators: which stories, which field values qualify.",
     "\u2022 Display '\u2014' when metric lacks qualifying data; omit calculations for empty sets.",
-    "\u2022 Define exact message text for empty or unavailable data states.",
-    "\u2022 When AC references test_results, specify it is an array of {status, message} objects \u2014 check status === 'pass', never stringify the array."
+    "\u2022 Define exact message text for empty or unavailable data states."
   ],
   "synthesized_at": "2026-05-31 11:10:59",
   "item_count": 187

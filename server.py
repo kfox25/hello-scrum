@@ -1693,6 +1693,30 @@ All API routes:
                 purpose, ftype = known[f]
                 code_structure.append({"file": f, "purpose": purpose, "type": ftype})
         result["code_structure"] = code_structure
+
+        # Override business transactions and key endpoints server-side
+        result["business_transactions"] = [
+            "Run inception — intent to stories",
+            "Start sprint — agent executes stories",
+            "Review retrospective findings",
+            "Add idea via Team Chat or Watercooler",
+            "Check system health and impediments",
+            "Restore baseline before sprint",
+            "View sprint leaderboard",
+        ]
+        result["key_endpoints"] = [
+            {"method": "POST", "path": "/sprint/start",                    "purpose": "Launch sprint — agent runs all in-sprint stories"},
+            {"method": "GET",  "path": "/backlog",                         "purpose": "Fetch full pipeline including backlog and sprint items"},
+            {"method": "POST", "path": "/inception/elaborate",             "purpose": "Generate unit, stories, bolts from intent + Q&A"},
+            {"method": "POST", "path": "/inception/add-stories-to-sprint", "purpose": "Add inception stories to sprint"},
+            {"method": "POST", "path": "/inception/workspace",             "purpose": "Scan codebase and save workspace_context.json"},
+            {"method": "POST", "path": "/inception/reverse-engineer",      "purpose": "Analyze codebase and produce architectural artifacts"},
+            {"method": "POST", "path": "/baseline/restore",                "purpose": "Reset index.html to baseline and commit"},
+            {"method": "POST", "path": "/backlog/mark-pending",            "purpose": "Reset in-sprint done/failed items to pending"},
+            {"method": "GET",  "path": "/active.json",                     "purpose": "Current sprint item, stage, and progress"},
+            {"method": "GET",  "path": "/health/score",                    "purpose": "Composite health score for nav indicator"},
+        ]
+
         result["item_count"] = workspace.get("item_count")
         result["cached"] = False
 

@@ -1590,31 +1590,49 @@ def inception_reverse_engineer():
         except Exception:
             pass
 
-        # Extract agent pipeline and model info from agent.py
-        agent_info = {}
+        # Extract info from agent.py
+        agent_info = {"model": "claude-sonnet-4-6", "reviewer": "claude-haiku-4-5-20251001", "system_prompt_summary": ""}
         try:
             with open(os.path.join(BASE, "agent.py"), encoding="utf-8") as f:
                 agt = f.read()
-            m = re.search(r"pipeline_stages.*?=.*?\[([^\]]+)\]", agt)
             sm = re.search(r'model="([^"]+)"', agt)
-            agent_info["model"] = sm.group(1) if sm else "claude-sonnet-4-6"
+            if sm:
+                agent_info["model"] = sm.group(1)
+            # Extract first 3 lines of SYSTEM_PROMPT for context
+            sp = re.search(r'SYSTEM_PROMPT\s*=\s*"""(.*?)"""', agt, re.DOTALL)
+            if sp:
+                first_lines = [l.strip() for l in sp.group(1).strip().splitlines()[:3] if l.strip()]
+                agent_info["system_prompt_summary"] = " | ".join(first_lines)
         except Exception:
             pass
+
+        # Build file inventory from html files
+        html_files = sorted([f for f in os.listdir(BASE) if f.endswith('.html') and not f.startswith('index_')])
+        py_files   = sorted([f for f in os.listdir(BASE) if f.endswith('.py')])
+        file_inventory = (
+            "Python: " + ", ".join(py_files) + "\n" +
+            "HTML: " + ", ".join(html_files[:15])
+        )
 
         # Build compact codebase summary for the LLM
         dm = workspace.get("data_model", {})
         route_lines = "\n".join(
-            f"  {r['method']:6} {r['path']}" for r in routes[:25]
+            f"  {r['method']:6} {r['path']}" for r in routes[:30]
         )
         summary = f"""Project: Hello Scrum (brownfield Python/JS/HTML)
 Files: {workspace.get('file_counts', {}).get('python', 0)} Python, {workspace.get('file_counts', {}).get('javascript', 0)} JS, {workspace.get('file_counts', {}).get('html', 0)} HTML
 
+File inventory:
+{file_inventory}
+
 Key files:
   server.py     — Flask API server with {len(routes)} routes
-  agent.py      — Claude coding agent ({agent_info.get('model','')})
+  agent.py      — Claude coding agent (model: {agent_info.get('model','')})
   board.html    — Kanban sprint board (drag-and-drop)
   index.html    — Test fixture app the agent modifies
   sdlc_pipeline.json — Data store ({workspace.get('item_count', 0)} items)
+
+Agent system prompt (first lines): {agent_info.get('system_prompt_summary', '')}
 
 Data model (sdlc_pipeline.json items):
   fields:  {', '.join(dm.get('item_fields', []))}
@@ -1623,7 +1641,7 @@ Data model (sdlc_pipeline.json items):
 
 Agent pipeline: {' → '.join(workspace.get('pipeline_stages', []))}
 
-API routes (sample):
+All API routes:
 {route_lines}"""
 
         client = anthropic.Anthropic()
@@ -1638,6 +1656,43 @@ API routes (sample):
         if start == -1:
             raise ValueError("No JSON object in reverse engineering response")
         result, _ = json.JSONDecoder().raw_decode(text, start)
+        # Build code_structure server-side — more reliable than asking Haiku
+        known = {
+            "server.py":              ("Flask API server — all routes, sprint start, inception endpoints", "server"),
+            "agent.py":               ("Claude coding agent — pull/story/code/test/review/deploy pipeline", "agent"),
+            "board.html":             ("Kanban sprint board — drag-and-drop, start sprint, mark pending", "frontend"),
+            "index.html":             ("Test fixture app modified by the agent each sprint", "frontend"),
+            "index_baseline.html":    ("Baseline reset state for index.html", "frontend"),
+            "intake.html":            ("Team Chat + Watercooler — idea capture and intake", "frontend"),
+            "inception.html":         ("AI-DLC inception flow — intent to stories to sprint", "frontend"),
+            "active.html":            ("Live sprint view — current story, stage, streaming log", "frontend"),
+            "retro.html":             ("Sprint retrospective — findings and wisdom display", "frontend"),
+            "health.html":            ("System health dashboard — score, impediments, velocity", "frontend"),
+            "audit.html":             ("Audit log — story diffs and agent decisions", "frontend"),
+            "prompts.html":           ("Prompt viewer — all agent and inception prompts", "frontend"),
+            "sdlc_pipeline.json":     ("Sprint backlog and item store — single source of truth", "data"),
+            "workspace_context.json": ("Workspace snapshot saved by inception for agent injection", "data"),
+            "reverse_engineering.json": ("Cached reverse engineering artifacts from last inception run", "data"),
+            "coding_wisdom.json":     ("Synthesized coding directives from retrospectives", "data"),
+            "ac_wisdom.json":         ("Synthesized AC-writing directives from retrospectives", "data"),
+            "notes.html":             ("Scratch pad for team notes", "frontend"),
+            "workflow.html":          ("Workflow nav shell page", "frontend"),
+            "hello-scrum.html":       ("Hello Scrum operating model reference", "frontend"),
+            "hello-scrum-aidlc.html": ("Hello Scrum AI-DLC pipeline documentation", "frontend"),
+            "ai-dlc.html":            ("AWS AI-DLC white paper reference", "frontend"),
+            "jeff.html":              ("Sutherland agent operating model reference", "frontend"),
+            "chad.html":              ("Chad workflow reference", "frontend"),
+            "items.html":             ("Item lifecycle end-to-end reference", "frontend"),
+            "docs.html":              ("AI-DLC reference docs hub", "frontend"),
+            "shared.js":              ("Nav injection, phase nav, health indicator", "config"),
+            "shared.css":             ("Global styles — dark theme, layout, components", "config"),
+        }
+        code_structure = []
+        for f in py_files + html_files:
+            if f in known:
+                purpose, ftype = known[f]
+                code_structure.append({"file": f, "purpose": purpose, "type": ftype})
+        result["code_structure"] = code_structure
         result["item_count"] = workspace.get("item_count")
         result["cached"] = False
 
@@ -1645,6 +1700,17 @@ API routes (sample):
             json.dump(result, f, indent=2)
 
         return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/inception/reverse-engineer/clear", methods=["POST"])
+def inception_reverse_engineer_clear():
+    try:
+        re_file = os.path.join(BASE, "reverse_engineering.json")
+        if os.path.exists(re_file):
+            os.remove(re_file)
+        return jsonify({"ok": True})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

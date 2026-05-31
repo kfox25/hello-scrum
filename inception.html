@@ -674,13 +674,32 @@
           <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.25rem;">${txns}</div>
         </div>
 
+        ${(re.code_structure || []).length ? `
+        <div class="ws-block">
+          <div class="ws-block-label">Code Structure</div>
+          <div class="ws-files">${(re.code_structure || []).map(f => {
+            const typeColor = {server:'#00ff99',agent:'#ffcc00',frontend:'#4488ff',data:'#cc88ff',config:'#888'}[f.type] || '#555';
+            return `<div class="ws-file"><span class="ws-filename" style="color:${typeColor}">${escHtml(f.file)}</span><span class="ws-purpose">${escHtml(f.purpose)}</span></div>`;
+          }).join('')}</div>
+        </div>` : ''}
+
         <div style="display:flex;gap:0.75rem;align-items:center;margin-top:1.75rem;">
           <button class="btn" id="btnReNext" onclick="runRequirementsAnalysis()">Next →</button>
+          <button class="btn" onclick="reRunReverseEngineering()">Re-run</button>
           <div class="status-line" id="reStatus"></div>
           <button class="btn btn-copy" style="margin-left:auto;" onclick="copyReverseEngineering()">Copy</button>
           <span class="copy-confirm" id="copyConfirmRe">copied</span>
         </div>
       `;
+    }
+
+    async function reRunReverseEngineering() {
+      // Clear cache on server then re-run
+      await fetch('/inception/reverse-engineer/clear', { method: 'POST' });
+      currentReverseEngineering = null;
+      localStorage.removeItem(LS+'re');
+      document.getElementById('reverseEngineerContent').innerHTML = '<div class="status-line active">Re-analyzing codebase...</div>';
+      await runReverseEngineering();
     }
 
     async function runReverseEngineering() {

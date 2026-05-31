@@ -1,6 +1,6 @@
 {
-  "version": "0.1.210",
-  "deployed": "2026-05-30 18:56:47 CT",
+  "version": "0.1.211",
+  "deployed": "2026-05-30 19:24:49 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1058,6 +1058,11 @@
       "version": "0.1.210",
       "date": "2026-05-30",
       "change": "Leaderboard now shows pass-rate column per sprint: 100% when no failures, 0% when all failed, em-dash when no done or failed items"
+    },
+    {
+      "version": "0.1.211",
+      "date": "2026-05-30",
+      "change": "Added sprint leaderboard to index.html with pass-rate column: 100% for zero failures, 0% for all failed, em-dash when no done/failed items"
     }
   ]
 }

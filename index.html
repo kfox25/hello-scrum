@@ -77,13 +77,69 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.66</div>
-  <div class="meta">Last deployed: 2026-05-25 22:39:40 CT</div>
+  <div class="version" id="version-badge">v0.1.211</div>
+  <div class="meta">Last deployed: 2026-05-30 19:24:49 CT</div>
+  <div id="leaderboard-section" style="width:100%;max-width:600px;margin-bottom:2rem;">
+    <h2 style="font-size:0.75rem;color:#555;text-transform:uppercase;letter-spacing:0.15em;margin:0 0 0.75rem 0;">Sprint Leaderboard</h2>
+    <table id="leaderboard-table" style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+      <thead>
+        <tr style="border-bottom:1px solid #2a2a2a;">
+          <th style="text-align:left;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;">Sprint</th>
+          <th style="text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;">Done</th>
+          <th style="text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;">Failed</th>
+          <th style="text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;">Pass Rate</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboard-body">
+        <tr><td colspan="4" style="padding:0.6rem;color:#444;">No sprint data found.</td></tr>
+      </tbody>
+    </table>
+  </div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
   </div>
   <script>
+    function buildLeaderboard() {
+      try {
+        const raw = localStorage.getItem('scrumItems') || localStorage.getItem('backlogItems') || '[]';
+        const items = JSON.parse(raw);
+        if (!Array.isArray(items) || items.length === 0) return;
+        const sprintMap = {};
+        items.forEach(item => {
+          const sprint = item.sprint || item.sprintId || item.Sprint || null;
+          if (!sprint) return;
+          const key = String(sprint);
+          if (!sprintMap[key]) sprintMap[key] = { done: 0, failed: 0 };
+          const status = String(item.status || item.Status || '').toLowerCase();
+          if (status === 'done' || status === 'complete' || status === 'completed') sprintMap[key].done++;
+          else if (status === 'failed' || status === 'fail' || status === 'blocked') sprintMap[key].failed++;
+        });
+        const sprints = Object.keys(sprintMap).sort();
+        if (sprints.length === 0) return;
+        const tbody = document.getElementById('leaderboard-body');
+        tbody.innerHTML = sprints.map(sprint => {
+          const { done, failed } = sprintMap[sprint];
+          const total = done + failed;
+          let passRate;
+          if (total === 0) {
+            passRate = '&mdash;';
+          } else if (failed === 0) {
+            passRate = '100%';
+          } else if (done === 0) {
+            passRate = '0%';
+          } else {
+            passRate = Math.round((done / total) * 100) + '%';
+          }
+          return `<tr style="border-bottom:1px solid #1c1c1c;">
+            <td style="padding:0.4rem 0.6rem;color:#e8eaf0;text-align:left;">${escHtml(sprint)}</td>
+            <td style="padding:0.4rem 0.6rem;color:#00ff99;text-align:right;">${done}</td>
+            <td style="padding:0.4rem 0.6rem;color:#ff4466;text-align:right;">${failed}</td>
+            <td style="padding:0.4rem 0.6rem;color:#e8eaf0;text-align:right;font-weight:600;">${passRate}</td>
+          </tr>`;
+        }).join('');
+      } catch(e) {}
+    }
     function escHtml(s) {
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
@@ -104,6 +160,7 @@
         .catch(() => {});
     }
     loadChangelog();
+    buildLeaderboard();
   </script>
 <script src="shared.js"></script>
 </body>

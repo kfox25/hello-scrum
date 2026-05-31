@@ -10,25 +10,21 @@
         "Each row displays the sprint number and its total stories-completed count.",
         "Two sprints with equal stories-completed counts share the same rank position."
       ],
-      "status": "done",
+      "status": "failed",
       "in_sprint": true,
       "source": "inception",
-      "sprint_number": 61,
-      "error": "Parse error: Extra data: line 27 column 1 (char 1043) | Response preview: ```json\n{\n  \"patches\": [\n    {\n      \"find\": \"    <a href=\\\"notes.html\\\">Notes</a>\\n    <a href=\\\"health.html\\\">Health</a>\\n  </nav>\",\n      \"replace\": \"    <a href=\\\"notes.html\\\">Notes</a>\\n    <a hr",
-      "started": 1780185374.080887,
+      "sprint_number": 62,
+      "error": "Parse error: Extra data: line 27 column 1 (char 968) | Response preview: ```json\n{\n  \"patches\": [\n    {\n      \"find\": \"    <a href=\\\"notes.html\\\">Notes</a>\\n    <a href=\\\"health.html\\\">Health</a>\",\n      \"replace\": \"    <a href=\\\"notes.html\\\">Notes</a>\\n    <a href=\\\"healt",
+      "started": 1780187060.305775,
       "stage_times": {
-        "pull": 1780185374.080887,
-        "code": 1780185399.406741,
-        "story": 1780185374.149451,
-        "test": 1780185399.631887,
-        "code_review": 1780185399.931446,
-        "ac_check": 1780185399.936448,
-        "deploy": 1780185399.975032,
-        "done": 1780185403.654449
+        "pull": 1780187060.305775,
+        "code": 1780187085.492167,
+        "story": 1780187060.419183,
+        "failed": 1780187085.504175
       },
       "tokens_in": 2565,
-      "tokens_out": 1901,
-      "sprint_wisdom": "[note] Sprint completed 1 item with 100% success rate and all 9 test checks passing, indicating solid quality control despite patch generation errors.\n[fail] Parse error occurred during patch generation (Extra data at line 27 column 1), but did not block deployment due to defaulted approvals in code review and AC checks.\n[note] Multiple validation gates (code review, AC check, Hermes verdict) defaulted to approve rather than failing, masking the underlying parse error and reducing visibility into patch quality issues.\n[ok] Sprint delivered a complete feature (sprint leaderboard) with comprehensive test coverage across HTML structure, versioning, deployment metadata, and CSS validation.",
+      "tokens_out": 1943,
+      "sprint_wisdom": "[fail] JSON parse error in patch generation: extra data at line 27 column 1 suggests the patch replacement string is malformed or incomplete, causing deserialization failure despite passing all functional tests\n[note] All 9 test cases passed successfully, indicating the generated code meets functional and quality requirements, but the patch format itself is broken\n[note] Code review and AC checks both failed with defaults to approve, masking potential issues\u2014these fallback approvals may be hiding the root cause of the parse error",
       "summary": "Add sprint leaderboard ranked by stories completed to index.html home page",
       "diff": null,
       "test_results": [
@@ -89,18 +85,68 @@
       "status": "pending",
       "in_sprint": true,
       "source": "inception",
-      "sprint_number": 61,
-      "retro_context": "[fail] JSON parse error due to malformed patch structure\u2014the generated JSON contains truncated or improperly escaped content, causing parsing to fail at line 27. The patch replacement value appears to be cut off mid-string.\n[note] Single item sprint with 0% completion rate indicates either scope was too ambitious or the agent encountered blocking issues early. No test results or code review feedback captured, suggesting the failure occurred before reaching validation stages.",
+      "sprint_number": 62,
+      "retro_context": "[note] Sprint completed 1 item with 100% success rate and all 9 test checks passing, indicating solid quality control despite patch generation errors.\n[fail] Parse error occurred during patch generation (Extra data at line 27 column 1), but did not block deployment due to defaulted approvals in code review and AC checks.\n[note] Multiple validation gates (code review, AC check, Hermes verdict) defaulted to approve rather than failing, masking the underlying parse error and reducing visibility into patch quality issues.\n[ok] Sprint delivered a complete feature (sprint leaderboard) with comprehensive test coverage across HTML structure, versioning, deployment metadata, and CSS validation.",
       "error": "Parse error: Extra data: line 27 column 1 (char 964) | Response preview: ```json\n{\n  \"patches\": [\n    {\n      \"find\": \"<a href=\\\"audit.html\\\">Audit</a>\",\n      \"replace\": \"<a href=\\\"audit.html\\\">Audit</a>\\n    <a href=\\\"leaderboard.html\\\">Leaderboard</a>\"\n    }\n  ],\n  \"ver",
-      "started": 1780185174.596185,
+      "started": 1780185407.946599,
       "stage_times": {
-        "pull": 1780185174.596185,
-        "code": 1780185188.428046,
-        "story": 1780185174.615215,
-        "failed": 1780185188.431037
+        "pull": 1780185407.946599,
+        "code": 1780185416.568868,
+        "story": 1780185407.972233,
+        "test": 1780185416.717959,
+        "code_review": 1780185416.964607,
+        "ac_check": 1780185416.98063,
+        "deploy": 1780185417.007172,
+        "done": 1780185420.673376
       },
-      "tokens_in": 2651,
-      "tokens_out": 898
+      "tokens_in": 4035,
+      "tokens_out": 663,
+      "summary": "Add pass-rate column to sprint leaderboard derived from Done vs Failed item counts",
+      "diff": null,
+      "test_results": [
+        {
+          "status": "pass",
+          "message": "index.html exists and contains title"
+        },
+        {
+          "status": "pass",
+          "message": "version 0.1.210 matches between version.json and index.html"
+        },
+        {
+          "status": "pass",
+          "message": "deployed timestamp '2026-05-30 18:56:47 CT' present in index.html"
+        },
+        {
+          "status": "pass",
+          "message": "changelog has entry for v0.1.210: Leaderboard now shows pass-rate column per sprint: 100% when no failures, 0% when all failed, em-dash when no done or failed items"
+        },
+        {
+          "status": "pass",
+          "message": "no CSS outside style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate h1 rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no -webkit-text-fill-color in style block"
+        },
+        {
+          "status": "pass",
+          "message": "no duplicate body rules (1 found)"
+        },
+        {
+          "status": "pass",
+          "message": "no mixed color formats"
+        }
+      ],
+      "deployed": "2026-05-30 18:56:47 CT",
+      "code_review_verdict": "approve",
+      "code_review_reason": "Code review failed \u2014 defaulting to approve",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "AC check failed \u2014 defaulting to approve",
+      "hermes_verdict": "approve"
     },
     {
       "ac_check_reason": "All three acceptance criteria are met: a leaderboard section displays the last 5 sprints ranked by stories completed in descending order, each row shows sprint identifier, stories completed count, and pass rate percentage with visual distinction via color-coded badges (green/yellow/red), and the leaderboard updates on page load by fetching current data from version.json.",
@@ -12770,5 +12816,5 @@
       "tokens_out": 2816
     }
   ],
-  "sprint_number": 61
+  "sprint_number": 62
 }

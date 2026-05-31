@@ -744,6 +744,10 @@
         'Business Transactions:',
         ...(re.business_transactions || []).map(t => `  • ${t}`),
       ];
+      if ((re.code_structure || []).length) {
+        lines.push('', 'Code Structure:');
+        (re.code_structure || []).forEach(f => lines.push(`  [${f.type}] ${f.file} — ${f.purpose}`));
+      }
       navigator.clipboard.writeText(lines.join('\n'));
       flashCopied('copyConfirmRe');
     }

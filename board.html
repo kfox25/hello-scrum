@@ -383,7 +383,7 @@
       const res = await fetch('/backlog?t=' + Date.now());
       backlogData = await res.json();
       renderBoard();
-      const hasResettable = (backlogData.items || []).some(i => i.status === 'done' || i.status === 'failed');
+      const hasResettable = (backlogData.items || []).some(i => i.in_sprint && (i.status === 'done' || i.status === 'failed'));
       const pbtn = document.getElementById('pending-btn');
       pbtn.disabled = !hasResettable;
       pbtn.style.opacity = hasResettable ? '' : '0.35';

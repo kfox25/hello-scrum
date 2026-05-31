@@ -1,6 +1,6 @@
 {
-  "version": "0.1.221",
-  "deployed": "2026-05-31 11:08:58 CT",
+  "version": "0.1.222",
+  "deployed": "2026-05-31 11:09:44 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1113,6 +1113,11 @@
       "version": "0.1.221",
       "date": "2026-05-31",
       "change": "Sprint Leaderboard: added inline section ranking sprints by velocity (done stories count) descending, tie-broken by sprint number ascending, with empty-state message"
+    },
+    {
+      "version": "0.1.222",
+      "date": "2026-05-31",
+      "change": "Sprint Leaderboard: added Completion Rate, Code Review Pass Rate, and Test Pass Rate quality metric columns per sprint row"
     }
   ]
 }

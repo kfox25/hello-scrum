@@ -1,6 +1,6 @@
 {
-  "version": "0.1.218",
-  "deployed": "2026-05-31 11:00:39 CT",
+  "version": "0.1.219",
+  "deployed": "2026-05-31 11:04:46 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1098,6 +1098,11 @@
       "version": "0.1.218",
       "date": "2026-05-31",
       "change": "Added Sprint Leaderboard section to index.html: ranks sprints by velocity (done stories) descending, ties broken by ascending sprint number, fetched from sdlc_pipeline.json"
+    },
+    {
+      "version": "0.1.219",
+      "date": "2026-05-31",
+      "change": "Sprint Leaderboard: inline section on index.html showing rank, sprint number, and velocity (done stories) sorted descending; fetched from sdlc_pipeline.json"
     }
   ]
 }

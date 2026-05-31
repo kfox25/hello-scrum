@@ -77,12 +77,16 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.66</div>
-  <div class="meta">Last deployed: 2026-05-25 22:39:40 CT</div>
+  <div class="version" id="version-badge">v0.1.219</div>
+  <div class="meta">Last deployed: 2026-05-31 11:04:46 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
   </div>
+  <section id="sprint-leaderboard" style="width:100%;max-width:500px;margin-top:2rem;">
+    <h2 style="font-size:0.75rem;color:#555;text-transform:uppercase;letter-spacing:0.15em;margin:0 0 0.75rem 0;">Sprint Leaderboard</h2>
+    <div id="leaderboard-content" style="font-size:0.9rem;">Loading…</div>
+  </section>
   <script>
     function escHtml(s) {
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -104,6 +108,47 @@
         .catch(() => {});
     }
     loadChangelog();
+
+    function loadLeaderboard() {
+      fetch('/sdlc_pipeline.json')
+        .then(r => r.json())
+        .then(data => {
+          const items = Array.isArray(data) ? data : [];
+          const sprintMap = {};
+          items.forEach(item => {
+            const sn = item.sprint_number;
+            if (sn == null) return;
+            if (!sprintMap[sn]) sprintMap[sn] = 0;
+            if (item.status === 'done') sprintMap[sn]++;
+          });
+          const sprints = Object.keys(sprintMap);
+          if (sprints.length === 0) {
+            document.getElementById('leaderboard-content').textContent = 'No sprint data available yet.';
+            return;
+          }
+          const rows = sprints.map(sn => ({ sprint: Number(sn), velocity: sprintMap[sn] }));
+          rows.sort((a, b) => b.velocity - a.velocity || a.sprint - b.sprint);
+          let html = '<table style="width:100%;border-collapse:collapse;">';
+          html += '<thead><tr style="border-bottom:1px solid #1c1c1c;">';
+          html += '<th style="text-align:left;padding:0.35rem 0.5rem;color:#555;font-size:0.73rem;text-transform:uppercase;letter-spacing:0.1em;">Rank</th>';
+          html += '<th style="text-align:left;padding:0.35rem 0.5rem;color:#555;font-size:0.73rem;text-transform:uppercase;letter-spacing:0.1em;">Sprint</th>';
+          html += '<th style="text-align:left;padding:0.35rem 0.5rem;color:#555;font-size:0.73rem;text-transform:uppercase;letter-spacing:0.1em;">Velocity</th>';
+          html += '</tr></thead><tbody>';
+          rows.forEach((row, i) => {
+            html += '<tr style="border-top:1px solid #1c1c1c;">';
+            html += '<td style="padding:0.35rem 0.5rem;color:#7a8099;">' + escHtml(i + 1) + '</td>';
+            html += '<td style="padding:0.35rem 0.5rem;color:#e8eaf0;">Sprint ' + escHtml(row.sprint) + '</td>';
+            html += '<td style="padding:0.35rem 0.5rem;color:#00ff99;font-weight:600;">' + escHtml(row.velocity) + '</td>';
+            html += '</tr>';
+          });
+          html += '</tbody></table>';
+          document.getElementById('leaderboard-content').innerHTML = html;
+        })
+        .catch(() => {
+          document.getElementById('leaderboard-content').textContent = 'No sprint data available yet.';
+        });
+    }
+    loadLeaderboard();
   </script>
 <script src="shared.js"></script>
 </body>

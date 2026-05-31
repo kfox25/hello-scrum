@@ -89,25 +89,26 @@
         "A sprint where all items failed shows a pass rate of 0%.",
         "A sprint with no done or failed items displays a dash in the pass-rate column."
       ],
-      "status": "pending",
+      "status": "done",
       "in_sprint": true,
       "source": "inception",
       "sprint_number": 64,
-      "retro_context": "[fail] JSON parse error in patch application (Extra data at line 27 column 1) indicates malformed patch syntax or response structure; the patch definition likely contains unescaped characters or incomplete JSON formatting\n[fail] Acceptance criteria cannot be verified because the core implementation file (leaderboard.html) was not included in the patch; only navigation link updates were provided, leaving the actual ranking feature unimplemented\n[note] All syntax and version control tests passed successfully, indicating metadata consistency and proper file structure; the failure is implementation-level rather than quality-of-life",
-      "started": 1780196076.188633,
+      "retro_context": "[ok] Perfect execution: 1 item completed with zero failures, full Hermes approval, all acceptance criteria met, and 9/9 tests passing indicates strong code quality and requirements clarity.\n[note] Single-item sprint suggests focused scope; the sprint leaderboard feature was well-scoped with clear acceptance criteria (data source, grouping logic, sorting, display format) that enabled comprehensive validation.\n[ok] Comprehensive test coverage validated both technical correctness (syntax, CSS rules, versioning consistency) and functional requirements (data fetching, DOM manipulation, changelog updates), reducing production risk.",
+      "started": 1780196526.530515,
       "stage_times": {
-        "pull": 1780196076.188633,
-        "code": 1780196081.891046,
-        "story": 1780196076.212392,
-        "test": 1780196082.089242,
-        "code_review": 1780196082.333893,
-        "ac_check": 1780196083.532016,
-        "rejected": 1780196084.724129
+        "pull": 1780196526.530515,
+        "code": 1780196558.090603,
+        "story": 1780196548.745626,
+        "test": 1780196558.271156,
+        "code_review": 1780196558.504276,
+        "ac_check": 1780196559.920994,
+        "deploy": 1780196561.555201,
+        "done": 1780196565.41842
       },
-      "tokens_in": 5389,
-      "tokens_out": 459,
-      "summary": "Add sprint leaderboard with pass-rate column to index.html",
-      "diff": "diff --git a/index.html b/index.html\nindex a7fb39d..e7f5a60 100644\n--- a/index.html\n+++ b/index.html\n@@ -67,6 +67,7 @@\n     <a href=\"/\">Backlog</a>\n     <a href=\"active.html\">Live Work</a>\n     <a href=\"audit.html\">Audit</a>\n+    <a href=\"leaderboard.html\">Leaderboard</a>\n     <a href=\"retro.html\">Retro</a>\n     <a href=\"workflow.html\">Workflow</a>\n     <a href=\"prompts.html\">Prompts</a>\n@@ -77,8 +78,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.213</div>\n+  <div class=\"meta\">Last deployed: 2026-05-30 21:54:36 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 47caab5..705809b 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.211\",\n-  \"deployed\": \"2026-05-30 19:24:49 CT\",\n+  \"version\": \"0.1.213\",\n+  \"deployed\": \"2026-05-30 21:54:36 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -1063,6 +1063,16 @@\n       \"version\": \"0.1.211\",\n       \"date\": \"2026-05-30\",\n       \"change\": \"Added sprint leaderboard to index.html with pass-rate column: 100% for zero failures, 0% for all failed, em-dash when no done/failed items\"\n+    },\n+    {\n+      \"version\": \"0.1.212\",\n+      \"date\": \"2026-05-30\",\n+      \"change\": \"Added leaderboard.html: ranks all sprints by stories-completed count (highest to lowest), shared rank for ties, nav link added\"\n+    },\n+    {\n+      \"version\": \"0.1.213\",\n+      \"date\": \"2026-05-30\",\n+      \"change\": \"Leaderboard now shows pass-rate percentage per sprint (100% if zero failures, 0% if all failed, \\u2014 if no done/failed items)\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "tokens_in": 10848,
+      "tokens_out": 2857,
+      "summary": "Add pass-rate column to Sprint Leaderboard derived from done/failed items per sprint",
+      "diff": "diff --git a/index.html b/index.html\nindex f935f40..b37bb8a 100644\n--- a/index.html\n+++ b/index.html\n@@ -77,8 +77,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.214</div>\n-  <div class=\"meta\">Last deployed: 2026-05-30 22:01:39 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.215</div>\n+  <div class=\"meta\">Last deployed: 2026-05-30 22:02:06 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -114,6 +114,15 @@\n         .then(r => r.json())\n         .then(items => {\n           const sprintMap = {};\n+          const sprintMapFull = {};\n+          items.forEach(item => {\n+            const sn2 = item.sprint_number;\n+            if (sn2 === undefined || sn2 === null) return;\n+            if (!sprintMapFull[sn2]) sprintMapFull[sn2] = { done: 0, failed: 0 };\n+            const st2 = (item.status || '').toLowerCase();\n+            if (st2 === 'done') sprintMapFull[sn2].done++;\n+            else if (st2 === 'failed') sprintMapFull[sn2].failed++;\n+          });\n           items.forEach(item => {\n             const sn = item.sprint_number;\n             if (sn === undefined || sn === null) return;\n@@ -133,11 +142,15 @@\n           container.innerHTML = rows.map((r, i) => {\n             const rank = i + 1;\n             const medal = medals[i] || '';\n+            const fd = sprintMapFull[r.sprint] || { done: 0, failed: 0 };\n+            const total = fd.done + fd.failed;\n+            const passRate = total === 0 ? '\u00e2\u20ac\u201d' : (fd.done === total ? '100%' : (fd.failed === total ? '0%' : Math.round((fd.done / total) * 100) + '%'));\n             return `<div style=\"display:flex;align-items:center;gap:0.75rem;padding:0.45rem 0.6rem;border-top:1px solid #1c1c1c;font-size:0.88rem;\">\n               <span style=\"width:2rem;text-align:center;font-size:1rem;\">${medal || rank}</span>\n               <span style=\"color:#7a8099;min-width:4.5rem;\">Sprint ${escHtml(String(r.sprint))}</span>\n               <span style=\"color:#e8eaf0;flex:1;\">Rank #${rank}</span>\n               <span style=\"color:#00ff99;font-weight:700;\">${r.completed} completed</span>\n+              <span style=\"color:#7a8099;font-size:0.8rem;min-width:4.5rem;text-align:right;\">Pass: ${passRate}</span>\n             </div>`;\n           }).join('');\n         })\ndiff --git a/version.json b/version.json\nindex fb5253b..bb40413 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.214\",\n-  \"deployed\": \"2026-05-30 22:01:39 CT\",\n+  \"version\": \"0.1.215\",\n+  \"deployed\": \"2026-05-30 22:02:06 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -1078,6 +1078,11 @@\n       \"version\": \"0.1.214\",\n       \"date\": \"2026-05-30\",\n       \"change\": \"Added inline Sprint Leaderboard section ranking sprints by stories completed, loaded from sdlc_pipeline.json\"\n+    },\n+    {\n+      \"version\": \"0.1.215\",\n+      \"date\": \"2026-05-30\",\n+      \"change\": \"Added pass-rate percentage column to Sprint Leaderboard, derived from done and failed items per sprint\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "test_results": [
         {
           "status": "pass",
@@ -115,15 +116,15 @@
         },
         {
           "status": "pass",
-          "message": "version 0.1.213 matches between version.json and index.html"
+          "message": "version 0.1.215 matches between version.json and index.html"
         },
         {
           "status": "pass",
-          "message": "deployed timestamp '2026-05-30 21:54:36 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-30 22:02:06 CT' present in index.html"
         },
         {
           "status": "pass",
-          "message": "changelog has entry for v0.1.213: Leaderboard now shows pass-rate percentage per sprint (100% if zero failures, 0% if all failed, \u2014 if no done/failed items)"
+          "message": "changelog has entry for v0.1.215: Added pass-rate percentage column to Sprint Leaderboard, derived from done and failed items per sprint"
         },
         {
           "status": "pass",
@@ -146,8 +147,13 @@
           "message": "no mixed color formats"
         }
       ],
-      "deployed": "2026-05-30 19:24:49 CT",
-      "hermes_reason": "Diff does not include leaderboard.html file or implementation code showing pass-rate calculation logic for each sprint, making it impossible to verify that acceptance criteria are actually implemented."
+      "deployed": "2026-05-30 22:02:06 CT",
+      "hermes_reason": "Diff does not include leaderboard.html file or implementation code showing pass-rate calculation logic for each sprint, making it impossible to verify that acceptance criteria are actually implemented.",
+      "code_review_verdict": "approve",
+      "code_review_reason": "No syntax errors or runtime-breaking defects detected; version and deployment timestamp updates are expected; pass rate calculation logic and HTML rendering are syntactically correct.",
+      "ac_check_verdict": "approve",
+      "ac_check_reason": "The leaderboard is implemented inline in index.html, fetches from /sdlc_pipeline.json, groups by sprint_number, calculates pass rate from done/failed items only, and correctly handles all edge cases (100% when zero failed, 0% when all failed, dash when no done/failed items).",
+      "hermes_verdict": "approve"
     },
     {
       "ac_check_reason": "All three acceptance criteria are met: a leaderboard section displays the last 5 sprints ranked by stories completed in descending order, each row shows sprint identifier, stories completed count, and pass rate percentage with visual distinction via color-coded badges (green/yellow/red), and the leaderboard updates on page load by fetching current data from version.json.",
@@ -358,7 +364,7 @@
         "test": 1780026725.00395
       },
       "started": 1780026720.590874,
-      "status": "pending",
+      "status": "done",
       "story": null,
       "summary": "Add letter-spacing: 0.05em to .version badge",
       "test_results": [
@@ -400,7 +406,8 @@
         }
       ],
       "tokens_in": 4700,
-      "tokens_out": 378
+      "tokens_out": 378,
+      "sprint_number": 58
     },
     {
       "ac_check_reason": "All acceptance criteria are met: scrollbar track is dark (#0f0f0f), thumb is brand green (#00ff99) and visually distinct, styling uses both webkit pseudo-elements and scrollbar-color for cross-browser consistency, and the implementation covers Chrome, Edge, and Firefox support.",
@@ -431,7 +438,7 @@
         "test": 1780022791.576665
       },
       "started": 1780022786.061049,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the scrollbar to match the brand green color so that the interface feels visually cohesive and reinforces the app's identity.",
       "summary": "Add custom scrollbar styling with brand green thumb and dark track (Webkit + Firefox)",
       "test_results": [
@@ -473,7 +480,8 @@
         }
       ],
       "tokens_in": 5023,
-      "tokens_out": 521
+      "tokens_out": 521,
+      "sprint_number": 57
     },
     {
       "ac_check_reason": "The .tagline color property was changed from #7a8099 to #aaa (satisfying criterion 1), and no other .tagline styles were modified (satisfying criterion 2).",
@@ -503,7 +511,7 @@
         "test": 1780022806.400531
       },
       "started": 1780022802.307562,
-      "status": "pending",
+      "status": "done",
       "story": null,
       "summary": "Change .tagline color from #7a8099 to #aaa for a softer grey appearance",
       "test_results": [
@@ -545,7 +553,8 @@
         }
       ],
       "tokens_in": 4795,
-      "tokens_out": 366
+      "tokens_out": 366,
+      "sprint_number": 57
     },
     {
       "ac_check_reason": "The footer selector has opacity: 0.7 added as a new rule, no other footer styles were modified, and no other selectors were added or removed.",
@@ -574,7 +583,7 @@
         "test": 1780012475.009166
       },
       "started": 1780012469.855843,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the footer to appear slightly muted so it does not compete with the main content.",
       "summary": "Add opacity: 0.7 to footer selector so the footer appears slightly muted",
       "test_results": [
@@ -616,7 +625,8 @@
         }
       ],
       "tokens_in": 4726,
-      "tokens_out": 422
+      "tokens_out": 422,
+      "sprint_number": 56
     },
     {
       "ac_check_reason": "The footer selector has opacity: 0.7 added as a new rule, no other footer styles exist, and no other selectors were added or removed.",
@@ -646,7 +656,7 @@
         "test": 1780005443.76577
       },
       "started": 1780005438.786221,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
       "summary": "Add opacity: 0.7 to footer selector for a slightly muted appearance",
       "test_results": [
@@ -688,7 +698,8 @@
         }
       ],
       "tokens_in": 4712,
-      "tokens_out": 422
+      "tokens_out": 422,
+      "sprint_number": 55
     },
     {
       "ac_check_reason": "The .tagline selector has font-style: italic added, no other .tagline styles are modified, and no other selectors are added or removed.",
@@ -718,7 +729,7 @@
         "test": 1780005455.698949
       },
       "started": 1780005452.044819,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the tagline to be italicised so it stands out from the heading.",
       "summary": "Add font-style: italic to .tagline for distinctive appearance",
       "test_results": [
@@ -760,7 +771,8 @@
         }
       ],
       "tokens_in": 4679,
-      "tokens_out": 368
+      "tokens_out": 368,
+      "sprint_number": 55
     },
     {
       "ac_check_reason": "The footer selector has opacity: 0.7 added, no other footer styles are modified, and no other selectors are added or removed.",
@@ -790,7 +802,7 @@
         "test": 1780003694.378957
       },
       "started": 1780003686.101462,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
       "summary": "Set opacity: 0.7 on footer selector to mute it visually",
       "test_results": [
@@ -832,7 +844,8 @@
         }
       ],
       "tokens_in": 4695,
-      "tokens_out": 408
+      "tokens_out": 408,
+      "sprint_number": 54
     },
     {
       "ac_check_reason": "The .tagline selector now has font-style: italic added, no other .tagline styles were modified, and no other selectors were added or removed.",
@@ -862,7 +875,7 @@
         "test": 1780003708.561273
       },
       "started": 1780003704.837261,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the tagline to be italicised so it stands out from the heading.",
       "summary": "Add font-style: italic to .tagline for distinctive appearance",
       "test_results": [
@@ -904,7 +917,8 @@
         }
       ],
       "tokens_in": 4703,
-      "tokens_out": 362
+      "tokens_out": 362,
+      "sprint_number": 54
     },
     {
       "ac_check_reason": "The footer selector has opacity: 0.7 added as the only modification to the style block, no other footer styles were changed, and no other selectors were added or removed.",
@@ -934,7 +948,7 @@
         "test": 1780003079.042555
       },
       "started": 1780003069.339832,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
       "summary": "Set opacity: 0.7 on footer selector to make it appear slightly muted",
       "test_results": [
@@ -976,7 +990,8 @@
         }
       ],
       "tokens_in": 7219,
-      "tokens_out": 789
+      "tokens_out": 789,
+      "sprint_number": 54
     },
     {
       "ac_check_reason": "The .tagline selector now has font-style: italic added, no other .tagline styles were modified, and no other selectors were added or removed.",
@@ -1006,7 +1021,7 @@
         "test": 1780003097.84824
       },
       "started": 1780003089.577868,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the tagline to be italicised so it stands out from the heading.",
       "summary": "Add font-style: italic to .tagline for distinctive italicised appearance",
       "test_results": [
@@ -1048,7 +1063,8 @@
         }
       ],
       "tokens_in": 4620,
-      "tokens_out": 375
+      "tokens_out": 375,
+      "sprint_number": 54
     },
     {
       "ac_check_reason": "The footer selector has opacity: 0.7 added, no other footer styles are modified, and no other selectors are added or removed.",
@@ -1078,7 +1094,7 @@
         "test": 1780002993.216378
       },
       "started": 1780002987.429689,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
       "summary": "Set opacity: 0.7 on footer selector to slightly mute it",
       "test_results": [
@@ -1120,7 +1136,8 @@
         }
       ],
       "tokens_in": 4647,
-      "tokens_out": 415
+      "tokens_out": 415,
+      "sprint_number": 54
     },
     {
       "ac_check_reason": "The .tagline selector now has font-style: italic added, no other .tagline styles were modified, and no other selectors were added or removed.",
@@ -1150,7 +1167,7 @@
         "test": 1780003007.275826
       },
       "started": 1780003003.164806,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the tagline to be italicised so it stands out from the heading.",
       "summary": "Add font-style: italic to .tagline for distinctive appearance",
       "test_results": [
@@ -1192,7 +1209,8 @@
         }
       ],
       "tokens_in": 4640,
-      "tokens_out": 386
+      "tokens_out": 386,
+      "sprint_number": 54
     },
     {
       "ac_check_reason": "The footer selector has opacity: 0.7 added as the only modification, no other footer styles were changed, and no other selectors were added or removed.",
@@ -1222,7 +1240,7 @@
         "test": 1780000976.969014
       },
       "started": 1780000972.156738,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
       "summary": "Set opacity: 0.7 on footer so it appears slightly muted",
       "test_results": [
@@ -1264,7 +1282,8 @@
         }
       ],
       "tokens_in": 4671,
-      "tokens_out": 427
+      "tokens_out": 427,
+      "sprint_number": 53
     },
     {
       "ac_check_reason": "The .tagline selector now has font-style: italic added as the only modification, no other .tagline styles were changed, and no other selectors were added or removed.",
@@ -1294,7 +1313,7 @@
         "test": 1780000991.006944
       },
       "started": 1780000986.820601,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the tagline to be italicised so it stands out from the heading.",
       "summary": "Add font-style: italic to .tagline for distinctive italicised appearance",
       "test_results": [
@@ -1336,7 +1355,8 @@
         }
       ],
       "tokens_in": 4639,
-      "tokens_out": 310
+      "tokens_out": 310,
+      "sprint_number": 53
     },
     {
       "ac_check_reason": "The footer selector has opacity: 0.7 added, no other footer styles are modified, and no other selectors are added or removed.",
@@ -1366,7 +1386,7 @@
         "test": 1780000220.639051
       },
       "started": 1780000215.458291,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
       "summary": "Add opacity: 0.7 to footer selector to mute it visually",
       "test_results": [
@@ -1408,7 +1428,8 @@
         }
       ],
       "tokens_in": 4657,
-      "tokens_out": 411
+      "tokens_out": 411,
+      "sprint_number": 52
     },
     {
       "ac_check_reason": "The .tagline selector has font-style: italic added as the sole modification, no other .tagline styles were changed, and no other selectors were added or removed.",
@@ -1438,7 +1459,7 @@
         "test": 1780000235.145036
       },
       "started": 1780000230.354427,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the tagline to be italicised so it stands out from the heading.",
       "summary": "Add font-style: italic to .tagline for distinctive appearance",
       "test_results": [
@@ -1480,7 +1501,8 @@
         }
       ],
       "tokens_in": 4653,
-      "tokens_out": 385
+      "tokens_out": 385,
+      "sprint_number": 52
     },
     {
       "ac_check_reason": "The footer selector has opacity: 0.7 added, no other footer styles are modified, and no other selectors are added or removed.",
@@ -1509,7 +1531,7 @@
         "test": 1780000132.963275
       },
       "started": 1780000127.841565,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
       "summary": "Set opacity: 0.7 on footer selector to make footer appear slightly muted",
       "test_results": [
@@ -1551,7 +1573,8 @@
         }
       ],
       "tokens_in": 4666,
-      "tokens_out": 408
+      "tokens_out": 408,
+      "sprint_number": 52
     },
     {
       "ac_check_reason": "The footer selector has opacity: 0.7 added as a new rule, no other footer styles are modified, and no other selectors are added or removed.",
@@ -1581,7 +1604,7 @@
         "test": 1779999781.089948
       },
       "started": 1779999776.510226,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
       "summary": "Add opacity: 0.7 to footer selector so the footer appears slightly muted",
       "test_results": [
@@ -1623,7 +1646,8 @@
         }
       ],
       "tokens_in": 4707,
-      "tokens_out": 425
+      "tokens_out": 425,
+      "sprint_number": 52
     },
     {
       "ac_check_reason": "The .tagline selector has font-style: italic added, no other .tagline styles are modified, and no other selectors are added or removed.",
@@ -1653,7 +1677,7 @@
         "test": 1779999794.590667
       },
       "started": 1779999791.356942,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the tagline to be italicised so it stands out from the heading.",
       "summary": "Add font-style: italic to .tagline for distinctive appearance",
       "test_results": [
@@ -1695,7 +1719,8 @@
         }
       ],
       "tokens_in": 4670,
-      "tokens_out": 303
+      "tokens_out": 303,
+      "sprint_number": 52
     },
     {
       "ac_check_reason": "The footer selector has opacity: 0.7 added, no other footer styles are modified, and no other selectors are added or removed.",
@@ -1725,7 +1750,7 @@
         "test": 1779997442.968719
       },
       "started": 1779997438.196102,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
       "summary": "Add opacity: 0.7 to footer selector so the footer appears slightly muted",
       "test_results": [
@@ -1767,7 +1792,8 @@
         }
       ],
       "tokens_in": 4695,
-      "tokens_out": 434
+      "tokens_out": 434,
+      "sprint_number": 51
     },
     {
       "ac_check_reason": "The .tagline selector now has font-style: italic added, no other .tagline styles were modified, and no other selectors were added or removed.",
@@ -1797,7 +1823,7 @@
         "test": 1779997456.440322
       },
       "started": 1779997452.83387,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the tagline to be italicised so it stands out from the heading.",
       "summary": "Add font-style: italic to .tagline for distinctive styling",
       "test_results": [
@@ -1839,7 +1865,8 @@
         }
       ],
       "tokens_in": 4695,
-      "tokens_out": 302
+      "tokens_out": 302,
+      "sprint_number": 51
     },
     {
       "ac_check_reason": "The footer selector has opacity: 0.7 added, no other footer styles are modified, and no other selectors are added or removed.",
@@ -1869,7 +1896,7 @@
         "test": 1779996213.369793
       },
       "started": 1779996208.626882,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
       "summary": "Add opacity: 0.7 to footer selector for muted appearance",
       "test_results": [
@@ -1911,7 +1938,8 @@
         }
       ],
       "tokens_in": 4684,
-      "tokens_out": 406
+      "tokens_out": 406,
+      "sprint_number": 50
     },
     {
       "ac_check_reason": "The .tagline selector has font-style: italic added, no other .tagline styles are modified, and no other selectors are added or removed.",
@@ -1941,7 +1969,7 @@
         "test": 1779996227.084598
       },
       "started": 1779996223.290851,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the tagline to be italicised so it stands out from the heading.",
       "summary": "Add font-style: italic to .tagline for distinctive styling",
       "test_results": [
@@ -1983,7 +2011,8 @@
         }
       ],
       "tokens_in": 4714,
-      "tokens_out": 387
+      "tokens_out": 387,
+      "sprint_number": 50
     },
     {
       "ac_check_reason": "The footer selector has opacity: 0.7 added, no other footer styles are modified, and no other selectors are added or removed.",
@@ -2012,7 +2041,7 @@
         "test": 1779994104.338039
       },
       "started": 1779994099.355922,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
       "summary": "Add opacity: 0.7 to footer selector to visually mute it",
       "test_results": [
@@ -2054,7 +2083,8 @@
         }
       ],
       "tokens_in": 4667,
-      "tokens_out": 404
+      "tokens_out": 404,
+      "sprint_number": 49
     },
     {
       "ac_check_reason": "The footer selector has opacity: 0.7 added, no other footer styles are modified, and no other selectors are added or removed.",
@@ -2083,7 +2113,7 @@
         "test": 1779993738.963705
       },
       "started": 1779993734.204522,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
       "summary": "Set opacity: 0.7 on footer element to mute it visually",
       "test_results": [
@@ -2125,7 +2155,8 @@
         }
       ],
       "tokens_in": 4649,
-      "tokens_out": 416
+      "tokens_out": 416,
+      "sprint_number": 49
     },
     {
       "ac_check_reason": "The footer selector has opacity: 0.7 added, no other footer styles are modified, and no other selectors are added or removed.",
@@ -2155,7 +2186,7 @@
         "test": 1779993628.124517
       },
       "started": 1779993623.327215,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
       "summary": "Add opacity: 0.7 to footer selector to mute footer appearance",
       "test_results": [
@@ -2197,7 +2228,8 @@
         }
       ],
       "tokens_in": 4655,
-      "tokens_out": 398
+      "tokens_out": 398,
+      "sprint_number": 49
     },
     {
       "ac_check_reason": "The .tagline selector has font-style: italic added, no other .tagline styles are modified, and no other selectors are added or removed.",
@@ -2227,7 +2259,7 @@
         "test": 1779993641.162995
       },
       "started": 1779993637.084212,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the tagline to be italicised so it stands out from the heading.",
       "summary": "Add font-style: italic to .tagline for distinctive look",
       "test_results": [
@@ -2269,7 +2301,8 @@
         }
       ],
       "tokens_in": 4637,
-      "tokens_out": 383
+      "tokens_out": 383,
+      "sprint_number": 49
     },
     {
       "ac_check_reason": "The footer selector has opacity: 0.7 added, no other footer styles are modified, and no other selectors are added or removed.",
@@ -2298,7 +2331,7 @@
         "test": 1779993109.609967
       },
       "started": 1779993104.743671,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
       "summary": "Add opacity: 0.7 to footer selector to make footer appear slightly muted",
       "test_results": [
@@ -2340,7 +2373,8 @@
         }
       ],
       "tokens_in": 4650,
-      "tokens_out": 397
+      "tokens_out": 397,
+      "sprint_number": 49
     },
     {
       "ac_check_reason": "The footer selector has opacity: 0.7 added, no other footer styles are modified, and no other selectors are added or removed.",
@@ -2369,7 +2403,7 @@
         "test": 1779992779.917021
       },
       "started": 1779992774.713173,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the footer to appear slightly muted so it doesn't compete with the main content.",
       "summary": "Set opacity: 0.7 on footer selector to visually mute footer content",
       "test_results": [
@@ -2411,7 +2445,8 @@
         }
       ],
       "tokens_in": 4681,
-      "tokens_out": 404
+      "tokens_out": 404,
+      "sprint_number": 49
     },
     {
       "ac_check_reason": "The body selector now has max-width: 860px and margin: 0 auto added, the existing margin: 0 was correctly updated to margin: 0 auto, no other body styles were modified, and no other selectors were added or removed.",
@@ -2442,7 +2477,7 @@
         "test": 1779992640.231522
       },
       "started": 1779992635.887064,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the page content centered with a max width so it reads comfortably on large displays.",
       "summary": "Center page layout with max-width: 860px and margin: 0 auto on body",
       "test_results": [
@@ -2484,7 +2519,8 @@
         }
       ],
       "tokens_in": 4703,
-      "tokens_out": 385
+      "tokens_out": 385,
+      "sprint_number": 49
     },
     {
       "ac_check_reason": "The diff adds `a { text-decoration: underline; }` as a new selector without modifying any existing a styles or other selectors, satisfying all three acceptance criteria.",
@@ -2514,7 +2550,7 @@
         "test": 1779992654.639692
       },
       "started": 1779992649.678727,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want links to be underlined so I can easily identify them.",
       "summary": "Add text-decoration: underline to a selector for clear link identification",
       "test_results": [
@@ -2556,7 +2592,8 @@
         }
       ],
       "tokens_in": 4815,
-      "tokens_out": 414
+      "tokens_out": 414,
+      "sprint_number": 49
     },
     {
       "ac_check_reason": "All acceptance criteria are met: body selector has max-width: 860px and margin: 0 auto added, no other body styles were modified, and no other selectors were added or removed.",
@@ -2587,7 +2624,7 @@
         "test": 1779991953.278928
       },
       "started": 1779991949.184354,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the page content centered with a max width so it reads comfortably on large displays.",
       "summary": "Center page layout with max-width: 860px and margin: 0 auto on body",
       "test_results": [
@@ -2629,7 +2666,8 @@
         }
       ],
       "tokens_in": 4663,
-      "tokens_out": 373
+      "tokens_out": 373,
+      "sprint_number": 48
     },
     {
       "ac_check_reason": "The diff adds `text-decoration: underline` to a new `a` selector without modifying any existing styles or selectors, satisfying all three acceptance criteria.",
@@ -2659,7 +2697,7 @@
         "test": 1779991967.853539
       },
       "started": 1779991962.931458,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want links to be underlined so I can easily identify them.",
       "summary": "Add text-decoration: underline to a selector for clearer link visibility",
       "test_results": [
@@ -2701,7 +2739,8 @@
         }
       ],
       "tokens_in": 4785,
-      "tokens_out": 414
+      "tokens_out": 414,
+      "sprint_number": 48
     },
     {
       "ac_check_reason": "The body selector now has max-width: 860px and margin: 0 auto added, no other body styles were modified, and no other selectors were added or removed.",
@@ -2732,7 +2771,7 @@
         "test": 1779991690.506369
       },
       "started": 1779991685.461318,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the page content centered with a max width so it reads comfortably on large displays.",
       "summary": "Center body layout with max-width: 860px and margin: 0 auto",
       "test_results": [
@@ -2774,7 +2813,8 @@
         }
       ],
       "tokens_in": 4711,
-      "tokens_out": 368
+      "tokens_out": 368,
+      "sprint_number": 48
     },
     {
       "ac_check_reason": "The diff adds text-decoration: underline to a new a selector without modifying any existing a styles or other selectors, satisfying all three acceptance criteria.",
@@ -2804,7 +2844,7 @@
         "test": 1779991705.097755
       },
       "started": 1779991700.354979,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want links to be underlined so I can easily identify them.",
       "summary": "Add text-decoration: underline to a selector for clearly distinguishable links",
       "test_results": [
@@ -2846,7 +2886,8 @@
         }
       ],
       "tokens_in": 4818,
-      "tokens_out": 410
+      "tokens_out": 410,
+      "sprint_number": 48
     },
     {
       "ac_check_reason": "The footer element has border-top: 1px solid #333 added as the only modification to footer styles, no other selectors were added or removed, and all acceptance criteria are met.",
@@ -2876,7 +2917,7 @@
         "test": 1779991397.84294
       },
       "started": 1779991392.602472,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want a subtle separator above the footer so it feels distinct from the page body.",
       "summary": "Add border-top: 1px solid #333 to footer for visual separation",
       "test_results": [
@@ -2918,7 +2959,8 @@
         }
       ],
       "tokens_in": 4749,
-      "tokens_out": 430
+      "tokens_out": 430,
+      "sprint_number": 48
     },
     {
       "ac_check_reason": "The h1 selector has line-height: 1.15 added, no other h1 styles are modified, and no other selectors are added or removed.",
@@ -2948,7 +2990,7 @@
         "test": 1779991418.851945
       },
       "started": 1779991409.572108,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the main heading to have tighter line height so it looks more intentional.",
       "summary": "Add line-height: 1.15 to h1 for tighter heading appearance",
       "test_results": [
@@ -2990,7 +3032,8 @@
         }
       ],
       "tokens_in": 7486,
-      "tokens_out": 637
+      "tokens_out": 637,
+      "sprint_number": 48
     },
     {
       "ac_check_reason": "The .meta selector now has letter-spacing: 0.04em added, no other .meta styles were modified, and no other selectors were added or removed.",
@@ -3019,7 +3062,7 @@
         "test": 1779990492.764123
       },
       "started": 1779990485.938868,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the deployment date text to have subtle letter spacing so it feels refined.",
       "summary": "Add letter-spacing: 0.04em to .meta for refined deployment date text",
       "test_results": [
@@ -3061,7 +3104,8 @@
         }
       ],
       "tokens_in": 4929,
-      "tokens_out": 408
+      "tokens_out": 408,
+      "sprint_number": 47
     },
     {
       "ac_check_reason": "The .changelog-entry .cv selector now has font-family: monospace added, no other styles in that rule were modified, and no other selectors were added or removed.",
@@ -3091,7 +3135,7 @@
         "test": 1779989581.355607
       },
       "started": 1779989576.955343,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want changelog version numbers to use monospace font so they align with the code aesthetic.",
       "summary": "Add font-family: monospace to .changelog-entry .cv for code-aesthetic version number rendering",
       "test_results": [
@@ -3133,7 +3177,8 @@
         }
       ],
       "tokens_in": 4999,
-      "tokens_out": 425
+      "tokens_out": 425,
+      "sprint_number": 46
     },
     {
       "ac_check_reason": "The .changelog h2 selector now has font-weight: 600 added, no other styles in that selector were modified, and no other selectors were added or removed.",
@@ -3163,7 +3208,7 @@
         "test": 1779989595.639938
       },
       "started": 1779989591.293191,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the changelog heading to be semi-bold so it stands out from the entries below it.",
       "summary": "Add font-weight: 600 to .changelog h2 for semi-bold heading presence",
       "test_results": [
@@ -3205,7 +3250,8 @@
         }
       ],
       "tokens_in": 5191,
-      "tokens_out": 470
+      "tokens_out": 470,
+      "sprint_number": 46
     },
     {
       "ac_check_reason": "The .changelog-entry .cv selector now has font-family: monospace added, no other styles in that selector were modified, and no other selectors were added or removed.",
@@ -3235,7 +3281,7 @@
         "test": 1779989065.921452
       },
       "started": 1779989061.219067,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want changelog version numbers to use monospace font so they align with the code aesthetic.",
       "summary": "Add font-family: monospace to .changelog-entry .cv for code-aesthetic version number rendering",
       "test_results": [
@@ -3277,7 +3323,8 @@
         }
       ],
       "tokens_in": 5016,
-      "tokens_out": 403
+      "tokens_out": 403,
+      "sprint_number": 46
     },
     {
       "ac_check_reason": "The diff adds font-weight: 600 to the .changelog h2 selector without modifying any other styles in that rule or adding/removing any selectors, satisfying all three acceptance criteria.",
@@ -3307,7 +3354,7 @@
         "test": 1779989080.802579
       },
       "started": 1779989075.609621,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the changelog heading to be semi-bold so it stands out from the entries below it.",
       "summary": "Add font-weight: 600 to .changelog h2 for semi-bold heading presence",
       "test_results": [
@@ -3349,7 +3396,8 @@
         }
       ],
       "tokens_in": 5220,
-      "tokens_out": 477
+      "tokens_out": 477,
+      "sprint_number": 46
     },
     {
       "ac_check_reason": "The .hero selector has gap: 0.5rem added, no other .hero styles were modified, and no selectors were added or removed.",
@@ -3379,7 +3427,7 @@
         "test": 1779988918.295259
       },
       "started": 1779988913.442398,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the hero section to have consistent spacing between elements so the layout feels balanced.",
       "summary": "Add gap: 0.5rem to .hero for consistent spacing between headline and tagline",
       "test_results": [
@@ -3421,7 +3469,8 @@
         }
       ],
       "tokens_in": 4544,
-      "tokens_out": 377
+      "tokens_out": 377,
+      "sprint_number": 46
     },
     {
       "ac_check_reason": "The .version selector has cursor: pointer added, no other .version styles are modified, and no other selectors are added or removed.",
@@ -3451,7 +3500,7 @@
         "test": 1779988932.918814
       },
       "started": 1779988928.865973,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the version badge to show a pointer cursor so I know it is interactive.",
       "summary": "Add cursor: pointer to .version badge for clickable affordance",
       "test_results": [
@@ -3493,7 +3542,8 @@
         }
       ],
       "tokens_in": 4707,
-      "tokens_out": 360
+      "tokens_out": 360,
+      "sprint_number": 46
     },
     {
       "ac_check_reason": "The .hero selector has gap: 0.5rem added as the only modification to its styles, no other selectors were added or removed, and all acceptance criteria are met.",
@@ -3523,7 +3573,7 @@
         "test": 1779988636.628516
       },
       "started": 1779988632.243365,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the hero section to have consistent spacing between elements so the layout feels balanced.",
       "summary": "Add gap: 0.5rem to .hero for consistent spacing between headline and tagline",
       "test_results": [
@@ -3565,7 +3615,8 @@
         }
       ],
       "tokens_in": 4615,
-      "tokens_out": 387
+      "tokens_out": 387,
+      "sprint_number": 46
     },
     {
       "ac_check_reason": "The .version selector has cursor: pointer added, no other .version styles are modified, and no other selectors are added or removed.",
@@ -3595,7 +3646,7 @@
         "test": 1779988649.921908
       },
       "started": 1779988646.096161,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the version badge to show a pointer cursor so I know it is interactive.",
       "summary": "Add cursor: pointer to .version badge for interactive affordance",
       "test_results": [
@@ -3637,7 +3688,8 @@
         }
       ],
       "tokens_in": 4787,
-      "tokens_out": 359
+      "tokens_out": 359,
+      "sprint_number": 46
     },
     {
       "ac_check_reason": "cursor: pointer was added to .version selector, no other .version styles were modified, and no other selectors were added or removed.",
@@ -3667,7 +3719,7 @@
         "test": 1779988175.439022
       },
       "started": 1779988171.134752,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the version badge to show a pointer cursor so I know it is interactive.",
       "summary": "Add cursor: pointer to .version badge to indicate interactivity",
       "test_results": [
@@ -3709,7 +3761,8 @@
         }
       ],
       "tokens_in": 4640,
-      "tokens_out": 383
+      "tokens_out": 383,
+      "sprint_number": 46
     },
     {
       "ac_check_reason": "The .changelog-entry .cv selector has font-family: monospace added, no other styles in that rule were modified, and no other selectors were added or removed.",
@@ -3739,7 +3792,7 @@
         "test": 1779988188.605228
       },
       "started": 1779988184.631685,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want changelog version numbers to use monospace font so they align with the code aesthetic.",
       "summary": "Add font-family: monospace to .changelog-entry .cv for code-aesthetic version number rendering",
       "test_results": [
@@ -3781,7 +3834,8 @@
         }
       ],
       "tokens_in": 5118,
-      "tokens_out": 419
+      "tokens_out": 419,
+      "sprint_number": 46
     },
     {
       "ac_check_reason": "The diff adds line-height: 1.4 to the .changelog-entry .ct selector without modifying any other styles in that rule or adding/removing any selectors, satisfying all acceptance criteria.",
@@ -3810,7 +3864,7 @@
         "test": 1779988113.405498
       },
       "started": 1779988108.926538,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want changelog change text to have comfortable line height so wrapped descriptions are easy to read.",
       "summary": "Add line-height: 1.4 to .changelog-entry .ct for comfortable wrapped text readability",
       "test_results": [
@@ -3852,7 +3906,8 @@
         }
       ],
       "tokens_in": 4856,
-      "tokens_out": 429
+      "tokens_out": 429,
+      "sprint_number": 46
     },
     {
       "ac_check_reason": "The .changelog-entry .ct selector now has line-height: 1.4 added while preserving all existing styles, no other selectors were modified, and the implementation satisfies all acceptance criteria.",
@@ -3882,7 +3937,7 @@
         "test": 1779987206.848906
       },
       "started": 1779987201.742557,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want changelog change text to have comfortable line height so wrapped descriptions are easy to read.",
       "summary": "Add line-height: 1.4 to .changelog-entry .ct for comfortable text wrapping",
       "test_results": [
@@ -3924,7 +3979,8 @@
         }
       ],
       "tokens_in": 4871,
-      "tokens_out": 423
+      "tokens_out": 423,
+      "sprint_number": 45
     },
     {
       "ac_check_reason": "The .version selector has cursor: pointer added as the only modification to its styles, no other selectors are added or removed, and all acceptance criteria are satisfied.",
@@ -3954,7 +4010,7 @@
         "test": 1779987220.772675
       },
       "started": 1779987215.567655,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the version badge to show a pointer cursor so I know it is interactive.",
       "summary": "Add cursor: pointer to .version badge to signal interactivity",
       "test_results": [
@@ -3996,7 +4052,8 @@
         }
       ],
       "tokens_in": 4789,
-      "tokens_out": 387
+      "tokens_out": 387,
+      "sprint_number": 45
     },
     {
       "ac_check_reason": "The .hero selector has gap: 0.5rem added as the only modification to that rule, no other styles are changed, and no selectors are added or removed.",
@@ -4025,7 +4082,7 @@
         "test": 1779987101.43939
       },
       "started": 1779987097.451098,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the hero section to have consistent spacing between elements so the layout feels balanced.",
       "summary": "Add gap: 0.5rem to .hero for consistent spacing between headline and tagline",
       "test_results": [
@@ -4067,7 +4124,8 @@
         }
       ],
       "tokens_in": 4581,
-      "tokens_out": 376
+      "tokens_out": 376,
+      "sprint_number": 45
     },
     {
       "ac_check_reason": "The .version selector has cursor: pointer added, no other .version styles are modified, and no other selectors are added or removed.",
@@ -4096,7 +4154,7 @@
         "test": 1779986889.406795
       },
       "started": 1779986883.788865,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the version badge to show a pointer cursor so I know it is interactive.",
       "summary": "Add cursor: pointer to .version badge to indicate interactivity",
       "test_results": [
@@ -4138,7 +4196,8 @@
         }
       ],
       "tokens_in": 4672,
-      "tokens_out": 390
+      "tokens_out": 390,
+      "sprint_number": 45
     },
     {
       "ac_check_reason": "The .hero selector has gap: 0.5rem added, no other .hero styles are modified, and no other selectors are added or removed.",
@@ -4168,7 +4227,7 @@
         "test": 1779986550.568935
       },
       "started": 1779986545.183653,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the hero section to have consistent spacing between elements so the layout feels balanced.",
       "summary": "Add gap: 0.5rem to .hero for consistent spacing between headline and tagline",
       "test_results": [
@@ -4210,7 +4269,8 @@
         }
       ],
       "tokens_in": 4560,
-      "tokens_out": 381
+      "tokens_out": 381,
+      "sprint_number": 45
     },
     {
       "ac_check_reason": "The .changelog-entry .ct selector has line-height: 1.4 added, no other styles in that selector were modified, and no other selectors were added or removed.",
@@ -4240,7 +4300,7 @@
         "test": 1779986563.452447
       },
       "started": 1779986559.568602,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want changelog change text to have comfortable line height so wrapped descriptions are easy to read.",
       "summary": "Add line-height: 1.4 to .changelog-entry .ct for comfortable text wrapping",
       "test_results": [
@@ -4282,7 +4342,8 @@
         }
       ],
       "tokens_in": 4939,
-      "tokens_out": 444
+      "tokens_out": 444,
+      "sprint_number": 45
     },
     {
       "ac_check_reason": "The .meta selector now has letter-spacing: 0.04em added, no other .meta styles were modified, and no other selectors were added or removed.",
@@ -4311,7 +4372,7 @@
         "test": 1779986213.435338
       },
       "started": 1779986202.150264,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the deployment date text to have subtle letter spacing so it feels refined.",
       "summary": "Add letter-spacing: 0.04em to .meta for refined deployment date text",
       "test_results": [
@@ -4353,7 +4414,8 @@
         }
       ],
       "tokens_in": 4939,
-      "tokens_out": 426
+      "tokens_out": 426,
+      "sprint_number": 45
     },
     {
       "ac_check_reason": "All three acceptance criteria are met: font-family: monospace was added to .changelog-entry .cv, no other styles in that rule were modified, and no selectors were added or removed.",
@@ -4383,7 +4445,7 @@
         "test": 1779985859.055603
       },
       "started": 1779985847.855962,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want changelog version numbers to use monospace font so they align with the code aesthetic.",
       "summary": "Add font-family: monospace to .changelog-entry .cv for code-aesthetic version number alignment",
       "test_results": [
@@ -4425,7 +4487,8 @@
         }
       ],
       "tokens_in": 5066,
-      "tokens_out": 437
+      "tokens_out": 437,
+      "sprint_number": 45
     },
     {
       "ac_check_reason": "The .changelog h2 selector now has font-weight: 600 added, no other styles in that selector were modified, and no other selectors were added or removed.",
@@ -4455,7 +4518,7 @@
         "test": 1779985888.256158
       },
       "started": 1779985877.44983,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the changelog heading to be semi-bold so it stands out from the entries below it.",
       "summary": "Add font-weight: 600 to .changelog h2 for semi-bold heading presence",
       "test_results": [
@@ -4497,7 +4560,8 @@
         }
       ],
       "tokens_in": 5243,
-      "tokens_out": 455
+      "tokens_out": 455,
+      "sprint_number": 45
     },
     {
       "ac_check_reason": "The h1 selector now has text-shadow: 0 0 20px #00ff9940 added, no other h1 styles were modified, and no selectors were added or removed.",
@@ -4526,7 +4590,7 @@
         "test": 1779984843.082217
       },
       "started": 1779984830.975054,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the main headline to have a soft glow so it feels polished and on-brand.",
       "summary": "Add subtle green glow text-shadow to h1 headline",
       "test_results": [
@@ -4568,7 +4632,8 @@
         }
       ],
       "tokens_in": 4736,
-      "tokens_out": 401
+      "tokens_out": 401,
+      "sprint_number": 44
     },
     {
       "ac_check_reason": "The h1 selector now contains text-shadow: 0 0 20px #00ff9940, no other h1 styles were modified, and no selectors were added or removed.",
@@ -4598,7 +4663,7 @@
         "test": 1779984211.409938
       },
       "started": 1779984206.394456,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the main headline to have a soft glow so it feels polished and on-brand.",
       "summary": "Add subtle green glow (text-shadow) to h1 headline",
       "test_results": [
@@ -4640,7 +4705,8 @@
         }
       ],
       "tokens_in": 4748,
-      "tokens_out": 398
+      "tokens_out": 398,
+      "sprint_number": 43
     },
     {
       "ac_check_reason": "The diff adds font-family: monospace to .changelog-entry .cv without modifying any other styles in that selector or adding/removing any selectors, satisfying all three acceptance criteria.",
@@ -4670,7 +4736,7 @@
         "test": 1779984225.499356
       },
       "started": 1779984221.27623,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want changelog version numbers to use monospace font so they align clearly with the code aesthetic.",
       "summary": "Add font-family: monospace to .changelog-entry .cv for code-aesthetic version number alignment",
       "test_results": [
@@ -4712,7 +4778,8 @@
         }
       ],
       "tokens_in": 5212,
-      "tokens_out": 426
+      "tokens_out": 426,
+      "sprint_number": 43
     },
     {
       "ac_check_reason": "The body selector now has caret-color: #00ff99 added, no other body styles were modified, and no other selectors were added or removed.",
@@ -4742,7 +4809,7 @@
         "test": 1779983771.932253
       },
       "started": 1779983761.411431,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the text insertion cursor to be green so it matches the brand.",
       "summary": "Add caret-color: #00ff99 to body for brand-matched text insertion cursor",
       "test_results": [
@@ -4784,7 +4851,8 @@
         }
       ],
       "tokens_in": 4636,
-      "tokens_out": 393
+      "tokens_out": 393,
+      "sprint_number": 43
     },
     {
       "ac_check_reason": "The .version selector now has cursor: pointer added, no other .version styles were modified, and no other selectors were added or removed.",
@@ -4815,7 +4883,7 @@
         "test": 1779983800.843378
       },
       "started": 1779983790.74294,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the version badge to show a pointer cursor so I know it is interactive.",
       "summary": "Add cursor: pointer to .version badge so it feels clickable",
       "test_results": [
@@ -4857,7 +4925,8 @@
         }
       ],
       "tokens_in": 4783,
-      "tokens_out": 380
+      "tokens_out": 380,
+      "sprint_number": 43
     },
     {
       "ac_check_reason": "The .changelog-entry .ct rule now includes line-height: 1.4, no other styles in that rule were modified, and no selectors were added or removed.",
@@ -4887,7 +4956,7 @@
         "test": 1779983832.55103
       },
       "started": 1779983821.851613,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the changelog change text to have comfortable line height so wrapped descriptions are easy to read.",
       "summary": "Add line-height: 1.4 to .changelog-entry .ct for comfortable text wrapping",
       "test_results": [
@@ -4929,7 +4998,8 @@
         }
       ],
       "tokens_in": 5017,
-      "tokens_out": 404
+      "tokens_out": 404,
+      "sprint_number": 43
     },
     {
       "ac_check_reason": "The body selector has line-height: 1.6 added, no other body styles are modified, and no other selectors are added or removed.",
@@ -4959,7 +5029,7 @@
         "test": 1779983355.733535
       },
       "started": 1779983345.090464,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the page text to have comfortable line spacing so it is easier to read.",
       "summary": "Add line-height: 1.6 to body for comfortable text readability",
       "test_results": [
@@ -5001,7 +5071,8 @@
         }
       ],
       "tokens_in": 4607,
-      "tokens_out": 386
+      "tokens_out": 386,
+      "sprint_number": 43
     },
     {
       "ac_check_reason": "The h1 selector now contains text-shadow: 0 0 8px #00ff9933, no other h1 styles were modified, and no other selectors were added or removed.",
@@ -5032,7 +5103,7 @@
         "test": 1779983385.342271
       },
       "started": 1779983375.006012,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the main headline to have a faint green glow so it feels on-brand.",
       "summary": "Add text-shadow: 0 0 8px #00ff9933 to h1 for subtle on-brand glow",
       "test_results": [
@@ -5074,7 +5145,8 @@
         }
       ],
       "tokens_in": 4797,
-      "tokens_out": 397
+      "tokens_out": 397,
+      "sprint_number": 43
     },
     {
       "ac_check_reason": "The .meta rule has opacity: 0.8 added, no other .meta styles are modified, and no other selectors are added or removed.",
@@ -5104,7 +5176,7 @@
         "test": 1779983414.741298
       },
       "started": 1779983404.411289,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the deployment metadata line to appear slightly dimmed so it does not compete with the version badge.",
       "summary": "Add opacity: 0.8 to .meta rule to subtly dim the deployment metadata line",
       "test_results": [
@@ -5146,7 +5218,8 @@
         }
       ],
       "tokens_in": 5129,
-      "tokens_out": 401
+      "tokens_out": 401,
+      "sprint_number": 43
     },
     {
       "ac_check_reason": "The body selector now contains caret-color: #00ff99, no other body styles were modified, and no other selectors were added or removed.",
@@ -5176,7 +5249,7 @@
         "test": 1779982918.992391
       },
       "started": 1779982914.521734,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the text insertion cursor to be green so it matches the brand.",
       "summary": "Add caret-color: #00ff99 to body for brand-matching text insertion cursor",
       "test_results": [
@@ -5218,7 +5291,8 @@
         }
       ],
       "tokens_in": 4655,
-      "tokens_out": 400
+      "tokens_out": 400,
+      "sprint_number": 43
     },
     {
       "ac_check_reason": "The .tagline selector has opacity: 0.7 added, no other .tagline styles are modified, and no other selectors are added or removed.",
@@ -5249,7 +5323,7 @@
         "test": 1779982932.873159
       },
       "started": 1779982928.876419,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the tagline to appear slightly dimmed so it does not compete with the main headline.",
       "summary": "Add opacity: 0.7 to .tagline to subtly de-emphasize it relative to the main headline",
       "test_results": [
@@ -5291,7 +5365,8 @@
         }
       ],
       "tokens_in": 4796,
-      "tokens_out": 387
+      "tokens_out": 387,
+      "sprint_number": 43
     },
     {
       "ac_check_reason": "The diff adds font-style: italic to .changelog-entry .cd without modifying any other styles in that rule or adding/removing selectors, satisfying all acceptance criteria.",
@@ -5321,7 +5396,7 @@
         "test": 1779982947.158537
       },
       "started": 1779982944.091403,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want changelog dates to appear in italics so they are visually distinct.",
       "summary": "Add font-style: italic to .changelog-entry .cd for subtle date styling",
       "test_results": [
@@ -5363,7 +5438,8 @@
         }
       ],
       "tokens_in": 5061,
-      "tokens_out": 310
+      "tokens_out": 310,
+      "sprint_number": 43
     },
     {
       "ac_check_reason": "The body selector has line-height: 1.6 added, no other body styles are modified, and no other selectors are added or removed.",
@@ -5393,7 +5469,7 @@
         "test": 1779981404.302686
       },
       "started": 1779981400.223165,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the page text to have comfortable line spacing so it is easier to read.",
       "summary": "Add line-height: 1.6 to body selector for improved text readability",
       "test_results": [
@@ -5435,7 +5511,8 @@
         }
       ],
       "tokens_in": 4620,
-      "tokens_out": 395
+      "tokens_out": 395,
+      "sprint_number": 42
     },
     {
       "ac_check_reason": "The .version selector now has transition: box-shadow 0.2s ease added, no other .version styles were modified, and no other selectors were added or removed.",
@@ -5466,7 +5543,7 @@
         "test": 1779981418.669182
       },
       "started": 1779981413.914543,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the version badge to animate smoothly on hover so the interaction feels polished.",
       "summary": "Add box-shadow transition to .version badge for polished hover effect",
       "test_results": [
@@ -5508,7 +5585,8 @@
         }
       ],
       "tokens_in": 4847,
-      "tokens_out": 399
+      "tokens_out": 399,
+      "sprint_number": 42
     },
     {
       "ac_check_reason": "The .meta rule now includes margin-bottom: 0.75rem as required, no other .meta styles were modified, and no other selectors were added or removed.",
@@ -5538,7 +5616,7 @@
         "test": 1779981432.973283
       },
       "started": 1779981428.939341,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the deployment metadata line to have more space below it so the layout feels less cramped.",
       "summary": "Add margin-bottom: 0.75rem to .meta for improved layout spacing",
       "test_results": [
@@ -5580,7 +5658,8 @@
         }
       ],
       "tokens_in": 5136,
-      "tokens_out": 408
+      "tokens_out": 408,
+      "sprint_number": 42
     },
     {
       "ac_check_reason": "The body selector has line-height: 1.5 added, no other body styles are modified, and no other selectors are added or removed.",
@@ -5610,7 +5689,7 @@
         "test": 1779979778.250488
       },
       "started": 1779979770.958232,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the page text to have comfortable line spacing so it is easier to read.",
       "summary": "Add line-height: 1.5 to body for comfortable reading",
       "test_results": [
@@ -5652,7 +5731,8 @@
         }
       ],
       "tokens_in": 4841,
-      "tokens_out": 384
+      "tokens_out": 384,
+      "sprint_number": 41
     },
     {
       "ac_check_reason": "The h1 selector has the exact text-shadow property added, no other h1 styles were modified, and no other selectors were added or removed.",
@@ -5683,7 +5763,7 @@
         "test": 1779979792.904284
       },
       "started": 1779979788.727625,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the main headline to have a faint green glow so it feels on-brand.",
       "summary": "Add text-shadow: 0 0 8px #00ff9933 to h1 for subtle green glow",
       "test_results": [
@@ -5725,7 +5805,8 @@
         }
       ],
       "tokens_in": 4777,
-      "tokens_out": 386
+      "tokens_out": 386,
+      "sprint_number": 41
     },
     {
       "ac_check_reason": "The .meta rule now includes letter-spacing: 0.03em, no other .meta styles were modified, and no other selectors were added or removed.",
@@ -5755,7 +5836,7 @@
         "test": 1779979808.426597
       },
       "started": 1779979804.20676,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the deployment metadata line to have slight letter spacing so it feels polished.",
       "summary": "Add letter-spacing: 0.03em to .meta rule for polished deployment metadata line",
       "test_results": [
@@ -5797,7 +5878,8 @@
         }
       ],
       "tokens_in": 5112,
-      "tokens_out": 413
+      "tokens_out": 413,
+      "sprint_number": 41
     },
     {
       "ac_check_reason": "The body selector now has line-height: 1.6 added, no other body styles were modified, and no other selectors were added or removed.",
@@ -5827,7 +5909,7 @@
         "test": 1779979044.345093
       },
       "started": 1779979039.273874,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the page text to have comfortable line spacing so it is easier to read.",
       "summary": "Add line-height: 1.6 to body for comfortable text readability",
       "test_results": [
@@ -5869,7 +5951,8 @@
         }
       ],
       "tokens_in": 4644,
-      "tokens_out": 413
+      "tokens_out": 413,
+      "sprint_number": 40
     },
     {
       "ac_check_reason": "The h1 selector has text-shadow: 0 0 8px #00ff9933 added, no other h1 styles were modified, and no other selectors were added or removed.",
@@ -5900,7 +5983,7 @@
         "test": 1779979058.297822
       },
       "started": 1779979053.676322,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the main headline to have a faint green glow so it feels on-brand.",
       "summary": "Add faint green glow text-shadow to h1 for on-brand styling",
       "test_results": [
@@ -5942,7 +6025,8 @@
         }
       ],
       "tokens_in": 4839,
-      "tokens_out": 399
+      "tokens_out": 399,
+      "sprint_number": 40
     },
     {
       "ac_check_reason": "The .version selector has cursor: pointer added, no other .version styles are modified, and no other selectors are added or removed.",
@@ -5972,7 +6056,7 @@
         "test": 1779979072.34056
       },
       "started": 1779979068.442982,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the version badge to show a pointer cursor so I know it is interactive.",
       "summary": "Add cursor: pointer to .version badge for interactive feel",
       "test_results": [
@@ -6014,7 +6098,8 @@
         }
       ],
       "tokens_in": 4834,
-      "tokens_out": 386
+      "tokens_out": 386,
+      "sprint_number": 40
     },
     {
       "ac_check_reason": "The body selector has cursor: default added, no other body styles were modified, and no other selectors were added or removed.",
@@ -6045,7 +6130,7 @@
         "test": 1779977840.034941
       },
       "started": 1779977418.62151,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the cursor to appear as a default arrow over non-interactive page areas so the experience feels intentional.",
       "summary": "Add cursor: default to body selector for intentional arrow cursor on non-interactive areas",
       "test_results": [
@@ -6087,7 +6172,8 @@
         }
       ],
       "tokens_in": 4726,
-      "tokens_out": 378
+      "tokens_out": 378,
+      "sprint_number": 39
     },
     {
       "ac_check_reason": "The h1 selector now contains text-shadow: 0 0 8px #00ff9933, no other h1 styles were modified, and no other selectors were added or removed.",
@@ -6116,7 +6202,7 @@
         "test": 1779977861.437174
       },
       "started": 1779977856.512871,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the main headline to have a faint green glow so it feels on-brand.",
       "summary": "Add faint green glow text-shadow to h1 selector",
       "test_results": [
@@ -6158,7 +6244,8 @@
         }
       ],
       "tokens_in": 4714,
-      "tokens_out": 405
+      "tokens_out": 405,
+      "sprint_number": 39
     },
     {
       "ac_check_reason": "The diff adds line-height: 1.4 to the .changelog-entry .ct rule without modifying other styles or selectors, satisfying all acceptance criteria.",
@@ -6187,7 +6274,7 @@
         "test": 1779975612.125901
       },
       "started": 1779975606.871463,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the changelog change text to have comfortable line height so wrapped descriptions are easy to read.",
       "summary": "Add line-height: 1.4 to .changelog-entry .ct for readable wrapped text",
       "test_results": [
@@ -6229,7 +6316,8 @@
         }
       ],
       "tokens_in": 5600,
-      "tokens_out": 432
+      "tokens_out": 432,
+      "sprint_number": 38
     },
     {
       "ac_check_reason": "The .meta rule now has opacity: 0.8 added, no other .meta styles were modified, and no other selectors were added or removed.",
@@ -6258,7 +6346,7 @@
         "test": 1779975634.215318
       },
       "started": 1779975628.510987,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the deployment metadata line to appear slightly dimmed so it does not compete with the version badge.",
       "summary": "Add opacity: 0.8 to .meta to subtly dim the deployment metadata line",
       "test_results": [
@@ -6300,7 +6388,8 @@
         }
       ],
       "tokens_in": 5719,
-      "tokens_out": 464
+      "tokens_out": 464,
+      "sprint_number": 38
     },
     {
       "ac_check_reason": "The .hero selector has gap: 0.5rem added, no other .hero styles are modified, and no other selectors are added or removed.",
@@ -6386,7 +6475,7 @@
         "test": 1779944795.130604
       },
       "started": 1779944794.987176,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the changelog date to appear in italics so it is visually distinct from the version and change text.",
       "summary": "Add font-style: italic to .changelog-entry .cd",
       "test_results": [
@@ -6428,7 +6517,8 @@
         }
       ],
       "tokens_in": 5664,
-      "tokens_out": 391
+      "tokens_out": 391,
+      "sprint_number": 37
     },
     {
       "ac_check_reason": "The .changelog rule now contains padding: 0 0.5rem, no other .changelog styles were modified, and no other selectors were added or removed.",
@@ -6458,7 +6548,7 @@
         "test": 1779944809.717171
       },
       "started": 1779944804.473105,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the changelog section to have a little side padding so it does not feel edge-to-edge.",
       "summary": "Add padding: 0 0.5rem to .changelog for side breathing room",
       "test_results": [
@@ -6500,7 +6590,8 @@
         }
       ],
       "tokens_in": 5788,
-      "tokens_out": 389
+      "tokens_out": 389,
+      "sprint_number": 37
     },
     {
       "ac_check_reason": "The body selector has line-height: 1.6 added, no other body styles are modified, and no other selectors are added or removed.",
@@ -6530,7 +6621,7 @@
         "test": 1779944551.634645
       },
       "started": 1779944546.462627,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the page text to have comfortable line spacing so it is easier to read.",
       "summary": "Add line-height: 1.6 to body selector for improved text readability",
       "test_results": [
@@ -6572,7 +6663,8 @@
         }
       ],
       "tokens_in": 5216,
-      "tokens_out": 377
+      "tokens_out": 377,
+      "sprint_number": 37
     },
     {
       "ac_check_reason": "The .version selector now has user-select: none added, no other .version styles were modified, and no other selectors were added or removed.",
@@ -6603,7 +6695,7 @@
         "test": 1779944602.392026
       },
       "started": 1779944597.737746,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want clicking the version badge to not highlight its text so the interaction feels clean.",
       "summary": "Add user-select: none to .version badge to prevent text selection on click",
       "test_results": [
@@ -6645,7 +6737,8 @@
         }
       ],
       "tokens_in": 5220,
-      "tokens_out": 354
+      "tokens_out": 354,
+      "sprint_number": 37
     },
     {
       "ac_check_reason": "The .meta rule now includes letter-spacing: 0.03em, no other .meta styles were modified, and no other selectors were added or removed.",
@@ -6675,7 +6768,7 @@
         "test": 1779944616.603889
       },
       "started": 1779944611.639926,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the deployment metadata line to have slight letter spacing so it feels polished.",
       "summary": "Add letter-spacing: 0.03em to .meta rule for polished deployment line appearance",
       "test_results": [
@@ -6717,7 +6810,8 @@
         }
       ],
       "tokens_in": 5621,
-      "tokens_out": 438
+      "tokens_out": 438,
+      "sprint_number": 37
     },
     {
       "ac_check_reason": "The .version selector has cursor: pointer added, no other .version styles are modified, and no other selectors are added or removed.",
@@ -6747,7 +6841,7 @@
         "test": 1779943066.085922
       },
       "started": 1779943061.577443,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the version badge to show a pointer cursor on hover so that it is clear it is interactive.",
       "summary": "Add cursor: pointer to .version badge for clickability affordance",
       "test_results": [
@@ -6789,7 +6883,8 @@
         }
       ],
       "tokens_in": 5165,
-      "tokens_out": 356
+      "tokens_out": 356,
+      "sprint_number": 36
     },
     {
       "ac_check_reason": "The body selector now has caret-color: #00ff99 added, no other body styles were modified, and no other selectors were added or removed.",
@@ -6820,7 +6915,7 @@
         "test": 1779943079.549946
       },
       "started": 1779943074.937927,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want any text cursor on the page to appear in the brand green so the experience feels cohesive.",
       "summary": "Set caret-color: #00ff99 on body selector for brand-cohesive text cursor",
       "test_results": [
@@ -6862,7 +6957,8 @@
         }
       ],
       "tokens_in": 5299,
-      "tokens_out": 397
+      "tokens_out": 397,
+      "sprint_number": 36
     },
     {
       "ac_check_reason": "All acceptance criteria are met: .tagline has opacity: 0.7 as default, transition: opacity 0.2s ease is added, .tagline:hover sets opacity to 1, no other .tagline styles were modified, and no other selectors were added or removed.",
@@ -6894,7 +6990,7 @@
         "test": 1779943104.950705
       },
       "started": 1779943088.350142,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the tagline to lighten slightly when I hover over it so the page feels alive.",
       "summary": "Add opacity: 0.7 default and opacity: 1 hover with transition to .tagline for subtle alive feel",
       "test_results": [
@@ -6936,7 +7032,8 @@
         }
       ],
       "tokens_in": 8806,
-      "tokens_out": 902
+      "tokens_out": 902,
+      "sprint_number": 36
     },
     {
       "acceptance_criteria": [
@@ -6956,10 +7053,11 @@
         "story": 1779941051.696705
       },
       "started": 1779941051.676235,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want the page to scroll smoothly so that navigation feels polished.",
       "tokens_in": 2994,
-      "tokens_out": 269
+      "tokens_out": 269,
+      "sprint_number": 35
     },
     {
       "acceptance_criteria": [
@@ -6988,7 +7086,7 @@
         "test": 1779941065.20787
       },
       "started": 1779941059.365226,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want text I select on the page to highlight in the brand green so that the experience feels cohesive.",
       "test_results": [
         {
@@ -7029,7 +7127,8 @@
         }
       ],
       "tokens_in": 3987,
-      "tokens_out": 284
+      "tokens_out": 284,
+      "sprint_number": 35
     },
     {
       "acceptance_criteria": [
@@ -7051,10 +7150,11 @@
         "story": 1779941071.373115
       },
       "started": 1779941071.349966,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want the version badge to glow on hover so that it feels interactive.",
       "tokens_in": 3188,
-      "tokens_out": 322
+      "tokens_out": 322,
+      "sprint_number": 35
     },
     {
       "ac_check_reason": "All acceptance criteria are met: .meta selector has margin-bottom added with value 0.75rem (within 0.4rem-1rem range), no other .meta styles were modified, and no other selectors were added or removed.",
@@ -7085,7 +7185,7 @@
         "test": 1779940528.855534
       },
       "started": 1779940524.029422,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want more space below the deployment date so the layout feels less cramped.",
       "summary": "Increase .meta margin-bottom to 0.75rem for more breathing room below deployment date",
       "test_results": [
@@ -7127,7 +7227,8 @@
         }
       ],
       "tokens_in": 5507,
-      "tokens_out": 421
+      "tokens_out": 421,
+      "sprint_number": 35
     },
     {
       "acceptance_criteria": [
@@ -7155,7 +7256,7 @@
         "test": 1779940544.063021
       },
       "started": 1779940538.14535,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want the tagline to brighten slightly on hover so it feels alive.",
       "test_results": [
         {
@@ -7196,7 +7297,8 @@
         }
       ],
       "tokens_in": 4115,
-      "tokens_out": 482
+      "tokens_out": 482,
+      "sprint_number": 35
     },
     {
       "ac_check_reason": "The .changelog h2 color was updated from #555 to #888 (a brighter value), no other styles in that rule were modified, and no selectors were added or removed.",
@@ -7226,7 +7328,7 @@
         "test": 1779940554.351918
       },
       "started": 1779940549.788506,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the Recent Changes heading to be slightly brighter so it is easier to read.",
       "summary": "Brighten changelog section heading color from #555 to #888",
       "test_results": [
@@ -7268,7 +7370,8 @@
         }
       ],
       "tokens_in": 5867,
-      "tokens_out": 445
+      "tokens_out": 445,
+      "sprint_number": 35
     },
     {
       "acceptance_criteria": [
@@ -7287,10 +7390,11 @@
         "story": 1779944830.419036
       },
       "started": 1779944830.374955,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want the page to scroll smoothly so that navigation feels polished.",
       "tokens_in": 3055,
-      "tokens_out": 257
+      "tokens_out": 257,
+      "sprint_number": 37
     },
     {
       "ac_check_reason": "The html selector has scroll-behavior: smooth added, no other html or body styles are modified, and no other selectors are added or removed.",
@@ -7320,7 +7424,7 @@
         "test": 1779939926.252693
       },
       "started": 1779939921.601708,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the page to scroll smoothly so that navigation feels polished.",
       "summary": "Add scroll-behavior: smooth to html selector",
       "test_results": [
@@ -7362,7 +7466,8 @@
         }
       ],
       "tokens_in": 5314,
-      "tokens_out": 358
+      "tokens_out": 358,
+      "sprint_number": 35
     },
     {
       "ac_check_reason": "All acceptance criteria are met: .version:hover rule added with box-shadow using #00ff99 at low opacity (40), transition added to .version for box-shadow, existing .version styles unchanged, and no other selectors added or removed.",
@@ -7393,7 +7498,7 @@
         "test": 1779940009.214367
       },
       "started": 1779940002.477606,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the version badge to glow on hover so that it feels interactive.",
       "summary": "Add glow hover effect and box-shadow transition to .version badge",
       "test_results": [
@@ -7435,7 +7540,8 @@
         }
       ],
       "tokens_in": 5309,
-      "tokens_out": 581
+      "tokens_out": 581,
+      "sprint_number": 35
     },
     {
       "ac_check_reason": "The .changelog-entry selector has border-radius: 6px added (within 4px-12px range), no other .changelog-entry styles are modified, and no other selectors are added or removed.",
@@ -7466,7 +7572,7 @@
         "test": 1779939951.465818
       },
       "started": 1779939947.173209,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want changelog entries to have rounded corners so that the list looks less rigid.",
       "summary": "Add border-radius: 6px to .changelog-entry for softer rounded corners",
       "test_results": [
@@ -7508,7 +7614,8 @@
         }
       ],
       "tokens_in": 5472,
-      "tokens_out": 390
+      "tokens_out": 390,
+      "sprint_number": 35
     },
     {
       "ac_check_reason": "The blur radius of 6px in the existing shadow falls below the required minimum of 8px, violating acceptance criterion 3",
@@ -7539,7 +7646,7 @@
         "test": 1779939812.190797
       },
       "started": 1779939807.511276,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want the main h1 heading to have a subtle green glow so that it feels more alive on the dark background.",
       "test_results": [
         {
@@ -7580,7 +7687,8 @@
         }
       ],
       "tokens_in": 5284,
-      "tokens_out": 400
+      "tokens_out": 400,
+      "sprint_number": 35
     },
     {
       "acceptance_criteria": [
@@ -7602,10 +7710,11 @@
         "story": 1779939819.280459
       },
       "started": 1779939819.248133,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want text I select on the page to highlight in the brand green so that the experience feels cohesive.",
       "tokens_in": 3047,
-      "tokens_out": 324
+      "tokens_out": 324,
+      "sprint_number": 35
     },
     {
       "acceptance_criteria": [
@@ -7632,7 +7741,7 @@
         "test": 1779939834.464301
       },
       "started": 1779939829.951116,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want nav links to fade slightly on hover so that the navigation feels more polished.",
       "test_results": [
         {
@@ -7673,7 +7782,8 @@
         }
       ],
       "tokens_in": 4020,
-      "tokens_out": 286
+      "tokens_out": 286,
+      "sprint_number": 35
     },
     {
       "acceptance_criteria": [
@@ -7694,10 +7804,11 @@
         "story": 1779936630.293503
       },
       "started": 1779936630.269992,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want the tagline text to have subtle letter-spacing so that it looks more refined.",
       "tokens_in": 2363,
-      "tokens_out": 291
+      "tokens_out": 291,
+      "sprint_number": 34
     },
     {
       "acceptance_criteria": [
@@ -7725,7 +7836,7 @@
         "test": 1779936668.660858
       },
       "started": 1779936647.555374,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want text I select on the page to highlight in the brand green so that the experience feels cohesive.",
       "test_results": [
         {
@@ -7766,7 +7877,8 @@
         }
       ],
       "tokens_in": 4213,
-      "tokens_out": 376
+      "tokens_out": 376,
+      "sprint_number": 34
     },
     {
       "acceptance_criteria": [
@@ -7787,10 +7899,11 @@
         "story": 1779936682.774742
       },
       "started": 1779936682.740372,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want nav links to fade slightly on hover so that the navigation feels more polished.",
       "tokens_in": 2946,
-      "tokens_out": 319
+      "tokens_out": 319,
+      "sprint_number": 34
     },
     {
       "acceptance_criteria": [
@@ -7816,7 +7929,7 @@
         "test": 1779935449.320097
       },
       "started": 1779935428.456956,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want the tagline text to have subtle letter-spacing so that it looks more refined.",
       "test_results": [
         {
@@ -7857,7 +7970,8 @@
         }
       ],
       "tokens_in": 4070,
-      "tokens_out": 388
+      "tokens_out": 388,
+      "sprint_number": 33
     },
     {
       "ac_check_reason": "All acceptance criteria are met: a ::selection CSS rule is added with background #00ff9930 and color #00ff99, no existing CSS rules are modified, and test results confirm correct implementation.",
@@ -7888,7 +8002,7 @@
         "test": 1779935484.486776
       },
       "started": 1779935462.95831,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want text I select on the page to highlight in the brand green so that the experience feels cohesive.",
       "summary": "Add ::selection CSS rule with brand green highlight colors",
       "test_results": [
@@ -7930,7 +8044,8 @@
         }
       ],
       "tokens_in": 4989,
-      "tokens_out": 424
+      "tokens_out": 424,
+      "sprint_number": 33
     },
     {
       "ac_check_reason": "All acceptance criteria are met: nav links have CSS transition on opacity with 0.2s duration, hover state reduces opacity to 0.7, and no other nav styles or layout were modified.",
@@ -7961,7 +8076,7 @@
         "test": 1779935541.47531
       },
       "started": 1779935520.154446,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want nav links to fade slightly on hover so that the navigation feels more polished.",
       "summary": "Add opacity transition (0.2s) to nav links with hover state at 0.7 opacity",
       "test_results": [
@@ -8003,7 +8118,8 @@
         }
       ],
       "tokens_in": 5109,
-      "tokens_out": 444
+      "tokens_out": 444,
+      "sprint_number": 33
     },
     {
       "acceptance_criteria": [
@@ -8029,7 +8145,7 @@
         "test": 1779934106.100371
       },
       "started": 1779934085.575865,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want the tagline text to have subtle letter-spacing so that it looks more refined.",
       "test_results": [
         {
@@ -8070,7 +8186,8 @@
         }
       ],
       "tokens_in": 4036,
-      "tokens_out": 371
+      "tokens_out": 371,
+      "sprint_number": 32
     },
     {
       "acceptance_criteria": [
@@ -8096,7 +8213,7 @@
         "test": 1779933382.980984
       },
       "started": 1779933361.266676,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want text I select on the page to highlight in the brand green so that the experience feels cohesive.",
       "test_results": [
         {
@@ -8137,7 +8254,8 @@
         }
       ],
       "tokens_in": 3994,
-      "tokens_out": 368
+      "tokens_out": 368,
+      "sprint_number": 31
     },
     {
       "acceptance_criteria": [
@@ -8163,7 +8281,7 @@
         "test": 1779933064.322481
       },
       "started": 1779933044.288914,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want the site title to have subtle letter-spacing so that it looks more refined.",
       "test_results": [
         {
@@ -8204,7 +8322,8 @@
         }
       ],
       "tokens_in": 3920,
-      "tokens_out": 339
+      "tokens_out": 339,
+      "sprint_number": 31
     },
     {
       "acceptance_criteria": [
@@ -8230,7 +8349,7 @@
         "test": 1779932641.915799
       },
       "started": 1779932620.534091,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want nav links to fade slightly on hover so that the navigation feels more polished.",
       "test_results": [
         {
@@ -8271,7 +8390,8 @@
         }
       ],
       "tokens_in": 3869,
-      "tokens_out": 388
+      "tokens_out": 388,
+      "sprint_number": 31
     },
     {
       "ac_check_reason": "The h1 site title has letter-spacing of 0.04em applied (within the 0.02em-0.06em range), no other h1 styles or layout were modified, no duplicate h1 rules were introduced, and all acceptance criteria are met.",
@@ -8302,7 +8422,7 @@
         "test": 1779932678.47181
       },
       "started": 1779932657.65723,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the site title to have subtle letter-spacing so that it looks more refined.",
       "summary": "Add letter-spacing 0.04em to h1 for refined site title appearance",
       "test_results": [
@@ -8344,7 +8464,8 @@
         }
       ],
       "tokens_in": 4925,
-      "tokens_out": 395
+      "tokens_out": 395,
+      "sprint_number": 31
     },
     {
       "ac_check_reason": "The h1 site title now has a text-shadow CSS property with a muted green color (#00ff9940), a subtle 6px blur radius with zero offset, and no other h1 styles or layout were modified.",
@@ -8374,7 +8495,7 @@
         "test": 1779930828.345159
       },
       "started": 1779930807.872304,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the site title to have a subtle green glow so that it feels more vibrant.",
       "summary": "Add subtle green text-shadow glow to h1 site title",
       "test_results": [
@@ -8416,7 +8537,8 @@
         }
       ],
       "tokens_in": 4820,
-      "tokens_out": 384
+      "tokens_out": 384,
+      "sprint_number": 30
     },
     {
       "ac_check_reason": "All acceptance criteria are met: hover adds box-shadow to changelog entries, shadow color (#00ff9920) is consistent with dark theme, transition is smooth (0.2s ease), and no existing styles are modified.",
@@ -8447,7 +8569,7 @@
         "test": 1779930883.018958
       },
       "started": 1779930861.784909,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want changelog entries to show a subtle shadow when hovered so that they feel interactive.",
       "summary": "Add smooth box-shadow hover effect to changelog entries using theme color #00ff9920",
       "test_results": [
@@ -8489,7 +8611,8 @@
         }
       ],
       "tokens_in": 5110,
-      "tokens_out": 444
+      "tokens_out": 444,
+      "sprint_number": 30
     },
     {
       "acceptance_criteria": [
@@ -8515,7 +8638,7 @@
         "test": 1779930527.091893
       },
       "started": 1779930505.742105,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want to see a copyright year in the site footer so that the site feels polished.",
       "test_results": [
         {
@@ -8556,7 +8679,8 @@
         }
       ],
       "tokens_in": 3783,
-      "tokens_out": 443
+      "tokens_out": 443,
+      "sprint_number": 30
     },
     {
       "acceptance_criteria": [
@@ -8577,10 +8701,11 @@
         "story": 1779930541.455603
       },
       "started": 1779930541.441014,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want to hover over the version badge and see the full version string so I can confirm which build is live.",
       "tokens_in": 2661,
-      "tokens_out": 280
+      "tokens_out": 280,
+      "sprint_number": 30
     },
     {
       "ac_check_reason": "All acceptance criteria are met: tagline element with correct text 'AI-powered Scrum, built in the open' appears directly below h1, styled with muted color #555e7a consistent with dark theme, and no existing heading or layout styles were modified.",
@@ -8611,7 +8736,7 @@
         "test": 1779928831.745309
       },
       "started": 1779928504.878153,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor to the homepage, I want to see a short tagline below the site title so that I immediately understand what the site is about.",
       "summary": "Add site tagline below h1 on homepage",
       "test_results": [
@@ -8653,7 +8778,8 @@
         }
       ],
       "tokens_in": 7497,
-      "tokens_out": 622
+      "tokens_out": 622,
+      "sprint_number": 29
     },
     {
       "ac_check_reason": "All acceptance criteria are met: the CSS class `.nav-active` applies the distinct highlight color #00ff99, the inline script correctly identifies and highlights only the matching nav link based on current pathname, default styles for other links are preserved, and no existing nav styles or layout are modified.",
@@ -8684,7 +8810,7 @@
         "test": 1779928895.564059
       },
       "started": 1779928867.063949,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the current page's nav link to appear highlighted so that I know which page I am on.",
       "summary": "Highlight active nav link via .nav-active CSS class applied by inline script",
       "test_results": [
@@ -8726,7 +8852,8 @@
         }
       ],
       "tokens_in": 5001,
-      "tokens_out": 710
+      "tokens_out": 710,
+      "sprint_number": 29
     },
     {
       "acceptance_criteria": [
@@ -8747,10 +8874,11 @@
         "story": 1779928042.076386
       },
       "started": 1779928042.058034,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor, I want to hover over the version badge and see the full deployed version string so that I can quickly confirm which build is live.",
       "tokens_in": 3123,
-      "tokens_out": 279
+      "tokens_out": 279,
+      "sprint_number": 29
     },
     {
       "acceptance_criteria": [
@@ -8775,7 +8903,7 @@
         "test": 1779926023.734191
       },
       "started": 1779926002.787385,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor to the homepage, I want the cursor to change to a pointer when hovering over changelog entries so that I know they are interactive.",
       "test_results": [
         {
@@ -8816,7 +8944,8 @@
         }
       ],
       "tokens_in": 4155,
-      "tokens_out": 333
+      "tokens_out": 333,
+      "sprint_number": 28
     },
     {
       "acceptance_criteria": [
@@ -8836,10 +8965,11 @@
         "story": 1779926037.502761
       },
       "started": 1779926037.487907,
-      "status": "pending",
+      "status": "failed",
       "story": "As a visitor to the homepage, I want to see a copyright year in the site footer so that the site feels polished and professional.",
       "tokens_in": 2928,
-      "tokens_out": 519
+      "tokens_out": 519,
+      "sprint_number": 28
     },
     {
       "ac_check_reason": "All acceptance criteria are met: hover changes background to #1a1a1a (dark theme consistent), transition is smooth with 0.2s CSS transition property, and no existing changelog styles or layout are modified.",
@@ -8869,7 +8999,7 @@
         "test": 1779903741.819657
       },
       "started": 1779903736.195392,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor to the homepage, I want changelog entries to highlight when I hover over them so that I can easily read individual entries.",
       "summary": "Add smooth hover highlight (#1a1a1a) to changelog entries via CSS transition",
       "test_results": [
@@ -8911,7 +9041,8 @@
         }
       ],
       "tokens_in": 5138,
-      "tokens_out": 443
+      "tokens_out": 443,
+      "sprint_number": 27
     },
     {
       "ac_check_reason": "The implementation correctly displays the total shipped story count below the version badge by fetching the changelog length from version.json and dynamically inserting it into a new meta div with proper singular/plural handling.",
@@ -8935,7 +9066,7 @@
         "test": 1779824214.813062
       },
       "started": 1779824206.900597,
-      "status": "pending",
+      "status": "done",
       "summary": "Show total shipped story count below version badge",
       "test_results": [
         {
@@ -8976,7 +9107,8 @@
         }
       ],
       "tokens_in": 4806,
-      "tokens_out": 631
+      "tokens_out": 631,
+      "sprint_number": 26
     },
     {
       "ac_check_reason": "All acceptance criteria are met: footer has position fixed with bottom: 0 and full width, displays a clickable 'GitHub Pages' link to the correct URL, uses the specified colors (#0f1117 background, #e8eaf0 text, #00ff99 link), implements the correct hover state with #0d3320 background and #00ff99 border, and body padding is adjusted from 2rem to 3.5rem to prevent overlap while maintaining all other page styling.",
@@ -9008,7 +9140,7 @@
         "test": 1779810860.09111
       },
       "started": 1779810850.93775,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want a footer with a link to the live GitHub Pages site so that I can easily access the project repository from the app.",
       "summary": "Add fixed footer with GitHub Pages link using design system colors and hover state",
       "test_results": [
@@ -9050,7 +9182,8 @@
         }
       ],
       "tokens_in": 5468,
-      "tokens_out": 861
+      "tokens_out": 861,
+      "sprint_number": 25
     },
     {
       "ac_check_reason": "All acceptance criteria are met: the versionGlow keyframes animation oscillates between 0% opacity (0 0 0 0 rgba(0, 255, 153, 0)) and 50% opacity (0 0 8px 0 rgba(0, 255, 153, 0.5)) over 2 seconds with infinite repetition, the .version selector applies this animation with ease-in-out timing, and all existing badge styling (color, background, border, padding, border-radius) remains unchanged.",
@@ -9081,7 +9214,7 @@
         "test": 1779810882.538866
       },
       "started": 1779810874.51452,
-      "status": "pending",
+      "status": "done",
       "story": "As a product owner, I want the version badge to display a subtle pulsing glow animation so that it draws gentle attention to the current version without being distracting.",
       "summary": "Add pulsing glow keyframe animation to .version badge with 2s infinite ease-in-out cycle",
       "test_results": [
@@ -9123,7 +9256,8 @@
         }
       ],
       "tokens_in": 5584,
-      "tokens_out": 769
+      "tokens_out": 769,
+      "sprint_number": 25
     },
     {
       "ac_check_reason": "The h1 color property was changed from #00ff99 to red, no other h1 styles were modified, and all test results confirm the implementation is correct.",
@@ -9152,7 +9286,7 @@
         "test": 1779778355.824781
       },
       "started": 1779778350.542167,
-      "status": "pending",
+      "status": "done",
       "story": "As a developer testing the baseline restore feature, I want the h1 title color changed to red so I can visually confirm the change before reverting.",
       "summary": "Change h1 color from #00ff99 to red for baseline restore test",
       "test_results": [
@@ -9194,7 +9328,8 @@
         }
       ],
       "tokens_in": 4317,
-      "tokens_out": 398
+      "tokens_out": 398,
+      "sprint_number": 24
     },
     {
       "ac_check_reason": "The .version padding has been changed from 0.3rem 0.9rem to 0.3rem 1rem, all other .version styles remain unchanged, and only the padding property was modified in the style block.",
@@ -9223,7 +9358,7 @@
         "test": 1779778063.584798
       },
       "started": 1779778059.570023,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the version badge to have slightly wider horizontal padding so it feels more spacious and readable.",
       "summary": "Widen .version badge horizontal padding from 0.9rem to 1rem",
       "test_results": [
@@ -9265,7 +9400,8 @@
         }
       ],
       "tokens_in": 4429,
-      "tokens_out": 416
+      "tokens_out": 416,
+      "sprint_number": 24
     },
     {
       "ac_check_reason": "The .changelog h2 color property is changed from #555 to #4a4a4a, all other styles remain unchanged, and exactly one color value is modified in the style block, satisfying all acceptance criteria.",
@@ -9295,7 +9431,7 @@
         "test": 1779778079.878138
       },
       "started": 1779778075.524023,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the Recent Changes heading to use a slightly warmer dark tone that is consistent with the meta text color.",
       "summary": "Change .changelog h2 color from #555 to #4a4a4a",
       "test_results": [
@@ -9337,7 +9473,8 @@
         }
       ],
       "tokens_in": 4933,
-      "tokens_out": 509
+      "tokens_out": 509,
+      "sprint_number": 24
     },
     {
       "ac_check_reason": "The .tagline font-weight property was changed from 400 to 300, all other tagline styles remain unchanged, and the CSS modification is present in the style block with supporting version and changelog updates.",
@@ -9366,7 +9503,7 @@
         "test": 1779766273.311964
       },
       "started": 1779766268.540744,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the tagline to appear lighter in weight so that it feels more refined and secondary to the main heading.",
       "summary": "Change .tagline font-weight from 400 to 300 for lighter appearance",
       "test_results": [
@@ -9408,7 +9545,8 @@
         }
       ],
       "tokens_in": 6285,
-      "tokens_out": 375
+      "tokens_out": 375,
+      "sprint_number": 23
     },
     {
       "ac_check_reason": "The h1 font-size property is changed from 3.2rem to 3rem in the CSS style block, all other h1 properties remain unchanged, and the diff contains only CSS changes plus version/changelog updates.",
@@ -9438,7 +9576,7 @@
         "test": 1779766288.82572
       },
       "started": 1779766284.891854,
-      "status": "pending",
+      "status": "done",
       "story": "As a visitor, I want the page title to be slightly smaller so that it feels less dominant and better balanced with the tagline.",
       "summary": "Reduce h1 font-size from 3.2rem to 3rem",
       "test_results": [
@@ -9480,7 +9618,8 @@
         }
       ],
       "tokens_in": 6420,
-      "tokens_out": 319
+      "tokens_out": 319,
+      "sprint_number": 23
     },
     {
       "acceptance_criteria": [
@@ -9504,7 +9643,7 @@
         "test": 1779765722.596882
       },
       "started": 1779765717.826637,
-      "status": "pending",
+      "status": "failed",
       "story": "As a user, I want the version badge border to be more visible so that it stands out better against the dark background.",
       "test_results": [
         {
@@ -9545,7 +9684,8 @@
         }
       ],
       "tokens_in": 4939,
-      "tokens_out": 340
+      "tokens_out": 340,
+      "sprint_number": 23
     },
     {
       "acceptance_criteria": [
@@ -9570,7 +9710,7 @@
         "test": 1779765733.900607
       },
       "started": 1779765729.160867,
-      "status": "pending",
+      "status": "failed",
       "story": "As a user, I want the meta text to be slightly smaller so that it has less visual weight than the version badge.",
       "test_results": [
         {
@@ -9611,7 +9751,8 @@
         }
       ],
       "tokens_in": 5048,
-      "tokens_out": 300
+      "tokens_out": 300,
+      "sprint_number": 23
     },
     {
       "acceptance_criteria": [
@@ -9636,7 +9777,7 @@
         "test": 1779765745.632644
       },
       "started": 1779765740.143868,
-      "status": "pending",
+      "status": "failed",
       "story": "As a user, I want the changelog section heading to have wider letter spacing so that it reads more clearly as a label.",
       "test_results": [
         {
@@ -9677,7 +9818,8 @@
         }
       ],
       "tokens_in": 5087,
-      "tokens_out": 413
+      "tokens_out": 413,
+      "sprint_number": 23
     },
     {
       "ac_check_reason": "All acceptance criteria are met: element has id 'last-updated' with class 'meta', reads 'deployed' from /version.json via fetch, displays in correct format with fallback '\u2014', loads on page load and on Reset button click.",
@@ -9707,7 +9849,7 @@
         "test": 1779759613.104199
       },
       "started": 1779759603.691319,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want to see the last updated date below the version badge so that I know when the application was last deployed.",
       "summary": "Add last-updated date element below version badge reading from version.json",
       "test_results": [
@@ -9749,7 +9891,8 @@
         }
       ],
       "tokens_in": 6721,
-      "tokens_out": 790
+      "tokens_out": 790,
+      "sprint_number": 22
     },
     {
       "ac_check_reason": "All acceptance criteria are met: .tagline font-size is changed to 1.2rem, all other tagline styles remain unchanged (font-weight: 400, letter-spacing: 0.12em, text-transform: uppercase, color: #7a8099), and no layout issues are evident from the diff.",
@@ -9779,7 +9922,7 @@
         "test": 1779759630.642947
       },
       "started": 1779759626.984246,
-      "status": "pending",
+      "status": "done",
       "story": "As a designer, I want the tagline font size to be 1.2rem so that it has better visual hierarchy and prominence on the page.",
       "summary": "Change tagline font-size to 1.2rem for better visual hierarchy",
       "test_results": [
@@ -9821,7 +9964,8 @@
         }
       ],
       "tokens_in": 6318,
-      "tokens_out": 332
+      "tokens_out": 332,
+      "sprint_number": 22
     },
     {
       "ac_check_reason": "The horizontal rule is correctly positioned between changelog and health-monitor sections with proper styling (1px solid #1c1c1c border), full-width container spanning (width: 100%), and balanced spacing (1.5rem margins top and bottom) matching all acceptance criteria.",
@@ -9852,7 +9996,7 @@
         "test": 1779759647.886972
       },
       "started": 1779759642.448175,
-      "status": "pending",
+      "status": "done",
       "story": "As a developer, I want a visual separator between the changelog and health monitor so that the page layout is clearer and content sections are visually distinct.",
       "summary": "Add horizontal rule separator between changelog and health monitor",
       "test_results": [
@@ -9894,7 +10038,8 @@
         }
       ],
       "tokens_in": 6656,
-      "tokens_out": 491
+      "tokens_out": 491,
+      "sprint_number": 22
     },
     {
       "ac_check_reason": "All acceptance criteria are met: reset button is placed in health-monitor div below health-label with correct text and styling (monospace, #00ff99, #1a1a1a, #00ff9940 border, 0.4rem 1rem padding), and click handler clears changelog, resets health indicators to initial state, and reloads both endpoints.",
@@ -9924,7 +10069,7 @@
         "test": 1779749982.130062
       },
       "started": 1779749971.178309,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want a reset button on the homepage that restores the page to its baseline state so that I can clear any temporary state or user interactions.",
       "summary": "Add Reset button to health-monitor panel restoring homepage to baseline state",
       "test_results": [
@@ -9946,7 +10091,8 @@
         }
       ],
       "tokens_in": 6818,
-      "tokens_out": 903
+      "tokens_out": 903,
+      "sprint_number": 21
     },
     {
       "ac_check_reason": "All acceptance criteria are satisfied: line count element with id 'hLines' is positioned after tokens in the health-row div, .health-lines CSS class exists with correct font-size 0.78rem, color #444, and font-family monospace, JavaScript fetches d.lines from /health response and displays formatted line count or fallback '\u2014' when missing.",
@@ -9977,7 +10123,7 @@
         "test": 1779748635.078915
       },
       "started": 1779748627.616543,
-      "status": "pending",
+      "status": "done",
       "story": "As a developer, I want to see the line count metric in the app health monitor so that I can track code size and complexity alongside file size and token usage.",
       "summary": "Add line count metric to health monitor display after tokens_est",
       "test_results": [
@@ -9999,7 +10145,8 @@
         }
       ],
       "tokens_in": 6396,
-      "tokens_out": 692
+      "tokens_out": 692,
+      "sprint_number": 20
     },
     {
       "ac_check_reason": "The h1 selector color has been changed to #00ff99, no conflicting CSS rules exist, the change matches the green theme accent color, and CSS syntax is valid with properly closed style tags.",
@@ -10031,7 +10178,7 @@
         "test": 1779748137.410141
       },
       "started": 1779747257.299113,
-      "status": "pending",
+      "status": "done",
       "story": "As a product owner, I want the h1 title color to match the green theme of the page so that the hero section visually aligns with the brand's primary accent color.",
       "summary": "Change h1 color to #00ff99 to match primary neon green brand accent",
       "test_results": [
@@ -10053,7 +10200,8 @@
         }
       ],
       "tokens_in": 5586,
-      "tokens_out": 393
+      "tokens_out": 393,
+      "sprint_number": 19
     },
     {
       "ac_check_reason": "All acceptance criteria are satisfied: the h1 title color is updated to #2d8659 with no conflicting properties, no duplicate color declarations exist, CSS syntax is valid with proper closing tags, and the h1 element exists in the DOM matching the style rule.",
@@ -10084,7 +10232,7 @@
         "test": 1779744546.549051
       },
       "started": 1779744542.140097,
-      "status": "pending",
+      "status": "done",
       "story": "As a UI developer, I want to update the title color to match the green theme elements so that the design is visually consistent across the application.",
       "summary": "Update h1 title color from #00aa00 to #2d8659 to match green theme",
       "test_results": [
@@ -10106,7 +10254,8 @@
         }
       ],
       "tokens_in": 5503,
-      "tokens_out": 405
+      "tokens_out": 405,
+      "sprint_number": 18
     },
     {
       "ac_check_reason": "The h1 element has color property set to #00aa00, no duplicate color rules exist, no background-clip or -webkit-text-fill-color overrides are present, and CSS syntax is valid.",
@@ -10137,7 +10286,7 @@
         "test": 1779744266.089744
       },
       "started": 1779744261.624324,
-      "status": "pending",
+      "status": "done",
       "story": "As a web user, I want the index page title to display in green color so that it stands out visually on the page.",
       "summary": "Change h1 title color to #00aa00 (green)",
       "test_results": [
@@ -10159,7 +10308,8 @@
         }
       ],
       "tokens_in": 5390,
-      "tokens_out": 371
+      "tokens_out": 371,
+      "sprint_number": 18
     },
     {
       "ac_check_reason": "The h1 color has been changed from #00ff99 to #FF0000 in the single h1 selector, no conflicting properties exist, there are no duplicate selectors, and the CSS syntax is valid with proper closure.",
@@ -10192,7 +10342,7 @@
         "test": 1779729117.151233
       },
       "started": 1779728804.967622,
-      "status": "pending",
+      "status": "done",
       "story": "As a web developer, I want to change the index page h1 title color to red so that the main heading stands out visually on the page.",
       "summary": "Change h1 title color to red (#FF0000)",
       "test_results": [
@@ -10214,7 +10364,8 @@
         }
       ],
       "tokens_in": 5516,
-      "tokens_out": 378
+      "tokens_out": 378,
+      "sprint_number": 17
     },
     {
       "acceptance_criteria": [
@@ -10241,7 +10392,7 @@
         "test": 1779727277.305905
       },
       "started": 1779727273.232041,
-      "status": "pending",
+      "status": "failed",
       "story": "As a web developer, I want to style the index page h1 title with red color so that the main heading stands out visually on the page.",
       "test_results": [
         {
@@ -10262,7 +10413,8 @@
         }
       ],
       "tokens_in": 3118,
-      "tokens_out": 337
+      "tokens_out": 337,
+      "sprint_number": 16
     },
     {
       "ac_check_reason": "All acceptance criteria are satisfied: the h1 selector has color set to #22C55E, no duplicate h1 selectors exist, CSS syntax is valid, and the h1 element will render in green.",
@@ -10294,7 +10446,7 @@
         "test": 1779726666.844269
       },
       "started": 1779726662.223533,
-      "status": "pending",
+      "status": "done",
       "story": "As a web developer, I want to change the index page title color to green so that the h1 heading is visually emphasized.",
       "summary": "Set h1 color to #22C55E on index page",
       "test_results": [
@@ -10316,7 +10468,8 @@
         }
       ],
       "tokens_in": 4035,
-      "tokens_out": 391
+      "tokens_out": 391,
+      "sprint_number": 15
     },
     {
       "acceptance_criteria": [
@@ -10338,7 +10491,7 @@
         "test": 1779722682.538312
       },
       "started": 1779722677.570916,
-      "status": "pending",
+      "status": "failed",
       "story": "As a website visitor, I want the index page title to display in green color so that it stands out visually and improves page hierarchy clarity.",
       "test_results": [
         {
@@ -10359,7 +10512,8 @@
         }
       ],
       "tokens_in": 2183,
-      "tokens_out": 340
+      "tokens_out": 340,
+      "sprint_number": 14
     },
     {
       "diff": "diff --git a/index.html b/index.html\nindex 21efe97..f563ca0 100644\n--- a/index.html\n+++ b/index.html\n@@ -142,6 +142,8 @@ body {\n     color: #7a8099;\n     margin-bottom: 0;\n   }\n+\n+.hero h1 { color: green; }\n </style>\n </head>\n <body>\n@@ -159,8 +161,8 @@ body {\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.49</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.50</div>\n+  <div class=\"meta\">Last deployed: 2026-05-25 10:14:25 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 3885768..fa4c973 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,5 +1,5 @@\n {\n-  \"version\": \"0.1.49\",\n+  \"version\": \"0.1.50\",\n   \"deployed\": \"2026-05-25 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n@@ -253,6 +253,11 @@\n       \"version\": \"0.1.49\",\n       \"date\": \"2026-05-25\",\n       \"change\": \"Messenger: green theme throughout, watercooler tagline, bottom padding, brighter placeholder, Send button matches app style\"\n+    },\n+    {\n+      \"version\": \"0.1.50\",\n+      \"date\": \"2026-05-25\",\n+      \"change\": \"Change index page title color to green\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
@@ -10375,7 +10529,7 @@
         "test": 1779722070.387483
       },
       "started": 1779722065.973088,
-      "status": "pending",
+      "status": "failed",
       "test_results": [
         {
           "message": "index.html exists and contains title",
@@ -10395,7 +10549,8 @@
         }
       ],
       "tokens_in": 2061,
-      "tokens_out": 244
+      "tokens_out": 244,
+      "sprint_number": 13
     },
     {
       "ac_check_reason": "All acceptance criteria are met: hero section has a purple-to-cyan gradient background, title uses modern font treatment with gradient text effect and clear hierarchy, tagline is distinctly styled in uppercase with different color, layout is centered and responsive with flexbox, and no duplicate CSS selectors are introduced.",
@@ -10428,7 +10583,7 @@
         "test": 1779657846.657277
       },
       "started": 1779657835.636793,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want a modern home page layout with updated branding so that the app feels polished and professional.",
       "summary": "Modern home page layout with gradient title, dark background, and styled hero section",
       "test_results": [
@@ -10450,7 +10605,8 @@
         }
       ],
       "tokens_in": 4161,
-      "tokens_out": 922
+      "tokens_out": 922,
+      "sprint_number": 12
     },
     {
       "acceptance_criteria": [
@@ -10476,7 +10632,7 @@
         "test": 1779652491.022865
       },
       "started": 1779652484.71995,
-      "status": "pending",
+      "status": "failed",
       "story": "As a user, I want the page title color to match the overall page style so that the design feels cohesive and consistent.",
       "test_results": [
         {
@@ -10497,7 +10653,8 @@
         }
       ],
       "tokens_in": 2232,
-      "tokens_out": 428
+      "tokens_out": 428,
+      "sprint_number": 11
     },
     {
       "ac_check_reason": "The 'Hello Scrum' h1 title is now styled with red color via the .title-wrap h1 selector, no other elements are affected, and all test cases pass.",
@@ -10527,7 +10684,7 @@
         "test": 1779652262.698083
       },
       "started": 1779652257.755203,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the index page title to display in red so that it stands out visually.",
       "summary": "Change index page title color to red",
       "test_results": [
@@ -10549,7 +10706,8 @@
         }
       ],
       "tokens_in": 3321,
-      "tokens_out": 443
+      "tokens_out": 443,
+      "sprint_number": 11
     },
     {
       "acceptance_criteria": [
@@ -10575,7 +10733,7 @@
         "test": 1779652358.83072
       },
       "started": 1779652272.932526,
-      "status": "pending",
+      "status": "failed",
       "story": "As a user, I want the index page title to be styled in blue so that it stands out visually on the page.",
       "test_results": [
         {
@@ -10596,7 +10754,8 @@
         }
       ],
       "tokens_in": 2266,
-      "tokens_out": 411
+      "tokens_out": 411,
+      "sprint_number": 11
     },
     {
       "ac_check_reason": "All acceptance criteria are met: the Recent Changes section displays at most 3 entries via .slice(0, 3), shows the most recent entries (0.1.34, 0.1.35, 0.1.36), displays them in reverse-chronological order (newest first), and all older entries have been removed from version.json's changelog array.",
@@ -10628,7 +10787,7 @@
         "test": 1779589520.23939
       },
       "started": 1779589512.364413,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the Recent Changes section to show only the last 3 changelog entries so the page stays clean and focused on what matters most.",
       "summary": "Trim changelog to last 3 entries and cap Recent Changes display to 3 items",
       "test_results": [
@@ -10650,7 +10809,8 @@
         }
       ],
       "tokens_in": 11631,
-      "tokens_out": 624
+      "tokens_out": 624,
+      "sprint_number": 10
     },
     {
       "ac_check_reason": "All four acceptance criteria are met: stats section is positioned between meta info and changelog, displays three meaningful metrics (versions, days active, features shipped), uses consistent neon green terminal styling with appropriate colors and text-shadow effects, and employs flexbox with flex-wrap for responsive horizontal card layout.",
@@ -10681,7 +10841,7 @@
         "test": 1779575983.077222
       },
       "started": 1779575953.943862,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want to see a stats section on the homepage so I can quickly understand key metrics about the project at a glance.",
       "summary": "Add stats section with version count, days active, and features shipped metrics",
       "test_results": [
@@ -10703,7 +10863,8 @@
         }
       ],
       "tokens_in": 4843,
-      "tokens_out": 2840
+      "tokens_out": 2840,
+      "sprint_number": 7
     },
     {
       "acceptance_criteria": [
@@ -10729,7 +10890,7 @@
         "test": 1779586704.26136
       },
       "started": 1779586682.04252,
-      "status": "pending",
+      "status": "failed",
       "story": "As a user, I want to see the number of stories shipped in the stats section so I can track delivery progress at a glance.",
       "test_results": [
         {
@@ -10750,7 +10911,8 @@
         }
       ],
       "tokens_in": 4639,
-      "tokens_out": 2357
+      "tokens_out": 2357,
+      "sprint_number": 8
     },
     {
       "ac_check_reason": "The stat value logic displays '0' when failed is 0 or falsy, but the condition (failed && failed > 0) means zero values won't be explicitly converted to a number string, failing the requirement to display the value as a number even when zero.",
@@ -10780,7 +10942,7 @@
         "test": 1779586743.292584
       },
       "started": 1779586710.338363,
-      "status": "pending",
+      "status": "failed",
       "story": "As a user, I want to see the number of stories failed in the stats section so I can track quality and failure rate alongside other project metrics.",
       "test_results": [
         {
@@ -10801,7 +10963,8 @@
         }
       ],
       "tokens_in": 6163,
-      "tokens_out": 2565
+      "tokens_out": 2565,
+      "sprint_number": 8
     },
     {
       "ac_check_reason": "All acceptance criteria are met: the 'Tokens Used' stat card appears in the stats section, reads total_tokens from version.json with proper number formatting, displays '0' when absent or zero, and matches the existing stat card styling.",
@@ -10833,7 +10996,7 @@
         "test": 1779576075.812586
       },
       "started": 1779576052.777583,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want to see the total tokens consumed displayed in the stats section so I can track AI resource usage at a glance.",
       "summary": "Add Tokens Used stat card to stats section reading total_tokens from version.json",
       "test_results": [
@@ -10855,7 +11018,8 @@
         }
       ],
       "tokens_in": 5943,
-      "tokens_out": 2454
+      "tokens_out": 2454,
+      "sprint_number": 7
     },
     {
       "ac_check_reason": "All acceptance criteria are met: the stat card is labeled 'Sprint Success Rate', the calculation implements (versions/days)*100 capped at 100% as whole-number percentage, the dash fallback handles zero/unavailable days, and the card uses the existing neon terminal styling.",
@@ -10887,7 +11051,7 @@
         "test": 1779586776.789782
       },
       "started": 1779586750.677573,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want to see a sprint success rate percentage in the stats section so I can gauge overall delivery health at a glance.",
       "summary": "Add Sprint Success Rate percentage stat card to stats section",
       "test_results": [
@@ -10909,7 +11073,8 @@
         }
       ],
       "tokens_in": 5299,
-      "tokens_out": 2670
+      "tokens_out": 2670,
+      "sprint_number": 8
     },
     {
       "ac_check_reason": "All four acceptance criteria are met: h1 color changed to #00ff99, glow animation uses green tones (#00ff99 and #00cc7a), -webkit-text-fill-color set to #00ff99, and animation keyframes use green/teal drop-shadow values.",
@@ -10940,7 +11105,7 @@
         "test": 1779566140.323634
       },
       "started": 1779566119.189719,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the homepage title to display in green styling so that it matches the terminal aesthetic and page-wide green accent theme.",
       "summary": "Restore green title styling on homepage: #00ff99 color and green glow animation",
       "test_results": [
@@ -10962,7 +11127,8 @@
         }
       ],
       "tokens_in": 6053,
-      "tokens_out": 2092
+      "tokens_out": 2092,
+      "sprint_number": 6
     },
     {
       "acceptance_criteria": [
@@ -10988,7 +11154,7 @@
         "test": 1779556193.927897
       },
       "started": 1779556171.782611,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the home page typography and color scheme to match brand standards so that the visual identity feels consistent and professional.",
       "summary": "Update home page typography and color scheme to match brand standards",
       "test_results": [
@@ -11010,7 +11176,8 @@
         }
       ],
       "tokens_in": 5249,
-      "tokens_out": 1900
+      "tokens_out": 1900,
+      "sprint_number": 5
     },
     {
       "acceptance_criteria": [
@@ -11036,7 +11203,7 @@
         "test": 1779518805.360702
       },
       "started": 1779518783.986449,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the title to feel more exciting and bold so that the page makes a stronger first impression.",
       "summary": "Spicier title: bold uppercase animated neon gradient with pulsing glow and attitude tagline",
       "test_results": [
@@ -11058,7 +11225,8 @@
         }
       ],
       "tokens_in": 4645,
-      "tokens_out": 2080
+      "tokens_out": 2080,
+      "sprint_number": 4
     },
     {
       "acceptance_criteria": [
@@ -11086,7 +11254,7 @@
         "test": 1779518256.34474
       },
       "started": 1779518239.725922,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the title to match the style of the rest of the page so that the design feels cohesive and consistent with the terminal aesthetic",
       "summary": "Match title color to page terminal aesthetic using primary green #00ff99",
       "test_results": [
@@ -11108,7 +11276,8 @@
         }
       ],
       "tokens_in": 4347,
-      "tokens_out": 1661
+      "tokens_out": 1661,
+      "sprint_number": 4
     },
     {
       "acceptance_criteria": [
@@ -11130,7 +11299,7 @@
         "test": 1779518832.954379
       },
       "started": 1779518814.136884,
-      "status": "pending",
+      "status": "failed",
       "story": "As a user, I want the title to look sexier so that the page makes a stronger first impression",
       "test_results": [
         {
@@ -11151,7 +11320,8 @@
         }
       ],
       "tokens_in": 3644,
-      "tokens_out": 1737
+      "tokens_out": 1737,
+      "sprint_number": 4
     },
     {
       "acceptance_criteria": [
@@ -11176,7 +11346,7 @@
         "test": 1779518032.804671
       },
       "started": 1779518011.176489,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the title to look sexier so that the app feels more exciting and visually impressive at first glance",
       "summary": "Sexier title: larger font, wider spacing, faster neon gradient, animated tagline added",
       "test_results": [
@@ -11198,7 +11368,8 @@
         }
       ],
       "tokens_in": 5181,
-      "tokens_out": 1918
+      "tokens_out": 1918,
+      "sprint_number": 4
     },
     {
       "acceptance_criteria": [
@@ -11227,7 +11398,7 @@
         "test": 1779518067.080663
       },
       "started": 1779518040.874289,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the title to feel calm and understated so that the page has a relaxed, professional atmosphere instead of an intense animated display.",
       "summary": "Calmer title: static muted teal, smaller size, no animations or gradients",
       "test_results": [
@@ -11249,7 +11420,8 @@
         }
       ],
       "tokens_in": 5553,
-      "tokens_out": 2387
+      "tokens_out": 2387,
+      "sprint_number": 4
     },
     {
       "acceptance_criteria": [
@@ -11274,7 +11446,7 @@
         "test": 1779517054.764373
       },
       "started": 1779517043.262455,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the title to appear even bolder so it has a stronger, more commanding visual presence on the page.",
       "summary": "Increase title boldness: larger font-size, tighter letter-spacing, subtle text-stroke",
       "test_results": [
@@ -11296,7 +11468,8 @@
         }
       ],
       "tokens_in": 4130,
-      "tokens_out": 956
+      "tokens_out": 956,
+      "sprint_number": 3
     },
     {
       "acceptance_criteria": [
@@ -11322,7 +11495,7 @@
         "test": 1779517077.676881
       },
       "started": 1779517062.571134,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the page title to match the page's monospace terminal aesthetic so it feels cohesive and intentional rather than visually inconsistent",
       "summary": "Match title style to terminal aesthetic: monospace font, solid green color, no gradient or animation",
       "test_results": [
@@ -11344,7 +11517,8 @@
         }
       ],
       "tokens_in": 4512,
-      "tokens_out": 1223
+      "tokens_out": 1223,
+      "sprint_number": 3
     },
     {
       "acceptance_criteria": [
@@ -11369,7 +11543,7 @@
         "test": 1779516498.954988
       },
       "started": 1779516481.210672,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the title to have an animated gradient sweep so it feels dynamic and eye-catching",
       "summary": "Animated sweeping neon gradient on title with pulsing glow",
       "test_results": [
@@ -11391,7 +11565,8 @@
         }
       ],
       "tokens_in": 4106,
-      "tokens_out": 1574
+      "tokens_out": 1574,
+      "sprint_number": 3
     },
     {
       "acceptance_criteria": [
@@ -11416,7 +11591,7 @@
         "test": 1779516518.378418
       },
       "started": 1779516507.111166,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the title to be bolder so that it has a stronger visual presence on the page.",
       "summary": "Increase title font-weight from 800 to 900 for bolder appearance",
       "test_results": [
@@ -11438,7 +11613,8 @@
         }
       ],
       "tokens_in": 4074,
-      "tokens_out": 1068
+      "tokens_out": 1068,
+      "sprint_number": 3
     },
     {
       "acceptance_criteria": [
@@ -11458,7 +11634,7 @@
         "test": 1779516677.041586
       },
       "started": 1779516528.191241,
-      "status": "pending",
+      "status": "failed",
       "story": "As a user, I want the page title to feel more exciting and edgy so that the app makes a stronger first impression",
       "test_results": [
         {
@@ -11479,7 +11655,8 @@
         }
       ],
       "tokens_in": 2933,
-      "tokens_out": 1143
+      "tokens_out": 1143,
+      "sprint_number": 3
     },
     {
       "acceptance_criteria": [
@@ -11504,7 +11681,7 @@
         "test": 1779514402.733186
       },
       "started": 1779514389.369589,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the title to be more colorful so that the page feels vibrant and visually engaging.",
       "summary": "Make title more colorful with a vibrant five-hue gradient",
       "test_results": [
@@ -11524,7 +11701,8 @@
           "message": "changelog has entry for v0.1.9: Made title more colorful: five-stop gradient spanning pink, amber, yellow, mint, and sky blue",
           "status": "pass"
         }
-      ]
+      ],
+      "sprint_number": 2
     },
     {
       "acceptance_criteria": [
@@ -11549,7 +11727,7 @@
         "test": 1779514421.777914
       },
       "started": 1779514409.43777,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the title styling to match the overall page aesthetic so the page feels cohesive and consistent",
       "summary": "Align title color with terminal green theme to match rest of page",
       "test_results": [
@@ -11569,7 +11747,8 @@
           "message": "changelog has entry for v0.1.10: Aligned title style with page theme: solid #00ff99 green with subtle glow to match terminal aesthetic",
           "status": "pass"
         }
-      ]
+      ],
+      "sprint_number": 2
     },
     {
       "acceptance_criteria": [
@@ -11595,7 +11774,7 @@
         "test": 1779514440.794512
       },
       "started": 1779514426.980626,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the page title to look sexier so that the app feels more polished and visually striking at first glance",
       "summary": "Upgrade title to uppercase gradient (green\u2192cyan\u2192purple) with neon drop-shadow glow",
       "test_results": [
@@ -11615,7 +11794,8 @@
           "message": "changelog has entry for v0.1.11: Sexier title: larger uppercase lettering with green-to-cyan-to-purple gradient and layered neon glow",
           "status": "pass"
         }
-      ]
+      ],
+      "sprint_number": 2
     },
     {
       "acceptance_criteria": [
@@ -11640,7 +11820,7 @@
         "test": 1779511473.73482
       },
       "started": 1779511462.792354,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the title to feel warm and welcoming so that the app has a friendly, inviting tone.",
       "summary": "Warm up title gradient from teal/cyan to amber/coral with matching glow",
       "test_results": [
@@ -11660,7 +11840,8 @@
           "message": "changelog has entry for v0.1.8: Made title warmer: replaced cool teal gradient with amber-to-coral warm tones and soft orange glow",
           "status": "pass"
         }
-      ]
+      ],
+      "sprint_number": 1
     },
     {
       "acceptance_criteria": [
@@ -11686,7 +11867,7 @@
         "test": 1779511092.330446
       },
       "started": 1779511081.827908,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want the page title to be visually attractive so that the app feels polished and inviting.",
       "summary": "Make title attractive: large bold gradient text with subtle glow",
       "test_results": [
@@ -11706,7 +11887,8 @@
           "message": "changelog has entry for v0.1.7: Made title attractive: large bold font with teal-to-cyan gradient and subtle glow",
           "status": "pass"
         }
-      ]
+      ],
+      "sprint_number": 1
     },
     {
       "acceptance_criteria": [
@@ -12575,7 +12757,7 @@
         "test": 1779587492.734848
       },
       "started": 1779587459.78831,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want to see the date of the most recent deploy displayed in the stats section so I can quickly understand how current the application is.",
       "summary": "Add Last Deploy stat card showing most recent changelog date formatted as Month DD, YYYY",
       "test_results": [
@@ -12597,7 +12779,8 @@
         }
       ],
       "tokens_in": 6822,
-      "tokens_out": 2706
+      "tokens_out": 2706,
+      "sprint_number": 9
     },
     {
       "ac_check_reason": "All acceptance criteria are met: the 'Releases This Year' stat card is visible in the stats section, the JavaScript filters changelog entries by current calendar year using startsWith matching, the value updates dynamically from version.json data, and it displays '0' when no releases exist for the year.",
@@ -12629,7 +12812,7 @@
         "test": 1779587532.106972
       },
       "started": 1779587502.71759,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want to see the number of releases made this calendar year in the stats section, so I can quickly gauge yearly shipping activity.",
       "summary": "Add Releases This Year stat card counting changelog entries from the current calendar year",
       "test_results": [
@@ -12651,7 +12834,8 @@
         }
       ],
       "tokens_in": 6694,
-      "tokens_out": 2625
+      "tokens_out": 2625,
+      "sprint_number": 9
     },
     {
       "ac_check_reason": "All acceptance criteria are met: the 'Days Since Launch' stat card is displayed in the stats section, it calculates days from the earliest changelog date to today, the value updates dynamically by reading from version.json, and it shows '\u2014' as a fallback when no dates are available.",
@@ -12683,7 +12867,7 @@
         "test": 1779587571.15809
       },
       "started": 1779587543.508274,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want to see the number of days since the first release in the stats section, so I can understand how long the project has been running.",
       "summary": "Add Days Since Launch stat card showing days elapsed from first release date to today",
       "test_results": [
@@ -12705,7 +12889,8 @@
         }
       ],
       "tokens_in": 7116,
-      "tokens_out": 2825
+      "tokens_out": 2825,
+      "sprint_number": 9
     },
     {
       "ac_check_reason": "All acceptance criteria are met: the 'Latest Change' stat card appears in the stats section, displays the most recent changelog description dynamically from version.json, includes fallback '\u2014' handling, and implements text wrapping with proper styling.",
@@ -12738,7 +12923,7 @@
         "test": 1779587615.085484
       },
       "started": 1779587584.049866,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want to see the most recent changelog description in the stats section so I can quickly know what the latest update was without scrolling to the changelog.",
       "summary": "Add Latest Change stat card showing most recent changelog description in stats section",
       "test_results": [
@@ -12760,7 +12945,8 @@
         }
       ],
       "tokens_in": 7508,
-      "tokens_out": 3160
+      "tokens_out": 3160,
+      "sprint_number": 9
     },
     {
       "ac_check_reason": "All acceptance criteria are met: the 'Release Days' stat card is visible in the stats section, it displays the count of distinct dates by using a Set to filter unique dates from changelog entries, it updates dynamically by reading version.json, and it displays '\u2014' as a fallback when no dates are available.",
@@ -12792,7 +12978,7 @@
         "test": 1779587654.932073
       },
       "started": 1779587626.027631,
-      "status": "pending",
+      "status": "done",
       "story": "As a user, I want to see the number of distinct release dates in the stats section so I can understand how many unique days the team has shipped code.",
       "summary": "Add Release Days stat card showing count of distinct changelog entry dates",
       "test_results": [
@@ -12814,8 +13000,9 @@
         }
       ],
       "tokens_in": 7439,
-      "tokens_out": 2816
+      "tokens_out": 2816,
+      "sprint_number": 9
     }
   ],
-  "sprint_number": 64
+  "sprint_number": 65
 }

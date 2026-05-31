@@ -31,10 +31,11 @@ INDEX_FILE   = "index.html"
 VERSION_FILE = "version.json"
 TEST_SCRIPT  = "test.py"
 REPO_URL     = "https://kfox25.github.io/hello-scrum"
-RETRO_FILE         = "retrospective.json"
-CODING_WISDOM_FILE = "coding_wisdom.json"
-AC_WISDOM_FILE     = "ac_wisdom.json"
-SPRINT_RESULT_FILE = "sprint_result.json"
+RETRO_FILE             = "retrospective.json"
+CODING_WISDOM_FILE     = "coding_wisdom.json"
+AC_WISDOM_FILE         = "ac_wisdom.json"
+SPRINT_RESULT_FILE     = "sprint_result.json"
+WORKSPACE_CONTEXT_FILE = "workspace_context.json"
 
 _log_lines = []
 _retro_active_stage = None
@@ -320,6 +321,9 @@ def get_ct_timestamp():
 
 def call_agent(idea, story, acceptance_criteria, index_html, version_json, timestamp, retro_context=None, scope_creep_feedback=None):
     context_parts = []
+    workspace_ctx = load_workspace_context()
+    if workspace_ctx:
+        context_parts.append(workspace_ctx)
     wisdom = load_wisdom()
     if wisdom:
         context_parts.append("CODING WISDOM:\n" + "\n".join(f"- {b}" for b in wisdom))
@@ -438,12 +442,13 @@ def apply_changes(response_text, timestamp):
     elif not text.startswith("{"):
         pass  # fall through to rfind below
 
-    # Strip any trailing prose after the closing brace
-    start, end = text.find("{"), text.rfind("}") + 1
-    if start != -1 and end > start:
-        text = text[start:end]
-
-    data = json.loads(text)
+    # Parse only the first complete JSON object — raw_decode stops at the end of
+    # the first object and ignores any trailing content (prose, second JSON block, etc.)
+    start = text.find("{")
+    if start == -1:
+        raise ValueError("No JSON object found in agent response")
+    decoder = json.JSONDecoder()
+    data, _ = decoder.raw_decode(text, start)
 
     with open(INDEX_FILE, encoding="utf-8-sig") as f:
         content = f.read()
@@ -734,6 +739,29 @@ def load_wisdom():
         return [b.lstrip("•").strip() for b in data.get("bullets", []) if b.strip()]
     except Exception:
         return []
+
+
+def load_workspace_context():
+    """Return a compact workspace context string for injection into the agent prompt, or None."""
+    try:
+        with open(WORKSPACE_CONTEXT_FILE, encoding="utf-8") as f:
+            ws = json.load(f)
+        dm = ws.get("data_model", {})
+        fields   = ", ".join(dm.get("item_fields", []))
+        statuses = " | ".join(dm.get("status_values", []))
+        sources  = " | ".join(dm.get("source_values", []))
+        pipeline = " → ".join(ws.get("pipeline_stages", []))
+        lines = [
+            "WORKSPACE CONTEXT (from last inception run):",
+            f"Data store: sdlc_pipeline.json — item fields: {fields}",
+            f"Status values: {statuses}",
+            f"Source values: {sources}",
+            f"Agent pipeline: {pipeline}",
+            "Read data via fetch('/sdlc_pipeline.json') — never localStorage.",
+        ]
+        return "\n".join(lines)
+    except Exception:
+        return None
 
 
 def run_retro(processed_items, retro=None):

@@ -1429,7 +1429,7 @@ def mark_pending():
             backlog = json.load(f)
         count = 0
         for item in backlog.get("items", []):
-            if item.get("status") in ("done", "failed"):
+            if item.get("in_sprint") and item.get("status") in ("done", "failed"):
                 item["status"] = "pending"
                 count += 1
         with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
@@ -1512,7 +1512,7 @@ def inception_workspace():
         except Exception:
             pass
 
-        return jsonify({
+        workspace = {
             'project_type':    'brownfield',
             'languages':       ['Python', 'JavaScript', 'HTML'],
             'file_counts':     {'python': len(py_files), 'javascript': len(js_files), 'html': len(html_files)},
@@ -1522,7 +1522,10 @@ def inception_workspace():
             'pipeline_stages': ['pull', 'story', 'code', 'test', 'code_review', 'ac_check', 'deploy', 'done'],
             'agent_model':     'claude-sonnet-4-6',
             'reviewer_model':  'claude-haiku-4-5-20251001',
-        })
+        }
+        with open(os.path.join(BASE, 'workspace_context.json'), 'w', encoding='utf-8') as _wf:
+            json.dump(workspace, _wf, indent=2)
+        return jsonify(workspace)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

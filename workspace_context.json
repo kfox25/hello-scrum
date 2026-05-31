@@ -1,0 +1,81 @@
+{
+  "project_type": "brownfield",
+  "languages": [
+    "Python",
+    "JavaScript",
+    "HTML"
+  ],
+  "file_counts": {
+    "python": 8,
+    "javascript": 1,
+    "html": 20
+  },
+  "key_files": [
+    {
+      "file": "server.py",
+      "purpose": "Flask API server (30+ routes)"
+    },
+    {
+      "file": "agent.py",
+      "purpose": "Claude coding agent pipeline"
+    },
+    {
+      "file": "sdlc_pipeline.json",
+      "purpose": "Sprint backlog and item store"
+    },
+    {
+      "file": "index.html",
+      "purpose": "Test fixture app the agent modifies"
+    },
+    {
+      "file": "index_baseline.html",
+      "purpose": "Baseline reset state for index.html"
+    }
+  ],
+  "item_count": 210,
+  "data_model": {
+    "item_fields": [
+      "id",
+      "idea",
+      "story",
+      "acceptance_criteria",
+      "status",
+      "in_sprint",
+      "source",
+      "sprint_number",
+      "error",
+      "started",
+      "stage_times",
+      "tokens_in",
+      "tokens_out",
+      "sprint_wisdom",
+      "summary",
+      "diff",
+      "test_results",
+      "deployed",
+      "code_review_verdict",
+      "code_review_reason",
+      "ac_check_verdict",
+      "ac_check_reason",
+      "hermes_verdict"
+    ],
+    "status_values": [
+      "pending"
+    ],
+    "source_values": [
+      "inception"
+    ]
+  },
+  "pipeline_stages": [
+    "pull",
+    "story",
+    "code",
+    "test",
+    "code_review",
+    "ac_check",
+    "deploy",
+    "done"
+  ],
+  "agent_model": "claude-sonnet-4-6",
+  "reviewer_model": "claude-haiku-4-5-20251001"
+}

@@ -1,11 +1,14 @@
 {
   "bullets": [
-    "\u2022 Assert modified property values in tests against parsed style block source.",
-    "\u2022 Scope CSS patches to single property modifications per submission when possible.",
-    "\u2022 Validate color values against design system before submitting styling changes.",
-    "\u2022 Document test checklist: HTML validation, version sync, changelog, CSS linting.",
-    "\u2022 Verify design system adherence before approving UI/UX enhancement patches."
+    "\u2022 Validate JSON structure before submission; reject malformed or incomplete responses.",
+    "\u2022 Include complete file content for all new files referenced in patches.",
+    "\u2022 Verify all patch file references exist with corresponding diff content.",
+    "\u2022 Detect and remove content exceeding JSON closing brace position.",
+    "\u2022 Reject patches referencing undefined files; require inline implementations.",
+    "\u2022 Implement new files atomically within single patch submission.",
+    "\u2022 Synchronize version numbers across all modified files and changelog entries.",
+    "\u2022 Validate CSS changes against sprint baseline standards; flag deviations."
   ],
-  "synthesized_at": "2026-05-26 10:55:03",
-  "finding_count": 295
+  "synthesized_at": "2026-05-30 22:02:54",
+  "finding_count": 660
 }

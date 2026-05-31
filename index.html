@@ -112,7 +112,8 @@
     function loadLeaderboard() {
       fetch('/sdlc_pipeline.json')
         .then(r => r.json())
-        .then(items => {
+        .then(data => {
+          const items = data.items || [];
           const sprintMap = {};
           const sprintMapFull = {};
           items.forEach(item => {

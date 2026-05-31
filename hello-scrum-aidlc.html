@@ -231,6 +231,29 @@
             <div class="connector"></div>
           </div>
           <div class="step-card">
+            <div class="step-name">Reverse Engineering <span class="agent-badge badge-ai">Haiku</span></div>
+            <div class="step-desc">Analyzes the existing codebase and produces a structured architectural overview. Runs automatically on brownfield projects; results cached in reverse_engineering.json by item count.</div>
+            <ul class="step-bullets">
+              <li>Extracts all API routes from server.py</li>
+              <li>Produces architecture summary, components, key endpoints, business transactions</li>
+              <li>Cached — skips re-run if data unchanged</li>
+              <li>Artifacts injected into Requirements Analysis and Elaboration prompts</li>
+            </ul>
+            <div class="produces">
+              <span class="produces-item">architecture summary</span>
+              <span class="produces-item">components</span>
+              <span class="produces-item">key endpoints</span>
+              <span class="produces-item">reverse_engineering.json</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left">
+            <div class="step-num">4</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
             <div class="step-name">Requirements Analysis <span class="agent-badge badge-ai">Haiku</span></div>
             <div class="step-desc">Classifies the intent and generates 4–6 targeted clarifying questions with A/B/C option chips. Workspace context is injected so questions are grounded in the actual codebase.</div>
             <ul class="step-bullets">
@@ -247,7 +270,7 @@
 
         <div class="step ai">
           <div class="step-left">
-            <div class="step-num">4</div>
+            <div class="step-num">5</div>
             <div class="connector"></div>
           </div>
           <div class="step-card">
@@ -271,7 +294,7 @@
 
         <div class="step human">
           <div class="step-left">
-            <div class="step-num">5</div>
+            <div class="step-num">6</div>
             <div class="connector"></div>
           </div>
           <div class="step-card">
@@ -287,7 +310,7 @@
 
         <div class="step system">
           <div class="step-left">
-            <div class="step-num">6</div>
+            <div class="step-num">7</div>
             <div class="connector"></div>
           </div>
           <div class="step-card">
@@ -302,7 +325,7 @@
 
         <div class="step ai">
           <div class="step-left">
-            <div class="step-num">7</div>
+            <div class="step-num">8</div>
             <div class="connector"></div>
           </div>
           <div class="step-card">
@@ -324,7 +347,7 @@
 
         <div class="step ai">
           <div class="step-left">
-            <div class="step-num">8</div>
+            <div class="step-num">9</div>
             <div class="connector"></div>
           </div>
           <div class="step-card">
@@ -345,7 +368,7 @@
 
         <div class="step ai">
           <div class="step-left">
-            <div class="step-num">9</div>
+            <div class="step-num">10</div>
           </div>
           <div class="step-card">
             <div class="step-name">Retrospective <span class="agent-badge badge-ai">Haiku</span></div>
@@ -446,7 +469,7 @@
         <div class="diff-row">
           <span class="diff-label">Reverse Eng.</span>
           <span class="diff-aws">Deep LLM analysis → architecture.md, api-docs.md, component inventory</span>
-          <span class="diff-hs">Not yet built — workspace detection is the lightweight precursor</span>
+          <span class="diff-hs">Built (step 3) — extracts routes, produces architecture summary, components, endpoints, cached in reverse_engineering.json</span>
         </div>
         <div class="diff-row">
           <span class="diff-label">App Design</span>
@@ -480,11 +503,6 @@
         <div class="prose-section-header">
           <span class="prose-num">D</span>
           <span class="prose-title">Roadmap — Stages to Add</span>
-        </div>
-        <div class="planned-item">
-          <div class="planned-dot" style="background:#00ff9940;border-color:#00ff9960;"></div>
-          <span class="planned-name">Reverse Engineering</span>
-          <span class="planned-desc">Deep LLM analysis of the codebase — produces architecture.md, api-docs.md, component inventory. Sits between Workspace Detection and Requirements Analysis. Brownfield only.</span>
         </div>
         <div class="planned-item">
           <div class="planned-dot"></div>

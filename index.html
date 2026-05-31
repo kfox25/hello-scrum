@@ -77,12 +77,16 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.66</div>
-  <div class="meta">Last deployed: 2026-05-25 22:39:40 CT</div>
+  <div class="version" id="version-badge">v0.1.214</div>
+  <div class="meta">Last deployed: 2026-05-30 22:01:39 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
   </div>
+  <section id="sprint-leaderboard" style="width:100%;max-width:560px;margin:2rem auto 0;">
+    <h2 style="font-size:0.75rem;color:#555;text-transform:uppercase;letter-spacing:0.15em;margin:0 0 0.75rem 0;">Sprint Leaderboard — Stories Completed</h2>
+    <div id="leaderboard-body" style="width:100%;"></div>
+  </section>
   <script>
     function escHtml(s) {
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -104,6 +108,45 @@
         .catch(() => {});
     }
     loadChangelog();
+
+    function loadLeaderboard() {
+      fetch('/sdlc_pipeline.json')
+        .then(r => r.json())
+        .then(items => {
+          const sprintMap = {};
+          items.forEach(item => {
+            const sn = item.sprint_number;
+            if (sn === undefined || sn === null) return;
+            const st = (item.status || '').toLowerCase();
+            if (st !== 'done' && st !== 'failed') return;
+            if (!sprintMap[sn]) sprintMap[sn] = { sprint: sn, completed: 0 };
+            if (st === 'done') sprintMap[sn].completed++;
+          });
+          const rows = Object.values(sprintMap);
+          rows.sort((a, b) => b.completed - a.completed || a.sprint - b.sprint);
+          const container = document.getElementById('leaderboard-body');
+          if (rows.length === 0) {
+            container.innerHTML = '<p style="color:#555;font-size:0.85rem;">No sprint data available.</p>';
+            return;
+          }
+          const medals = ['🥇','🥈','🥉'];
+          container.innerHTML = rows.map((r, i) => {
+            const rank = i + 1;
+            const medal = medals[i] || '';
+            return `<div style="display:flex;align-items:center;gap:0.75rem;padding:0.45rem 0.6rem;border-top:1px solid #1c1c1c;font-size:0.88rem;">
+              <span style="width:2rem;text-align:center;font-size:1rem;">${medal || rank}</span>
+              <span style="color:#7a8099;min-width:4.5rem;">Sprint ${escHtml(String(r.sprint))}</span>
+              <span style="color:#e8eaf0;flex:1;">Rank #${rank}</span>
+              <span style="color:#00ff99;font-weight:700;">${r.completed} completed</span>
+            </div>`;
+          }).join('');
+        })
+        .catch(() => {
+          const container = document.getElementById('leaderboard-body');
+          if (container) container.innerHTML = '<p style="color:#555;font-size:0.85rem;">Could not load sprint data.</p>';
+        });
+    }
+    loadLeaderboard();
   </script>
 <script src="shared.js"></script>
 </body>

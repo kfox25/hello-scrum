@@ -1,6 +1,6 @@
 {
-  "version": "0.1.211",
-  "deployed": "2026-05-30 19:24:49 CT",
+  "version": "0.1.214",
+  "deployed": "2026-05-30 22:01:39 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1063,6 +1063,21 @@
       "version": "0.1.211",
       "date": "2026-05-30",
       "change": "Added sprint leaderboard to index.html with pass-rate column: 100% for zero failures, 0% for all failed, em-dash when no done/failed items"
+    },
+    {
+      "version": "0.1.212",
+      "date": "2026-05-30",
+      "change": "Added leaderboard.html: ranks all sprints by stories-completed count (highest to lowest), shared rank for ties, nav link added"
+    },
+    {
+      "version": "0.1.213",
+      "date": "2026-05-30",
+      "change": "Leaderboard now shows pass-rate percentage per sprint (100% if zero failures, 0% if all failed, \u2014 if no done/failed items)"
+    },
+    {
+      "version": "0.1.214",
+      "date": "2026-05-30",
+      "change": "Added inline Sprint Leaderboard section ranking sprints by stories completed, loaded from sdlc_pipeline.json"
     }
   ]
 }

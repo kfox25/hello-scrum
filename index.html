@@ -77,8 +77,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.216</div>
-  <div class="meta">Last deployed: 2026-05-30 22:47:00 CT</div>
+  <div class="version" id="version-badge">v0.1.217</div>
+  <div class="meta">Last deployed: 2026-05-30 22:47:27 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -119,9 +119,22 @@
     }
     loadChangelog();
     function loadLeaderboard() {
+      const section = document.getElementById('sprint-leaderboard');
+      const table = document.getElementById('leaderboard-table');
+      let emptyMsg = document.getElementById('leaderboard-empty');
+      if (!emptyMsg) {
+        emptyMsg = document.createElement('p');
+        emptyMsg.id = 'leaderboard-empty';
+        emptyMsg.style.cssText = 'color:#7a8099;font-size:0.88rem;margin:0.5rem 0;';
+        emptyMsg.textContent = 'No sprint data available';
+        if (section) section.appendChild(emptyMsg);
+      }
+      emptyMsg.style.display = 'none';
+      if (table) table.style.display = '';
       fetch('/sdlc_pipeline.json')
         .then(r => r.json())
-        .then(items => {
+        .then(data => {
+          const items = (data && Array.isArray(data.items)) ? data.items : [];
           const sprintMap = {};
           items.forEach(item => {
             const sn = item.sprint_number;
@@ -131,6 +144,11 @@
             if (item.status === 'done') sprintMap[sn].done++;
             if (item.status === 'failed') sprintMap[sn].failed++;
           });
+          if (Object.keys(sprintMap).length === 0) {
+            if (table) table.style.display = 'none';
+            if (emptyMsg) emptyMsg.style.display = '';
+            return;
+          }
           const rows = Object.keys(sprintMap).map(sn => ({
             sprint: Number(sn),
             done: sprintMap[sn].done,
@@ -150,7 +168,12 @@
             </tr>`;
           }).join('');
         })
-        .catch(() => {});
+        .catch(() => {
+          const table2 = document.getElementById('leaderboard-table');
+          const emptyMsg2 = document.getElementById('leaderboard-empty');
+          if (table2) table2.style.display = 'none';
+          if (emptyMsg2) emptyMsg2.style.display = '';
+        });
     }
     loadLeaderboard();
   </script>

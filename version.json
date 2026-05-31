@@ -1,6 +1,6 @@
 {
-  "version": "0.1.216",
-  "deployed": "2026-05-30 22:47:00 CT",
+  "version": "0.1.217",
+  "deployed": "2026-05-30 22:47:27 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1088,6 +1088,11 @@
       "version": "0.1.216",
       "date": "2026-05-30",
       "change": "Added Sprint Velocity Leaderboard to index.html ranking all sprints by done-item count with pass-rate column"
+    },
+    {
+      "version": "0.1.217",
+      "date": "2026-05-30",
+      "change": "Leaderboard gracefully handles empty or missing sprint data: shows 'No sprint data available', supports velocity=0, reads data.items from fetch response object"
     }
   ]
 }

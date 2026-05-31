@@ -65,10 +65,10 @@
 
     .btn-copy {
       background: #0a0f1f;
-      color: #4488ff;
-      border: 1px solid #4488ff40;
+      color: #00ff99;
+      border: 1px solid #00ff9940;
     }
-    .btn-copy:hover { border-color: #4488ff; background: #0d1530; }
+    .btn-copy:hover { border-color: #00ff99; background: #0d2a1a; }
 
     /* ── State: workspace ── */
     #stateWorkspace { display: none; flex-direction: column; gap: 1rem; }
@@ -76,18 +76,24 @@
     .ws-badge {
       display: inline-block; font-size: 0.7rem; font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.1em;
-      color: #4488ff; background: #0a0f1f; border: 1px solid #4488ff40;
-      border-radius: 3px; padding: 0.15rem 0.6rem; margin-bottom: 0.5rem;
+      color: #00ff99; background: #0a1f12; border: 1px solid #00ff9940;
+      border-radius: 3px; padding: 0.2rem 0.7rem; margin-right: 0.6rem;
     }
-    .ws-langs { font-size: 0.78rem; color: #555; margin-bottom: 0.25rem; }
-    .ws-files { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.25rem; }
-    .ws-file { display: flex; gap: 1rem; font-size: 0.8rem; }
-    .ws-filename { color: #00ff99; font-family: monospace; min-width: 160px; flex-shrink: 0; }
-    .ws-purpose { color: #555; }
-    .ws-row { font-size: 0.8rem; color: #666; margin-bottom: 0.2rem; }
-    .ws-row span { color: #888; }
-    .ws-pipeline { font-size: 0.8rem; color: #555; font-family: monospace; }
-    .ws-advancing { font-size: 0.78rem; color: #00ff9980; margin-top: 1rem; }
+    .ws-langs { font-size: 0.82rem; color: #666; }
+    .ws-block { margin-top: 1.25rem; }
+    .ws-block-label {
+      font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.12em;
+      color: #444; margin-bottom: 0.6rem; padding-bottom: 0.35rem;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .ws-files { display: flex; flex-direction: column; gap: 0.5rem; }
+    .ws-file { display: flex; gap: 1.25rem; font-size: 0.83rem; }
+    .ws-filename { color: #00ff99; font-family: monospace; min-width: 180px; flex-shrink: 0; }
+    .ws-purpose { color: #666; line-height: 1.4; }
+    .ws-row { font-size: 0.82rem; color: #555; margin-bottom: 0.4rem; display: flex; gap: 0.75rem; }
+    .ws-row-label { color: #444; min-width: 60px; flex-shrink: 0; }
+    .ws-row-value { color: #888; line-height: 1.5; }
+    .ws-pipeline { font-size: 0.82rem; color: #666; font-family: monospace; letter-spacing: 0.03em; line-height: 1.8; }
 
     /* ── State: intent ── */
     #stateIntent { display: flex; flex-direction: column; gap: 1rem; }
@@ -223,13 +229,11 @@
     .status-line.error  { color: #ff4444; }
 
     .req-assessment {
-      font-size: 0.75rem; color: #4488ff; background: #0a0f1f;
-      border: 1px solid #1a2a4a; border-radius: 4px;
-      padding: 0.45rem 0.75rem; margin-bottom: 0.25rem; display: none;
+      font-size: 0.78rem; color: #777; margin-bottom: 0.5rem; display: none;
     }
     .q-category {
       font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em;
-      color: #4488ff; margin-bottom: 0.15rem;
+      color: #00ff99; margin-bottom: 0.15rem;
     }
     .option-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.3rem 0 0.1rem; }
     .option-chip {
@@ -281,7 +285,10 @@
   <!-- State 1: Intent -->
   <div id="stateIntent">
     <div class="card">
-      <div class="label">Intent</div>
+      <div style="display:flex;align-items:baseline;gap:1rem;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid #222;">
+        <div class="label" style="margin-bottom:0;">Intent</div>
+        <div style="font-size:0.78rem;color:#666;">High-level statement of purpose — the starting point for AI-DLC decomposition</div>
+      </div>
       <textarea id="intentInput" rows="3" placeholder="Describe what you want to build or change at a high level..."></textarea>
       <div style="display:flex;gap:0.75rem;align-items:center;margin-top:1rem;">
         <button class="btn" id="btnStart" onclick="startClarify()">Start →</button>
@@ -295,7 +302,10 @@
   <!-- State 1.5: Workspace Detection -->
   <div id="stateWorkspace">
     <div class="card">
-      <div class="section-label">Workspace Detection</div>
+      <div style="display:flex;align-items:baseline;gap:1rem;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid #222;">
+        <div class="section-label" style="margin-bottom:0;">Workspace Detection</div>
+        <div style="font-size:0.78rem;color:#666;">Scans the existing codebase to establish brownfield context before requirements analysis</div>
+      </div>
       <div id="workspaceContent"><div class="status-line active">Scanning workspace...</div></div>
     </div>
   </div>
@@ -303,10 +313,14 @@
   <!-- State 2: Requirements Analysis -->
   <div id="stateQuestions">
     <div class="card">
+      <div style="display:flex;align-items:baseline;gap:1rem;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid #222;">
+        <div class="section-label" style="margin-bottom:0;">Requirements Analysis</div>
+        <div style="font-size:0.78rem;color:#666;">Clarifies scope, users, and constraints before elaboration</div>
+      </div>
       <div class="section-label">Intent</div>
       <div class="intent-display" id="intentDisplay"></div>
       <div class="req-assessment" id="reqAssessment"></div>
-      <div class="section-label" style="margin-top:1rem;">Requirements Analysis</div>
+      <div class="section-label" style="margin-top:1rem;">Questions</div>
       <div id="qnaList" style="display:flex;flex-direction:column;gap:1rem;"></div>
       <div style="display:flex;gap:0.75rem;align-items:center;margin-top:1.5rem;">
         <button class="btn" id="btnElaborate" onclick="elaborate()">Elaborate →</button>
@@ -431,18 +445,33 @@
       const sources = (dm.source_values|| []).join(' | ');
       const pipeline= (ws.pipeline_stages || []).join(' → ');
       document.getElementById('workspaceContent').innerHTML = `
-        <div><span class="ws-badge">Brownfield</span> <span class="ws-langs">${escHtml(langs)} · ${counts.python||0} Python · ${counts.javascript||0} JS · ${counts.html||0} HTML</span></div>
-        <div class="section-label" style="margin-top:0.75rem;">Key Files</div>
-        <div class="ws-files">${files}</div>
-        <div class="section-label" style="margin-top:0.75rem;">Data Model — sdlc_pipeline.json (${ws.item_count||0} items)</div>
-        <div class="ws-row">fields: <span>${escHtml(fields)}</span></div>
-        <div class="ws-row">status: <span>${escHtml(statuses)}</span></div>
-        <div class="ws-row">source: <span>${escHtml(sources)}</span></div>
-        <div class="section-label" style="margin-top:0.75rem;">Agent Pipeline</div>
-        <div class="ws-pipeline">${escHtml(pipeline)}</div>
-        <div style="display:flex;gap:0.75rem;align-items:center;margin-top:1.5rem;">
+        <div style="margin-bottom:0.25rem;">
+          <span class="ws-badge">Brownfield</span>
+          <span class="ws-langs">${escHtml(langs)} &nbsp;·&nbsp; ${counts.python||0} Python &nbsp;·&nbsp; ${counts.javascript||0} JS &nbsp;·&nbsp; ${counts.html||0} HTML</span>
+        </div>
+
+        <div class="ws-block">
+          <div class="ws-block-label">Key Files</div>
+          <div class="ws-files">${files}</div>
+        </div>
+
+        <div class="ws-block">
+          <div class="ws-block-label">Data Model &mdash; sdlc_pipeline.json &nbsp;(${ws.item_count||0} items)</div>
+          <div class="ws-row"><span class="ws-row-label">fields</span><span class="ws-row-value">${escHtml(fields)}</span></div>
+          <div class="ws-row"><span class="ws-row-label">status</span><span class="ws-row-value">${escHtml(statuses)}</span></div>
+          <div class="ws-row"><span class="ws-row-label">source</span><span class="ws-row-value">${escHtml(sources)}</span></div>
+        </div>
+
+        <div class="ws-block">
+          <div class="ws-block-label">Agent Pipeline</div>
+          <div class="ws-pipeline">${escHtml(pipeline)}</div>
+        </div>
+
+        <div style="display:flex;gap:0.75rem;align-items:center;margin-top:1.75rem;">
           <button class="btn" id="btnWsNext" onclick="runRequirementsAnalysis()">Next →</button>
           <div class="status-line" id="wsStatus"></div>
+          <button class="btn btn-copy" style="margin-left:auto;" onclick="copyWorkspace()">Copy</button>
+          <span class="copy-confirm" id="copyConfirmWs">copied</span>
         </div>
       `;
     }
@@ -587,7 +616,10 @@
         const assessment = data.assessment || {};
         const assessEl = document.getElementById('reqAssessment');
         const parts = [assessment.type, assessment.scope, assessment.complexity].filter(Boolean);
-        if (parts.length) { assessEl.textContent = parts.join(' · '); assessEl.style.display = 'block'; }
+        if (parts.length) {
+          assessEl.textContent = `Request Type: ${assessment.type || '—'},  Scope: ${assessment.scope || '—'},  Complexity: ${assessment.complexity || '—'}`;
+          assessEl.style.display = 'block';
+        }
         else { assessEl.style.display = 'none'; }
         buildQnA(currentQuestions, []);
         document.getElementById('intentDisplay').textContent = currentIntent;
@@ -705,6 +737,29 @@
       const el = document.getElementById(id);
       el.style.display = 'inline';
       setTimeout(() => { el.style.display = 'none'; }, 2000);
+    }
+
+    function copyWorkspace() {
+      if (!currentWorkspace) return;
+      const ws = currentWorkspace;
+      const dm = ws.data_model || {};
+      const lines = [
+        'Workspace Detection',
+        `Project Type: ${ws.project_type || ''}`,
+        `Languages: ${(ws.languages || []).join(', ')}`,
+        '',
+        'Key Files:',
+        ...(ws.key_files || []).map(f => `  ${f.file} — ${f.purpose}`),
+        '',
+        `Data Model (sdlc_pipeline.json — ${ws.item_count || 0} items):`,
+        `  fields: ${(dm.item_fields || []).join(', ')}`,
+        `  status: ${(dm.status_values || []).join(' | ')}`,
+        `  source: ${(dm.source_values || []).join(' | ')}`,
+        '',
+        `Agent Pipeline: ${(ws.pipeline_stages || []).join(' → ')}`,
+      ];
+      navigator.clipboard.writeText(lines.join('\n'));
+      flashCopied('copyConfirmWs');
     }
 
     function copyPanel1() {

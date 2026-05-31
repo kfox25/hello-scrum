@@ -1,6 +1,6 @@
 {
-  "version": "0.1.219",
-  "deployed": "2026-05-31 11:04:46 CT",
+  "version": "0.1.221",
+  "deployed": "2026-05-31 11:08:58 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1103,6 +1103,16 @@
       "version": "0.1.219",
       "date": "2026-05-31",
       "change": "Sprint Leaderboard: inline section on index.html showing rank, sprint number, and velocity (done stories) sorted descending; fetched from sdlc_pipeline.json"
+    },
+    {
+      "version": "0.1.220",
+      "date": "2026-05-31",
+      "change": "Sprint Leaderboard: added Completion Rate, Code Review Pass Rate, and Test Pass Rate quality metric columns per sprint; handles data.items fetch shape and edge cases (zero stories, no CR/test data)"
+    },
+    {
+      "version": "0.1.221",
+      "date": "2026-05-31",
+      "change": "Sprint Leaderboard: added inline section ranking sprints by velocity (done stories count) descending, tie-broken by sprint number ascending, with empty-state message"
     }
   ]
 }

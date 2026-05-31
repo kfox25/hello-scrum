@@ -77,8 +77,12 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.66</div>
-  <div class="meta">Last deployed: 2026-05-25 22:39:40 CT</div>
+  <div class="version" id="version-badge">v0.1.221</div>
+  <div class="meta">Last deployed: 2026-05-31 11:08:58 CT</div>
+  <div id="sprint-leaderboard" style="width:100%;max-width:600px;margin-top:2rem;">
+    <h2 style="font-size:0.75rem;color:#555;text-transform:uppercase;letter-spacing:0.15em;margin:0 0 0.75rem 0;">Sprint Leaderboard</h2>
+    <div id="leaderboard-content" style="color:#7a8099;font-size:0.9rem;">Loading…</div>
+  </div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -104,6 +108,51 @@
         .catch(() => {});
     }
     loadChangelog();
+
+    function loadLeaderboard() {
+      fetch('/sdlc_pipeline.json')
+        .then(r => r.json())
+        .then(data => {
+          const items = Array.isArray(data) ? data : (Array.isArray(data.items) ? data.items : []);
+          if (!items.length) {
+            document.getElementById('leaderboard-content').textContent = 'No sprint data available yet.';
+            return;
+          }
+          const sprintMap = {};
+          for (const item of items) {
+            const sn = item.sprint_number;
+            if (sn == null) continue;
+            if (!sprintMap[sn]) sprintMap[sn] = { sprint: sn, velocity: 0 };
+            if (item.status === 'done') sprintMap[sn].velocity++;
+          }
+          const sprints = Object.values(sprintMap);
+          if (!sprints.length) {
+            document.getElementById('leaderboard-content').textContent = 'No sprint data available yet.';
+            return;
+          }
+          sprints.sort((a, b) => b.velocity - a.velocity || a.sprint - b.sprint);
+          let html = '<table style="width:100%;border-collapse:collapse;font-size:0.88rem;">';
+          html += '<thead><tr style="color:#555;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;">';
+          html += '<th style="padding:0.4rem 0.6rem;text-align:center;border-bottom:1px solid #1c1c1c;">Rank</th>';
+          html += '<th style="padding:0.4rem 0.6rem;text-align:center;border-bottom:1px solid #1c1c1c;">Sprint</th>';
+          html += '<th style="padding:0.4rem 0.6rem;text-align:center;border-bottom:1px solid #1c1c1c;">Velocity</th>';
+          html += '</tr></thead><tbody>';
+          sprints.forEach((s, i) => {
+            const bg = i % 2 === 0 ? '#13151c' : '#0f1117';
+            html += '<tr style="background:' + bg + ';">';
+            html += '<td style="padding:0.4rem 0.6rem;text-align:center;color:#7a8099;">' + (i + 1) + '</td>';
+            html += '<td style="padding:0.4rem 0.6rem;text-align:center;color:#e8eaf0;">Sprint ' + escHtml(String(s.sprint)) + '</td>';
+            html += '<td style="padding:0.4rem 0.6rem;text-align:center;color:#00ff99;font-weight:600;">' + s.velocity + '</td>';
+            html += '</tr>';
+          });
+          html += '</tbody></table>';
+          document.getElementById('leaderboard-content').innerHTML = html;
+        })
+        .catch(() => {
+          document.getElementById('leaderboard-content').textContent = 'No sprint data available yet.';
+        });
+    }
+    loadLeaderboard();
   </script>
 <script src="shared.js"></script>
 </body>

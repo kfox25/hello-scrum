@@ -33,6 +33,25 @@ agent_running = False
 agent_lock = threading.Lock()
 AGENT_LOG_FILE = os.path.join(BASE, "agent_log.json")
 
+FUNCTIONAL_DESIGN_PROMPT = """You are an AI-DLC Functional Design assistant for Hello Scrum. Given a user story and acceptance criteria, produce a concrete implementation plan for patching index.html.
+
+Return JSON only (no markdown):
+{
+  "implementation_approach": "one sentence describing the overall approach",
+  "elements_to_add": ["HTML/CSS/JS element or block to add — be specific about tag, id, class"],
+  "elements_to_modify": ["existing element to modify — name its id or class and what changes"],
+  "existing_elements_touched": ["id or class of each existing element affected"],
+  "risks": ["potential issue or edge case to watch for"]
+}
+
+Rules:
+- implementation_approach: 1 sentence, max 20 words
+- 2-4 items per array, each max 15 words
+- elements_to_add: describe new HTML structure, CSS rules, or JS functions
+- elements_to_modify: name the exact id/class from index.html that will change
+- existing_elements_touched: list of ids/classes — used to prevent scope creep
+- risks: things that could go wrong or cause Hermes to reject"""
+
 INCEPTION_REVERSE_ENGINEER_PROMPT = """You are an AI-DLC Reverse Engineering assistant. Analyze this codebase summary and produce a concise architectural overview.
 
 Return JSON only (no markdown). Keep all strings short — one sentence max per field.
@@ -1412,6 +1431,97 @@ def save_backlog():
     with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
     return jsonify({"ok": True})
+
+
+@app.route("/construction/design", methods=["POST"])
+def construction_design():
+    try:
+        data      = request.get_json()
+        story     = (data or {}).get("story", "").strip()
+        ac        = (data or {}).get("acceptance_criteria", [])
+        item_id   = (data or {}).get("item_id", "")
+        if not story:
+            return jsonify({"error": "No story provided"}), 400
+
+        with open(os.path.join(BASE, INDEX_FILE), encoding="utf-8-sig") as f:
+            index_html = f.read()
+
+        ws_ctx = ""
+        try:
+            with open(os.path.join(BASE, "workspace_context.json"), encoding="utf-8") as f:
+                ws = json.load(f)
+            dm = ws.get("data_model", {})
+            ws_ctx = (
+                f"\nData store fields: {', '.join(dm.get('item_fields', []))}\n"
+                f"Status values: {' | '.join(dm.get('status_values', []))}\n"
+                f"Pipeline: {' → '.join(ws.get('pipeline_stages', []))}"
+            )
+        except Exception:
+            pass
+
+        ac_str = "\n".join(f"- {c}" for c in ac) if ac else "(none)"
+        user_msg = (
+            f"Story: {story}\n\n"
+            f"Acceptance criteria:\n{ac_str}\n"
+            f"{ws_ctx}\n\n"
+            f"index.html (current):\n{index_html[:8000]}"
+        )
+
+        client = anthropic.Anthropic()
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=600,
+            system=FUNCTIONAL_DESIGN_PROMPT,
+            messages=[{"role": "user", "content": user_msg}],
+        )
+        text = next((b.text for b in response.content if hasattr(b, "text")), "")
+        start = text.find("{")
+        if start == -1:
+            raise ValueError("No JSON in response")
+        result, _ = json.JSONDecoder().raw_decode(text, start)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/construction/approve-design", methods=["POST"])
+def construction_approve_design():
+    try:
+        data    = request.get_json()
+        item_id = (data or {}).get("item_id", "")
+        design  = (data or {}).get("design", {})
+        if not item_id:
+            return jsonify({"error": "No item_id"}), 400
+
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
+            backlog = json.load(f)
+        item = next((i for i in backlog.get("items", []) if i["id"] == item_id), None)
+        if not item:
+            return jsonify({"error": "Item not found"}), 404
+
+        item["functional_design"] = design
+        with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
+            json.dump(backlog, f, indent=2)
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/construction/clear-design", methods=["POST"])
+def construction_clear_design():
+    try:
+        data    = request.get_json()
+        item_id = (data or {}).get("item_id", "")
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
+            backlog = json.load(f)
+        item = next((i for i in backlog.get("items", []) if i["id"] == item_id), None)
+        if item:
+            item.pop("functional_design", None)
+            with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
+                json.dump(backlog, f, indent=2)
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/inception/add-stories-to-sprint", methods=["POST"])

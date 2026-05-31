@@ -319,11 +319,23 @@ def get_ct_timestamp():
 
 # ── Worker agent ──────────────────────────────────────────────────────────────
 
-def call_agent(idea, story, acceptance_criteria, index_html, version_json, timestamp, retro_context=None, scope_creep_feedback=None):
+def call_agent(idea, story, acceptance_criteria, index_html, version_json, timestamp, retro_context=None, scope_creep_feedback=None, functional_design=None):
     context_parts = []
     workspace_ctx = load_workspace_context()
     if workspace_ctx:
         context_parts.append(workspace_ctx)
+    if functional_design:
+        fd = functional_design
+        lines = ["FUNCTIONAL DESIGN (pre-approved — follow this plan):"]
+        if fd.get("implementation_approach"):
+            lines.append(f"Approach: {fd['implementation_approach']}")
+        if fd.get("elements_to_add"):
+            lines.append("Add: " + "; ".join(fd["elements_to_add"]))
+        if fd.get("elements_to_modify"):
+            lines.append("Modify: " + "; ".join(fd["elements_to_modify"]))
+        if fd.get("existing_elements_touched"):
+            lines.append("Existing elements touched: " + ", ".join(fd["existing_elements_touched"]))
+        context_parts.append("\n".join(lines))
     wisdom = load_wisdom()
     if wisdom:
         context_parts.append("CODING WISDOM:\n" + "\n".join(f"- {b}" for b in wisdom))
@@ -1035,6 +1047,7 @@ def run_one(sprint_only=False, processed=None, sprint_wisdom=None):
                 index_html, version_json, timestamp,
                 retro_context=sprint_wisdom,
                 scope_creep_feedback=scope_creep_feedback,
+                functional_design=item.get("functional_design"),
             )
             tokens_in += t_in
             tokens_out += t_out

@@ -1708,6 +1708,23 @@ All API routes:
             {"method": "GET",  "path": "/health/score",                    "purpose": "Composite health score for nav indicator"},
         ]
 
+        result["business_dictionary"] = {
+            "Bolt":          "A suggested sprint grouping from inception — one Bolt = one Sprint run",
+            "Hermes":        "The AI reviewer (Haiku) that runs code_review and ac_check gates after each story",
+            "Inception":     "The AI-DLC process that decomposes an intent into Unit, Stories, Bolts via inception.html",
+            "Unit":          "An Epic — a bounded context grouping of related stories produced by inception",
+            "Sprint":        "A sequential batch of stories executed by the agent in one run",
+            "Story":         "A user story with acceptance criteria that the agent implements as patches to index.html",
+            "Idea":          "The raw instruction text for a story — mirrors story text for inception items",
+            "Opportunity":   "An idea in the opportunity backlog — not yet elaborated into a story",
+            "in_sprint":     "Boolean — true means the item is queued for the current sprint run",
+            "sprint_number": "Integer identifying which sprint batch an item ran in — used by the leaderboard",
+            "source":        "Origin of an item: 'inception', 'team_chat', or 'watercooler'",
+            "Retro":         "Retrospective — runs automatically after each sprint, produces findings and wisdom",
+            "Wisdom":        "Synthesized coding/AC directives from past retros — injected into future agent prompts",
+            "Workspace":     "The codebase snapshot saved by inception for downstream context injection",
+        }
+
         result["item_count"] = workspace.get("item_count")
         result["cached"] = False
 
@@ -1745,11 +1762,14 @@ def inception_clarify():
             dm = workspace.get("data_model", {})
             txns = re_ctx.get("business_transactions", [])
             patterns = re_ctx.get("technical_patterns", [])
+            biz_dict = re_ctx.get("business_dictionary", {})
+            dict_lines = "; ".join(f"{k}={v}" for k, v in list(biz_dict.items())[:8]) if biz_dict else ""
             ws_lines = [
                 "\n\nCODEBASE CONTEXT (from Reverse Engineering — use to generate grounded questions):",
                 f"Architecture: {re_ctx['architecture_summary']}",
                 f"Business transactions: {', '.join(txns)}",
                 f"Technical patterns: {', '.join(patterns)}",
+                *([ f"Business dictionary: {dict_lines}" ] if dict_lines else []),
                 f"Data store: sdlc_pipeline.json — fields: {', '.join(dm.get('item_fields', []))}",
                 f"Status values: {' | '.join(dm.get('status_values', []))}",
                 f"Source values: {' | '.join(dm.get('source_values', []))}",
@@ -1805,12 +1825,16 @@ def inception_elaborate():
             dm = workspace.get("data_model", {}) if workspace else {}
             txns = re_ctx.get("business_transactions", [])
             comps = re_ctx.get("components", [])
+            biz_dict_elab = re_ctx.get("business_dictionary", {})
+            dict_str = "; ".join(f"{k}={v}" for k, v in list(biz_dict_elab.items())[:8]) if biz_dict_elab else ""
             comp_lines = "\n".join(f"  - {c['name']} ({c['file']}): {c['role']}" for c in comps)
+            dict_line = f"Business dictionary: {dict_str}\n" if dict_str else ""
             ws_section = (
                 "\n\nCODEBASE CONTEXT (from Reverse Engineering):\n"
                 f"Architecture: {re_ctx['architecture_summary']}\n"
                 f"Components:\n{comp_lines}\n"
                 f"Business transactions: {', '.join(txns)}\n"
+                f"{dict_line}"
                 f"Data store: sdlc_pipeline.json — fields: {', '.join(dm.get('item_fields', []))}\n"
                 f"Status values: {' | '.join(dm.get('status_values', []))}\n"
                 f"Source values: {' | '.join(dm.get('source_values', []))}\n"

@@ -674,6 +674,14 @@
           <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.25rem;">${txns}</div>
         </div>
 
+        ${Object.keys(re.business_dictionary || {}).length ? `
+        <div class="ws-block">
+          <div class="ws-block-label">Business Dictionary</div>
+          <div class="ws-files">${Object.entries(re.business_dictionary || {}).map(([term, def]) =>
+            `<div class="ws-file"><span class="ws-filename">${escHtml(term)}</span><span class="ws-purpose">${escHtml(def)}</span></div>`
+          ).join('')}</div>
+        </div>` : ''}
+
         ${(re.code_structure || []).length ? `
         <div class="ws-block">
           <div class="ws-block-label">Code Structure</div>
@@ -744,6 +752,10 @@
         'Business Transactions:',
         ...(re.business_transactions || []).map(t => `  • ${t}`),
       ];
+      if (Object.keys(re.business_dictionary || {}).length) {
+        lines.push('', 'Business Dictionary:');
+        Object.entries(re.business_dictionary).forEach(([term, def]) => lines.push(`  ${term}: ${def}`));
+      }
       if ((re.code_structure || []).length) {
         lines.push('', 'Code Structure:');
         (re.code_structure || []).forEach(f => lines.push(`  [${f.type}] ${f.file} — ${f.purpose}`));

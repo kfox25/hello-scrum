@@ -273,7 +273,7 @@
 
   <div class="page-header">
     <h1>Inception</h1>
-    <div class="page-sub">Intent → Workspace Detection → Requirements Analysis → Elaboration → Sprint</div>
+    <div class="page-sub">Intent → Workspace Detection → Reverse Engineering → Requirements Analysis → Elaboration → Sprint</div>
   </div>
 
   <!-- State 1: Intent -->
@@ -301,6 +301,17 @@
         <div style="font-size:0.78rem;color:#666;">Scans the existing codebase to establish brownfield context before requirements analysis</div>
       </div>
       <div id="workspaceContent"><div class="status-line active">Scanning workspace...</div></div>
+    </div>
+  </div>
+
+  <!-- State 1.7: Reverse Engineering -->
+  <div id="stateReverseEngineer" style="display:none;flex-direction:column;gap:1rem;">
+    <div class="card">
+      <div style="display:flex;align-items:baseline;gap:1rem;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid #222;">
+        <div class="section-label" style="margin-bottom:0;">Reverse Engineering</div>
+        <div style="font-size:0.78rem;color:#666;">Analyzes the existing codebase to produce a structured architectural overview</div>
+      </div>
+      <div id="reverseEngineerContent"><div class="status-line active">Analyzing codebase...</div></div>
     </div>
   </div>
 
@@ -395,10 +406,11 @@
 
   <script>
     const LS = 'inception3-';
-    let currentIntent    = '';
-    let currentQuestions = [];
-    let currentUnit      = null;
-    let currentWorkspace = null;
+    let currentIntent           = '';
+    let currentQuestions        = [];
+    let currentUnit             = null;
+    let currentWorkspace        = null;
+    let currentReverseEngineering = null;
 
     function save() {
       localStorage.setItem(LS+'intent',    currentIntent);
@@ -407,6 +419,7 @@
       if (answers.some(a => a.trim())) localStorage.setItem(LS+'answers', JSON.stringify(answers));
       if (currentUnit) localStorage.setItem(LS+'unit', JSON.stringify(readUnitFromDom()));
       if (currentWorkspace) localStorage.setItem(LS+'workspace', JSON.stringify(currentWorkspace));
+      if (currentReverseEngineering) localStorage.setItem(LS+'re', JSON.stringify(currentReverseEngineering));
     }
 
     function readUnitFromDom() {
@@ -428,11 +441,12 @@
     }
 
     function setState(name) {
-      document.getElementById('stateIntent').style.display     = name === 'intent'     ? 'flex'  : 'none';
-      document.getElementById('stateWorkspace').style.display  = name === 'workspace'  ? 'flex'  : 'none';
-      document.getElementById('stateQuestions').style.display  = name === 'questions'  ? 'flex'  : 'none';
-      document.getElementById('stateResult').style.display     = name === 'result'     ? 'block' : 'none';
-      if (name !== 'workspace') localStorage.setItem(LS+'state', name);
+      document.getElementById('stateIntent').style.display            = name === 'intent'            ? 'flex'  : 'none';
+      document.getElementById('stateWorkspace').style.display         = name === 'workspace'         ? 'flex'  : 'none';
+      document.getElementById('stateReverseEngineer').style.display   = name === 'reverseengineer'   ? 'flex'  : 'none';
+      document.getElementById('stateQuestions').style.display         = name === 'questions'         ? 'flex'  : 'none';
+      document.getElementById('stateResult').style.display            = name === 'result'            ? 'block' : 'none';
+      if (name !== 'workspace' && name !== 'reverseengineer') localStorage.setItem(LS+'state', name);
     }
 
     function renderWorkspace(ws) {
@@ -470,7 +484,7 @@
         </div>
 
         <div style="display:flex;gap:0.75rem;align-items:center;margin-top:1.75rem;">
-          <button class="btn" id="btnWsNext" onclick="runRequirementsAnalysis()">Next →</button>
+          <button class="btn" id="btnWsNext" onclick="runReverseEngineering()">Next →</button>
           <div class="status-line" id="wsStatus"></div>
           <button class="btn btn-copy" style="margin-left:auto;" onclick="copyWorkspace()">Copy</button>
           <span class="copy-confirm" id="copyConfirmWs">copied</span>
@@ -534,7 +548,15 @@
       document.getElementById('resultIntentDisplay').textContent = currentIntent;
 
       const wsEl = document.getElementById('resultWorkspace');
-      if (currentWorkspace) {
+      if (currentReverseEngineering && currentReverseEngineering.architecture_summary) {
+        const re = currentReverseEngineering;
+        const txns  = (re.business_transactions || []).join(', ');
+        const comps = (re.components || []).map(c => c.file).join(', ');
+        wsEl.innerHTML =
+          `<div style="margin-bottom:0.4rem;color:#888;font-size:0.78rem;line-height:1.5;">${escHtml(re.architecture_summary)}</div>` +
+          `<div style="margin-bottom:0.3rem;"><span style="color:#666;">components</span> &nbsp;<span style="color:#777;">${escHtml(comps)}</span></div>` +
+          `<div><span style="color:#666;">transactions</span> &nbsp;<span style="color:#777;">${escHtml(txns)}</span></div>`;
+      } else if (currentWorkspace) {
         const dm = currentWorkspace.data_model || {};
         const fields   = (dm.item_fields   || []).join(', ');
         const statuses = (dm.status_values || []).join(' | ');
@@ -624,6 +646,89 @@
       }
     }
 
+    function renderReverseEngineering(re) {
+      const comps = (re.components || []).map(c =>
+        `<div class="ws-file"><span class="ws-filename">${escHtml(c.file)}</span><span class="ws-purpose">${escHtml(c.role)}</span></div>`
+      ).join('');
+      const endpoints = (re.key_endpoints || []).map(e =>
+        `<div class="ws-row"><span class="ws-row-label" style="min-width:3.5rem;color:#00ff9960;">${escHtml(e.method)}</span><span class="ws-row-value" style="font-family:monospace;font-size:0.78rem;">${escHtml(e.path)}<span style="color:#555;font-family:sans-serif;margin-left:0.75rem;">${escHtml(e.purpose)}</span></span></div>`
+      ).join('');
+      const txns = (re.business_transactions || []).map(t => `<span class="ws-badge" style="margin-bottom:0.3rem;">${escHtml(t)}</span>`).join(' ');
+      const cached = re.cached ? ' <span style="font-size:0.65rem;color:#555;margin-left:0.5rem;">cached</span>' : '';
+
+      document.getElementById('reverseEngineerContent').innerHTML = `
+        <div style="font-size:0.82rem;color:#aaa;line-height:1.6;margin-bottom:1rem;">${escHtml(re.architecture_summary || '')}${cached}</div>
+
+        <div class="ws-block">
+          <div class="ws-block-label">Components</div>
+          <div class="ws-files">${comps}</div>
+        </div>
+
+        <div class="ws-block">
+          <div class="ws-block-label">Key Endpoints</div>
+          ${endpoints}
+        </div>
+
+        <div class="ws-block">
+          <div class="ws-block-label">Business Transactions</div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.25rem;">${txns}</div>
+        </div>
+
+        <div style="display:flex;gap:0.75rem;align-items:center;margin-top:1.75rem;">
+          <button class="btn" id="btnReNext" onclick="runRequirementsAnalysis()">Next →</button>
+          <div class="status-line" id="reStatus"></div>
+          <button class="btn btn-copy" style="margin-left:auto;" onclick="copyReverseEngineering()">Copy</button>
+          <span class="copy-confirm" id="copyConfirmRe">copied</span>
+        </div>
+      `;
+    }
+
+    async function runReverseEngineering() {
+      const btn = document.getElementById('btnWsNext');
+      if (btn) btn.disabled = true;
+      setState('reverseengineer');
+      try {
+        const [reRes] = await Promise.all([
+          fetch('/inception/reverse-engineer', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ workspace: currentWorkspace }),
+          }),
+          new Promise(r => setTimeout(r, 1000)),
+        ]);
+        const reData = await reRes.json();
+        if (reData.error) throw new Error(reData.error);
+        currentReverseEngineering = reData;
+        renderReverseEngineering(reData);
+        save();
+      } catch(e) {
+        setState('workspace');
+        const statusEl = document.getElementById('wsStatus');
+        if (statusEl) { statusEl.textContent = 'Error: ' + e.message; statusEl.className = 'status-line error'; }
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    function copyReverseEngineering() {
+      if (!currentReverseEngineering) return;
+      const re = currentReverseEngineering;
+      const lines = [
+        'Reverse Engineering',
+        re.architecture_summary || '',
+        '',
+        'Components:',
+        ...(re.components || []).map(c => `  ${c.file} — ${c.role}`),
+        '',
+        'Key Endpoints:',
+        ...(re.key_endpoints || []).map(e => `  ${e.method} ${e.path} — ${e.purpose}`),
+        '',
+        'Business Transactions:',
+        ...(re.business_transactions || []).map(t => `  • ${t}`),
+      ];
+      navigator.clipboard.writeText(lines.join('\n'));
+      flashCopied('copyConfirmRe');
+    }
+
     async function runRequirementsAnalysis() {
       const btn = document.getElementById('btnWsNext');
       if (btn) btn.disabled = true;
@@ -632,7 +737,7 @@
       try {
         const res  = await fetch('/inception/clarify', {
           method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({intent: currentIntent, workspace: currentWorkspace})
+          body: JSON.stringify({intent: currentIntent, workspace: currentWorkspace, reverse_engineering: currentReverseEngineering})
         });
         const data = await res.json();
         if (data.error) throw new Error(data.error);
@@ -663,7 +768,7 @@
       btn.disabled = true;
       setStatus('statusQuestions', 'Elaborating...', 'active');
       try {
-        const res  = await fetch('/inception/elaborate', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ intent: currentIntent, qna, workspace: currentWorkspace }) });
+        const res  = await fetch('/inception/elaborate', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ intent: currentIntent, qna, workspace: currentWorkspace, reverse_engineering: currentReverseEngineering }) });
         const data = await res.json();
         if (data.error) throw new Error(data.error);
         buildResult(currentQuestions, answers, {
@@ -851,9 +956,11 @@
       const questions = Array.isArray(rawQ) && rawQ.length && typeof rawQ[0] === 'object' ? rawQ : [];
       const answers   = JSON.parse(localStorage.getItem(LS+'answers')   || '[]');
       const unit      = JSON.parse(localStorage.getItem(LS+'unit')      || 'null');
-      const workspace = JSON.parse(localStorage.getItem(LS+'workspace') || 'null');
+      const workspace         = JSON.parse(localStorage.getItem(LS+'workspace') || 'null');
+      const reverseEngineering = JSON.parse(localStorage.getItem(LS+'re')        || 'null');
 
-      currentIntent = intent; currentQuestions = questions; currentWorkspace = workspace;
+      currentIntent = intent; currentQuestions = questions;
+      currentWorkspace = workspace; currentReverseEngineering = reverseEngineering;
       document.getElementById('intentInput').value = intent;
       localStorage.setItem(LS+'intent', intent);
 

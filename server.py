@@ -33,6 +33,28 @@ agent_running = False
 agent_lock = threading.Lock()
 AGENT_LOG_FILE = os.path.join(BASE, "agent_log.json")
 
+INCEPTION_REVERSE_ENGINEER_PROMPT = """You are an AI-DLC Reverse Engineering assistant. Analyze this existing codebase summary and produce a structured architectural overview.
+
+Return JSON only (no markdown):
+{
+  "architecture_summary": "2-3 sentence description of what the system does and how it is structured",
+  "components": [
+    {"name": "component name", "file": "filename", "role": "what it does", "responsibilities": ["key responsibility 1", "key responsibility 2"]}
+  ],
+  "key_endpoints": [
+    {"method": "GET|POST", "path": "/path", "purpose": "what this endpoint does"}
+  ],
+  "business_transactions": ["transaction 1", "transaction 2"],
+  "technical_patterns": ["pattern 1", "pattern 2"]
+}
+
+Rules:
+- architecture_summary: plain language, 2-3 sentences
+- components: 3-6 most important components only
+- key_endpoints: 6-10 most important endpoints only
+- business_transactions: the main things the system enables a user to do (e.g. "Run a sprint", "Add a story")
+- technical_patterns: notable patterns in the codebase (e.g. "SSE streaming for sprint output", "JSON file as data store")"""
+
 INCEPTION_CLARIFY_PROMPT = """You are an AI-DLC Requirements Analysis assistant. Given a high-level intent, perform a structured requirements analysis.
 
 First, assess the intent: classify its type (Feature/Enhancement/New Project/Refactor/Bug Fix), scope (Small/Medium/Large), and complexity (Simple/Moderate/Complex).
@@ -1535,6 +1557,96 @@ def inception_workspace():
         return jsonify({'error': str(e)}), 500
 
 
+@app.route("/inception/reverse-engineer", methods=["POST"])
+def inception_reverse_engineer():
+    try:
+        data      = request.get_json()
+        workspace = (data or {}).get("workspace", {})
+
+        # Check cache — if reverse_engineering.json exists and item_count matches, return it
+        re_file = os.path.join(BASE, "reverse_engineering.json")
+        if workspace.get("item_count") and os.path.exists(re_file):
+            try:
+                with open(re_file, encoding="utf-8") as f:
+                    cached = json.load(f)
+                if cached.get("item_count") == workspace.get("item_count"):
+                    cached["cached"] = True
+                    return jsonify(cached)
+            except Exception:
+                pass
+
+        # Extract routes from server.py
+        routes = []
+        try:
+            with open(os.path.join(BASE, "server.py"), encoding="utf-8") as f:
+                srv = f.read()
+            for m in re.finditer(
+                r'@app\.route\("([^"]+)"(?:,\s*methods=\[([^\]]+)\])?\)\s*\ndef (\w+)',
+                srv
+            ):
+                path, methods, fn = m.group(1), m.group(2), m.group(3)
+                method = methods.replace('"','').replace("'","").strip() if methods else "GET"
+                routes.append({"method": method, "path": path, "fn": fn})
+        except Exception:
+            pass
+
+        # Extract agent pipeline and model info from agent.py
+        agent_info = {}
+        try:
+            with open(os.path.join(BASE, "agent.py"), encoding="utf-8") as f:
+                agt = f.read()
+            m = re.search(r"pipeline_stages.*?=.*?\[([^\]]+)\]", agt)
+            sm = re.search(r'model="([^"]+)"', agt)
+            agent_info["model"] = sm.group(1) if sm else "claude-sonnet-4-6"
+        except Exception:
+            pass
+
+        # Build compact codebase summary for the LLM
+        dm = workspace.get("data_model", {})
+        route_lines = "\n".join(
+            f"  {r['method']:6} {r['path']}" for r in routes[:25]
+        )
+        summary = f"""Project: Hello Scrum (brownfield Python/JS/HTML)
+Files: {workspace.get('file_counts', {}).get('python', 0)} Python, {workspace.get('file_counts', {}).get('javascript', 0)} JS, {workspace.get('file_counts', {}).get('html', 0)} HTML
+
+Key files:
+  server.py     — Flask API server with {len(routes)} routes
+  agent.py      — Claude coding agent ({agent_info.get('model','')})
+  board.html    — Kanban sprint board (drag-and-drop)
+  index.html    — Test fixture app the agent modifies
+  sdlc_pipeline.json — Data store ({workspace.get('item_count', 0)} items)
+
+Data model (sdlc_pipeline.json items):
+  fields:  {', '.join(dm.get('item_fields', []))}
+  status:  {' | '.join(dm.get('status_values', []))}
+  source:  {' | '.join(dm.get('source_values', []))}
+
+Agent pipeline: {' → '.join(workspace.get('pipeline_stages', []))}
+
+API routes (sample):
+{route_lines}"""
+
+        client = anthropic.Anthropic()
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=1200,
+            system=INCEPTION_REVERSE_ENGINEER_PROMPT,
+            messages=[{"role": "user", "content": summary}],
+        )
+        text = next((b.text for b in response.content if hasattr(b, "text")), "")
+        start, end = text.find("{"), text.rfind("}") + 1
+        result = json.loads(text[start:end])
+        result["item_count"] = workspace.get("item_count")
+        result["cached"] = False
+
+        with open(re_file, "w", encoding="utf-8") as f:
+            json.dump(result, f, indent=2)
+
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/inception/clarify", methods=["POST"])
 def inception_clarify():
     try:
@@ -1544,11 +1656,27 @@ def inception_clarify():
         if not intent:
             return jsonify({"error": "No intent provided"}), 400
 
+        re_ctx = (data or {}).get("reverse_engineering", {})
         ws_lines = []
-        if workspace:
+        if re_ctx and re_ctx.get("architecture_summary"):
+            dm = workspace.get("data_model", {})
+            txns = re_ctx.get("business_transactions", [])
+            patterns = re_ctx.get("technical_patterns", [])
+            ws_lines = [
+                "\n\nCODEBASE CONTEXT (from Reverse Engineering — use to generate grounded questions):",
+                f"Architecture: {re_ctx['architecture_summary']}",
+                f"Business transactions: {', '.join(txns)}",
+                f"Technical patterns: {', '.join(patterns)}",
+                f"Data store: sdlc_pipeline.json — fields: {', '.join(dm.get('item_fields', []))}",
+                f"Status values: {' | '.join(dm.get('status_values', []))}",
+                f"Source values: {' | '.join(dm.get('source_values', []))}",
+                f"Agent pipeline: {' → '.join(workspace.get('pipeline_stages', []))}",
+                "Agent modifies index.html — not a separate backend or database.",
+            ]
+        elif workspace:
             dm = workspace.get("data_model", {})
             ws_lines = [
-                "\n\nCODEBASE CONTEXT (use this to generate relevant, grounded questions):",
+                "\n\nCODEBASE CONTEXT:",
                 f"Project type: {workspace.get('project_type', 'brownfield')} — existing Python/JS/HTML application",
                 f"Item fields in sdlc_pipeline.json: {', '.join(dm.get('item_fields', []))}",
                 f"Status values: {' | '.join(dm.get('status_values', []))}",
@@ -1588,8 +1716,26 @@ def inception_elaborate():
                 f"Q: {item['q']}\nA: {item['a']}" for item in qna if item.get("a", "").strip()
             )
 
+        re_ctx     = (data or {}).get("reverse_engineering", {})
         ws_section = ""
-        if workspace:
+        if re_ctx and re_ctx.get("architecture_summary"):
+            dm = workspace.get("data_model", {}) if workspace else {}
+            txns = re_ctx.get("business_transactions", [])
+            comps = re_ctx.get("components", [])
+            comp_lines = "\n".join(f"  - {c['name']} ({c['file']}): {c['role']}" for c in comps)
+            ws_section = (
+                "\n\nCODEBASE CONTEXT (from Reverse Engineering):\n"
+                f"Architecture: {re_ctx['architecture_summary']}\n"
+                f"Components:\n{comp_lines}\n"
+                f"Business transactions: {', '.join(txns)}\n"
+                f"Data store: sdlc_pipeline.json — fields: {', '.join(dm.get('item_fields', []))}\n"
+                f"Status values: {' | '.join(dm.get('status_values', []))}\n"
+                f"Source values: {' | '.join(dm.get('source_values', []))}\n"
+                f"Agent pipeline: {' → '.join(workspace.get('pipeline_stages', []) if workspace else [])}\n"
+                "The agent implements stories by patching index.html. "
+                "Stories must reference the actual data model and existing file structure."
+            )
+        elif workspace:
             dm = workspace.get("data_model", {})
             ws_section = (
                 "\n\nCODEBASE CONTEXT:\n"

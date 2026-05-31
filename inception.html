@@ -406,6 +406,7 @@
       const answers = currentQuestions.map((_, i) => document.getElementById('answer-'+i)?.value || '');
       if (answers.some(a => a.trim())) localStorage.setItem(LS+'answers', JSON.stringify(answers));
       if (currentUnit) localStorage.setItem(LS+'unit', JSON.stringify(readUnitFromDom()));
+      if (currentWorkspace) localStorage.setItem(LS+'workspace', JSON.stringify(currentWorkspace));
     }
 
     function readUnitFromDom() {
@@ -540,11 +541,11 @@
         const sources  = (dm.source_values || []).join(' | ');
         const pipeline = (currentWorkspace.pipeline_stages || []).join(' → ');
         wsEl.innerHTML =
-          `<div style="margin-bottom:0.3rem;"><span style="color:#444;">type</span> &nbsp;<span style="color:#888;">${escHtml(currentWorkspace.project_type || '')}</span></div>` +
-          `<div style="margin-bottom:0.3rem;"><span style="color:#444;">fields</span> &nbsp;<span style="color:#666;">${escHtml(fields)}</span></div>` +
-          `<div style="margin-bottom:0.3rem;"><span style="color:#444;">status</span> &nbsp;<span style="color:#666;">${escHtml(statuses)}</span></div>` +
-          `<div style="margin-bottom:0.3rem;"><span style="color:#444;">source</span> &nbsp;<span style="color:#666;">${escHtml(sources)}</span></div>` +
-          `<div><span style="color:#444;">pipeline</span> &nbsp;<span style="color:#666;font-family:monospace;font-size:0.75rem;">${escHtml(pipeline)}</span></div>`;
+          `<div style="margin-bottom:0.3rem;"><span style="color:#666;">type</span> &nbsp;<span style="color:#aaa;">${escHtml(currentWorkspace.project_type || '')}</span></div>` +
+          `<div style="margin-bottom:0.3rem;"><span style="color:#666;">fields</span> &nbsp;<span style="color:#888;">${escHtml(fields)}</span></div>` +
+          `<div style="margin-bottom:0.3rem;"><span style="color:#666;">status</span> &nbsp;<span style="color:#888;">${escHtml(statuses)}</span></div>` +
+          `<div style="margin-bottom:0.3rem;"><span style="color:#666;">source</span> &nbsp;<span style="color:#888;">${escHtml(sources)}</span></div>` +
+          `<div><span style="color:#666;">pipeline</span> &nbsp;<span style="color:#888;font-family:monospace;font-size:0.75rem;">${escHtml(pipeline)}</span></div>`;
       } else {
         wsEl.textContent = '—';
       }
@@ -842,8 +843,9 @@
       const questions = Array.isArray(rawQ) && rawQ.length && typeof rawQ[0] === 'object' ? rawQ : [];
       const answers   = JSON.parse(localStorage.getItem(LS+'answers')   || '[]');
       const unit      = JSON.parse(localStorage.getItem(LS+'unit')      || 'null');
+      const workspace = JSON.parse(localStorage.getItem(LS+'workspace') || 'null');
 
-      currentIntent = intent; currentQuestions = questions;
+      currentIntent = intent; currentQuestions = questions; currentWorkspace = workspace;
       document.getElementById('intentInput').value = intent;
       localStorage.setItem(LS+'intent', intent);
 

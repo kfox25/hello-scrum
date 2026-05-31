@@ -215,7 +215,7 @@
       try {
         const res  = await fetch('/backlog?t=' + Date.now());
         const data = await res.json();
-        sprintItems = (data.items || []).filter(i => i.in_sprint);
+        sprintItems = (data.items || []).filter(i => i.in_sprint && i.source === 'inception');
         renderStories();
       } catch(e) {
         document.getElementById('storiesContainer').innerHTML =

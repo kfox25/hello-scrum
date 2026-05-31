@@ -273,7 +273,7 @@
 
   <div class="page-header">
     <h1>Inception</h1>
-    <div class="page-sub">Intent → Workspace Detection → Reverse Engineering → Requirements Analysis → Elaboration → Sprint</div>
+    <div class="page-sub" id="workflow-nav"></div>
   </div>
 
   <!-- State 1: Intent -->
@@ -406,11 +406,12 @@
 
   <script>
     const LS = 'inception3-';
-    let currentIntent           = '';
-    let currentQuestions        = [];
-    let currentUnit             = null;
-    let currentWorkspace        = null;
+    let currentIntent             = '';
+    let currentQuestions          = [];
+    let currentUnit               = null;
+    let currentWorkspace          = null;
     let currentReverseEngineering = null;
+    let _currentStateName         = 'intent';
 
     function save() {
       localStorage.setItem(LS+'intent',    currentIntent);
@@ -441,12 +442,57 @@
     }
 
     function setState(name) {
+      _currentStateName = name;
       document.getElementById('stateIntent').style.display            = name === 'intent'            ? 'flex'  : 'none';
       document.getElementById('stateWorkspace').style.display         = name === 'workspace'         ? 'flex'  : 'none';
       document.getElementById('stateReverseEngineer').style.display   = name === 'reverseengineer'   ? 'flex'  : 'none';
       document.getElementById('stateQuestions').style.display         = name === 'questions'         ? 'flex'  : 'none';
       document.getElementById('stateResult').style.display            = name === 'result'            ? 'block' : 'none';
       if (name !== 'workspace' && name !== 'reverseengineer') localStorage.setItem(LS+'state', name);
+      updateSubtitle();
+    }
+
+    function updateSubtitle() {
+      const steps = [
+        { label: 'Intent',                state: 'intent',           available: true },
+        { label: 'Workspace Detection',   state: 'workspace',        available: !!currentWorkspace },
+        { label: 'Reverse Engineering',   state: 'reverseengineer',  available: !!currentReverseEngineering },
+        { label: 'Requirements Analysis', state: 'questions',        available: currentQuestions.length > 0 },
+        { label: 'Elaboration',           state: 'result',           available: !!currentUnit },
+        { label: 'Sprint',                state: null,               available: true },
+      ];
+      const nav = document.getElementById('workflow-nav');
+      if (!nav) return;
+      nav.innerHTML = steps.map((step, i) => {
+        const arrow = i > 0 ? '<span style="color:#2a2a2a;margin:0 0.35rem;">→</span>' : '';
+        if (step.state === null) {
+          return arrow + '<a href="/" style="color:#555;font-size:0.82rem;text-decoration:none;cursor:pointer;">Sprint</a>';
+        }
+        const isCurrent = step.state === _currentStateName;
+        if (isCurrent) {
+          return arrow + `<span style="color:#00ff99;font-size:0.82rem;">${step.label}</span>`;
+        }
+        if (step.available) {
+          return arrow + `<span style="color:#888;font-size:0.82rem;cursor:pointer;text-decoration:underline;text-underline-offset:3px;" onclick="navToStep('${step.state}')">${step.label}</span>`;
+        }
+        return arrow + `<span style="color:#333;font-size:0.82rem;">${step.label}</span>`;
+      }).join('');
+    }
+
+    function navToStep(state) {
+      if (state === 'intent') {
+        setState('intent');
+      } else if (state === 'workspace' && currentWorkspace) {
+        renderWorkspace(currentWorkspace);
+        setState('workspace');
+      } else if (state === 'reverseengineer' && currentReverseEngineering) {
+        renderReverseEngineering(currentReverseEngineering);
+        setState('reverseengineer');
+      } else if (state === 'questions' && currentQuestions.length > 0) {
+        setState('questions');
+      } else if (state === 'result' && currentUnit) {
+        setState('result');
+      }
     }
 
     function renderWorkspace(ws) {

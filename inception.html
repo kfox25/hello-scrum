@@ -70,6 +70,25 @@
     }
     .btn-copy:hover { border-color: #4488ff; background: #0d1530; }
 
+    /* ── State: workspace ── */
+    #stateWorkspace { display: none; flex-direction: column; gap: 1rem; }
+
+    .ws-badge {
+      display: inline-block; font-size: 0.7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: #4488ff; background: #0a0f1f; border: 1px solid #4488ff40;
+      border-radius: 3px; padding: 0.15rem 0.6rem; margin-bottom: 0.5rem;
+    }
+    .ws-langs { font-size: 0.78rem; color: #555; margin-bottom: 0.25rem; }
+    .ws-files { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.25rem; }
+    .ws-file { display: flex; gap: 1rem; font-size: 0.8rem; }
+    .ws-filename { color: #00ff99; font-family: monospace; min-width: 160px; flex-shrink: 0; }
+    .ws-purpose { color: #555; }
+    .ws-row { font-size: 0.8rem; color: #666; margin-bottom: 0.2rem; }
+    .ws-row span { color: #888; }
+    .ws-pipeline { font-size: 0.8rem; color: #555; font-family: monospace; }
+    .ws-advancing { font-size: 0.78rem; color: #00ff9980; margin-top: 1rem; }
+
     /* ── State: intent ── */
     #stateIntent { display: flex; flex-direction: column; gap: 1rem; }
 
@@ -256,7 +275,7 @@
 
   <div class="page-header">
     <h1>Inception</h1>
-    <div class="page-sub">Intent → Unit → Stories → Suggested Bolts</div>
+    <div class="page-sub">Intent → Workspace Detection → Requirements Analysis → Unit → Stories → Bolts</div>
   </div>
 
   <!-- State 1: Intent -->
@@ -270,6 +289,14 @@
         <button class="btn btn-copy" style="margin-left:auto;" onclick="copyPanel1()">Copy</button>
         <span class="copy-confirm" id="copyConfirm1">copied</span>
       </div>
+    </div>
+  </div>
+
+  <!-- State 1.5: Workspace Detection -->
+  <div id="stateWorkspace">
+    <div class="card">
+      <div class="section-label">Workspace Detection</div>
+      <div id="workspaceContent"><div class="status-line active">Scanning workspace...</div></div>
     </div>
   </div>
 
@@ -356,6 +383,7 @@
     let currentIntent    = '';
     let currentQuestions = [];
     let currentUnit      = null;
+    let currentWorkspace = null;
 
     function save() {
       localStorage.setItem(LS+'intent',    currentIntent);
@@ -384,10 +412,39 @@
     }
 
     function setState(name) {
-      document.getElementById('stateIntent').style.display    = name === 'intent'    ? 'flex'  : 'none';
-      document.getElementById('stateQuestions').style.display = name === 'questions' ? 'flex'  : 'none';
-      document.getElementById('stateResult').style.display    = name === 'result'    ? 'block' : 'none';
-      localStorage.setItem(LS+'state', name);
+      document.getElementById('stateIntent').style.display     = name === 'intent'     ? 'flex'  : 'none';
+      document.getElementById('stateWorkspace').style.display  = name === 'workspace'  ? 'flex'  : 'none';
+      document.getElementById('stateQuestions').style.display  = name === 'questions'  ? 'flex'  : 'none';
+      document.getElementById('stateResult').style.display     = name === 'result'     ? 'block' : 'none';
+      if (name !== 'workspace') localStorage.setItem(LS+'state', name);
+    }
+
+    function renderWorkspace(ws) {
+      const langs  = (ws.languages || []).join(' · ');
+      const counts = ws.file_counts || {};
+      const files  = (ws.key_files || []).map(f =>
+        `<div class="ws-file"><span class="ws-filename">${escHtml(f.file)}</span><span class="ws-purpose">${escHtml(f.purpose)}</span></div>`
+      ).join('');
+      const dm      = ws.data_model || {};
+      const fields  = (dm.item_fields  || []).join(' · ');
+      const statuses= (dm.status_values|| []).join(' | ');
+      const sources = (dm.source_values|| []).join(' | ');
+      const pipeline= (ws.pipeline_stages || []).join(' → ');
+      document.getElementById('workspaceContent').innerHTML = `
+        <div><span class="ws-badge">Brownfield</span> <span class="ws-langs">${escHtml(langs)} · ${counts.python||0} Python · ${counts.javascript||0} JS · ${counts.html||0} HTML</span></div>
+        <div class="section-label" style="margin-top:0.75rem;">Key Files</div>
+        <div class="ws-files">${files}</div>
+        <div class="section-label" style="margin-top:0.75rem;">Data Model — sdlc_pipeline.json (${ws.item_count||0} items)</div>
+        <div class="ws-row">fields: <span>${escHtml(fields)}</span></div>
+        <div class="ws-row">status: <span>${escHtml(statuses)}</span></div>
+        <div class="ws-row">source: <span>${escHtml(sources)}</span></div>
+        <div class="section-label" style="margin-top:0.75rem;">Agent Pipeline</div>
+        <div class="ws-pipeline">${escHtml(pipeline)}</div>
+        <div style="display:flex;gap:0.75rem;align-items:center;margin-top:1.5rem;">
+          <button class="btn" id="btnWsNext" onclick="runRequirementsAnalysis()">Next →</button>
+          <div class="status-line" id="wsStatus"></div>
+        </div>
+      `;
     }
 
     function setStatus(id, msg, type) {
@@ -495,9 +552,35 @@
 
       const btn = document.getElementById('btnStart');
       btn.disabled = true;
-      setStatus('statusIntent', 'Analyzing requirements...', 'active');
+      setStatus('statusIntent', 'Detecting workspace...', 'active');
       try {
-        const res  = await fetch('/inception/clarify', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({intent}) });
+        setState('workspace');
+        const [wsRes] = await Promise.all([
+          fetch('/inception/workspace'),
+          new Promise(r => setTimeout(r, 1500)),
+        ]);
+        const wsData = await wsRes.json();
+        currentWorkspace = wsData;
+        renderWorkspace(wsData);
+      } catch(e) {
+        setState('intent');
+        setStatus('statusIntent', 'Error: ' + e.message, 'error');
+      } finally {
+        btn.disabled = false;
+        setStatus('statusIntent', '', '');
+      }
+    }
+
+    async function runRequirementsAnalysis() {
+      const btn = document.getElementById('btnWsNext');
+      if (btn) btn.disabled = true;
+      const statusEl = document.getElementById('wsStatus');
+      if (statusEl) { statusEl.textContent = 'Generating questions...'; statusEl.className = 'status-line active'; }
+      try {
+        const res  = await fetch('/inception/clarify', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({intent: currentIntent, workspace: currentWorkspace})
+        });
         const data = await res.json();
         if (data.error) throw new Error(data.error);
         currentQuestions = data.questions || [];
@@ -507,14 +590,12 @@
         if (parts.length) { assessEl.textContent = parts.join(' · '); assessEl.style.display = 'block'; }
         else { assessEl.style.display = 'none'; }
         buildQnA(currentQuestions, []);
-        document.getElementById('intentDisplay').textContent = intent;
+        document.getElementById('intentDisplay').textContent = currentIntent;
         setState('questions');
         save();
       } catch(e) {
-        setStatus('statusIntent', 'Error: ' + e.message, 'error');
-      } finally {
-        btn.disabled = false;
-        setStatus('statusIntent', '', '');
+        if (statusEl) { statusEl.textContent = 'Error: ' + e.message; statusEl.className = 'status-line error'; }
+        if (btn) btn.disabled = false;
       }
     }
 
@@ -526,7 +607,7 @@
       btn.disabled = true;
       setStatus('statusQuestions', 'Elaborating...', 'active');
       try {
-        const res  = await fetch('/inception/elaborate', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ intent: currentIntent, qna }) });
+        const res  = await fetch('/inception/elaborate', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ intent: currentIntent, qna, workspace: currentWorkspace }) });
         const data = await res.json();
         if (data.error) throw new Error(data.error);
         buildResult(currentQuestions, answers, {
@@ -682,6 +763,7 @@
       document.getElementById('intentInput').value = intent;
       localStorage.setItem(LS+'intent', intent);
 
+      if (state === 'workspace') state = 'intent';
       if (state === 'questions' && questions.length) {
         buildQnA(questions, answers);
         document.getElementById('intentDisplay').textContent = intent;

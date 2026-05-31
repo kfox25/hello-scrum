@@ -1472,19 +1472,90 @@ def inception_add_to_sprint():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/inception/workspace", methods=["GET"])
+def inception_workspace():
+    try:
+        import glob as _glob
+        py_files   = [f for f in os.listdir(BASE) if f.endswith('.py')]
+        js_files   = [f for f in os.listdir(BASE) if f.endswith('.js')]
+        html_files = [f for f in os.listdir(BASE) if f.endswith('.html')]
+
+        key_file_map = {
+            'server.py':           'Flask API server (30+ routes)',
+            'agent.py':            'Claude coding agent pipeline',
+            'sdlc_pipeline.json':  'Sprint backlog and item store',
+            'index.html':          'Test fixture app the agent modifies',
+            'index_baseline.html': 'Baseline reset state for index.html',
+        }
+        key_files = [
+            {'file': f, 'purpose': p}
+            for f, p in key_file_map.items()
+            if os.path.exists(os.path.join(BASE, f))
+        ]
+
+        data_model = {}
+        item_count = 0
+        try:
+            with open(SDLC_PIPELINE_FILE, encoding='utf-8-sig') as f:
+                pipeline = json.load(f)
+            items = pipeline.get('items', [])
+            item_count = len(items)
+            if items:
+                fields   = list(items[0].keys())
+                statuses = sorted(set(i.get('status', '') for i in items if i.get('status')))
+                sources  = sorted(set(i.get('source', '') for i in items if i.get('source')))
+                data_model = {
+                    'item_fields':   fields,
+                    'status_values': statuses,
+                    'source_values': sources,
+                }
+        except Exception:
+            pass
+
+        return jsonify({
+            'project_type':    'brownfield',
+            'languages':       ['Python', 'JavaScript', 'HTML'],
+            'file_counts':     {'python': len(py_files), 'javascript': len(js_files), 'html': len(html_files)},
+            'key_files':       key_files,
+            'item_count':      item_count,
+            'data_model':      data_model,
+            'pipeline_stages': ['pull', 'story', 'code', 'test', 'code_review', 'ac_check', 'deploy', 'done'],
+            'agent_model':     'claude-sonnet-4-6',
+            'reviewer_model':  'claude-haiku-4-5-20251001',
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 @app.route("/inception/clarify", methods=["POST"])
 def inception_clarify():
     try:
         data = request.get_json()
-        intent = (data or {}).get("intent", "").strip()
+        intent    = (data or {}).get("intent", "").strip()
+        workspace = (data or {}).get("workspace", {})
         if not intent:
             return jsonify({"error": "No intent provided"}), 400
+
+        ws_lines = []
+        if workspace:
+            dm = workspace.get("data_model", {})
+            ws_lines = [
+                "\n\nCODEBASE CONTEXT (use this to generate relevant, grounded questions):",
+                f"Project type: {workspace.get('project_type', 'brownfield')} — existing Python/JS/HTML application",
+                f"Item fields in sdlc_pipeline.json: {', '.join(dm.get('item_fields', []))}",
+                f"Status values: {' | '.join(dm.get('status_values', []))}",
+                f"Source values: {' | '.join(dm.get('source_values', []))}",
+                f"Agent pipeline: {' → '.join(workspace.get('pipeline_stages', []))}",
+                "Agent modifies index.html — not a separate backend or database.",
+            ]
+        user_msg = intent + "\n".join(ws_lines)
+
         client = anthropic.Anthropic()
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=800,
             system=INCEPTION_CLARIFY_PROMPT,
-            messages=[{"role": "user", "content": intent}],
+            messages=[{"role": "user", "content": user_msg}],
         )
         text = next((b.text for b in response.content if hasattr(b, "text")), "")
         start, end = text.find("{"), text.rfind("}") + 1
@@ -1497,8 +1568,9 @@ def inception_clarify():
 def inception_elaborate():
     try:
         data = request.get_json()
-        intent = (data or {}).get("intent", "").strip()
-        qna = (data or {}).get("qna", [])
+        intent    = (data or {}).get("intent", "").strip()
+        qna       = (data or {}).get("qna", [])
+        workspace = (data or {}).get("workspace", {})
         if not intent:
             return jsonify({"error": "No intent provided"}), 400
 
@@ -1506,6 +1578,20 @@ def inception_elaborate():
         if qna:
             qna_section = "\n\nCLARIFICATION:\n" + "\n".join(
                 f"Q: {item['q']}\nA: {item['a']}" for item in qna if item.get("a", "").strip()
+            )
+
+        ws_section = ""
+        if workspace:
+            dm = workspace.get("data_model", {})
+            ws_section = (
+                "\n\nCODEBASE CONTEXT:\n"
+                f"Project: brownfield Python/JS/HTML app\n"
+                f"Data store: sdlc_pipeline.json — items have fields: {', '.join(dm.get('item_fields', []))}\n"
+                f"Status values: {' | '.join(dm.get('status_values', []))}\n"
+                f"Source values: {' | '.join(dm.get('source_values', []))}\n"
+                f"Agent pipeline: {' → '.join(workspace.get('pipeline_stages', []))}\n"
+                "The agent implements stories by patching index.html. "
+                "Stories must reference the actual data model and existing file structure."
             )
 
         ac_wisdom_bullets = []
@@ -1521,7 +1607,7 @@ def inception_elaborate():
             model="claude-sonnet-4-6",
             max_tokens=2000,
             system=INCEPTION_ELABORATE_PROMPT,
-            messages=[{"role": "user", "content": intent + qna_section + wisdom_section}],
+            messages=[{"role": "user", "content": intent + qna_section + ws_section + wisdom_section}],
         )
         text = next((b.text for b in response.content if hasattr(b, "text")), "")
         start, end = text.find("{"), text.rfind("}") + 1

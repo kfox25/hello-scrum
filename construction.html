@@ -307,9 +307,15 @@
         return `
           <div class="story-design-card ${hasFD ? 'approved' : ''}" id="card-${idx}" style="margin-bottom:0.75rem;">
             <div class="story-header">
-              <div class="story-text-preview">${escHtml((item.story || item.idea || '').substring(0, 120))}${(item.story||item.idea||'').length > 120 ? '…' : ''}</div>
+              <div class="story-text-preview">${escHtml(item.story || item.idea || '')}</div>
               ${statusBadge}
             </div>
+            ${(item.acceptance_criteria||[]).length ? `
+            <div class="design-section" style="margin-top:0.5rem;">
+              <div class="design-label">Acceptance Criteria</div>
+              <div class="design-list">${(item.acceptance_criteria||[]).map(c =>
+                `<div class="design-list-item">${escHtml(c)}</div>`).join('')}</div>
+            </div>` : ''}
             ${fd ? buildDesignHtml(fd) : ''}
             ${actions_html ? `<div class="design-actions">${actions_html}<div class="status-line" id="status-${idx}"></div></div>` : ''}
           </div>`;

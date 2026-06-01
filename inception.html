@@ -506,6 +506,13 @@
       const statuses= (dm.status_values|| []).join(' | ');
       const sources = (dm.source_values|| []).join(' | ');
       const pipeline= (ws.pipeline_stages || []).join(' → ');
+      const complexTypes = Object.entries(dm.field_types || {})
+        .filter(([k, v]) => v.startsWith('Array') || v === 'object');
+      const fieldTypesHtml = complexTypes.length
+        ? complexTypes.map(([k, v]) =>
+            `<div class="ws-row"><span class="ws-row-label" style="font-family:monospace;">${escHtml(k)}</span><span class="ws-row-value" style="font-family:monospace;font-size:0.72rem;color:#666;">${escHtml(v)}</span></div>`
+          ).join('')
+        : '';
       document.getElementById('workspaceContent').innerHTML = `
         <div style="margin-bottom:0.25rem;">
           <span class="ws-badge">Brownfield</span>
@@ -522,6 +529,7 @@
           <div class="ws-row"><span class="ws-row-label">fields</span><span class="ws-row-value">${escHtml(fields)}</span></div>
           <div class="ws-row"><span class="ws-row-label">status</span><span class="ws-row-value">${escHtml(statuses)}</span></div>
           <div class="ws-row"><span class="ws-row-label">source</span><span class="ws-row-value">${escHtml(sources)}</span></div>
+          ${fieldTypesHtml}
         </div>
 
         <div class="ws-block">
@@ -965,6 +973,9 @@
         `  fields: ${(dm.item_fields || []).join(', ')}`,
         `  status: ${(dm.status_values || []).join(' | ')}`,
         `  source: ${(dm.source_values || []).join(' | ')}`,
+        ...Object.entries(dm.field_types || {})
+          .filter(([k, v]) => v.startsWith('Array') || v === 'object')
+          .map(([k, v]) => `  ${k}: ${v}`),
         '',
         `Agent Pipeline: ${(ws.pipeline_stages || []).join(' → ')}`,
       ];

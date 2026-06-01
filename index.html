@@ -77,8 +77,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.66</div>
-  <div class="meta">Last deployed: 2026-05-25 22:39:40 CT</div>
+  <div class="version" id="version-badge">v0.1.229</div>
+  <div class="meta">Last deployed: 2026-06-01 18:19:25 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -106,5 +106,92 @@
     loadChangelog();
   </script>
 <script src="shared.js"></script>
+
+<!-- Sprint Quality Dashboard -->
+<section id="sprint-quality-dashboard" style="width:100%;max-width:860px;margin:2.5rem auto 1.5rem;">
+  <h2 style="font-size:1rem;color:#00ff99;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:1rem;">Sprint Quality Dashboard</h2>
+  <div style="overflow-x:auto;">
+    <table id="sqd-table" style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+      <thead>
+        <tr style="border-bottom:2px solid #00ff9944;">
+          <th style="padding:0.5rem 0.75rem;color:#7a8099;text-align:left;">Sprint</th>
+          <th style="padding:0.5rem 0.75rem;color:#7a8099;text-align:center;">Story Completion Rate</th>
+          <th style="padding:0.5rem 0.75rem;color:#7a8099;text-align:center;">Code Review Pass Rate</th>
+          <th style="padding:0.5rem 0.75rem;color:#7a8099;text-align:center;">AC Check Pass Rate</th>
+          <th style="padding:0.5rem 0.75rem;color:#7a8099;text-align:center;">Defect Escape Rate</th>
+        </tr>
+      </thead>
+      <tbody id="sqd-body">
+        <tr><td colspan="5" style="padding:1rem;color:#555;">Loading…</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<script>
+(function() {
+  function pct(num, den) {
+    if (den === 0) return '\u2014';
+    if (num === 0) return '0%';
+    return Math.round((num / den) * 100) + '%';
+  }
+
+  fetch('/sdlc_pipeline.json')
+    .then(r => r.json())
+    .then(data => {
+      var items = data.items || [];
+
+      // Collect distinct sprint numbers
+      var sprintSet = {};
+      items.forEach(function(item) {
+        if (item.sprint_number != null) sprintSet[item.sprint_number] = true;
+      });
+      var allSprints = Object.keys(sprintSet).map(Number).sort(function(a,b){return a-b;});
+      var top5 = allSprints.slice(-5);
+
+      if (top5.length === 0) {
+        document.getElementById('sqd-body').innerHTML = '<tr><td colspan="5" style="padding:1rem;color:#555;">No sprint data available.</td></tr>';
+        return;
+      }
+
+      var rows = top5.map(function(snum) {
+        var sprintItems = items.filter(function(item) { return item.sprint_number === snum; });
+
+        // Story Completion Rate: done / (done + failed)
+        var scDone = sprintItems.filter(function(i){ return i.status === 'done'; }).length;
+        var scFail = sprintItems.filter(function(i){ return i.status === 'failed'; }).length;
+        var scRate = (scDone === 0 && scFail === 0) ? '\u2014' : pct(scDone, scDone + scFail);
+
+        // Code Review Pass Rate: approve / (approve + reject)
+        var crApprove = sprintItems.filter(function(i){ return i.code_review_verdict === 'approve'; }).length;
+        var crReject = sprintItems.filter(function(i){ return i.code_review_verdict === 'reject'; }).length;
+        var crRate = (crApprove === 0 && crReject === 0) ? '\u2014' : pct(crApprove, crApprove + crReject);
+
+        // AC Check Pass Rate: approve / (approve + reject)
+        var acApprove = sprintItems.filter(function(i){ return i.ac_check_verdict === 'approve'; }).length;
+        var acReject = sprintItems.filter(function(i){ return i.ac_check_verdict === 'reject'; }).length;
+        var acRate = (acApprove === 0 && acReject === 0) ? '\u2014' : pct(acApprove, acApprove + acReject);
+
+        // Defect Escape Rate: items with non-empty test_results AND no passing test / items with non-empty test_results
+        var withTests = sprintItems.filter(function(i){ return Array.isArray(i.test_results) && i.test_results.length > 0; });
+        var escaped = withTests.filter(function(i){ return !i.test_results.some(function(t){ return t.status === 'pass'; }); });
+        var derRate = withTests.length === 0 ? '\u2014' : pct(escaped.length, withTests.length);
+
+        return '<tr style="border-bottom:1px solid #1c1c1c;">'
+          + '<td style="padding:0.5rem 0.75rem;color:#e8eaf0;text-align:left;">Sprint ' + snum + '</td>'
+          + '<td style="padding:0.5rem 0.75rem;color:#00ff99;text-align:center;">' + scRate + '</td>'
+          + '<td style="padding:0.5rem 0.75rem;color:#00ff99;text-align:center;">' + crRate + '</td>'
+          + '<td style="padding:0.5rem 0.75rem;color:#00ff99;text-align:center;">' + acRate + '</td>'
+          + '<td style="padding:0.5rem 0.75rem;color:#00ff99;text-align:center;">' + derRate + '</td>'
+          + '</tr>';
+      });
+
+      document.getElementById('sqd-body').innerHTML = rows.join('');
+    })
+    .catch(function() {
+      document.getElementById('sqd-body').innerHTML = '<tr><td colspan="5" style="padding:1rem;color:#555;">Failed to load sprint data.</td></tr>';
+    });
+})();
+</script>
 </body>
 </html>

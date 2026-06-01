@@ -1,6 +1,6 @@
 {
-  "version": "0.1.222",
-  "deployed": "2026-05-31 11:09:44 CT",
+  "version": "0.1.226",
+  "deployed": "2026-05-31 19:50:44 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1118,6 +1118,26 @@
       "version": "0.1.222",
       "date": "2026-05-31",
       "change": "Sprint Leaderboard: added Completion Rate, Code Review Pass Rate, and Test Pass Rate quality metric columns per sprint row"
+    },
+    {
+      "version": "0.1.223",
+      "date": "2026-05-31",
+      "change": "Sprint Leaderboard: section already fully implemented with Rank, Sprint Number, and Velocity columns sorted by velocity desc then sprint asc, with fallback message when no sprint data exists"
+    },
+    {
+      "version": "0.1.224",
+      "date": "2026-05-31",
+      "change": "Sprint Leaderboard quality metrics: prioritise data.items access for sdlc_pipeline.json fetch; display Completion Rate, Code Review Pass Rate, and Test Pass Rate columns with % formatting and \u2014 fallback per sprint row"
+    },
+    {
+      "version": "0.1.225",
+      "date": "2026-05-31",
+      "change": "Add Sprint Leaderboard section to index.html: fetches sdlc_pipeline.json, aggregates velocity (done story count) per sprint, renders ranked table sorted by velocity DESC then sprint ASC, with 'No sprint data available yet.' fallback"
+    },
+    {
+      "version": "0.1.226",
+      "date": "2026-05-31",
+      "change": "Enhance Sprint Leaderboard with quality metrics: adds Completion Rate, Code Review Pass Rate, and Test Pass Rate columns per sprint row; accesses data via data.items; displays '0%' for empty sprints and '\u2014' when no verdict/test data exists"
     }
   ]
 }

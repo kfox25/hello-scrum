@@ -232,6 +232,11 @@
     function buildDesignHtml(fd) {
       return `
         <div class="design-block">
+          ${fd.patch_target ? `
+          <div class="design-section">
+            <div class="design-label">Patch Target</div>
+            <div class="design-value" style="font-family:monospace;color:${fd.patch_target === 'index.html' ? '#00ff99' : '#ff4444'};">${escHtml(fd.patch_target)}</div>
+          </div>` : ''}
           <div class="design-section">
             <div class="design-label">Approach</div>
             <div class="design-value">${escHtml(fd.implementation_approach || '')}</div>

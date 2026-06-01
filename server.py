@@ -38,6 +38,7 @@ FUNCTIONAL_DESIGN_PROMPT = """You are an AI-DLC Functional Design assistant for 
 
 Return JSON only (no markdown):
 {
+  "patch_target": "index.html",
   "implementation_approach": "one sentence describing the overall approach",
   "elements_to_add": ["HTML/CSS/JS element or block to add — be specific about tag, id, class"],
   "elements_to_modify": ["existing element to modify — name its id or class and what changes"],
@@ -46,6 +47,7 @@ Return JSON only (no markdown):
 }
 
 Rules:
+- patch_target: always "index.html" — the only file the agent patches (besides version.json metadata)
 - implementation_approach: 1 sentence, max 20 words
 - 2-4 items per array, each max 15 words
 - elements_to_add: describe new HTML structure, CSS rules, or JS functions
@@ -87,6 +89,11 @@ Then generate 4-6 targeted questions to fully clarify requirements before elabor
 
 Where useful, include 3-4 mutually exclusive options (A, B, C) the human can choose from. Leave options empty [] when a free-form answer is more appropriate.
 
+CRITICAL — execution environment constraints (apply when generating options):
+- The agent only patches index.html and version.json. When generating location options, always name the actual file (e.g. "inline section in index.html") — never use conceptual names like "retrospective view", "sprint board", or "board page". These names cause the elaboration model to write the wrong file target into stories.
+- Data is sourced from sdlc_pipeline.json via fetch — never a separate API or database.
+- Verdict fields use 'approve'/'reject' not 'pass'/'fail'.
+
 Return JSON only (no markdown):
 {
   "assessment": {"type": "Feature", "scope": "Medium", "complexity": "Moderate"},
@@ -105,7 +112,14 @@ Rules:
 - stories: 2-3 user stories; each has a human-readable story, a short agent-facing idea, and 2-4 testable AC
 - bolts: 1-2 suggested sprint groupings; story_indices is a 0-based array referencing the stories array; a bolt runs its stories sequentially
 - nfrs: 2-3 non-functional requirements for the whole unit
-- risks: 2-3 risks for the whole unit"""
+- risks: 2-3 risks for the whole unit
+
+EXECUTION CONSTRAINTS — apply to every story and every AC criterion:
+- The agent patches exactly two files: index.html and version.json. Never reference retro.html, board.html, intake.html, or any other file as the implementation location. Use "index.html" explicitly — not "retrospective view", "sprint board", "backlog", or any other conceptual name.
+- Data from sdlc_pipeline.json is fetched via fetch('/sdlc_pipeline.json') and accessed as data.items (an array). Never reference localStorage. Never assume data is a bare array — always use data.items.
+- Verdict fields ac_check_verdict and code_review_verdict use values 'approve' and 'reject' — never 'pass' or 'fail'. AC that references 'pass'/'fail' for these fields will always compute 0% pass rates.
+- test_results is Array<{status, message}> — AC must specify checking with .some(t => t.status === 'pass'), never String(item.test_results).
+- For any story that adds UI to index.html, include this AC criterion verbatim: "Feature is implemented directly within index.html — no changes to any other file.\""""
 
 STORY_ELABORATION_PROMPT = """You are a scrum story writer. Given a raw idea, write a user story and acceptance criteria.
 

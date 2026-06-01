@@ -135,7 +135,7 @@
             sprintMap[sn].total++;
             if (item.status === 'done') sprintMap[sn].done++;
             if (item.code_review_verdict) { sprintMap[sn].reviewTotal++; if (item.code_review_verdict === 'approve') sprintMap[sn].reviewApprove++; }
-            if (item.test_results !== undefined && item.test_results !== null && item.test_results !== '') { sprintMap[sn].testTotal++; var tr = String(item.test_results).toLowerCase(); if (tr === 'pass' || tr === 'passed' || tr === 'true' || tr === '1') sprintMap[sn].testPass++; }
+            if (Array.isArray(item.test_results) && item.test_results.length) { sprintMap[sn].testTotal++; if (item.test_results.some(function(t) { return t.status === 'pass'; })) sprintMap[sn].testPass++; }
           });
           var sprints = Object.values(sprintMap);
           if (!sprints.length) {

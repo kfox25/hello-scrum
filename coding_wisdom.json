@@ -1,13 +1,11 @@
 {
   "bullets": [
-    "\u2022 Remove early return in loop control logic enabling multiple items per sprint aggregation.",
-    "\u2022 Escape newlines and quotes in multi-line JavaScript strings before JSON serialization.",
-    "\u2022 Preserve complete JavaScript function bodies in patches; avoid truncation mid-statement.",
-    "\u2022 Validate JSON output for control characters before patch submission to Hermes.",
-    "\u2022 Sanitize all HTML output using escHtml function in JavaScript data handling.",
-    "\u2022 Strip control characters from JSON response payloads during patch generation phase.",
-    "\u2022 test_results is an array of {status, message} objects \u2014 use Array.isArray() and .some(t => t.status === 'pass'), never String()."
+    "\u2022 Sanitize patch generation output; strip invalid control characters from JSON serialization.",
+    "\u2022 Validate patch JSON parseability before Hermes submission; reject malformed formatting.",
+    "\u2022 Distinguish code logic errors from patch formatting errors; debug separately.",
+    "\u2022 Build features incrementally; ensure new patches integrate cleanly with prior versions.",
+    "\u2022 CRITICAL: test_results is an array of {status, message} objects \u2014 NEVER use String(item.test_results) or compare it as a string. Always check: Array.isArray(item.test_results) && item.test_results.some(t => t.status === 'pass'). String() gives '[object Object]' and will always be false."
   ],
-  "synthesized_at": "2026-05-31 11:10:54",
-  "finding_count": 677
+  "synthesized_at": "2026-05-31 19:54:20",
+  "finding_count": 690
 }

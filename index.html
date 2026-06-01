@@ -58,13 +58,6 @@
     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }
     .changelog-entry .cd { color: #444; font-size: 0.73rem; }
     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }
-    #sprint-leaderboard { width: 100%; max-width: 860px; margin-top: 2rem; }
-    #sprint-leaderboard h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.75rem 0; }
-    #sprint-leaderboard table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-    #sprint-leaderboard th { color: #555; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.4rem 0.75rem; border-bottom: 1px solid #1c1c1c; text-align: center; }
-    #sprint-leaderboard td { padding: 0.45rem 0.75rem; border-top: 1px solid #1c1c1c; text-align: center; color: #e8eaf0; }
-    #sprint-leaderboard td:first-child { text-align: left; color: #00ff99; font-weight: 600; }
-    #sprint-leaderboard .lb-fallback { color: #555; font-size: 0.85rem; padding: 1rem 0; }
   </style>
 </head>
 <body>
@@ -79,18 +72,13 @@
     <a href="prompts.html">Prompts</a>
     <a href="notes.html">Notes</a>
     <a href="health.html">Health</a>
-    <a href="leaderboard.html">Leaderboard</a>
   </nav>
   <div class="hero">
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.226</div>
-  <div class="meta">Last deployed: 2026-05-31 19:50:44 CT</div>
-  <div id="sprint-leaderboard">
-    <h2>Sprint Leaderboard</h2>
-    <div id="leaderboard-content"><div class="lb-fallback">Loading sprint data…</div></div>
-  </div>
+  <div class="version" id="version-badge">v0.1.66</div>
+  <div class="meta">Last deployed: 2026-05-25 22:39:40 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -116,54 +104,6 @@
         .catch(() => {});
     }
     loadChangelog();
-
-    function loadLeaderboard() {
-      fetch('/sdlc_pipeline.json')
-        .then(r => r.json())
-        .then(data => {
-          const items = (data && data.items) ? data.items : [];
-          const sprintMap = {};
-          items.forEach(item => {
-            const sn = item.sprint_number;
-            if (sn === undefined || sn === null) return;
-            if (!sprintMap[sn]) {
-              sprintMap[sn] = { sprint: sn, total: 0, done: 0, reviewTotal: 0, reviewApprove: 0, testTotal: 0, testPass: 0 };
-            }
-            const s = sprintMap[sn];
-            s.total++;
-            if (item.status === 'done') s.done++;
-            if (item.code_review_verdict !== undefined && item.code_review_verdict !== null && item.code_review_verdict !== '') {
-              s.reviewTotal++;
-              if (item.code_review_verdict === 'approve') s.reviewApprove++;
-            }
-            if (item.test_results !== undefined && item.test_results !== null && item.test_results !== '') {
-              s.testTotal++;
-              const tr = String(item.test_results).toLowerCase();
-              if (tr.includes('pass') || tr.includes('success') || tr.includes('ok') || tr === 'true') s.testPass++;
-            }
-          });
-          const sprints = Object.values(sprintMap);
-          const el = document.getElementById('leaderboard-content');
-          if (sprints.length === 0) {
-            el.innerHTML = '<div class="lb-fallback">No sprint data available yet.</div>';
-            return;
-          }
-          sprints.sort((a, b) => b.done !== a.done ? b.done - a.done : a.sprint - b.sprint);
-          let rank = 1;
-          const rows = sprints.map(s => {
-            const completion = s.total === 0 ? '0%' : Math.round((s.done / s.total) * 100) + '%';
-            const review = s.reviewTotal === 0 ? '&mdash;' : Math.round((s.reviewApprove / s.reviewTotal) * 100) + '%';
-            const test = s.testTotal === 0 ? '&mdash;' : Math.round((s.testPass / s.testTotal) * 100) + '%';
-            return `<tr><td>#${rank++} Sprint ${escHtml(String(s.sprint))}</td><td>${s.done}</td><td>${completion}</td><td>${review}</td><td>${test}</td></tr>`;
-          }).join('');
-          el.innerHTML = `<table><thead><tr><th>Sprint</th><th>Velocity</th><th>Completion Rate</th><th>Code Review Pass Rate</th><th>Test Pass Rate</th></tr></thead><tbody>${rows}</tbody></table>`;
-        })
-        .catch(() => {
-          const el = document.getElementById('leaderboard-content');
-          if (el) el.innerHTML = '<div class="lb-fallback">No sprint data available yet.</div>';
-        });
-    }
-    loadLeaderboard();
   </script>
 <script src="shared.js"></script>
 </body>

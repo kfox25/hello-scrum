@@ -107,6 +107,9 @@
     .btn-red:hover { border-color: #ff4444; }
     .btn-grey { background: #111; color: #666; border-color: #2a2a2a; }
     .btn-grey:hover { border-color: #555; color: #aaa; }
+    .btn-copy { background: #0a0f1f; color: #00ff99; border: 1px solid #00ff9940; }
+    .btn-copy:hover { border-color: #00ff99; background: #0d2a1a; }
+    .copy-confirm { font-size: 0.78rem; color: #00ff9980; display: none; }
 
     .status-line { font-size: 0.75rem; color: #555; }
     .status-line.active { color: #00ff9980; }
@@ -198,6 +201,8 @@
         <div class="sprint-actions" id="sprintActions" style="display:none;">
           <a class="btn" href="/">Go to Sprint Board →</a>
           <span class="status-line" id="sprintStatus"></span>
+          <button class="btn btn-sm btn-copy" style="margin-left:auto;" onclick="copyAllDesigns()">Copy</button>
+          <span class="copy-confirm" id="copyConfirm">copied</span>
         </div>
       </div>
     </div>
@@ -332,6 +337,26 @@
         statusEl.textContent = 'Error: ' + e.message;
         statusEl.className = 'status-line error';
       }
+    }
+
+    function copyAllDesigns() {
+      const lines = [];
+      sprintItems.forEach(item => {
+        const fd = item.functional_design;
+        if (!fd) return;
+        lines.push('Story: ' + (item.story || item.idea || ''));
+        if (fd.implementation_approach) lines.push('Approach: ' + fd.implementation_approach);
+        if ((fd.elements_to_add||[]).length) { lines.push('Add:'); fd.elements_to_add.forEach(e => lines.push('  · ' + e)); }
+        if ((fd.elements_to_modify||[]).length) { lines.push('Modify:'); fd.elements_to_modify.forEach(e => lines.push('  · ' + e)); }
+        if ((fd.existing_elements_touched||[]).length) lines.push('Touches: ' + fd.existing_elements_touched.join(', '));
+        if ((fd.risks||[]).length) { lines.push('Risks:'); fd.risks.forEach(e => lines.push('  · ' + e)); }
+        lines.push('');
+      });
+      if (!lines.length) return;
+      navigator.clipboard.writeText(lines.join('\n'));
+      const el = document.getElementById('copyConfirm');
+      el.style.display = 'inline';
+      setTimeout(() => { el.style.display = 'none'; }, 2000);
     }
 
     async function clearDesign(idx) {

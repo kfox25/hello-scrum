@@ -28,6 +28,7 @@ app = Flask(__name__)
 BASE = os.path.dirname(os.path.abspath(__file__))
 SDLC_PIPELINE_FILE = os.path.join(BASE, "sdlc_pipeline.json")
 ACTIVE_FILE  = os.path.join(BASE, "active.json")
+INDEX_FILE   = "index.html"
 
 agent_running = False
 agent_lock = threading.Lock()

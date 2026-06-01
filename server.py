@@ -1653,7 +1653,8 @@ def inception_workspace():
                     parts = []
                     for k, vals in key_enums.items():
                         if len(vals) <= 5:
-                            parts.append(f'{k}: {"|".join(sorted(f\'"{v}"\' for v in vals))}')
+                            enum_str = '|'.join(sorted('"' + v + '"' for v in vals))
+                            parts.append(f'{k}: {enum_str}')
                         else:
                             parts.append(f'{k}: string')
                     return 'Array<{' + ', '.join(parts) + '}>'

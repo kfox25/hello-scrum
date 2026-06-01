@@ -104,9 +104,22 @@
       padding: 0.65rem 0.9rem;
       margin-bottom: 0.6rem;
       display: flex;
+      flex-direction: column;
+      gap: 0;
+      cursor: default;
+    }
+    .card-top {
+      display: flex;
       align-items: center;
       gap: 0.65rem;
-      cursor: default;
+    }
+    .card-footer {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+      padding-top: 0.35rem;
+      border-top: 1px solid #1e1e1e;
     }
     .card.pending { cursor: grab; }
     .card.pending:active { cursor: grabbing; }
@@ -177,8 +190,6 @@
       font-size: 0.62rem; padding: 0.1rem 0.4rem; border-radius: 3px; flex-shrink: 0;
       background: #1a0a1f; color: #cc88ff; border: 1px solid #cc88ff30;
     }
-    .watercooler-collapsed { }
-    .card.expanded .watercooler-collapsed { display: none; }
     .retry-btn {
       font-family: monospace;
       font-size: 0.85rem;
@@ -479,19 +490,17 @@
       }
 
       const sourceTag = item.source === 'team_chat'
-        ? `<span class="messenger-tag">&#8592; Team Chat</span>`
+        ? `<span class="messenger-tag">Team Chat</span>`
         : item.source === 'inception'
-        ? `<span class="inception-tag">&#8592; Inception</span>`
+        ? `<span class="inception-tag">Inception</span>`
         : (item.meeting_update || item.source === 'watercooler')
-        ? `<span class="watercooler-tag" title="${escHtml(item.meeting_update || 'Added from watercooler')}">&#8592; Watercooler</span>`
+        ? `<span class="watercooler-tag" title="${escHtml(item.meeting_update || 'Added from watercooler')}">Watercooler</span>`
         : '';
       const wcTag = sourceTag;
-      const lastAC = hasAC ? item.acceptance_criteria.length - 1 : -1;
       const acHtml = hasAC
         ? `<div class="card-ac">${item.acceptance_criteria.map((c, idx) => `
           <div class="ac-item">
             <span class="ac-item-text">· ${escHtml(c)}</span>
-            ${idx === lastAC ? wcTag : ''}
             ${isPending && !item.in_sprint ? `<button class="ac-edit-btn" onclick="editAC('${item.id}',${idx},event)" title="Edit">✎</button>` : ''}
           </div>`).join('')}</div>`
         : '';
@@ -506,18 +515,22 @@
                    ondragover="onCardDragOver(event)"
                    ondragleave="onCardDragLeave(event)"
                    ondrop="onCardDrop(event)">
-        ${handle}
-        <div class="card-content">
-          <div class="card-idea"><span>${escHtml(item.idea)}</span>${editBtn}</div>
-          <div class="card-id">#${item.id}</div>
-          ${storyLine}
-          ${acHtml}
-          ${expandBtn}
+        <div class="card-top">
+          ${handle}
+          <div class="card-content">
+            <div class="card-idea"><span>${escHtml(item.idea)}</span>${editBtn}</div>
+            <div class="card-id">#${item.id}</div>
+            ${storyLine}
+            ${acHtml}
+            ${expandBtn}
+          </div>
+          ${retryBtn}
+          ${deleteBtn}
         </div>
-        ${item.source === 'team_chat' ? `<span class="messenger-tag watercooler-collapsed">Team Chat</span>` : item.source === 'inception' ? `<span class="inception-tag watercooler-collapsed">Inception</span>` : (item.meeting_update || item.source === 'watercooler') ? `<span class="watercooler-tag watercooler-collapsed" title="${escHtml(item.meeting_update || '')}">Watercooler</span>` : ''}
-        <span class="badge badge-${item.status}">${item.status}</span>
-        ${retryBtn}
-        ${deleteBtn}
+        <div class="card-footer">
+          ${sourceTag}
+          <span class="badge badge-${item.status}">${item.status}</span>
+        </div>
       </div>`;
     }
 

@@ -764,7 +764,7 @@ def load_workspace_context():
         sources  = " | ".join(dm.get("source_values", []))
         pipeline = " → ".join(ws.get("pipeline_stages", []))
         field_types = dm.get("field_types", {})
-        complex_types = {k: v for k, v in field_types.items() if v.startswith("Array") or v == "object"}
+        complex_types = {k: v for k, v in field_types.items() if v.startswith("Array") or v.startswith("object")}
         lines = [
             "WORKSPACE CONTEXT (from last inception run):",
             f"Data store: sdlc_pipeline.json — item fields: {fields}",

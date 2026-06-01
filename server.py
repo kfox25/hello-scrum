@@ -1452,7 +1452,7 @@ def construction_design():
             with open(os.path.join(BASE, "workspace_context.json"), encoding="utf-8") as f:
                 ws = json.load(f)
             dm = ws.get("data_model", {})
-            ft = {k: v for k, v in dm.get('field_types', {}).items() if v.startswith('Array') or v == 'object'}
+            ft = {k: v for k, v in dm.get('field_types', {}).items() if v.startswith('Array') or v.startswith('object')}
             ft_line = ('\nField types: ' + '; '.join(f'{k}: {v}' for k, v in ft.items())) if ft else ''
             ws_ctx = (
                 f"\nData store fields: {', '.join(dm.get('item_fields', []))}\n"
@@ -1672,7 +1672,8 @@ def inception_workspace():
                     return '|'.join(f'"{d}"' for d in distinct)
                 return 'string'
             elif isinstance(sample, dict):
-                return 'object'
+                all_keys = sorted(set(k for s in non_null if isinstance(s, dict) for k in s.keys()))
+                return ('object<{' + ', '.join(all_keys) + '}>') if all_keys else 'object'
             return type(sample).__name__
 
         data_model = {}
@@ -1984,7 +1985,7 @@ def inception_elaborate():
         re_ctx     = (data or {}).get("reverse_engineering", {})
         ws_section = ""
         def _field_types_line(dm):
-            ft = {k: v for k, v in dm.get('field_types', {}).items() if v.startswith('Array') or v == 'object'}
+            ft = {k: v for k, v in dm.get('field_types', {}).items() if v.startswith('Array') or v.startswith('object')}
             return ('Field types (complex — use exact access patterns): ' + '; '.join(f'{k}: {v}' for k, v in ft.items()) + '\n') if ft else ''
 
         if re_ctx and re_ctx.get("architecture_summary"):

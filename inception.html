@@ -507,7 +507,7 @@
       const sources = (dm.source_values|| []).join(' | ');
       const pipeline= (ws.pipeline_stages || []).join(' → ');
       const complexTypes = Object.entries(dm.field_types || {})
-        .filter(([k, v]) => v.startsWith('Array') || v === 'object');
+        .filter(([k, v]) => v.startsWith('Array') || v.startsWith('object'));
       const fieldTypesHtml = complexTypes.length
         ? complexTypes.map(([k, v]) =>
             `<div class="ws-row"><span class="ws-row-label" style="font-family:monospace;">${escHtml(k)}</span><span class="ws-row-value" style="font-family:monospace;font-size:0.72rem;color:#999;">${escHtml(v)}</span></div>`
@@ -974,7 +974,7 @@
         `  status: ${(dm.status_values || []).join(' | ')}`,
         `  source: ${(dm.source_values || []).join(' | ')}`,
         ...Object.entries(dm.field_types || {})
-          .filter(([k, v]) => v.startsWith('Array') || v === 'object')
+          .filter(([k, v]) => v.startsWith('Array') || v.startsWith('object'))
           .map(([k, v]) => `  ${k}: ${v}`),
         '',
         `Agent Pipeline: ${(ws.pipeline_stages || []).join(' → ')}`,

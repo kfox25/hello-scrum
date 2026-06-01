@@ -1668,7 +1668,9 @@ def inception_workspace():
                 return 'number'
             elif isinstance(sample, str):
                 distinct = sorted(set(str(s) for s in non_null))
-                return '|'.join(f'"{d}"' for d in distinct) if len(distinct) <= 6 else 'string'
+                if len(distinct) <= 6 and all(len(d) <= 40 for d in distinct):
+                    return '|'.join(f'"{d}"' for d in distinct)
+                return 'string'
             elif isinstance(sample, dict):
                 return 'object'
             return type(sample).__name__

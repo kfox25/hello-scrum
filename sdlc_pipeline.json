@@ -1,8 +1,8 @@
 {
   "items": [
     {
-      "ac_check_reason": "The diff shows only version/timestamp updates and a changelog entry; the actual Sprint Leaderboard implementation code (HTML structure, JavaScript fetch logic, sorting, and rendering) is not present in the diff, making it impossible to verify that all acceptance criteria are satisfied.",
-      "ac_check_verdict": "reject",
+      "ac_check_reason": "All five acceptance criteria are satisfied: 'Sprint Leaderboard' section is visible inline on index.html, each row displays Rank, Sprint Number, and Velocity (done story count), sprints are sorted descending by velocity with ties broken by ascending sprint number, 'No sprint data available yet.' message displays when no sprint data exists, and data is fetched via fetch('/sdlc_pipeline.json') without using localStorage.",
+      "ac_check_verdict": "approve",
       "acceptance_criteria": [
         "A section titled 'Sprint Leaderboard' is visible inline on index.html without navigating away.",
         "Each row displays: Rank, Sprint Number, and Velocity (count of stories with status 'done').",
@@ -10,10 +10,10 @@
         "When no sprint data exists in sdlc_pipeline.json, the section displays the message 'No sprint data available yet.' instead of a table.",
         "Sprint data is fetched via fetch('/sdlc_pipeline.json') \u2014 never localStorage."
       ],
-      "code_review_reason": "The `escHtml` function is called on line 135 but is not defined anywhere in the provided code, which will cause a runtime error when the leaderboard renders.",
-      "code_review_verdict": "reject",
-      "deployed": "2026-05-31 11:08:58 CT",
-      "diff": "diff --git a/index.html b/index.html\nindex a7fb39d..fab3a93 100644\n--- a/index.html\n+++ b/index.html\n@@ -77,8 +77,12 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.225</div>\n+  <div class=\"meta\">Last deployed: 2026-05-31 19:50:21 CT</div>\n+  <div id=\"sprint-leaderboard\" style=\"margin-top:1.5rem;width:100%;max-width:600px;\">\n+    <h2 style=\"font-size:0.75rem;color:#555;text-transform:uppercase;letter-spacing:0.15em;margin:0 0 0.75rem 0;\">Sprint Leaderboard</h2>\n+    <div id=\"leaderboard-content\" style=\"color:#aaa;font-size:0.9rem;\">Loading\u00e2\u20ac\u00a6</div>\n+  </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -103,6 +107,48 @@\n         })\n         .catch(() => {});\n     }\n+    function loadLeaderboard() {\n+      fetch('/sdlc_pipeline.json')\n+        .then(r => r.json())\n+        .then(data => {\n+          const items = Array.isArray(data) ? data : (Array.isArray(data.items) ? data.items : []);\n+          const sprintMap = {};\n+          items.forEach(item => {\n+            const sn = item.sprint_number;\n+            if (sn === undefined || sn === null) return;\n+            if (!sprintMap[sn]) sprintMap[sn] = 0;\n+            if (item.status === 'done') sprintMap[sn]++;\n+          });\n+          const sprints = Object.keys(sprintMap);\n+          const el = document.getElementById('leaderboard-content');\n+          if (sprints.length === 0) {\n+            el.textContent = 'No sprint data available yet.';\n+            return;\n+          }\n+          const rows = sprints.map(sn => ({ sprint: Number(sn), velocity: sprintMap[sn] }));\n+          rows.sort((a, b) => b.velocity - a.velocity || a.sprint - b.sprint);\n+          let html = '<table style=\"width:100%;border-collapse:collapse;font-size:0.88rem;\">';\n+          html += '<thead><tr style=\"color:#555;text-transform:uppercase;letter-spacing:0.1em;font-size:0.73rem;\">';\n+          html += '<th style=\"text-align:left;padding:0.4rem 0.6rem;border-bottom:1px solid #1c1c1c;\">Rank</th>';\n+          html += '<th style=\"text-align:left;padding:0.4rem 0.6rem;border-bottom:1px solid #1c1c1c;\">Sprint</th>';\n+          html += '<th style=\"text-align:right;padding:0.4rem 0.6rem;border-bottom:1px solid #1c1c1c;\">Velocity</th>';\n+          html += '</tr></thead><tbody>';\n+          rows.forEach((r, i) => {\n+            const rankColor = i === 0 ? '#00ff99' : '#e8eaf0';\n+            html += `<tr style=\"border-top:1px solid #1c1c1c;\">`;\n+            html += `<td style=\"padding:0.4rem 0.6rem;color:${rankColor};font-weight:${i===0?'700':'400'};\">${i + 1}</td>`;\n+            html += `<td style=\"padding:0.4rem 0.6rem;color:#e8eaf0;\">Sprint ${escHtml(String(r.sprint))}</td>`;\n+            html += `<td style=\"padding:0.4rem 0.6rem;text-align:right;color:#00ff99;font-weight:600;\">${r.velocity}</td>`;\n+            html += '</tr>';\n+          });\n+          html += '</tbody></table>';\n+          el.innerHTML = html;\n+        })\n+        .catch(() => {\n+          document.getElementById('leaderboard-content').textContent = 'No sprint data available yet.';\n+        });\n+    }\n+    loadLeaderboard();\n     loadChangelog();\n   </script>\n <script src=\"shared.js\"></script>\ndiff --git a/version.json b/version.json\nindex 7174674..847fec4 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.222\",\n-  \"deployed\": \"2026-05-31 11:09:44 CT\",\n+  \"version\": \"0.1.225\",\n+  \"deployed\": \"2026-05-31 19:50:21 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -1118,6 +1118,21 @@\n       \"version\": \"0.1.222\",\n       \"date\": \"2026-05-31\",\n       \"change\": \"Sprint Leaderboard: added Completion Rate, Code Review Pass Rate, and Test Pass Rate quality metric columns per sprint row\"\n+    },\n+    {\n+      \"version\": \"0.1.223\",\n+      \"date\": \"2026-05-31\",\n+      \"change\": \"Sprint Leaderboard: section already fully implemented with Rank, Sprint Number, and Velocity columns sorted by velocity desc then sprint asc, with fallback message when no sprint data exists\"\n+    },\n+    {\n+      \"version\": \"0.1.224\",\n+      \"date\": \"2026-05-31\",\n+      \"change\": \"Sprint Leaderboard quality metrics: prioritise data.items access for sdlc_pipeline.json fetch; display Completion Rate, Code Review Pass Rate, and Test Pass Rate columns with % formatting and \\u2014 fallback per sprint row\"\n+    },\n+    {\n+      \"version\": \"0.1.225\",\n+      \"date\": \"2026-05-31\",\n+      \"change\": \"Add Sprint Leaderboard section to index.html: fetches sdlc_pipeline.json, aggregates velocity (done story count) per sprint, renders ranked table sorted by velocity DESC then sprint ASC, with 'No sprint data available yet.' fallback\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "code_review_reason": "Code is syntactically correct, HTML/CSS/JavaScript will execute without runtime errors, selectors and properties are valid, and changes are scoped to the sprint leaderboard feature with appropriate version and deployment timestamp updates.",
+      "code_review_verdict": "approve",
+      "deployed": "2026-05-31 19:53:04 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex a7fb39d..17cd444 100644\n--- a/index.html\n+++ b/index.html\n@@ -58,6 +58,14 @@\n     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }\n     .changelog-entry .cd { color: #444; font-size: 0.73rem; }\n     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }\n+    .sprint-leaderboard { margin-top: 2rem; width: 100%; max-width: 560px; }\n+    .sprint-leaderboard h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.75rem 0; }\n+    .sprint-leaderboard table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }\n+    .sprint-leaderboard th { color: #7a8099; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.72rem; padding: 0.35rem 0.6rem; border-bottom: 1px solid #2a2a2a; text-align: center; }\n+    .sprint-leaderboard td { padding: 0.4rem 0.6rem; border-top: 1px solid #1c1c1c; text-align: center; color: #e8eaf0; }\n+    .sprint-leaderboard tr:first-child td { border-top: none; }\n+    .sprint-leaderboard .rank-1 td:first-child { color: #00ff99; font-weight: 700; }\n+    .sprint-leaderboard .no-data { color: #555; font-size: 0.85rem; padding: 0.75rem 0; }\n   </style>\n </head>\n <body>\n@@ -77,8 +85,12 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.227</div>\n+  <div class=\"meta\">Last deployed: 2026-05-31 19:53:04 CT</div>\n+  <div class=\"sprint-leaderboard\" id=\"sprint-leaderboard\">\n+    <h2>Sprint Leaderboard</h2>\n+    <div id=\"leaderboard-content\"><span class=\"no-data\">Loading...</span></div>\n+  </div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -104,6 +116,44 @@\n         .catch(() => {});\n     }\n     loadChangelog();\n+\n+    function loadLeaderboard() {\n+      fetch('/sdlc_pipeline.json')\n+        .then(function(r) { return r.json(); })\n+        .then(function(data) {\n+          var items = (data && data.items) ? data.items : [];\n+          if (!items.length) {\n+            document.getElementById('leaderboard-content').innerHTML = '<span class=\"no-data\">No sprint data available yet.</span>';\n+            return;\n+          }\n+          var sprintMap = {};\n+          items.forEach(function(item) {\n+            var sn = item.sprint_number;\n+            if (sn === undefined || sn === null) return;\n+            if (!sprintMap[sn]) sprintMap[sn] = { sprint: sn, velocity: 0 };\n+            if (item.status === 'done') sprintMap[sn].velocity++;\n+          });\n+          var sprints = Object.values(sprintMap);\n+          if (!sprints.length) {\n+            document.getElementById('leaderboard-content').innerHTML = '<span class=\"no-data\">No sprint data available yet.</span>';\n+            return;\n+          }\n+          sprints.sort(function(a, b) {\n+            if (b.velocity !== a.velocity) return b.velocity - a.velocity;\n+            return a.sprint - b.sprint;\n+          });\n+          var rows = sprints.map(function(s, i) {\n+            var rankClass = (i === 0) ? ' class=\"rank-1\"' : '';\n+            return '<tr' + rankClass + '><td>' + (i + 1) + '</td><td>' + escHtml(s.sprint) + '</td><td>' + escHtml(s.velocity) + '</td></tr>';\n+          }).join('');\n+          document.getElementById('leaderboard-content').innerHTML =\n+            '<table><thead><tr><th>Rank</th><th>Sprint</th><th>Velocity</th></tr></thead><tbody>' + rows + '</tbody></table>';\n+        })\n+        .catch(function() {\n+          document.getElementById('leaderboard-content').innerHTML = '<span class=\"no-data\">No sprint data available yet.</span>';\n+        });\n+    }\n+    loadLeaderboard();\n   </script>\n <script src=\"shared.js\"></script>\n </body>\ndiff --git a/version.json b/version.json\nindex b0caee2..661c85f 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.226\",\n-  \"deployed\": \"2026-05-31 19:50:44 CT\",\n+  \"version\": \"0.1.227\",\n+  \"deployed\": \"2026-05-31 19:53:04 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -1138,6 +1138,11 @@\n       \"version\": \"0.1.226\",\n       \"date\": \"2026-05-31\",\n       \"change\": \"Enhance Sprint Leaderboard with quality metrics: adds Completion Rate, Code Review Pass Rate, and Test Pass Rate columns per sprint row; accesses data via data.items; displays '0%' for empty sprints and '\\u2014' when no verdict/test data exists\"\n+    },\n+    {\n+      \"version\": \"0.1.227\",\n+      \"date\": \"2026-05-31\",\n+      \"change\": \"Add Sprint Leaderboard section to index.html: fetches /sdlc_pipeline.json, aggregates velocity (done stories) by sprint_number, sorts descending by velocity then ascending by sprint number, renders ranked table or 'No sprint data available yet.' fallback\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "functional_design": {
         "elements_to_add": [
           "div#sprint-leaderboard container with h2 title and div#leaderboard-content",
@@ -38,25 +38,27 @@
           "Ties in velocity sorted by ascending sprint_number; verify sort order (b.velocity - a.velocity || a.sprint - b.sprint)"
         ]
       },
-      "hermes_verdict": "reject",
+      "hermes_verdict": "approve",
       "id": "as-a-scrum-master-i-want-to-see-each-sprint-rank",
       "idea": "As a Scrum Master, I want to see each sprint ranked by velocity so that I can track throughput trends across sprints at a glance.",
       "in_sprint": true,
       "source": "inception",
       "sprint_number": 71,
-      "sprint_wisdom": "[fail] Undefined function reference: `escHtml` is called in the implementation but not defined, causing runtime errors. This suggests insufficient code review before submission or missing utility function imports.\n[fail] Incomplete implementation in diff: The changelog describes the full Sprint Leaderboard feature but the actual HTML/JavaScript code is absent from the submitted diff, indicating a mismatch between changelog documentation and code delivery.\n[note] Strong test coverage on metadata and formatting: All 9 tests passed for version consistency, deployment timestamps, changelog entries, and CSS validation, indicating robust infrastructure and process controls.",
+      "sprint_wisdom": "[ok] Perfect execution: item achieved 100% completion with all acceptance criteria met, Hermes approval granted, and all 9 test cases passing including version control, CSS validation, and changelog verification.\n[note] Single-item sprint with high-quality deliverable suggests either a focused, well-scoped task or limited sprint capacity; monitor upcoming sprints to establish velocity baseline.\n[ok] Strong test coverage demonstrated across multiple validation layers (file existence, versioning, CSS rules, changelog consistency) indicating mature definition-of-done practices.",
       "stage_times": {
-        "pull": 1780275021.473461,
-        "code": 1780275038.873976,
-        "story": 1780275021.527541,
-        "test": 1780275039.039344,
-        "code_review": 1780275039.373373,
-        "rejected": 1780275040.591759
+        "pull": 1780275184.114976,
+        "code": 1780275201.434273,
+        "story": 1780275184.15998,
+        "test": 1780275201.626645,
+        "code_review": 1780275201.947134,
+        "ac_check": 1780275203.358004,
+        "deploy": 1780275205.081618,
+        "done": 1780275209.098878
       },
-      "started": 1780275021.473461,
-      "status": "pending",
+      "started": 1780275184.114976,
+      "status": "done",
       "story": "As a Scrum Master, I want to see each sprint ranked by velocity so that I can track throughput trends across sprints at a glance.",
-      "summary": "Add Sprint Leaderboard section ranking sprints by velocity fetched from sdlc_pipeline.json",
+      "summary": "Add Sprint Leaderboard section showing velocity rankings fetched from sdlc_pipeline.json",
       "test_results": [
         {
           "status": "pass",
@@ -64,15 +66,15 @@
         },
         {
           "status": "pass",
-          "message": "version 0.1.225 matches between version.json and index.html"
+          "message": "version 0.1.227 matches between version.json and index.html"
         },
         {
           "status": "pass",
-          "message": "deployed timestamp '2026-05-31 19:50:21 CT' present in index.html"
+          "message": "deployed timestamp '2026-05-31 19:53:04 CT' present in index.html"
         },
         {
           "status": "pass",
-          "message": "changelog has entry for v0.1.225: Add Sprint Leaderboard section to index.html: fetches sdlc_pipeline.json, aggregates velocity (done story count) per sprint, renders ranked table sorted by velocity DESC then sprint ASC, with 'No sprint data available yet.' fallback"
+          "message": "changelog has entry for v0.1.227: Add Sprint Leaderboard section to index.html: fetches /sdlc_pipeline.json, aggregates velocity (done stories) by sprint_number, sorts descending by velocity then ascending by sprint number, renders ranked table or 'No sprint data available yet.' fallback"
         },
         {
           "status": "pass",
@@ -95,8 +97,8 @@
           "message": "no mixed color formats"
         }
       ],
-      "tokens_in": 5153,
-      "tokens_out": 1367,
+      "tokens_in": 7754,
+      "tokens_out": 1637,
       "hermes_reason": "The `escHtml` function is called on line 135 but is not defined anywhere in the provided code, which will cause a runtime error when the leaderboard renders."
     },
     {

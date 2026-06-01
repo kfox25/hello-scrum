@@ -85,8 +85,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.227</div>
-  <div class="meta">Last deployed: 2026-05-31 19:53:04 CT</div>
+  <div class="version" id="version-badge">v0.1.228</div>
+  <div class="meta">Last deployed: 2026-05-31 19:53:32 CT</div>
   <div class="sprint-leaderboard" id="sprint-leaderboard">
     <h2>Sprint Leaderboard</h2>
     <div id="leaderboard-content"><span class="no-data">Loading...</span></div>
@@ -130,8 +130,12 @@
           items.forEach(function(item) {
             var sn = item.sprint_number;
             if (sn === undefined || sn === null) return;
-            if (!sprintMap[sn]) sprintMap[sn] = { sprint: sn, velocity: 0 };
+            if (!sprintMap[sn]) sprintMap[sn] = { sprint: sn, velocity: 0, total: 0, done: 0, reviewTotal: 0, reviewApprove: 0, testTotal: 0, testPass: 0 };
             if (item.status === 'done') sprintMap[sn].velocity++;
+            sprintMap[sn].total++;
+            if (item.status === 'done') sprintMap[sn].done++;
+            if (item.code_review_verdict) { sprintMap[sn].reviewTotal++; if (item.code_review_verdict === 'approve') sprintMap[sn].reviewApprove++; }
+            if (item.test_results !== undefined && item.test_results !== null && item.test_results !== '') { sprintMap[sn].testTotal++; var tr = String(item.test_results).toLowerCase(); if (tr === 'pass' || tr === 'passed' || tr === 'true' || tr === '1') sprintMap[sn].testPass++; }
           });
           var sprints = Object.values(sprintMap);
           if (!sprints.length) {
@@ -144,10 +148,13 @@
           });
           var rows = sprints.map(function(s, i) {
             var rankClass = (i === 0) ? ' class="rank-1"' : '';
-            return '<tr' + rankClass + '><td>' + (i + 1) + '</td><td>' + escHtml(s.sprint) + '</td><td>' + escHtml(s.velocity) + '</td></tr>';
+            var completionRate = s.total === 0 ? '0%' : Math.round(s.done / s.total * 100) + '%';
+            var reviewRate = s.reviewTotal === 0 ? '&mdash;' : Math.round(s.reviewApprove / s.reviewTotal * 100) + '%';
+            var testRate = s.testTotal === 0 ? '&mdash;' : Math.round(s.testPass / s.testTotal * 100) + '%';
+            return '<tr' + rankClass + '><td>' + (i + 1) + '</td><td>' + escHtml(s.sprint) + '</td><td>' + escHtml(s.velocity) + '</td><td>' + completionRate + '</td><td>' + reviewRate + '</td><td>' + testRate + '</td></tr>';
           }).join('');
           document.getElementById('leaderboard-content').innerHTML =
-            '<table><thead><tr><th>Rank</th><th>Sprint</th><th>Velocity</th></tr></thead><tbody>' + rows + '</tbody></table>';
+            '<table><thead><tr><th>Rank</th><th>Sprint</th><th>Velocity</th><th>Completion Rate</th><th>Code Review Pass Rate</th><th>Test Pass Rate</th></tr></thead><tbody>' + rows + '</tbody></table>';
         })
         .catch(function() {
           document.getElementById('leaderboard-content').innerHTML = '<span class="no-data">No sprint data available yet.</span>';

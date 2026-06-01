@@ -1,6 +1,6 @@
 {
-  "version": "0.1.227",
-  "deployed": "2026-05-31 19:53:04 CT",
+  "version": "0.1.228",
+  "deployed": "2026-05-31 19:53:32 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1143,6 +1143,11 @@
       "version": "0.1.227",
       "date": "2026-05-31",
       "change": "Add Sprint Leaderboard section to index.html: fetches /sdlc_pipeline.json, aggregates velocity (done stories) by sprint_number, sorts descending by velocity then ascending by sprint number, renders ranked table or 'No sprint data available yet.' fallback"
+    },
+    {
+      "version": "0.1.228",
+      "date": "2026-05-31",
+      "change": "Add quality metrics columns to Sprint Leaderboard: Completion Rate (done/total stories), Code Review Pass Rate (approve verdicts), and Test Pass Rate (passing test_results), with '\u2014' fallback when no data and percentage rounding"
     }
   ]
 }

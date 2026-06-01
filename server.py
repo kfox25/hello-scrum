@@ -1452,10 +1452,13 @@ def construction_design():
             with open(os.path.join(BASE, "workspace_context.json"), encoding="utf-8") as f:
                 ws = json.load(f)
             dm = ws.get("data_model", {})
+            ft = {k: v for k, v in dm.get('field_types', {}).items() if v.startswith('Array') or v == 'object'}
+            ft_line = ('\nField types: ' + '; '.join(f'{k}: {v}' for k, v in ft.items())) if ft else ''
             ws_ctx = (
                 f"\nData store fields: {', '.join(dm.get('item_fields', []))}\n"
                 f"Status values: {' | '.join(dm.get('status_values', []))}\n"
                 f"Pipeline: {' → '.join(ws.get('pipeline_stages', []))}"
+                f"{ft_line}"
             )
         except Exception:
             pass
@@ -1631,6 +1634,44 @@ def inception_workspace():
             if os.path.exists(os.path.join(BASE, f))
         ]
 
+        def infer_field_type(samples):
+            non_null = [s for s in samples if s is not None and s != '']
+            if not non_null:
+                return None
+            sample = non_null[0]
+            if isinstance(sample, list):
+                inner = next((x for s in non_null if isinstance(s, list) for x in s), None)
+                if inner is None:
+                    return 'Array'
+                if isinstance(inner, dict):
+                    key_enums = {}
+                    for lst in non_null:
+                        for obj in (lst if isinstance(lst, list) else []):
+                            if isinstance(obj, dict):
+                                for k, v in obj.items():
+                                    key_enums.setdefault(k, set()).add(str(v) if not isinstance(v, str) else v)
+                    parts = []
+                    for k, vals in key_enums.items():
+                        if len(vals) <= 5:
+                            parts.append(f'{k}: {"|".join(sorted(f\'"{v}"\' for v in vals))}')
+                        else:
+                            parts.append(f'{k}: string')
+                    return 'Array<{' + ', '.join(parts) + '}>'
+                elif isinstance(inner, str):
+                    return 'Array<string>'
+                else:
+                    return f'Array<{type(inner).__name__}>'
+            elif isinstance(sample, bool):
+                return 'boolean'
+            elif isinstance(sample, (int, float)):
+                return 'number'
+            elif isinstance(sample, str):
+                distinct = sorted(set(str(s) for s in non_null))
+                return '|'.join(f'"{d}"' for d in distinct) if len(distinct) <= 6 else 'string'
+            elif isinstance(sample, dict):
+                return 'object'
+            return type(sample).__name__
+
         data_model = {}
         item_count = 0
         try:
@@ -1642,10 +1683,17 @@ def inception_workspace():
                 fields   = list(items[0].keys())
                 statuses = sorted(set(i.get('status', '') for i in items if i.get('status')))
                 sources  = sorted(set(i.get('source', '') for i in items if i.get('source')))
+                sample_items = items[:50]
+                field_types = {}
+                for field in fields:
+                    inferred = infer_field_type([i.get(field) for i in sample_items])
+                    if inferred:
+                        field_types[field] = inferred
                 data_model = {
                     'item_fields':   fields,
                     'status_values': statuses,
                     'source_values': sources,
+                    'field_types':   field_types,
                 }
         except Exception:
             pass
@@ -1932,6 +1980,10 @@ def inception_elaborate():
 
         re_ctx     = (data or {}).get("reverse_engineering", {})
         ws_section = ""
+        def _field_types_line(dm):
+            ft = {k: v for k, v in dm.get('field_types', {}).items() if v.startswith('Array') or v == 'object'}
+            return ('Field types (complex — use exact access patterns): ' + '; '.join(f'{k}: {v}' for k, v in ft.items()) + '\n') if ft else ''
+
         if re_ctx and re_ctx.get("architecture_summary"):
             dm = workspace.get("data_model", {}) if workspace else {}
             txns = re_ctx.get("business_transactions", [])
@@ -1949,6 +2001,7 @@ def inception_elaborate():
                 f"Data store: sdlc_pipeline.json — fields: {', '.join(dm.get('item_fields', []))}\n"
                 f"Status values: {' | '.join(dm.get('status_values', []))}\n"
                 f"Source values: {' | '.join(dm.get('source_values', []))}\n"
+                f"{_field_types_line(dm)}"
                 f"Agent pipeline: {' → '.join(workspace.get('pipeline_stages', []) if workspace else [])}\n"
                 "The agent implements stories by patching index.html. "
                 "Stories must reference the actual data model and existing file structure."
@@ -1961,6 +2014,7 @@ def inception_elaborate():
                 f"Data store: sdlc_pipeline.json — items have fields: {', '.join(dm.get('item_fields', []))}\n"
                 f"Status values: {' | '.join(dm.get('status_values', []))}\n"
                 f"Source values: {' | '.join(dm.get('source_values', []))}\n"
+                f"{_field_types_line(dm)}"
                 f"Agent pipeline: {' → '.join(workspace.get('pipeline_stages', []))}\n"
                 "The agent implements stories by patching index.html. "
                 "Stories must reference the actual data model and existing file structure."

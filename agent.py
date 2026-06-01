@@ -763,6 +763,8 @@ def load_workspace_context():
         statuses = " | ".join(dm.get("status_values", []))
         sources  = " | ".join(dm.get("source_values", []))
         pipeline = " → ".join(ws.get("pipeline_stages", []))
+        field_types = dm.get("field_types", {})
+        complex_types = {k: v for k, v in field_types.items() if v.startswith("Array") or v == "object"}
         lines = [
             "WORKSPACE CONTEXT (from last inception run):",
             f"Data store: sdlc_pipeline.json — item fields: {fields}",
@@ -771,6 +773,10 @@ def load_workspace_context():
             f"Agent pipeline: {pipeline}",
             "Read data via fetch('/sdlc_pipeline.json') — never localStorage.",
         ]
+        if complex_types:
+            lines.append("Field types (complex fields — use exact access patterns):")
+            for k, v in complex_types.items():
+                lines.append(f"  {k}: {v}")
         return "\n".join(lines)
     except Exception:
         return None

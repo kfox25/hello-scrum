@@ -1842,6 +1842,7 @@ All API routes:
             "index_baseline.html":    ("Baseline reset state for index.html", "frontend"),
             "intake.html":            ("Team Chat + Watercooler — idea capture and intake", "frontend"),
             "inception.html":         ("AI-DLC inception flow — intent to stories to sprint", "frontend"),
+            "construction.html":      ("AI-DLC construction — functional design approval before sprint", "frontend"),
             "active.html":            ("Live sprint view — current story, stage, streaming log", "frontend"),
             "retro.html":             ("Sprint retrospective — findings and wisdom display", "frontend"),
             "health.html":            ("System health dashboard — score, impediments, velocity", "frontend"),

@@ -215,6 +215,7 @@
     }
 
     let sprintItems = [];
+    let drafts = {}; // item_id → draft functional_design (not yet approved)
 
     async function loadStories() {
       try {
@@ -228,6 +229,41 @@
       }
     }
 
+    function buildDesignHtml(fd) {
+      return `
+        <div class="design-block">
+          <div class="design-section">
+            <div class="design-label">Approach</div>
+            <div class="design-value">${escHtml(fd.implementation_approach || '')}</div>
+          </div>
+          ${(fd.elements_to_add||[]).length ? `
+          <div class="design-section">
+            <div class="design-label">Add</div>
+            <div class="design-list">${(fd.elements_to_add||[]).map(e =>
+              `<div class="design-list-item">${escHtml(e)}</div>`).join('')}</div>
+          </div>` : ''}
+          ${(fd.elements_to_modify||[]).length ? `
+          <div class="design-section">
+            <div class="design-label">Modify</div>
+            <div class="design-list">${(fd.elements_to_modify||[]).map(e =>
+              `<div class="design-list-item">${escHtml(e)}</div>`).join('')}</div>
+          </div>` : ''}
+          ${(fd.existing_elements_touched||[]).length ? `
+          <div class="design-section">
+            <div class="design-label">Touches</div>
+            <div class="design-value" style="font-family:monospace;font-size:0.75rem;color:#555;">
+              ${(fd.existing_elements_touched||[]).map(e => escHtml(e)).join(', ')}
+            </div>
+          </div>` : ''}
+          ${(fd.risks||[]).length ? `
+          <div class="design-section">
+            <div class="design-label">Risks</div>
+            <div class="design-list">${(fd.risks||[]).map(e =>
+              `<div class="design-list-item" style="color:#aa6644;">${escHtml(e)}</div>`).join('')}</div>
+          </div>` : ''}
+        </div>`;
+    }
+
     function renderStories() {
       const container = document.getElementById('storiesContainer');
       const actions   = document.getElementById('sprintActions');
@@ -239,49 +275,34 @@
       }
 
       container.innerHTML = sprintItems.map((item, idx) => {
-        const status  = item.status || 'pending';
-        const hasFD   = !!item.functional_design;
-        const fd      = item.functional_design || {};
+        const status     = item.status || 'pending';
+        const hasFD      = !!item.functional_design;
+        const hasDraft   = !!drafts[item.id];
+        const fd         = drafts[item.id] || item.functional_design || null;
         const isComplete = status === 'done' || status === 'failed';
 
         let statusBadge = '';
-        if (status === 'done')    statusBadge = '<span class="story-status-badge badge-done-s">done</span>';
-        else if (status === 'failed') statusBadge = '<span class="story-status-badge badge-failed">failed</span>';
-        else if (hasFD)           statusBadge = '<span class="story-status-badge badge-approved">design approved</span>';
-        else                      statusBadge = '<span class="story-status-badge badge-pending">needs design</span>';
+        if (status === 'done')         statusBadge = '<span class="story-status-badge badge-done-s">done</span>';
+        else if (status === 'failed')  statusBadge = '<span class="story-status-badge badge-failed">failed</span>';
+        else if (hasFD)                statusBadge = '<span class="story-status-badge badge-approved">design approved</span>';
+        else if (hasDraft)             statusBadge = '<span class="story-status-badge badge-pending">needs approval</span>';
+        else                           statusBadge = '<span class="story-status-badge badge-pending">needs design</span>';
 
-        const designHtml = hasFD ? `
-          <div class="design-block">
-            <div class="design-section">
-              <div class="design-label">Approach</div>
-              <div class="design-value">${escHtml(fd.implementation_approach || '')}</div>
-            </div>
-            ${(fd.elements_to_add||[]).length ? `
-            <div class="design-section">
-              <div class="design-label">Add</div>
-              <div class="design-list">${(fd.elements_to_add||[]).map(e =>
-                `<div class="design-list-item">${escHtml(e)}</div>`).join('')}</div>
-            </div>` : ''}
-            ${(fd.elements_to_modify||[]).length ? `
-            <div class="design-section">
-              <div class="design-label">Modify</div>
-              <div class="design-list">${(fd.elements_to_modify||[]).map(e =>
-                `<div class="design-list-item">${escHtml(e)}</div>`).join('')}</div>
-            </div>` : ''}
-            ${(fd.existing_elements_touched||[]).length ? `
-            <div class="design-section">
-              <div class="design-label">Touches</div>
-              <div class="design-value" style="font-family:monospace;font-size:0.75rem;color:#555;">
-                ${(fd.existing_elements_touched||[]).map(e => escHtml(e)).join(', ')}
-              </div>
-            </div>` : ''}
-            ${(fd.risks||[]).length ? `
-            <div class="design-section">
-              <div class="design-label">Risks</div>
-              <div class="design-list">${(fd.risks||[]).map(e =>
-                `<div class="design-list-item" style="color:#aa6644;">${escHtml(e)}</div>`).join('')}</div>
-            </div>` : ''}
-          </div>` : '';
+        let actions_html = '';
+        if (!isComplete) {
+          if (!fd) {
+            actions_html = `<button class="btn btn-sm" onclick="generateDesign(${idx})">Generate Design →</button>`;
+          } else if (hasDraft) {
+            actions_html = `
+              <button class="btn btn-sm" onclick="approveDesign(${idx})">Approve →</button>
+              <button class="btn btn-sm btn-grey" onclick="generateDesign(${idx})">Re-generate</button>
+              <button class="btn btn-sm btn-red" onclick="clearDesign(${idx})">Clear</button>`;
+          } else {
+            actions_html = `
+              <button class="btn btn-sm btn-grey" onclick="generateDesign(${idx})">Re-generate</button>
+              <button class="btn btn-sm btn-red" onclick="clearDesign(${idx})">Clear</button>`;
+          }
+        }
 
         return `
           <div class="story-design-card ${hasFD ? 'approved' : ''}" id="card-${idx}" style="margin-bottom:0.75rem;">
@@ -289,16 +310,8 @@
               <div class="story-text-preview">${escHtml((item.story || item.idea || '').substring(0, 120))}${(item.story||item.idea||'').length > 120 ? '…' : ''}</div>
               ${statusBadge}
             </div>
-            ${designHtml}
-            ${!isComplete ? `
-            <div class="design-actions">
-              ${!hasFD
-                ? `<button class="btn btn-sm" onclick="generateDesign(${idx})">Generate Design →</button>`
-                : `<button class="btn btn-sm btn-grey" onclick="generateDesign(${idx})">Re-generate</button>
-                   <button class="btn btn-sm btn-red" onclick="clearDesign(${idx})">Clear</button>`
-              }
-              <div class="status-line" id="status-${idx}"></div>
-            </div>` : ''}
+            ${fd ? buildDesignHtml(fd) : ''}
+            ${actions_html ? `<div class="design-actions">${actions_html}<div class="status-line" id="status-${idx}"></div></div>` : ''}
           </div>`;
       }).join('');
 
@@ -306,13 +319,13 @@
     }
 
     async function generateDesign(idx) {
-      const item    = sprintItems[idx];
+      const item = sprintItems[idx];
+      const card = document.getElementById('card-' + idx);
       const statusEl = document.getElementById('status-' + idx);
-      statusEl.textContent = 'Generating design...';
-      statusEl.className = 'status-line active';
+      if (statusEl) { statusEl.textContent = 'Generating...'; statusEl.className = 'status-line active'; }
 
       try {
-        const res  = await fetch('/construction/design', {
+        const res = await fetch('/construction/design', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -323,26 +336,34 @@
         });
         const fd = await res.json();
         if (fd.error) throw new Error(fd.error);
+        drafts[item.id] = fd;
+        renderStories();
+      } catch(e) {
+        if (statusEl) { statusEl.textContent = 'Error: ' + e.message; statusEl.className = 'status-line error'; }
+      }
+    }
 
-        // Auto-approve
+    async function approveDesign(idx) {
+      const item = sprintItems[idx];
+      const fd   = drafts[item.id];
+      if (!fd) return;
+      try {
         await fetch('/construction/approve-design', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ item_id: item.id, design: fd }),
         });
-
-        statusEl.textContent = '';
+        delete drafts[item.id];
         await loadStories();
       } catch(e) {
-        statusEl.textContent = 'Error: ' + e.message;
-        statusEl.className = 'status-line error';
+        console.error('Approve failed:', e);
       }
     }
 
     function copyAllDesigns() {
       const lines = [];
       sprintItems.forEach(item => {
-        const fd = item.functional_design;
+        const fd = drafts[item.id] || item.functional_design;
         if (!fd) return;
         lines.push('Story: ' + (item.story || item.idea || ''));
         if (fd.implementation_approach) lines.push('Approach: ' + fd.implementation_approach);
@@ -361,12 +382,17 @@
 
     async function clearDesign(idx) {
       const item = sprintItems[idx];
-      await fetch('/construction/clear-design', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ item_id: item.id }),
-      });
-      await loadStories();
+      delete drafts[item.id];
+      if (item.functional_design) {
+        await fetch('/construction/clear-design', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ item_id: item.id }),
+        });
+        await loadStories();
+      } else {
+        renderStories();
+      }
     }
 
     loadStories();

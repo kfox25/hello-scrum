@@ -58,14 +58,6 @@
     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }
     .changelog-entry .cd { color: #444; font-size: 0.73rem; }
     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }
-    .sprint-leaderboard { margin-top: 2rem; width: 100%; max-width: 560px; }
-    .sprint-leaderboard h2 { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 0.75rem 0; }
-    .sprint-leaderboard table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-    .sprint-leaderboard th { color: #7a8099; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.72rem; padding: 0.35rem 0.6rem; border-bottom: 1px solid #2a2a2a; text-align: center; }
-    .sprint-leaderboard td { padding: 0.4rem 0.6rem; border-top: 1px solid #1c1c1c; text-align: center; color: #e8eaf0; }
-    .sprint-leaderboard tr:first-child td { border-top: none; }
-    .sprint-leaderboard .rank-1 td:first-child { color: #00ff99; font-weight: 700; }
-    .sprint-leaderboard .no-data { color: #555; font-size: 0.85rem; padding: 0.75rem 0; }
   </style>
 </head>
 <body>
@@ -85,12 +77,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.228</div>
-  <div class="meta">Last deployed: 2026-05-31 19:53:32 CT</div>
-  <div class="sprint-leaderboard" id="sprint-leaderboard">
-    <h2>Sprint Leaderboard</h2>
-    <div id="leaderboard-content"><span class="no-data">Loading...</span></div>
-  </div>
+  <div class="version" id="version-badge">v0.1.66</div>
+  <div class="meta">Last deployed: 2026-05-25 22:39:40 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -116,51 +104,6 @@
         .catch(() => {});
     }
     loadChangelog();
-
-    function loadLeaderboard() {
-      fetch('/sdlc_pipeline.json')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          var items = (data && data.items) ? data.items : [];
-          if (!items.length) {
-            document.getElementById('leaderboard-content').innerHTML = '<span class="no-data">No sprint data available yet.</span>';
-            return;
-          }
-          var sprintMap = {};
-          items.forEach(function(item) {
-            var sn = item.sprint_number;
-            if (sn === undefined || sn === null) return;
-            if (!sprintMap[sn]) sprintMap[sn] = { sprint: sn, velocity: 0, total: 0, done: 0, reviewTotal: 0, reviewApprove: 0, testTotal: 0, testPass: 0 };
-            if (item.status === 'done') sprintMap[sn].velocity++;
-            sprintMap[sn].total++;
-            if (item.status === 'done') sprintMap[sn].done++;
-            if (item.code_review_verdict) { sprintMap[sn].reviewTotal++; if (item.code_review_verdict === 'approve') sprintMap[sn].reviewApprove++; }
-            if (Array.isArray(item.test_results) && item.test_results.length) { sprintMap[sn].testTotal++; if (item.test_results.some(function(t) { return t.status === 'pass'; })) sprintMap[sn].testPass++; }
-          });
-          var sprints = Object.values(sprintMap);
-          if (!sprints.length) {
-            document.getElementById('leaderboard-content').innerHTML = '<span class="no-data">No sprint data available yet.</span>';
-            return;
-          }
-          sprints.sort(function(a, b) {
-            if (b.velocity !== a.velocity) return b.velocity - a.velocity;
-            return a.sprint - b.sprint;
-          });
-          var rows = sprints.map(function(s, i) {
-            var rankClass = (i === 0) ? ' class="rank-1"' : '';
-            var completionRate = s.total === 0 ? '0%' : Math.round(s.done / s.total * 100) + '%';
-            var reviewRate = s.reviewTotal === 0 ? '&mdash;' : Math.round(s.reviewApprove / s.reviewTotal * 100) + '%';
-            var testRate = s.testTotal === 0 ? '&mdash;' : Math.round(s.testPass / s.testTotal * 100) + '%';
-            return '<tr' + rankClass + '><td>' + (i + 1) + '</td><td>' + escHtml(s.sprint) + '</td><td>' + escHtml(s.velocity) + '</td><td>' + completionRate + '</td><td>' + reviewRate + '</td><td>' + testRate + '</td></tr>';
-          }).join('');
-          document.getElementById('leaderboard-content').innerHTML =
-            '<table><thead><tr><th>Rank</th><th>Sprint</th><th>Velocity</th><th>Completion Rate</th><th>Code Review Pass Rate</th><th>Test Pass Rate</th></tr></thead><tbody>' + rows + '</tbody></table>';
-        })
-        .catch(function() {
-          document.getElementById('leaderboard-content').innerHTML = '<span class="no-data">No sprint data available yet.</span>';
-        });
-    }
-    loadLeaderboard();
   </script>
 <script src="shared.js"></script>
 </body>

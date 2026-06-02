@@ -1,6 +1,6 @@
 {
-  "version": "0.1.233",
-  "deployed": "2026-06-02 10:31:45 CT",
+  "version": "0.1.234",
+  "deployed": "2026-06-02 10:32:01 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1173,6 +1173,11 @@
       "version": "0.1.233",
       "date": "2026-06-02",
       "change": "Increase h1 font-size from 3rem to 3.5rem for improved homepage title visibility"
+    },
+    {
+      "version": "0.1.234",
+      "date": "2026-06-02",
+      "change": "Change homepage h1 title color from #00ff99 to #ff0000 for prominent red display"
     }
   ]
 }

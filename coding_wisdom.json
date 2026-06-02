@@ -1,11 +1,11 @@
 {
   "bullets": [
-    "\u2022 Sanitize patch generation output; strip invalid control characters from JSON serialization.",
-    "\u2022 Validate patch JSON parseability before Hermes submission; reject malformed formatting.",
-    "\u2022 Distinguish code logic errors from patch formatting errors; debug separately.",
-    "\u2022 Build features incrementally; ensure new patches integrate cleanly with prior versions.",
-    "\u2022 CRITICAL: test_results is an array of {status, message} objects \u2014 NEVER use String(item.test_results) or compare it as a string. Always check: Array.isArray(item.test_results) && item.test_results.some(t => t.status === 'pass'). String() gives '[object Object]' and will always be false."
+    "\u2022 Validate anchor selector complexity against 3-line limit before writing code.",
+    "\u2022 Use single-line DOM anchors; split multi-step operations into separate patches.",
+    "\u2022 Reject conditional blocks exceeding 3 lines; refactor to minimal selectors.",
+    "\u2022 Break sorting and refresh into independent patches with isolated selectors.",
+    "\u2022 Confirm each DOM target supports single-line script anchors pre-implementation."
   ],
-  "synthesized_at": "2026-05-31 19:54:20",
-  "finding_count": 690
+  "synthesized_at": "2026-06-01 18:31:41",
+  "finding_count": 702
 }

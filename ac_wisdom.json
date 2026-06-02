@@ -1,15 +1,14 @@
 {
   "bullets": [
-    "\u2022 Qualify numerator and denominator independently for each metric.",
-    "\u2022 Round percentages to nearest integer; always suffix with '%'.",
-    "\u2022 Display '\u2014' when column lacks qualifying data; '0%' when zero records.",
-    "\u2022 Sort descending by metric value; break ties ascending sprint number.",
-    "\u2022 State one testable outcome per column or conditional display state.",
-    "\u2022 Verify metric calculation logic without referencing data retrieval implementation.",
-    "\u2022 Distinguish between \"no data\" (\u2014) and \"zero qualifying records\" (0%).",
-    "\u2022 Define exact fallback message when entire dataset is empty or absent.",
-    "\u2022 CRITICAL: Verdict fields use 'approve'/'reject' \u2014 never 'pass'/'fail'. ac_check_verdict and code_review_verdict both use 'approve' for success. AC that references 'pass' or 'fail' for these fields will produce 0% pass rates."
+    "\u2022 Distinguish \"no qualifying data\" (\u2014) from \"zero qualifying records\" (0%).",
+    "\u2022 State one testable outcome per displayed column or conditional branch.",
+    "\u2022 Verify metric logic independent of data retrieval or filtering implementation.",
+    "\u2022 Define fallback message when dataset is entirely absent or empty.",
+    "\u2022 Specify sort order for null/missing metric values relative to numeric values.",
+    "\u2022 Use 'approve'/'reject' terminology; never 'pass'/'fail' for verdict fields.",
+    "\u2022 Round all percentages to nearest integer; suffix with '%'.",
+    "\u2022 Declare which data fields qualify for each metric's numerator and denominator."
   ],
-  "synthesized_at": "2026-05-31 19:54:21",
+  "synthesized_at": "2026-06-01 18:31:43",
   "item_count": 187
 }

@@ -2050,7 +2050,7 @@ def inception_elaborate():
         client = anthropic.Anthropic()
         response = client.messages.create(
             model="claude-sonnet-4-6",
-            max_tokens=2000,
+            max_tokens=4000,
             system=INCEPTION_ELABORATE_PROMPT,
             messages=[{"role": "user", "content": intent + qna_section + ws_section + wisdom_section}],
         )

@@ -139,9 +139,13 @@
     <div class="page-sub">
       <span style="color:#00ff99;font-size:0.82rem;">Functional Design</span>
       <span style="color:#2a2a2a;margin:0 0.35rem;">→</span>
-      <a href="/" style="color:#555;font-size:0.82rem;text-decoration:none;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='#555'">Sprint Board</a>
+      <span style="color:#333;font-size:0.82rem;">NFR Requirements</span>
       <span style="color:#2a2a2a;margin:0 0.35rem;">→</span>
-      <a href="active.html" style="color:#555;font-size:0.82rem;text-decoration:none;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='#555'">Live Work</a>
+      <span style="color:#333;font-size:0.82rem;">NFR Design</span>
+      <span style="color:#2a2a2a;margin:0 0.35rem;">→</span>
+      <a href="/" style="color:#555;font-size:0.82rem;text-decoration:none;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='#555'">Code Generation</a>
+      <span style="color:#2a2a2a;margin:0 0.35rem;">→</span>
+      <a href="active.html" style="color:#555;font-size:0.82rem;text-decoration:none;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='#555'">Build + Test</a>
       <span style="color:#2a2a2a;margin:0 0.35rem;">→</span>
       <a href="retro.html" style="color:#555;font-size:0.82rem;text-decoration:none;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='#555'">Retro</a>
     </div>
@@ -167,7 +171,29 @@
 
         <div class="phase-step">
           <div class="step-left">
-            <div class="step-dot ai">2</div>
+            <div class="step-dot human">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">NFR Requirements <span class="badge badge-human">Human + AI</span></div>
+            <div class="step-desc">Determine non-functional requirements and tech stack choices. Prerequisite: Functional Design complete.</div>
+          </div>
+        </div>
+
+        <div class="phase-step">
+          <div class="step-left">
+            <div class="step-dot ai">3</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">NFR Design <span class="badge badge-ai">Sonnet</span></div>
+            <div class="step-desc">Architectural design for how NFRs will be met. Prerequisite: NFR Requirements complete.</div>
+          </div>
+        </div>
+
+        <div class="phase-step">
+          <div class="step-left">
+            <div class="step-dot ai">4</div>
             <div class="step-line"></div>
           </div>
           <div class="step-body">
@@ -178,7 +204,7 @@
 
         <div class="phase-step">
           <div class="step-left">
-            <div class="step-dot system">3</div>
+            <div class="step-dot system">5</div>
             <div class="step-line"></div>
           </div>
           <div class="step-body">
@@ -189,7 +215,7 @@
 
         <div class="phase-step">
           <div class="step-left">
-            <div class="step-dot ai">4</div>
+            <div class="step-dot ai">6</div>
             <div class="step-line"></div>
           </div>
           <div class="step-body">

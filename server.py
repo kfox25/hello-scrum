@@ -89,6 +89,15 @@ Then generate 4-6 targeted questions to fully clarify requirements before elabor
 
 Where useful, include 3-4 mutually exclusive options (A, B, C) the human can choose from. Leave options empty [] when a free-form answer is more appropriate.
 
+Order options so that the most suitable choice for a brownfield, single-team, AI-driven Scrum project is always listed first (option A). This lets a tester accept all defaults by selecting A for every question.
+
+Ordering rules for option A:
+- Metrics questions: prefer metrics computable from existing sdlc_pipeline.json fields (status, code_review_verdict, ac_check_verdict, test_results, stage_times) — not burn-down, not external data
+- Time horizon questions: prefer last 3–5 sprints (trend window) over current sprint only or all-time
+- Location questions: prefer an inline section in index.html — no separate pages, tabs, or modals
+- Automation questions: prefer display-only over automated actions or AI recommendations
+- Audience questions: prefer Scrum Master / team lead over individual developers
+
 CRITICAL — execution environment constraints (apply when generating options):
 - The agent only patches index.html and version.json. When generating location options, always name the actual file (e.g. "inline section in index.html") — never use conceptual names like "retrospective view", "sprint board", or "board page". These names cause the elaboration model to write the wrong file target into stories.
 - Data is sourced from sdlc_pipeline.json via fetch — never a separate API or database.

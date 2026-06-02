@@ -283,7 +283,7 @@
         <div class="label" style="margin-bottom:0;">Intent</div>
         <div style="font-size:0.78rem;color:#999;">High-level statement of purpose — the starting point for AI-DLC decomposition</div>
       </div>
-      <textarea id="intentInput" rows="3" placeholder="Describe what you want to build or change at a high level..."></textarea>
+      <textarea id="intentInput" rows="3" placeholder="Describe what you want to build or change at a high level...">Add sprint performance tracking to the Hello Scrum app</textarea>
       <div style="display:flex;gap:0.75rem;align-items:center;margin-top:1rem;">
         <button class="btn" id="btnStart" onclick="startClarify()">Start →</button>
         <div class="status-line" id="statusIntent"></div>
@@ -1039,10 +1039,10 @@
     }
 
 
-    const DEFAULT_INTENT = 'Add a leaderboard section to the Hello Scrum app showing sprint performance stats';
+    const DEFAULT_INTENT = 'Add sprint performance tracking to the Hello Scrum app';
 
     (function init() {
-      const intent    = localStorage.getItem(LS+'intent')    || DEFAULT_INTENT;
+      const intent    = DEFAULT_INTENT;
       const state     = localStorage.getItem(LS+'state')     || 'intent';
       const rawQ      = JSON.parse(localStorage.getItem(LS+'questions') || '[]');
       const questions = Array.isArray(rawQ) && rawQ.length && typeof rawQ[0] === 'object' ? rawQ : [];

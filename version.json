@@ -1,6 +1,6 @@
 {
-  "version": "0.1.230",
-  "deployed": "2026-06-02 10:27:10 CT",
+  "version": "0.1.231",
+  "deployed": "2026-06-02 10:29:57 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1158,6 +1158,11 @@
       "version": "0.1.230",
       "date": "2026-06-02",
       "change": "Change homepage h1 title color from green (#00ff99) to red for more prominent visual emphasis"
+    },
+    {
+      "version": "0.1.231",
+      "date": "2026-06-02",
+      "change": "Change homepage h1 title color from #00ff99 (neon green) to #ff0000 (red) for prominent visual emphasis"
     }
   ]
 }

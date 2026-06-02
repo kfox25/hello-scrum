@@ -1,18 +1,107 @@
 {
   "items": [
     {
-      "id": "1780413994025",
+      "id": "1780414162117",
       "idea": "Change homepage title color to red",
       "in_sprint": true,
       "source": "team_chat",
       "status": "pending",
-      "story": "As a site visitor, I want the homepage title to be displayed in red so that it stands out with a more prominent visual emphasis.",
+      "story": "As a user, I want the homepage title to display in red so that it stands out prominently on the page.",
+      "acceptance_criteria": [
+        "The h1 element containing 'Hello Scrum' has color property changed from #00ff99 to #ff0000 in the inline style block of index.html.",
+        "The title 'Hello Scrum' displays in red (#ff0000) instead of the current neon green when the homepage loads.",
+        "No other elements on the homepage are affected; tagline remains #7a8099, version badge remains #00ff99, and nav links remain #00ff99.",
+        "The change persists across page refreshes and all deployment artifacts (index.html) are updated with the new color value."
+      ],
+      "sprint_number": 76
+    },
+    {
+      "id": "1780414148526",
+      "idea": "Increase home page title font size for better visibility",
+      "in_sprint": true,
+      "source": "team_chat",
+      "status": "pending",
+      "story": "As a visitor to the homepage, I want the main title to be larger so that it stands out more prominently and improves page visibility.",
+      "acceptance_criteria": [
+        "The h1 'Hello Scrum' element font-size increases from 3rem to 3.5rem in the <style> block of index.html",
+        "The title text color remains #00ff99 with existing text-shadow glow effect (0 0 8px #00ff9933) intact",
+        "The title maintains existing font-family: monospace, font-weight: 800, and letter-spacing: -0.03em properties",
+        "The enlarged title remains visually balanced with the .tagline (1.2rem) and version badge below it"
+      ],
+      "sprint_number": 76
+    },
+    {
+      "ac_check_reason": "The h1 element color has been changed from #00ff99 (green) to red in the CSS rule, the 'Hello Scrum' title will display in red when the homepage loads, and the red color is defined in the h1 CSS rule in index.html, satisfying all three acceptance criteria.",
+      "ac_check_verdict": "approve",
       "acceptance_criteria": [
         "The h1 element on index.html changes from #00ff99 (green) to red",
         "The title 'Hello Scrum' displays in red color when the homepage loads",
         "The red title color is defined in the h1 CSS rule in index.html"
       ],
-      "sprint_number": 75
+      "code_review_reason": "All changes are syntactically correct: CSS color property uses a valid color value, HTML updates are well-formed, version.json is valid JSON with proper formatting, and version/deployment timestamp updates are expected accompaniments to feature changes.",
+      "code_review_verdict": "approve",
+      "deployed": "2026-06-02 10:27:10 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex a7fb39d..ef61683 100644\n--- a/index.html\n+++ b/index.html\n@@ -31,7 +31,7 @@\n       letter-spacing: -0.03em;\n       margin: 0 0 0.5rem;\n       text-transform: uppercase;\n-      color: #00ff99;\n+      color: red;\n     }\n     .tagline {\n       font-size: 1.2rem;\n@@ -77,8 +77,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.230</div>\n+  <div class=\"meta\">Last deployed: 2026-06-02 10:27:10 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\ndiff --git a/version.json b/version.json\nindex 7158a45..28852be 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.229\",\n-  \"deployed\": \"2026-06-01 18:19:25 CT\",\n+  \"version\": \"0.1.230\",\n+  \"deployed\": \"2026-06-02 10:27:10 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -1153,6 +1153,11 @@\n       \"version\": \"0.1.229\",\n       \"date\": \"2026-06-01\",\n       \"change\": \"Add Sprint Quality Dashboard section to index.html showing per-sprint Story Completion Rate, Code Review Pass Rate, AC Check Pass Rate, and Defect Escape Rate for the last 5 sprints\"\n+    },\n+    {\n+      \"version\": \"0.1.230\",\n+      \"date\": \"2026-06-02\",\n+      \"change\": \"Change homepage h1 title color from green (#00ff99) to red for more prominent visual emphasis\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
+      "hermes_verdict": "approve",
+      "id": "1780413994025",
+      "idea": "Change homepage title color to red",
+      "in_sprint": false,
+      "source": "team_chat",
+      "sprint_number": 75,
+      "stage_times": {
+        "ac_check": 1780414037.353531,
+        "code": 1780414035.653521,
+        "code_review": 1780414035.953903,
+        "deploy": 1780414038.701738,
+        "done": 1780414042.269666,
+        "pull": 1780414030.862312,
+        "story": 1780414030.938559,
+        "test": 1780414035.7701
+      },
+      "started": 1780414030.862312,
+      "status": "done",
+      "story": "As a site visitor, I want the homepage title to be displayed in red so that it stands out with a more prominent visual emphasis.",
+      "summary": "Change h1 title color from #00ff99 (green) to red",
+      "test_results": [
+        {
+          "message": "index.html exists and contains title",
+          "status": "pass"
+        },
+        {
+          "message": "version 0.1.230 matches between version.json and index.html",
+          "status": "pass"
+        },
+        {
+          "message": "deployed timestamp '2026-06-02 10:27:10 CT' present in index.html",
+          "status": "pass"
+        },
+        {
+          "message": "changelog has entry for v0.1.230: Change homepage h1 title color from green (#00ff99) to red for more prominent visual emphasis",
+          "status": "pass"
+        },
+        {
+          "message": "no CSS outside style block",
+          "status": "pass"
+        },
+        {
+          "message": "no duplicate h1 rules (1 found)",
+          "status": "pass"
+        },
+        {
+          "message": "no -webkit-text-fill-color in style block",
+          "status": "pass"
+        },
+        {
+          "message": "no duplicate body rules (1 found)",
+          "status": "pass"
+        },
+        {
+          "message": "no mixed color formats",
+          "status": "pass"
+        }
+      ],
+      "tokens_in": 4960,
+      "tokens_out": 431
     },
     {
       "ac_check_reason": "All acceptance criteria are met: the leaderboard fetches sprints from sdlc_pipeline.json, displays sprint_number and done-item count per row, sorts by descending done count with sprint_number as tiebreaker, and is implemented as an inline section directly within index.html.",
@@ -12094,5 +12183,5 @@
       "tokens_out": 2816
     }
   ],
-  "sprint_number": 75
+  "sprint_number": 76
 }

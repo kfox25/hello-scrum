@@ -1979,7 +1979,7 @@ def inception_clarify():
         client = anthropic.Anthropic()
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
-            max_tokens=800,
+            max_tokens=1200,
             system=INCEPTION_CLARIFY_PROMPT,
             messages=[{"role": "user", "content": user_msg}],
         )

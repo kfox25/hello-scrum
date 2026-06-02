@@ -331,7 +331,8 @@
         <button class="btn" id="btnElaborate" onclick="elaborate()">Elaborate →</button>
 
         <div class="status-line" id="statusQuestions"></div>
-        <button class="btn btn-copy" style="margin-left:auto;" onclick="copyPanel2()">Copy</button>
+        <button class="btn btn-grey" style="margin-left:auto;" onclick="selectAllA()">All A</button>
+        <button class="btn btn-copy" onclick="copyPanel2()">Copy</button>
         <span class="copy-confirm" id="copyConfirm2">copied</span>
       </div>
     </div>
@@ -819,9 +820,9 @@
     }
 
     async function runRequirementsAnalysis() {
-      const btn = document.getElementById('btnWsNext');
+      const btn = document.getElementById('btnReNext');
       if (btn) btn.disabled = true;
-      const statusEl = document.getElementById('wsStatus');
+      const statusEl = document.getElementById('reStatus');
       if (statusEl) { statusEl.textContent = 'Generating questions...'; statusEl.className = 'status-line active'; }
       try {
         const res  = await fetch('/inception/clarify', {
@@ -987,6 +988,13 @@
       const intent = document.getElementById('intentInput').value.trim();
       navigator.clipboard.writeText('Intent:\n' + intent);
       flashCopied('copyConfirm1');
+    }
+
+    function selectAllA() {
+      document.querySelectorAll('#qnaList .qna-item').forEach((item, i) => {
+        const first = item.querySelector('.option-chip');
+        if (first) first.click();
+      });
     }
 
     function copyPanel2() {

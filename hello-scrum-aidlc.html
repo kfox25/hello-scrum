@@ -217,6 +217,8 @@
             <ul class="step-bullets">
               <li>Detects languages, key files, item count</li>
               <li>Reads actual field names and enum values from live data</li>
+              <li>Infers field types for complex fields — e.g. test_results: Array&lt;{status, message}&gt;, stage_times: object&lt;{pull, deploy, …}&gt;</li>
+              <li>Field types injected into elaboration, FD, and agent prompts — prevents structural guesses</li>
               <li>Saves snapshot to workspace_context.json for downstream use</li>
             </ul>
             <div class="produces">
@@ -308,11 +310,35 @@
           </div>
         </div>
 
+        <div class="phase-label">Construction Phase</div>
+
+        <div class="step human">
+          <div class="step-left">
+            <div class="step-num">7</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Functional Design <span class="agent-badge badge-human">Human + AI</span></div>
+            <div class="step-desc">For each story in the sprint, Haiku generates a concrete implementation plan. Human reviews and approves before coding begins. Prevents the agent from misinterpreting story language into wrong file targets or data access patterns.</div>
+            <ul class="step-bullets">
+              <li>Haiku reads story + AC + workspace context + current index.html</li>
+              <li>Produces: patch_target, approach, elements to add/modify, risks</li>
+              <li>patch_target shown in green (index.html) or red (wrong file) — human gate</li>
+              <li>Approved FD saved to item in sdlc_pipeline.json and injected into agent coding prompt</li>
+              <li>Draft state: client-side only — not persisted until human clicks Approve</li>
+            </ul>
+            <div class="produces">
+              <span class="produces-item">functional_design on item</span>
+              <span class="produces-item">human approval required</span>
+            </div>
+          </div>
+        </div>
+
         <div class="phase-label">Sprint Phase</div>
 
         <div class="step system">
           <div class="step-left">
-            <div class="step-num">7</div>
+            <div class="step-num">8</div>
             <div class="connector"></div>
           </div>
           <div class="step-card">
@@ -327,7 +353,7 @@
 
         <div class="step ai">
           <div class="step-left">
-            <div class="step-num">8</div>
+            <div class="step-num">9</div>
             <div class="connector"></div>
           </div>
           <div class="step-card">
@@ -335,9 +361,10 @@
             <div class="step-desc">Implements each story as patches to index.html and a version.json bump. Workspace context tells the agent the exact data model, field names, and pipeline — preventing hallucinated implementations.</div>
             <ul class="step-bullets">
               <li>pull → story → code → test → deploy</li>
+              <li>Functional design injected as pre-approved implementation plan when present</li>
               <li>Scope creep guard: max 3-line find block, replace must contain find</li>
               <li>Up to 3 retry attempts on scope violations</li>
-              <li>Coding wisdom injected from previous retrospectives</li>
+              <li>Coding wisdom + workspace context injected from previous retrospectives</li>
             </ul>
             <div class="produces">
               <span class="produces-item">index.html patch</span>
@@ -349,7 +376,7 @@
 
         <div class="step ai">
           <div class="step-left">
-            <div class="step-num">9</div>
+            <div class="step-num">10</div>
             <div class="connector"></div>
           </div>
           <div class="step-card">
@@ -370,7 +397,7 @@
 
         <div class="step ai">
           <div class="step-left">
-            <div class="step-num">10</div>
+            <div class="step-num">11</div>
           </div>
           <div class="step-card">
             <div class="step-name">Retrospective <span class="agent-badge badge-ai">Haiku</span></div>

@@ -317,7 +317,6 @@
     function openNote(id) {
       activeId = id;
       const note = notes.find(n => n.id === id);
-      document.getElementById('iframeWrap').style.display = 'none';
       document.querySelector('header').style.display = '';
       document.getElementById('noteTitle').value = note.title || '';
       document.getElementById('noteBody').value = note.body || '';

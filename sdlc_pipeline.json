@@ -1,37 +1,18 @@
 {
   "items": [
     {
-      "acceptance_criteria": [
-        "The dashboard section heading 'Sprint Quality Dashboard' is visible in index.html after the Kanban board section.",
-        "The table renders exactly one row per sprint for up to 5 sprints, using only items whose sprint_number is among the 5 highest distinct sprint_number values present in data.items.",
-        "Story Completion Rate for a sprint is computed as (count of items in that sprint where status === 'done') / (count of items in that sprint where status === 'done' OR status === 'failed'), rounded to the nearest integer and displayed with a '%' suffix; displays '\u2014' when the sprint has zero items with status 'done' or 'failed', and '0%' when the denominator is non-zero but the numerator is zero.",
-        "Code Review Pass Rate for a sprint is computed as (count of items in that sprint where code_review_verdict === 'approve') / (count of items in that sprint where code_review_verdict === 'approve' OR code_review_verdict === 'reject'), rounded to the nearest integer and displayed with a '%' suffix; displays '\u2014' when no items in that sprint have code_review_verdict of 'approve' or 'reject', and '0%' when the denominator is non-zero but the numerator is zero.",
-        "AC Check Pass Rate for a sprint is computed as (count of items in that sprint where ac_check_verdict === 'approve') / (count of items in that sprint where ac_check_verdict === 'approve' OR ac_check_verdict === 'reject'), rounded to the nearest integer and displayed with a '%' suffix; displays '\u2014' when no items in that sprint have ac_check_verdict of 'approve' or 'reject', and '0%' when the denominator is non-zero but the numerator is zero.",
-        "Defect Escape Rate for a sprint is computed as (count of items in that sprint where test_results is a non-empty array AND test_results.some(t => t.status === 'pass') is false) / (count of items in that sprint where test_results is a non-empty array), rounded to the nearest integer and displayed with a '%' suffix; displays '\u2014' when no items in that sprint have a non-empty test_results array, and '0%' when the denominator is non-zero but the numerator is zero.",
-        "Feature is implemented directly within index.html \u2014 no changes to any other file."
-      ],
-      "id": "as-a-scrum-master-i-want-a-dashboard-section-ren",
-      "idea": "As a Scrum Master, I want a dashboard section rendered in index.html that displays a per-sprint quality metrics table for the last 5 sprints so that I can monitor quality trends at a glance.",
+      "id": "1780413994025",
+      "idea": "Change homepage title color to red",
       "in_sprint": true,
-      "source": "inception",
+      "source": "team_chat",
       "status": "pending",
-      "story": "As a Scrum Master, I want a dashboard section rendered in index.html that displays a per-sprint quality metrics table for the last 5 sprints so that I can monitor quality trends at a glance.",
-      "sprint_number": 72
-    },
-    {
+      "story": "As a site visitor, I want the homepage title to be displayed in red so that it stands out with a more prominent visual emphasis.",
       "acceptance_criteria": [
-        "A 'Refresh' button is present in the Sprint Quality Dashboard section; clicking it re-fetches fetch('/sdlc_pipeline.json'), re-reads data.items, recomputes all metrics, and re-renders the table without a full page reload.",
-        "Each column header in the table is clickable; clicking a metric column header sorts all rows by that metric's numeric value descending on first click and ascending on second click; ties in metric value are broken by sprint_number ascending.",
-        "When a metric cell displays '\u2014' (no qualifying data), those rows sort after all rows with numeric metric values when sorting by that column.",
-        "If fetch('/sdlc_pipeline.json') returns no items or data.items is empty or absent, the table body is replaced with a single full-width cell displaying the message: 'No sprint data available.'",
-        "Feature is implemented directly within index.html \u2014 no changes to any other file."
+        "The h1 element on index.html changes from #00ff99 (green) to red",
+        "The title 'Hello Scrum' displays in red color when the homepage loads",
+        "The red title color is defined in the h1 CSS rule in index.html"
       ],
-      "id": "as-a-scrum-master-i-want-the-sprint-quality-tabl",
-      "idea": "As a Scrum Master, I want the sprint quality table to support column-based sorting and an on-demand refresh button in index.html so that I can re-order data by any metric and pull the latest figures without reloading the page.",
-      "in_sprint": false,
-      "source": "inception",
-      "status": "pending",
-      "story": "As a Scrum Master, I want the sprint quality table to support column-based sorting and an on-demand refresh button in index.html so that I can re-order data by any metric and pull the latest figures without reloading the page."
+      "sprint_number": 75
     },
     {
       "ac_check_reason": "All acceptance criteria are met: the leaderboard fetches sprints from sdlc_pipeline.json, displays sprint_number and done-item count per row, sorts by descending done count with sprint_number as tiebreaker, and is implemented as an inline section directly within index.html.",
@@ -12113,5 +12094,5 @@
       "tokens_out": 2816
     }
   ],
-  "sprint_number": 72
+  "sprint_number": 75
 }

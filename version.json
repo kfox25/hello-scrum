@@ -1,6 +1,6 @@
 {
-  "version": "0.1.229",
-  "deployed": "2026-06-01 18:19:25 CT",
+  "version": "0.1.230",
+  "deployed": "2026-06-02 10:27:10 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1153,6 +1153,11 @@
       "version": "0.1.229",
       "date": "2026-06-01",
       "change": "Add Sprint Quality Dashboard section to index.html showing per-sprint Story Completion Rate, Code Review Pass Rate, AC Check Pass Rate, and Defect Escape Rate for the last 5 sprints"
+    },
+    {
+      "version": "0.1.230",
+      "date": "2026-06-02",
+      "change": "Change homepage h1 title color from green (#00ff99) to red for more prominent visual emphasis"
     }
   ]
 }

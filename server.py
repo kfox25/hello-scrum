@@ -166,6 +166,45 @@ After gathering any needed context, respond with JSON only (no markdown):
 {"story": "As a <role>, I want <goal> so that <benefit>.", "acceptance_criteria": ["<criterion 1>", "<criterion 2>", "<criterion 3>"]}
 Keep the story concise. Write 3-4 acceptance criteria as short, testable statements. Use exact values from the codebase when relevant."""
 
+INTAKE_CLASSIFIER_PROMPT = """You are the hello-scrum app assistant embedded in a team messenger.
+
+{app_state}
+
+Classify the user message and respond with JSON only (no markdown):
+
+If it describes a story idea (something a developer could build):
+{{"is_idea": true, "suggestions": ["<title 1>", "<title 2>"], "reply": "<one sentence acknowledging>"}}
+If it asks a question about the app, sprint, backlog, or team progress:
+{{"is_query": true, "reply": "<concise conversational answer using the app state above>"}}
+
+Otherwise:
+{{"reply": "<brief helpful response>"}}"""
+
+INTAKE_TRANSCRIPT_PROMPT = """You are a scrum assistant analyzing a meeting transcript against a product backlog.
+
+Step 1 — Extract every distinct topic, feature, bug, or idea mentioned in the transcript.
+Step 2 — For EACH extracted topic, scan the ENTIRE backlog list for any story that covers it, even loosely. Done and failed stories count — a [DONE] story means the feature already shipped.
+Step 3 — Report results.
+
+Respond with JSON only (no markdown):
+{
+  "alignments": [
+    {"id": "<id>", "idea": "<story title>", "changes": "<what from discussion relates>", "needs_update": false},
+    {"id": "<id>", "idea": "<story title>", "changes": "<what changed>", "needs_update": true, "proposed_idea": "<new title if changed, else omit>", "proposed_ac": ["<criterion>"]}
+  ],
+  "new_stories": ["<concise title ≤10 words>"]
+}
+
+Rules:
+- Scan ALL backlog stories for each topic before declaring it a new story
+- [DONE] stories are valid alignments — they show a feature is already shipped
+- Only add to new_stories when NO existing story (including done ones) covers the topic
+- Never put the same topic in both alignments and new_stories — if it matched a story, it goes in alignments only
+- Only set needs_update: true when discussion clearly changes or adds requirements
+- CRITICAL: alignment ids must be exact ids from the backlog list above — never invent or guess an id
+- If no real backlog story matches a topic, put it in new_stories, not alignments
+- Both arrays may be empty"""
+
 # On startup, clear only mid-sprint states so a restarted server doesn't show
 # a stale pulsing dot — but preserve done/failed/rejected so the panel persists.
 _KEEP_STAGES = {"done", "failed", "rejected", "retro_done"}
@@ -214,19 +253,26 @@ def get_prompts():
         server_src = f.read()
 
     entries = [
-        ("SYSTEM_PROMPT",              "Worker Agent",              agent_src),
-        ("RETRO_SYSTEM_PROMPT",        "Retrospective",             agent_src),
-        ("CODE_REVIEW_SYSTEM_PROMPT",  "Hermes — Code Review",      agent_src),
-        ("AC_CHECK_SYSTEM_PROMPT",     "Hermes — AC Check",         agent_src),
-        ("STORY_ELABORATION_PROMPT",   "Story Elaboration",         server_src),
-        ("CODING_WISDOM_PROMPT",       "Coding Wisdom Synthesis",   agent_src),
-        ("AC_WISDOM_PROMPT",           "AC Wisdom Synthesis",       agent_src),
+        ("INCEPTION_CLARIFY_PROMPT",          "Requirements Analysis",    server_src, "Inception"),
+        ("INCEPTION_ELABORATE_PROMPT",        "Inception Elaborate",      server_src, "Inception"),
+        ("INCEPTION_REVERSE_ENGINEER_PROMPT", "Reverse Engineering",      server_src, "Inception"),
+        ("FUNCTIONAL_DESIGN_PROMPT",          "Functional Design",        server_src, "Construction"),
+        ("NFR_REQUIREMENTS_PROMPT",           "NFR Requirements",         server_src, "Construction"),
+        ("SYSTEM_PROMPT",                     "Worker Agent",             agent_src,  "Sprint"),
+        ("STORY_ELABORATION_PROMPT",          "Story Elaboration",        server_src, "Sprint"),
+        ("CODE_REVIEW_SYSTEM_PROMPT",         "Hermes — Code Review",     agent_src,  "Review"),
+        ("AC_CHECK_SYSTEM_PROMPT",            "Hermes — AC Check",        agent_src,  "Review"),
+        ("RETRO_SYSTEM_PROMPT",               "Retrospective",            agent_src,  "Learning"),
+        ("CODING_WISDOM_PROMPT",              "Coding Wisdom Synthesis",  agent_src,  "Learning"),
+        ("AC_WISDOM_PROMPT",                  "AC Wisdom Synthesis",      agent_src,  "Learning"),
+        ("INTAKE_CLASSIFIER_PROMPT",          "Intake Classifier",        server_src, "Intake"),
+        ("INTAKE_TRANSCRIPT_PROMPT",          "Transcript Analyzer",      server_src, "Intake"),
     ]
 
     result = []
-    for name, label, src in entries:
+    for name, label, src, group in entries:
         m = re.search(rf'^{name}\s*=\s*"""(.*?)"""', src, re.DOTALL | re.MULTILINE)
-        result.append({"id": name, "label": label, "text": m.group(1).strip() if m else ""})
+        result.append({"id": name, "label": label, "group": group, "text": m.group(1).strip() if m else ""})
     return jsonify({"prompts": result})
 
 
@@ -587,19 +633,7 @@ Recently shipped:
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=300,
-            system=f"""You are the hello-scrum app assistant embedded in a team messenger.
-
-{app_state}
-
-Classify the user message and respond with JSON only (no markdown):
-
-If it describes a story idea (something a developer could build):
-{{"is_idea": true, "suggestions": ["<title 1>", "<title 2>"], "reply": "<one sentence acknowledging>"}}
-If it asks a question about the app, sprint, backlog, or team progress:
-{{"is_query": true, "reply": "<concise conversational answer using the app state above>"}}
-
-Otherwise:
-{{"reply": "<brief helpful response>"}}""",
+            system=INTAKE_CLASSIFIER_PROMPT.format(app_state=app_state),
             messages=[{"role": "user", "content": message}],
         )
 
@@ -668,30 +702,7 @@ def messenger_meeting():
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=1000,
-            system="""You are a scrum assistant analyzing a meeting transcript against a product backlog.
-
-Step 1 — Extract every distinct topic, feature, bug, or idea mentioned in the transcript.
-Step 2 — For EACH extracted topic, scan the ENTIRE backlog list for any story that covers it, even loosely. Done and failed stories count — a [DONE] story means the feature already shipped.
-Step 3 — Report results.
-
-Respond with JSON only (no markdown):
-{
-  "alignments": [
-    {"id": "<id>", "idea": "<story title>", "changes": "<what from discussion relates>", "needs_update": false},
-    {"id": "<id>", "idea": "<story title>", "changes": "<what changed>", "needs_update": true, "proposed_idea": "<new title if changed, else omit>", "proposed_ac": ["<criterion>"]}
-  ],
-  "new_stories": ["<concise title ≤10 words>"]
-}
-
-Rules:
-- Scan ALL backlog stories for each topic before declaring it a new story
-- [DONE] stories are valid alignments — they show a feature is already shipped
-- Only add to new_stories when NO existing story (including done ones) covers the topic
-- Never put the same topic in both alignments and new_stories — if it matched a story, it goes in alignments only
-- Only set needs_update: true when discussion clearly changes or adds requirements
-- CRITICAL: alignment ids must be exact ids from the backlog list above — never invent or guess an id
-- If no real backlog story matches a topic, put it in new_stories, not alignments
-- Both arrays may be empty""",
+            system=INTAKE_TRANSCRIPT_PROMPT,
             messages=[{"role": "user", "content": f"TRANSCRIPT:\n{transcript}\n\nFULL BACKLOG:\n{stories_context}\n\nOPPORTUNITY BACKLOG (already captured, not yet started):\n{opps_context}"}],
         )
 

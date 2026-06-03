@@ -8,6 +8,16 @@
   <style>
     body { padding: 4.5rem 2rem 3rem 15rem; }
 
+    .wf-nav-group {
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #888;
+      padding: 0.6rem 0.5rem 0.1rem;
+      margin-top: 0.5rem;
+    }
+    .wf-nav-group:first-child { margin-top: 0; }
+
     .page-title {
       font-size: 0.7rem;
       text-transform: uppercase;
@@ -110,8 +120,16 @@
         });
       }
 
+      let currentGroup = null;
       data.prompts.forEach((p, i) => {
         cards[p.id] = document.getElementById('prompt-' + p.id);
+        if (p.group !== currentGroup) {
+          currentGroup = p.group;
+          const hdr = document.createElement('div');
+          hdr.className = 'wf-nav-group';
+          hdr.textContent = p.group;
+          nav.appendChild(hdr);
+        }
         const a = document.createElement('a');
         a.href = '#';
         a.textContent = p.label;

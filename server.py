@@ -34,6 +34,34 @@ agent_running = False
 agent_lock = threading.Lock()
 AGENT_LOG_FILE = os.path.join(BASE, "agent_log.json")
 
+NFR_REQUIREMENTS_PROMPT = """You are an AI-DLC NFR Requirements assistant for Hello Scrum. Given a set of sprint stories, generate 3-4 non-functional requirement questions to guide the coding agent.
+
+Hello Scrum constraints:
+- Agent patches one file only: index.html (vanilla HTML/CSS/JS — no external libraries)
+- Dark theme: #0f0f0f background, #00ff99 accent, monospace font family
+- Data always fetched from /sdlc_pipeline.json → response is {sprint_number, items:[...]}
+- All changes must be self-contained within index.html
+
+Return JSON only (no markdown):
+{
+  "questions": [
+    {
+      "id": "nfr1",
+      "category": "Category",
+      "question": "Question text?",
+      "options": ["A: recommended option", "B: alternative", "C: minimal option"]
+    }
+  ]
+}
+
+Rules:
+- Exactly 3-4 questions
+- Use these categories only: Performance, Accessibility, Visual Consistency, Error Handling
+- Option A is always the recommended/conservative choice for Hello Scrum's constraints
+- Options must be specific — no generic enterprise patterns (no "CQRS", no "microservices")
+- Max 12 words per option"""
+
+
 FUNCTIONAL_DESIGN_PROMPT = """You are an AI-DLC Functional Design assistant for Hello Scrum. Given a user story and acceptance criteria, produce a concrete implementation plan for patching index.html.
 
 Return JSON only (no markdown):
@@ -1373,7 +1401,7 @@ def sprint_backlog():
         for i in data.get("items", [])
         if i.get("in_sprint")
     ]
-    return jsonify({"items": items})
+    return jsonify({"items": items, "sprint_number": data.get("sprint_number")})
 
 
 @app.route("/sprint/item/<item_id>", methods=["GET"])
@@ -1546,6 +1574,44 @@ def construction_clear_design():
             item.pop("functional_design", None)
             with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
                 json.dump(backlog, f, indent=2)
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/construction/nfr-questions", methods=["POST"])
+def construction_nfr_questions():
+    try:
+        data    = request.get_json()
+        stories = (data or {}).get("stories", [])
+        stories_str = "\n".join(f"- {s}" for s in stories) if stories else "(no stories provided)"
+        client = anthropic.Anthropic()
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=600,
+            system=NFR_REQUIREMENTS_PROMPT,
+            messages=[{"role": "user", "content": f"Sprint stories:\n{stories_str}"}],
+        )
+        text = next((b.text for b in response.content if hasattr(b, "text")), "")
+        start = text.find("{")
+        if start == -1:
+            raise ValueError("No JSON in response")
+        result, _ = json.JSONDecoder().raw_decode(text, start)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/construction/nfr-confirm", methods=["POST"])
+def construction_nfr_confirm():
+    try:
+        data    = request.get_json()
+        answers = (data or {}).get("answers", {})
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
+            backlog = json.load(f)
+        backlog["sprint_nfr"] = {"answers": answers}
+        with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
+            json.dump(backlog, f, indent=2)
         return jsonify({"ok": True})
     except Exception as e:
         return jsonify({"error": str(e)}), 500

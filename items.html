@@ -115,11 +115,22 @@
     <a href="intake.html">Intake</a>
     <a href="/">Backlog</a>
     <a href="active.html">Live Work</a>
-    <a href="audit.html">Audit</a>
-    <a href="retro.html">Retro</a>
-    <a href="workflow.html">Workflow</a>
-    <a href="prompts.html">Prompts</a>
-    <a href="notes.html">Notes</a>
+    <div class="nav-ref">
+      <span class="nav-ref-btn">Artifacts ▾</span>
+      <div class="nav-ref-menu">
+        <a href="retro.html">Retro</a>
+        <a href="audit.html">Audit</a>
+      </div>
+    </div>
+    <div class="nav-ref">
+      <span class="nav-ref-btn">Reference ▾</span>
+      <div class="nav-ref-menu">
+        <a href="hello-scrum.html">Workflow</a>
+        <a href="docs.html">Docs</a>
+        <a href="prompts.html">Prompts</a>
+        <a href="notes.html">Notes</a>
+      </div>
+    </div>
     <a href="health.html">Health</a>
   </nav>
 
@@ -308,7 +319,7 @@
     <div class="col">
       <div class="col-header">
         <h2 class="inception">Inception</h2>
-        <div class="subtitle">Intent → Unit → Stories → Bolts → sprint</div>
+        <div class="subtitle">Intent → Workspace Detection → Reverse Engineering → Requirements Analysis → Elaborate → Sprint</div>
       </div>
       <div class="pipeline">
 
@@ -323,24 +334,51 @@
         <div class="step ai">
           <div class="step-left"><div class="step-num">2</div><div class="connector"></div></div>
           <div class="step-card">
-            <div class="step-name">Clarifying questions <span class="badge badge-ai">Haiku</span></div>
-            <div class="step-desc">AI generates 3 targeted questions to remove ambiguity from the intent.</div>
+            <div class="step-name">Workspace Detection <span class="badge badge-ai">Haiku</span></div>
+            <div class="step-desc">AI scans the project — languages, key files, data model fields, status values, source values, pipeline stages. Produces a workspace snapshot injected into all downstream prompts.</div>
+            <div class="step-fields">
+              <span class="field-key">languages, key_files</span><br>
+              <span class="field-key">data_model:</span> <span class="field-val">{fields, statuses, sources, field_types}</span><br>
+              <span class="field-key">agent_pipeline</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left"><div class="step-num">3</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Reverse Engineering <span class="badge badge-ai">Haiku</span></div>
+            <div class="step-desc">AI extracts all routes from server.py, reads the agent system prompt, inventories code files, and produces an architecture summary. Cached by item count — skips re-run if codebase unchanged.</div>
+            <div class="step-fields">
+              <span class="field-key">architecture_summary</span><br>
+              <span class="field-key">key_endpoints, components</span><br>
+              <span class="field-key">business_dictionary (14 terms)</span><br>
+              <span class="field-key">code_structure (11 core files)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left"><div class="step-num">4</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Requirements Analysis <span class="badge badge-ai">Haiku</span></div>
+            <div class="step-desc">AI generates 4–6 structured clarifying questions using workspace + RE context. Questions use A/B/C option chips — option A is always the recommended choice. Human can click "All A" to accept all recommendations instantly.</div>
           </div>
         </div>
 
         <div class="step human">
-          <div class="step-left"><div class="step-num">3</div><div class="connector"></div></div>
+          <div class="step-left"><div class="step-num">5</div><div class="connector"></div></div>
           <div class="step-card">
             <div class="step-name">Answer questions <span class="badge badge-human">Human</span></div>
-            <div class="step-desc">Human answers all 3 questions to scope the work precisely.</div>
+            <div class="step-desc">Human selects answers to scope the work. Options reference actual file names and field names from the codebase — no generic placeholders.</div>
           </div>
         </div>
 
         <div class="step purple">
-          <div class="step-left"><div class="step-num">4</div><div class="connector"></div></div>
+          <div class="step-left"><div class="step-num">6</div><div class="connector"></div></div>
           <div class="step-card">
             <div class="step-name">Elaborate <span class="badge badge-purple">Sonnet</span></div>
-            <div class="step-desc">AI decomposes the intent into a full Unit with Stories, Bolts, NFRs, and Risks.</div>
+            <div class="step-desc">AI decomposes the intent into a full Unit with Stories, Bolts, NFRs, and Risks. Workspace + RE context injected — stories reference actual data fields, endpoints, and file names.</div>
             <div class="step-fields">
               <span class="field-key">unit:</span> <span class="field-val">{name, domain}</span><br>
               <span class="field-key">stories:</span> <span class="field-val">[{story, idea, ac}]</span><br>
@@ -351,15 +389,15 @@
         </div>
 
         <div class="step human">
-          <div class="step-left"><div class="step-num">5</div><div class="connector"></div></div>
+          <div class="step-left"><div class="step-num">7</div><div class="connector"></div></div>
           <div class="step-card">
             <div class="step-name">Review &amp; edit <span class="badge badge-human">Human</span></div>
-            <div class="step-desc">Human reviews stories, agent tasks, and AC. Edits any field before adding to sprint.</div>
+            <div class="step-desc">Human reviews stories and AC. Each story has a + criterion button to add AC rows inline before sending to sprint.</div>
           </div>
         </div>
 
         <div class="step human">
-          <div class="step-left"><div class="step-num">6</div><div class="connector"></div></div>
+          <div class="step-left"><div class="step-num">8</div><div class="connector"></div></div>
           <div class="step-card">
             <div class="step-name">Add to Sprint <span class="badge badge-human">Human</span></div>
             <div class="step-desc">Human adds a bolt (or all stories) to the sprint. Each story becomes one sprint item with all fields stored.</div>
@@ -373,16 +411,27 @@
           </div>
         </div>
 
-        <div class="step ai">
-          <div class="step-left"><div class="step-num">7</div><div class="connector"></div></div>
+        <div class="step human">
+          <div class="step-left"><div class="step-num">9</div><div class="connector"></div></div>
           <div class="step-card">
-            <div class="step-name">Sprint executes <span class="badge badge-ai">Sonnet</span></div>
-            <div class="step-desc">Agent implements the <strong>story</strong> guided by the acceptance criteria. The <code>idea</code> provides implementation context.</div>
+            <div class="step-name">Functional Design <span class="badge badge-human">Human + AI</span></div>
+            <div class="step-desc">Optional pre-sprint step on construction.html. Haiku reads each story + AC + index.html and generates an implementation plan. Human reviews and approves before coding begins. Approved FD is injected into the agent coding prompt.</div>
+            <div class="step-fields">
+              <span class="field-key">functional_design:</span> <span class="field-val">{approach, add[], modify[], touches[], risks[]}</span>
+            </div>
           </div>
         </div>
 
         <div class="step ai">
-          <div class="step-left"><div class="step-num">8</div></div>
+          <div class="step-left"><div class="step-num">10</div><div class="connector"></div></div>
+          <div class="step-card">
+            <div class="step-name">Sprint executes <span class="badge badge-ai">Sonnet</span></div>
+            <div class="step-desc">Agent implements the <strong>story</strong> guided by AC and optional approved Functional Design. Workspace context injected — agent knows actual data structures, endpoints, and file conventions.</div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left"><div class="step-num">11</div></div>
           <div class="step-card">
             <div class="step-name">Hermes review <span class="badge badge-ai">Hermes</span></div>
             <div class="step-desc">Hermes checks code review + AC compliance. Approve → deployed. Reject → failed.</div>
@@ -421,7 +470,13 @@
           <td>AI at entry</td>
           <td class="messenger">Haiku classifies + suggests 2 titles</td>
           <td class="watercooler">None — direct to backlog</td>
-          <td class="inception">Haiku asks clarifying questions</td>
+          <td class="inception">Workspace Detection → RE → Requirements Analysis (Haiku)</td>
+        </tr>
+        <tr>
+          <td>Codebase analysis</td>
+          <td class="messenger">None</td>
+          <td class="watercooler">None</td>
+          <td class="inception">Workspace Detection + Reverse Engineering injected into all prompts</td>
         </tr>
         <tr>
           <td>Story + AC source</td>
@@ -451,7 +506,13 @@
           <td>NFRs + Risks</td>
           <td class="messenger">Not captured</td>
           <td class="watercooler">Not captured</td>
-          <td class="inception">Generated, shown in Inception</td>
+          <td class="inception">Generated by Sonnet, shown in Inception result panel</td>
+        </tr>
+        <tr>
+          <td>Functional Design</td>
+          <td class="messenger">No</td>
+          <td class="watercooler">No</td>
+          <td class="inception">Optional — construction.html, Haiku generates per story, human approves</td>
         </tr>
         <tr>
           <td>Unit / domain context</td>

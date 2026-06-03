@@ -319,7 +319,7 @@ def get_ct_timestamp():
 
 # ── Worker agent ──────────────────────────────────────────────────────────────
 
-def call_agent(idea, story, acceptance_criteria, index_html, version_json, timestamp, retro_context=None, scope_creep_feedback=None, functional_design=None):
+def call_agent(idea, story, acceptance_criteria, index_html, version_json, timestamp, retro_context=None, scope_creep_feedback=None, functional_design=None, nfr_requirements=None):
     context_parts = []
     workspace_ctx = load_workspace_context()
     if workspace_ctx:
@@ -336,6 +336,13 @@ def call_agent(idea, story, acceptance_criteria, index_html, version_json, times
         if fd.get("existing_elements_touched"):
             lines.append("Existing elements touched: " + ", ".join(fd["existing_elements_touched"]))
         context_parts.append("\n".join(lines))
+    if nfr_requirements:
+        answers = nfr_requirements.get("answers", {})
+        if answers:
+            lines = ["NFR REQUIREMENTS (confirmed — apply to your implementation):"]
+            for val in answers.values():
+                lines.append(f"- {val}")
+            context_parts.append("\n".join(lines))
     wisdom = load_wisdom()
     if wisdom:
         context_parts.append("CODING WISDOM:\n" + "\n".join(f"- {b}" for b in wisdom))
@@ -1000,6 +1007,7 @@ def _append_sprint_result(item_id):
 
 def run_one(sprint_only=False, processed=None, sprint_wisdom=None):
     backlog = load_backlog()
+    nfr_requirements = backlog.get("sprint_nfr")
     item = get_next_item(backlog, sprint_only=sprint_only)
 
     if not item:
@@ -1054,6 +1062,7 @@ def run_one(sprint_only=False, processed=None, sprint_wisdom=None):
                 retro_context=sprint_wisdom,
                 scope_creep_feedback=scope_creep_feedback,
                 functional_design=item.get("functional_design"),
+                nfr_requirements=nfr_requirements,
             )
             tokens_in += t_in
             tokens_out += t_out

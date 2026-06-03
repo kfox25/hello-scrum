@@ -1,5 +1,12 @@
 [
   {
+    "id": 1780409172270,
+    "title": "AI Scrum CoP Community of Practice",
+    "body": "\u25cf Which model fits AI Scrum best?\n\n  - SDD is the foundation \u2014 AI doesn't fill gaps charitably, it guesses. Precise specs eliminate hallucination surface.\n  - DDD gives the vocabulary \u2014 business dictionary = ubiquitous language for prompts. Shared terms prevent \"retrospective view\" \u2192\n  wrong file.\n  - BDD is already embedded \u2014 AC criteria are behavioral contracts; Hermes is the automated verifier.\n  - Avoid spec-deferral patterns \u2014 emergent design, \"implement as you see fit,\" vague stories all fail with AI agents.\n  - AI-DLC = SDD over a DDD foundation \u2014 field types, execution constraints, workspace detection are SDD infrastructure for AI\n  reliability.\n\n\nIs there a discord server or slack channel for this group?\n\n\n\n\n",
+    "created": "2026-06-02T14:06:12.270Z",
+    "updated": "2026-06-02T15:07:51.103Z"
+  },
+  {
     "id": 1779743290210,
     "title": "Questions",
     "body": "Group of fellow travellers working on scrum, agile, ai\n\nwhich nodes should be human-in-the-loop? \n\nwhich priority model will ai scrum teams use? w-sjf, kano, 2x2, MoSCoW?\n\nshould we use several agents (coding agent, qa agent, etc) or just one agent that does everything?\n\nwhich health signals should be tracked and evaluated for a health score?\n\nDoD?\n",

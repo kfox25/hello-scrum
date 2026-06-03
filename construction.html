@@ -118,6 +118,26 @@
     .empty-state { color: #444; font-size: 0.85rem; padding: 1.5rem 0; text-align: center; }
 
     .sprint-actions { display: flex; gap: 0.75rem; align-items: center; padding: 0.75rem 0 0; }
+
+    /* NFR Requirements */
+    .nfr-question { margin-bottom: 1rem; }
+    .nfr-category { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: #ffcc0080; margin-bottom: 0.25rem; }
+    .nfr-q-text { font-size: 0.82rem; color: #bbb; margin-bottom: 0.5rem; line-height: 1.4; }
+    .nfr-options { display: flex; flex-direction: column; gap: 0.3rem; }
+    .nfr-option {
+      font-size: 0.78rem; color: #777; background: #111;
+      border: 1px solid #2a2a2a; border-radius: 4px;
+      padding: 0.35rem 0.7rem; cursor: pointer; text-align: left;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .nfr-option:hover { border-color: #ffcc0040; color: #ccc; background: #1a1a00; }
+    .nfr-option.selected { border-color: #ffcc0060; color: #ffcc00; background: #1a1a00; }
+    .nfr-confirmed-row { display: flex; gap: 0.5rem; margin-bottom: 0.4rem; align-items: baseline; }
+    .nfr-confirmed-row::before { content: '·'; color: #ffcc0060; flex-shrink: 0; }
+    .nfr-confirmed-row span { font-size: 0.8rem; color: #888; }
+    .nfr-locked { opacity: 0.4; pointer-events: none; }
+    .nfr-lock-msg { font-size: 0.75rem; color: #444; font-style: italic; margin-bottom: 0.75rem; }
+    .btn-ready { background: #0d3320 !important; border-color: #00ff99 !important; color: #00ff99 !important; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -126,11 +146,22 @@
     <a href="intake.html">Intake</a>
     <a href="/">Backlog</a>
     <a href="active.html">Live Work</a>
-    <a href="audit.html">Audit</a>
-    <a href="retro.html">Retro</a>
-    <a href="workflow.html">Workflow</a>
-    <a href="prompts.html">Prompts</a>
-    <a href="notes.html">Notes</a>
+    <div class="nav-ref">
+      <span class="nav-ref-btn">Artifacts ▾</span>
+      <div class="nav-ref-menu">
+        <a href="retro.html">Retro</a>
+        <a href="audit.html">Audit</a>
+      </div>
+    </div>
+    <div class="nav-ref">
+      <span class="nav-ref-btn">Reference ▾</span>
+      <div class="nav-ref-menu">
+        <a href="hello-scrum.html">Workflow</a>
+        <a href="docs.html">Docs</a>
+        <a href="prompts.html">Prompts</a>
+        <a href="notes.html">Notes</a>
+      </div>
+    </div>
     <a href="health.html">Health</a>
   </nav>
 
@@ -227,7 +258,7 @@
       </div>
     </div>
 
-    <!-- Right: functional design panel -->
+    <!-- Right: functional design + NFR panels -->
     <div class="right-panel" id="rightPanel">
       <div class="card">
         <div style="display:flex;align-items:baseline;gap:1rem;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid #222;">
@@ -240,6 +271,20 @@
           <span class="status-line" id="sprintStatus"></span>
           <button class="btn btn-sm btn-copy" style="margin-left:auto;" onclick="copyAllDesigns()">Copy</button>
           <span class="copy-confirm" id="copyConfirm">copied</span>
+        </div>
+      </div>
+
+      <div class="card" id="nfrCard" style="display:none;">
+        <div style="display:flex;align-items:baseline;gap:1rem;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid #222;">
+          <div class="section-label" style="margin-bottom:0;color:#ffcc00;">NFR Requirements</div>
+          <div style="font-size:0.78rem;color:#999;">Confirm non-functional requirements — applied to every story in this sprint</div>
+        </div>
+        <div id="nfrLockMsg" class="nfr-lock-msg">Approve all functional designs above to unlock.</div>
+        <div id="nfrBody"><div class="empty-state" style="padding:0.5rem 0;">Generate questions to begin.</div></div>
+        <div style="display:flex;gap:0.5rem;align-items:center;padding-top:0.75rem;" id="nfrActions">
+          <button class="btn btn-sm" id="nfrGenBtn" onclick="generateNFRQuestions()">Generate Questions →</button>
+          <button class="btn btn-sm" id="nfrConfirmBtn" style="display:none;background:#1a1a00;color:#ffcc00;border-color:#ffcc0040;" onclick="confirmNFR()">Confirm Requirements →</button>
+          <span class="status-line" id="nfrStatus"></span>
         </div>
       </div>
     </div>
@@ -364,6 +409,7 @@
       }).join('');
 
       actions.style.display = 'flex';
+      updateNFRLock();
     }
 
     async function generateDesign(idx) {
@@ -443,7 +489,141 @@
       }
     }
 
+    function allFDsApproved() {
+      const active = sprintItems.filter(i => !['done','failed'].includes(i.status));
+      return active.length > 0 && active.every(i => !!i.functional_design);
+    }
+
+    function updateNFRLock() {
+      const card    = document.getElementById('nfrCard');
+      const lockMsg = document.getElementById('nfrLockMsg');
+      if (!card || card.style.display === 'none') return;
+      const approved = allFDsApproved();
+      card.classList.toggle('nfr-locked', !approved);
+      if (lockMsg) lockMsg.style.display = approved ? 'none' : 'block';
+    }
+
+    // ── NFR Requirements ──────────────────────────────────────────────────────
+
+    let nfrQuestions = [];
+    let nfrAnswers   = {};
+    let nfrConfirmed = false;
+
+    async function loadNFR() {
+      try {
+        const res  = await fetch('/backlog?t=' + Date.now());
+        const data = await res.json();
+        const nfr  = data.sprint_nfr;
+        if (nfr && nfr.answers && Object.keys(nfr.answers).length) {
+          nfrAnswers   = nfr.answers;
+          nfrConfirmed = true;
+          renderNFRConfirmed();
+        }
+        const hasItems = (data.items || []).some(i => i.in_sprint);
+        document.getElementById('nfrCard').style.display = hasItems ? '' : 'none';
+        updateNFRLock();
+      } catch(e) {}
+    }
+
+    async function generateNFRQuestions() {
+      const btn = document.getElementById('nfrGenBtn');
+      const statusEl = document.getElementById('nfrStatus');
+      btn.disabled = true;
+      statusEl.textContent = 'Generating…';
+      statusEl.className = 'status-line active';
+      nfrConfirmed = false;
+      nfrAnswers = {};
+      try {
+        const stories = sprintItems.map(i => i.story || i.idea || '').filter(Boolean);
+        const res = await fetch('/construction/nfr-questions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stories }),
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        nfrQuestions = data.questions || [];
+        renderNFRQuestions();
+        statusEl.textContent = '';
+      } catch(e) {
+        statusEl.textContent = 'Error: ' + e.message;
+        statusEl.className = 'status-line error';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function renderNFRQuestions() {
+      const body = document.getElementById('nfrBody');
+      const confirmBtn = document.getElementById('nfrConfirmBtn');
+      body.innerHTML = nfrQuestions.map(q => `
+        <div class="nfr-question">
+          <div class="nfr-category">${escHtml(q.category)}</div>
+          <div class="nfr-q-text">${escHtml(q.question)}</div>
+          <div class="nfr-options">
+            ${(q.options || []).map(opt => `
+              <button class="nfr-option${nfrAnswers[q.id] === opt ? ' selected' : ''}"
+                onclick="selectNFROption('${q.id}', ${JSON.stringify(opt).replace(/'/g, "\\'")}, this)">
+                ${escHtml(opt)}
+              </button>`).join('')}
+          </div>
+        </div>`).join('');
+      confirmBtn.style.display = 'inline-block';
+      updateConfirmBtn();
+    }
+
+    function selectNFROption(id, val, el) {
+      nfrAnswers[id] = val;
+      el.closest('.nfr-options').querySelectorAll('.nfr-option').forEach(b => b.classList.remove('selected'));
+      el.classList.add('selected');
+      updateConfirmBtn();
+    }
+
+    function updateConfirmBtn() {
+      const allAnswered = nfrQuestions.length > 0 && nfrQuestions.every(q => nfrAnswers[q.id]);
+      document.getElementById('nfrConfirmBtn').disabled = !allAnswered;
+    }
+
+    async function confirmNFR() {
+      const btn = document.getElementById('nfrConfirmBtn');
+      const statusEl = document.getElementById('nfrStatus');
+      btn.disabled = true;
+      statusEl.textContent = 'Saving…';
+      statusEl.className = 'status-line active';
+      try {
+        await fetch('/construction/nfr-confirm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ answers: nfrAnswers }),
+        });
+        nfrConfirmed = true;
+        renderNFRConfirmed();
+        statusEl.textContent = '';
+      } catch(e) {
+        statusEl.textContent = 'Error: ' + e.message;
+        statusEl.className = 'status-line error';
+        btn.disabled = false;
+      }
+    }
+
+    function renderNFRConfirmed() {
+      const body = document.getElementById('nfrBody');
+      const confirmBtn = document.getElementById('nfrConfirmBtn');
+      const genBtn = document.getElementById('nfrGenBtn');
+      body.innerHTML = Object.values(nfrAnswers).map(val =>
+        `<div class="nfr-confirmed-row"><span>${escHtml(val)}</span></div>`
+      ).join('');
+      confirmBtn.style.display = 'none';
+      genBtn.textContent = 'Re-generate';
+      const sprintLink = document.querySelector('#sprintActions a.btn');
+      if (sprintLink) {
+        sprintLink.classList.add('btn-ready');
+        sprintLink.textContent = '✓ Ready — Go to Sprint Board →';
+      }
+    }
+
     loadStories();
+    loadNFR();
   </script>
   <script src="shared.js"></script>
 </body>

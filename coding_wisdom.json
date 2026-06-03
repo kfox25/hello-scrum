@@ -1,11 +1,12 @@
 {
   "bullets": [
-    "\u2022 Validate anchor selector complexity against 3-line limit before writing code.",
-    "\u2022 Use single-line DOM anchors; split multi-step operations into separate patches.",
-    "\u2022 Reject conditional blocks exceeding 3 lines; refactor to minimal selectors.",
-    "\u2022 Break sorting and refresh into independent patches with isolated selectors.",
-    "\u2022 Confirm each DOM target supports single-line script anchors pre-implementation."
+    "\u2022 Validate all code changes map directly to acceptance criteria before implementation.",
+    "\u2022 Reject patches introducing unrelated modifications outside explicit story scope.",
+    "\u2022 Consolidate related UI changes into single patches to minimize version bumps.",
+    "\u2022 Split multi-step DOM operations into isolated patches with independent selectors.",
+    "\u2022 Limit conditional blocks to 3 lines; refactor complex logic into minimal selectors.",
+    "\u2022 Document selector complexity rationale when exceeding standard 3-line execution patterns."
   ],
-  "synthesized_at": "2026-06-01 18:31:41",
-  "finding_count": 702
+  "synthesized_at": "2026-06-02 10:32:21",
+  "finding_count": 714
 }

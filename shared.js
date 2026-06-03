@@ -42,6 +42,13 @@
     if (lp === path || (path === '/' && lp === '/') || (path.endsWith(lp) && lp !== '/'))
       link.classList.add('active');
   });
+  document.querySelectorAll('.nav-ref-btn').forEach(btn => {
+    const menu = btn.nextElementSibling;
+    if (!menu) return;
+    const links = [...menu.querySelectorAll('a')];
+    const pages = links.map(a => new URL(a.href, location.href).pathname);
+    if (pages.some(p => path.endsWith(p.split('/').pop()))) btn.classList.add('active');
+  });
 })();
 
 (async function () {

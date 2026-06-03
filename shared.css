@@ -28,6 +28,55 @@ body {
 .top-nav a.active { background: #0d3320; border-color: #00ff9980; color: #fff; }
 .top-nav a[href="health.html"] { color: #555; border-color: #55555540; }
 
+.nav-ref {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.nav-ref-btn {
+  font-family: monospace;
+  font-size: 0.85rem;
+  background: #1a1a1a;
+  color: #00ff99;
+  border: 1px solid #00ff9940;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.nav-ref-btn:hover { background: #0d3320; border-color: #00ff99; }
+.nav-ref-btn.active { background: #0d3320; border-color: #00ff9980; color: #fff; }
+.nav-ref-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  padding: 0.35rem;
+  padding-top: 0.6rem;
+  z-index: 200;
+  min-width: 120px;
+}
+.nav-ref:hover .nav-ref-menu { display: flex; }
+.nav-ref-menu a {
+  font-family: monospace;
+  font-size: 0.82rem;
+  color: #888;
+  text-decoration: none;
+  padding: 0.35rem 0.65rem;
+  border-radius: 3px;
+  border: none;
+  background: none;
+  white-space: nowrap;
+}
+.nav-ref-menu a:hover { color: #00ff99; background: #0a1f12; }
+.nav-ref-menu a.active { color: #00ff99; background: #0a1f12; }
+
 .wf-nav {
   position: fixed;
   top: 50%;

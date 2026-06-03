@@ -6,7 +6,7 @@
   <title>Prompts — Hello Scrum</title>
   <link rel="stylesheet" href="shared.css">
   <style>
-    body { padding: 4.5rem 2rem 3rem; }
+    body { padding: 4.5rem 2rem 3rem 15rem; }
 
     .page-title {
       font-size: 0.7rem;
@@ -61,11 +61,22 @@
     <a href="intake.html">Intake</a>
     <a href="/">Backlog</a>
     <a href="active.html">Live Work</a>
-    <a href="audit.html">Audit</a>
-    <a href="retro.html">Retro</a>
-    <a href="workflow.html">Workflow</a>
-    <a href="prompts.html">Prompts</a>
-    <a href="notes.html">Notes</a>
+    <div class="nav-ref">
+      <span class="nav-ref-btn">Artifacts ▾</span>
+      <div class="nav-ref-menu">
+        <a href="retro.html">Retro</a>
+        <a href="audit.html">Audit</a>
+      </div>
+    </div>
+    <div class="nav-ref">
+      <span class="nav-ref-btn">Reference ▾</span>
+      <div class="nav-ref-menu">
+        <a href="hello-scrum.html">Workflow</a>
+        <a href="docs.html">Docs</a>
+        <a href="prompts.html">Prompts</a>
+        <a href="notes.html">Notes</a>
+      </div>
+    </div>
     <a href="health.html">Health</a>
   </nav>
 
@@ -79,13 +90,37 @@
       const res  = await fetch('/prompts');
       const data = await res.json();
       document.getElementById('prompts-root').innerHTML = data.prompts.map(p => `
-        <div class="prompt-card">
+        <div class="prompt-card" id="prompt-${p.id}">
           <div class="prompt-header">
             <span class="prompt-label">${p.label}</span>
             <span class="prompt-id">${p.id}</span>
           </div>
           <div class="prompt-body">${escHtml(p.text)}</div>
         </div>`).join('');
+
+      const nav = document.createElement('div');
+      nav.className = 'wf-nav';
+      const cards = {};
+      const navLinks = {};
+
+      function showPrompt(id) {
+        Object.keys(cards).forEach(k => {
+          cards[k].style.display = k === id ? '' : 'none';
+          navLinks[k].classList.toggle('active', k === id);
+        });
+      }
+
+      data.prompts.forEach((p, i) => {
+        cards[p.id] = document.getElementById('prompt-' + p.id);
+        const a = document.createElement('a');
+        a.href = '#';
+        a.textContent = p.label;
+        a.addEventListener('click', e => { e.preventDefault(); showPrompt(p.id); });
+        navLinks[p.id] = a;
+        nav.appendChild(a);
+      });
+      document.body.appendChild(nav);
+      showPrompt(data.prompts[0].id);
     }
 
     function escHtml(s) {

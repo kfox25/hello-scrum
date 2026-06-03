@@ -1,14 +1,14 @@
 {
   "bullets": [
-    "\u2022 Distinguish \"no qualifying data\" (\u2014) from \"zero qualifying records\" (0%).",
-    "\u2022 State one testable outcome per displayed column or conditional branch.",
-    "\u2022 Verify metric logic independent of data retrieval or filtering implementation.",
-    "\u2022 Define fallback message when dataset is entirely absent or empty.",
-    "\u2022 Specify sort order for null/missing metric values relative to numeric values.",
-    "\u2022 Use 'approve'/'reject' terminology; never 'pass'/'fail' for verdict fields.",
-    "\u2022 Round all percentages to nearest integer; suffix with '%'.",
-    "\u2022 Declare which data fields qualify for each metric's numerator and denominator."
+    "\u2022 Define exact property values; reject vague descriptions or assumptions about current state.",
+    "\u2022 Specify affected element and its before/after values; list unchanged related properties.",
+    "\u2022 Enumerate unrelated elements that must remain unchanged to prevent scope creep.",
+    "\u2022 Verify changes render correctly across page reloads without regression or artifact inconsistency.",
+    "\u2022 State testable observable outcomes; avoid implementation-specific or tool-dependent verification steps.",
+    "\u2022 Restrict changes to stated scope; reject modifications to unrelated properties or elements.",
+    "\u2022 Include dependent visual relationships; confirm balanced appearance with adjacent components.",
+    "\u2022 Name the file and code location where changes apply; ensure deployment consistency."
   ],
-  "synthesized_at": "2026-06-01 18:31:43",
-  "item_count": 187
+  "synthesized_at": "2026-06-02 10:32:24",
+  "item_count": 188
 }

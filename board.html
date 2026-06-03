@@ -301,11 +301,22 @@
     <a href="intake.html">Intake</a>
     <a href="/">Backlog</a>
     <a href="active.html">Live Work</a>
-    <a href="audit.html">Audit</a>
-    <a href="retro.html">Retro</a>
-    <a href="workflow.html">Workflow</a>
-    <a href="prompts.html">Prompts</a>
-    <a href="notes.html">Notes</a>
+    <div class="nav-ref">
+      <span class="nav-ref-btn">Artifacts ▾</span>
+      <div class="nav-ref-menu">
+        <a href="retro.html">Retro</a>
+        <a href="audit.html">Audit</a>
+      </div>
+    </div>
+    <div class="nav-ref">
+      <span class="nav-ref-btn">Reference ▾</span>
+      <div class="nav-ref-menu">
+        <a href="hello-scrum.html">Workflow</a>
+        <a href="docs.html">Docs</a>
+        <a href="prompts.html">Prompts</a>
+        <a href="notes.html">Notes</a>
+      </div>
+    </div>
     <a href="health.html">Health</a>
   </nav>
   <header>
@@ -355,6 +366,7 @@
       <div class="col-header">
         <div>
           <span class="col-title">Sprint Backlog</span>
+          <span id="sprint-num" style="font-size:0.72rem;color:#888;font-family:monospace;margin-left:0.3rem;"></span>
           <span class="col-count" id="sprint-count"></span>
         </div>
         <div style="display:flex;gap:0.4rem">
@@ -434,6 +446,8 @@
       document.getElementById('opp-count').textContent     = `(${oppItems.length})`;
       document.getElementById('backlog-count').textContent = `(${backlogItems.length})`;
       document.getElementById('sprint-count').textContent  = `(${sprintItems.length})`;
+      const sprintNumEl = document.getElementById('sprint-num');
+      if (sprintNumEl) sprintNumEl.textContent = backlogData.sprint_number != null ? `#${backlogData.sprint_number}` : '';
 
       document.getElementById('opp-zone').innerHTML = oppItems.length
         ? oppItems.map(renderCard).join('')

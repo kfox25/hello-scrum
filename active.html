@@ -378,11 +378,22 @@
     <a href="intake.html">Intake</a>
     <a href="/">Backlog</a>
     <a href="active.html">Live Work</a>
-    <a href="audit.html">Audit</a>
-    <a href="retro.html">Retro</a>
-    <a href="workflow.html">Workflow</a>
-    <a href="prompts.html">Prompts</a>
-    <a href="notes.html">Notes</a>
+    <div class="nav-ref">
+      <span class="nav-ref-btn">Artifacts ▾</span>
+      <div class="nav-ref-menu">
+        <a href="retro.html">Retro</a>
+        <a href="audit.html">Audit</a>
+      </div>
+    </div>
+    <div class="nav-ref">
+      <span class="nav-ref-btn">Reference ▾</span>
+      <div class="nav-ref-menu">
+        <a href="hello-scrum.html">Workflow</a>
+        <a href="docs.html">Docs</a>
+        <a href="prompts.html">Prompts</a>
+        <a href="notes.html">Notes</a>
+      </div>
+    </div>
     <a href="health.html">Health</a>
   </nav>
 
@@ -800,6 +811,8 @@
         const list  = document.getElementById('backlog-list');
         if (items.length === 0) { panel.style.display = 'none'; return; }
         panel.style.display = 'block';
+        const hdr = panel.querySelector('.backlog-header');
+        if (hdr) hdr.textContent = data.sprint_number != null ? `Active Sprint  #${data.sprint_number}` : 'Active Sprint';
         const retroRow = document.getElementById('retro-row');
         if (retroRow) retroRow.classList.toggle('backlog-selected', selectedItemId === '__retro__');
         try {

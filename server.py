@@ -239,6 +239,15 @@ def app_page():
     return send_file(os.path.join(BASE, "index.html"))
 
 
+@app.route("/last-prompt")
+def last_prompt():
+    try:
+        with open(os.path.join(BASE, "last_prompt.json"), encoding="utf-8") as f:
+            return jsonify(json.load(f))
+    except FileNotFoundError:
+        return jsonify({"error": "No prompt captured yet — run a sprint first."}), 404
+
+
 @app.route("/prompts.html")
 def prompts_page():
     return send_file(os.path.join(BASE, "prompts.html"))

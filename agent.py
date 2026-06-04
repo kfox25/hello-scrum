@@ -321,9 +321,13 @@ def get_ct_timestamp():
 
 def call_agent(idea, story, acceptance_criteria, index_html, version_json, timestamp, retro_context=None, scope_creep_feedback=None, functional_design=None, nfr_requirements=None):
     context_parts = []
+    labeled_blocks = []
+
     workspace_ctx = load_workspace_context()
     if workspace_ctx:
         context_parts.append(workspace_ctx)
+        labeled_blocks.append({"label": "Workspace Context", "content": workspace_ctx})
+
     if functional_design:
         fd = functional_design
         lines = ["FUNCTIONAL DESIGN (pre-approved — follow this plan):"]
@@ -335,21 +339,33 @@ def call_agent(idea, story, acceptance_criteria, index_html, version_json, times
             lines.append("Modify: " + "; ".join(fd["elements_to_modify"]))
         if fd.get("existing_elements_touched"):
             lines.append("Existing elements touched: " + ", ".join(fd["existing_elements_touched"]))
-        context_parts.append("\n".join(lines))
+        fd_block = "\n".join(lines)
+        context_parts.append(fd_block)
+        labeled_blocks.append({"label": "Functional Design", "content": fd_block})
+
     if nfr_requirements:
         answers = nfr_requirements.get("answers", {})
         if answers:
             lines = ["NFR REQUIREMENTS (confirmed — apply to your implementation):"]
             for val in answers.values():
                 lines.append(f"- {val}")
-            context_parts.append("\n".join(lines))
+            nfr_block = "\n".join(lines)
+            context_parts.append(nfr_block)
+            labeled_blocks.append({"label": "NFR Requirements", "content": nfr_block})
+
     wisdom = load_wisdom()
     if wisdom:
-        context_parts.append("CODING WISDOM:\n" + "\n".join(f"- {b}" for b in wisdom))
+        wisdom_block = "CODING WISDOM:\n" + "\n".join(f"- {b}" for b in wisdom)
+        context_parts.append(wisdom_block)
+        labeled_blocks.append({"label": "Coding Wisdom", "content": wisdom_block})
+
     if retro_context:
-        context_parts.append("SPRINT WISDOM:\n" + retro_context)
+        retro_block = "SPRINT WISDOM:\n" + retro_context
+        context_parts.append(retro_block)
+        labeled_blocks.append({"label": "Sprint Wisdom", "content": retro_block})
+
     if scope_creep_feedback:
-        context_parts.append(
+        scf_block = (
             "SCOPE CREEP REJECTION — YOUR PREVIOUS PATCHES WERE REJECTED:\n"
             f"{scope_creep_feedback}\n\n"
             "Fix your patches:\n"
@@ -357,20 +373,25 @@ def call_agent(idea, story, acceptance_criteria, index_html, version_json, times
             "2. Never include any CSS rule or JS block in 'find' that you are not directly changing.\n"
             "3. 'replace' must contain EVERY character from 'find' plus your new addition."
         )
+        context_parts.append(scf_block)
+        labeled_blocks.append({"label": "Scope Creep Feedback", "content": scf_block})
+
     context_section = ("\n\n" + "\n\n".join(context_parts)) if context_parts else ""
 
     version_json = strip_changelog_for_prompt(version_json)
 
     ac_str = "\n".join(f"- {c}" for c in acceptance_criteria) if acceptance_criteria else "(none)"
 
-    prompt = f"""Deploy timestamp: {timestamp}
+    story_header = f"""Deploy timestamp: {timestamp}
 Live URL: {REPO_URL}
 Idea: {idea}
 
 Story: {story or '(none)'}
 
 Acceptance criteria:
-{ac_str}
+{ac_str}"""
+
+    prompt = f"""{story_header}
 
 index.html:
 {index_html}
@@ -379,6 +400,22 @@ version.json:
 {version_json}{context_section}
 
 Implement. Return JSON only."""
+
+    try:
+        with open("last_prompt.json", "w", encoding="utf-8") as _f:
+            json.dump({
+                "captured_at": datetime.now().isoformat(),
+                "story": story or "",
+                "idea": idea or "",
+                "model": "claude-sonnet-4-6",
+                "system": SYSTEM_PROMPT,
+                "story_header": story_header,
+                "context_blocks": labeled_blocks,
+                "index_html_chars": len(index_html),
+                "version_json_chars": len(version_json),
+            }, _f, indent=2)
+    except Exception:
+        pass
 
     full_text = ""
     line_buffer = ""

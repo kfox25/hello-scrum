@@ -18,6 +18,37 @@
     }
     .wf-nav-group:first-child { margin-top: 0; }
 
+    .wf-nav-live {
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #4488ff;
+      padding: 0 0.5rem 0.1rem;
+    }
+    .wf-nav a.live-link { color: #4488ffaa; border-color: #4488ff20; }
+    .wf-nav a.live-link:hover { color: #4488ff; border-color: #4488ff60; background: #0a0f1f; }
+    .wf-nav a.live-link.active { color: #4488ff; border-color: #4488ff60; background: #0a0f1f; }
+
+    .live-meta {
+      display: flex; gap: 1.5rem; flex-wrap: wrap;
+      padding: 0.6rem 1rem; background: #0a0f1f;
+      border-bottom: 1px solid #1a2a44; font-size: 0.75rem;
+    }
+    .live-meta-item { display: flex; flex-direction: column; gap: 0.15rem; }
+    .live-meta-label { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.1em; color: #4488ff80; }
+    .live-meta-value { color: #aac4ff; font-family: monospace; }
+
+    .live-section { margin-bottom: 0.75rem; }
+    .live-section-label {
+      font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: #4488ff80; margin-bottom: 0.3rem;
+    }
+    .size-pill {
+      display: inline-block; font-size: 0.68rem; font-family: monospace;
+      color: #555; background: #111; border: 1px solid #222;
+      border-radius: 3px; padding: 0.15rem 0.5rem;
+    }
+
     .page-title {
       font-size: 0.7rem;
       text-transform: uppercase;
@@ -106,7 +137,14 @@
             <span class="prompt-id">${p.id}</span>
           </div>
           <div class="prompt-body">${escHtml(p.text)}</div>
-        </div>`).join('');
+        </div>`).join('') + `
+        <div class="prompt-card" id="prompt-__live__" style="display:none;">
+          <div class="prompt-header" style="background:#060c1a;border-color:#1a2a44;">
+            <span class="prompt-label" style="color:#4488ff;">Last Agent Call</span>
+            <button onclick="refreshLive()" style="background:none;border:none;color:#4488ff80;font-size:0.7rem;cursor:pointer;font-family:monospace;">refresh</button>
+          </div>
+          <div id="liveBody" class="prompt-body"></div>
+        </div>`;
 
       const nav = document.createElement('div');
       nav.className = 'wf-nav';
@@ -120,6 +158,25 @@
         });
       }
 
+      // Live section at top
+      const liveHdr = document.createElement('div');
+      liveHdr.className = 'wf-nav-live';
+      liveHdr.textContent = 'Live';
+      nav.appendChild(liveHdr);
+      const liveLink = document.createElement('a');
+      liveLink.href = '#';
+      liveLink.className = 'live-link';
+      liveLink.textContent = 'Last Agent Call';
+      liveLink.addEventListener('click', e => {
+        e.preventDefault();
+        showPrompt('__live__');
+        fetchLive();
+      });
+      navLinks['__live__'] = liveLink;
+      cards['__live__'] = document.getElementById('prompt-__live__');
+      nav.appendChild(liveLink);
+
+      // Phase groups
       let currentGroup = null;
       data.prompts.forEach((p, i) => {
         cards[p.id] = document.getElementById('prompt-' + p.id);
@@ -139,6 +196,53 @@
       });
       document.body.appendChild(nav);
       showPrompt(data.prompts[0].id);
+    }
+
+    async function fetchLive() {
+      const body = document.getElementById('liveBody');
+      body.textContent = 'Loading…';
+      try {
+        const res = await fetch('/last-prompt');
+        if (!res.ok) { const d = await res.json(); body.textContent = d.error || 'Not found.'; return; }
+        const d = await res.json();
+        renderLive(d);
+      } catch(e) {
+        body.textContent = 'Error: ' + e.message;
+      }
+    }
+
+    function refreshLive() { fetchLive(); }
+
+    function renderLive(d) {
+      const body = document.getElementById('liveBody');
+      const ts = d.captured_at ? d.captured_at.replace('T', ' ').slice(0, 19) : '—';
+      const kb = n => Math.round(n / 1024) + ' KB';
+      body.innerHTML = `
+        <div class="live-meta">
+          <div class="live-meta-item"><div class="live-meta-label">Story</div><div class="live-meta-value">${escHtml((d.story || '—').slice(0, 80))}</div></div>
+          <div class="live-meta-item"><div class="live-meta-label">Model</div><div class="live-meta-value">${escHtml(d.model || '—')}</div></div>
+          <div class="live-meta-item"><div class="live-meta-label">Captured</div><div class="live-meta-value">${ts}</div></div>
+        </div>
+        <div style="padding:1rem;">
+          <div class="live-section">
+            <div class="live-section-label">System Prompt</div>
+            <div class="prompt-body" style="padding:0.75rem;background:#0a0a0a;border-radius:4px;border:1px solid #1a1a1a;">${escHtml(d.system || '')}</div>
+          </div>
+          <div class="live-section">
+            <div class="live-section-label">Story Payload</div>
+            <div class="prompt-body" style="padding:0.75rem;background:#0a0a0a;border-radius:4px;border:1px solid #1a1a1a;">${escHtml(d.story_header || '')}</div>
+          </div>
+          <div class="live-section">
+            <div class="live-section-label">File Contents Injected</div>
+            <span class="size-pill">index.html — ${kb(d.index_html_chars || 0)}</span>
+            <span class="size-pill" style="margin-left:0.4rem;">version.json — ${kb(d.version_json_chars || 0)}</span>
+          </div>
+          ${(d.context_blocks || []).map(b => `
+          <div class="live-section">
+            <div class="live-section-label">${escHtml(b.label)}</div>
+            <div class="prompt-body" style="padding:0.75rem;background:#0a0a0a;border-radius:4px;border:1px solid #1a1a1a;">${escHtml(b.content)}</div>
+          </div>`).join('')}
+        </div>`;
     }
 
     function escHtml(s) {

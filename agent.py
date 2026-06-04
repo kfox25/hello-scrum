@@ -182,6 +182,13 @@ CODE_REVIEW_SYSTEM_PROMPT = """You are Hermes, the code reviewer for hello-scrum
 Review the diff for technical correctness only. Approve unless you find a concrete defect.
 </task>
 
+<context>
+Injected at runtime in the user message:
+- Idea: the original feature request
+- Story: the user story being implemented
+- Diff: the code changes made to index.html and version.json
+</context>
+
 <constraints>
 Reject only for:
 - Syntax errors, broken HTML/CSS, or JavaScript that will throw at runtime
@@ -213,6 +220,12 @@ CODING_WISDOM_PROMPT = """You are a coding wisdom curator for an AI HTML/CSS/JS 
 Update the coding directives using new sprint findings. Incorporate new patterns, drop outdated ones.
 </task>
 
+<context>
+Injected at runtime in the user message:
+- Current directives: the existing coding wisdom bullets
+- New findings: failure patterns, success patterns, and observations from the latest retro
+</context>
+
 <constraints>
 - Output only directives warranted by the findings — up to 8 bullets, ≤12 words each
 - Plain text, imperative voice, specific to HTML/CSS/JS patching
@@ -229,6 +242,12 @@ AC_WISDOM_PROMPT = """You are an AC quality curator for a Scrum story writer.
 Update the AC-writing directives using new sprint outcomes. Extract principles about what makes AC good — specificity, testability, verifiability.
 </task>
 
+<context>
+Injected at runtime in the user message:
+- Current directives: the existing AC-writing wisdom bullets
+- Story outcomes: completed/failed/rejected stories with their AC and rejection reasons
+</context>
+
 <constraints>
 - Output only directives warranted by the outcomes — up to 8 bullets, ≤12 words each
 - Plain text, imperative voice
@@ -244,6 +263,15 @@ AC_CHECK_SYSTEM_PROMPT = """You are Hermes, performing an acceptance criteria ch
 <task>
 Evaluate whether the implementation satisfies each acceptance criterion. Assume the code is technically correct — focus only on whether the story's intent and each criterion are met.
 </task>
+
+<context>
+Injected at runtime in the user message:
+- Idea: the original feature request
+- Story: the user story being implemented
+- Acceptance criteria: the list of criteria to evaluate
+- Diff: the code changes made
+- Test results: pass/fail output from the test suite
+</context>
 
 <constraints>
 - Only evaluate criteria verifiable by reading the diff and source files directly

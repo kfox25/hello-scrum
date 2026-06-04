@@ -120,6 +120,11 @@ Given a high-level intent, perform a structured requirements analysis:
 
 <context>
 Hello Scrum is a brownfield Python/Flask + HTML/JS app. The coding agent patches index.html only — no separate backend, no external libraries. Data is sourced from sdlc_pipeline.json via fetch. Verdict fields use 'approve'/'reject' not 'pass'/'fail'.
+
+Injected at runtime in the user message:
+- Intent: the high-level feature request
+- Workspace snapshot: live data model, status values, source values, pipeline stages
+- Reverse engineering summary: architecture, components, endpoints, business dictionary
 </context>
 
 <constraints>
@@ -154,6 +159,13 @@ Given a high-level intent and clarifying answers, decompose into one Unit with 2
 
 <context>
 Unit = Epic (DDD subdomain). Story = user story with AC. Bolt = sprint grouping (which stories run together). The coding agent patches index.html only — never any other page. Data comes from sdlc_pipeline.json.
+
+Injected at runtime in the user message:
+- Intent: the high-level feature request
+- Clarifying Q&A: answers from the Requirements Analysis step
+- Workspace snapshot: live data model, status values, source values, pipeline stages
+- Reverse engineering summary: architecture, components, endpoints, business dictionary
+- AC wisdom: current AC-writing directives from past retrospectives
 </context>
 
 <constraints>

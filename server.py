@@ -66,6 +66,14 @@ FUNCTIONAL_DESIGN_PROMPT = """You are an AI-DLC Functional Design assistant for 
 Given a user story and acceptance criteria, produce a concrete implementation plan for patching index.html.
 </task>
 
+<context>
+Injected at runtime in the user message:
+- Story: the user story to implement
+- Acceptance criteria: the list of criteria the implementation must satisfy
+- Workspace snapshot: live data model, status values, pipeline stages
+- index.html: first 8000 characters of the current file for structural reference
+</context>
+
 <constraints>
 - patch_target: always "index.html" — the only file the agent patches (besides version.json metadata)
 - implementation_approach: 1 sentence, max 20 words
@@ -91,6 +99,13 @@ INCEPTION_REVERSE_ENGINEER_PROMPT = """You are an AI-DLC Reverse Engineering ass
 <task>
 Analyze the provided codebase summary and produce a concise architectural overview.
 </task>
+
+<context>
+Injected at runtime in the user message:
+- Codebase summary: key files, route count, data model fields, status/source values, pipeline stages
+- All API routes: full list of Flask endpoints extracted from server.py
+- Agent system prompt excerpt: first lines of the coding agent's instructions
+</context>
 
 <constraints>
 - architecture_summary: 1 sentence only
@@ -247,6 +262,13 @@ Analyze a meeting transcript against the existing backlog in three steps:
 2. For each topic, scan the entire backlog for any story that covers it — even loosely. Done stories count as already shipped.
 3. Report alignments (existing stories) and new stories (genuinely uncovered topics).
 </task>
+
+<context>
+Injected at runtime in the user message:
+- Transcript: the meeting conversation to analyze
+- Full backlog: all pipeline items including done and failed stories
+- Opportunity backlog: ideas already captured but not yet started
+</context>
 
 <constraints>
 - Scan ALL backlog stories for each topic before declaring it new

@@ -88,8 +88,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.235</div>
-  <div class="meta">Last deployed: 2026-06-03 20:46:21 CT</div>
+  <div class="version" id="version-badge">v0.1.236</div>
+  <div class="meta">Last deployed: 2026-06-03 20:46:54 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -127,10 +127,13 @@
           <th style="text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:500;">Completed</th>
           <th style="text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:500;">Failed</th>
           <th style="text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:500;">Avg Stage Time (s)</th>
+          <th style="text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:500;">Test Pass %</th>
+          <th style="text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:500;">AC Approval %</th>
+          <th style="text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:500;">Code Review %</th>
         </tr>
       </thead>
       <tbody id="sprint-perf-tbody">
-        <tr><td colspan="4" style="color:#444;padding:0.6rem;text-align:center;">Loading…</td></tr>
+        <tr><td colspan="7" style="color:#444;padding:0.6rem;text-align:center;">Loading…</td></tr>
       </tbody>
     </table>
   </div>
@@ -153,18 +156,22 @@
           var item = items[i];
           var sn = item.sprint_number;
           if (sn == null) continue;
-          if (!sprintMap[sn]) sprintMap[sn] = { completed: 0, failed: 0, stageTotals: [], count: 0 };
+          if (!sprintMap[sn]) sprintMap[sn] = { completed: 0, failed: 0, stageTotals: [], count: 0, testPass: 0, testTotal: 0, acApprove: 0, acTotal: 0, crApprove: 0, crTotal: 0 };
           var s = sprintMap[sn];
           if (item.status === 'done') s.completed++;
           if (item.status === 'failed') s.failed++;
           s.stageTotals.push(sumStageTimes(item.stage_times));
+          if (Array.isArray(item.test_results) && item.test_results.some(function(t){return t.status==='pass';})) s.testPass++;
+          s.testTotal++;
+          if (item.ac_check_verdict === 'approve' || item.ac_check_verdict === 'reject') { s.acTotal++; if (item.ac_check_verdict === 'approve') s.acApprove++; }
+          if (item.code_review_verdict === 'approve' || item.code_review_verdict === 'reject') { s.crTotal++; if (item.code_review_verdict === 'approve') s.crApprove++; }
           s.count++;
         }
         var sprints = Object.keys(sprintMap).map(Number).sort(function(a,b){return a-b;});
         var last = sprints.slice(-5);
         var tbody = document.getElementById('sprint-perf-tbody');
         if (last.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="4" style="color:#444;padding:0.6rem;text-align:center;">No sprint data available.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="7" style="color:#444;padding:0.6rem;text-align:center;">No sprint data available.</td></tr>';
           return;
         }
         tbody.innerHTML = last.map(function(sn) {
@@ -175,6 +182,9 @@
             + '<td style="padding:0.45rem 0.6rem;text-align:center;color:#00ff99;">' + s.completed + '</td>'
             + '<td style="padding:0.45rem 0.6rem;text-align:center;color:#ff6b6b;">' + s.failed + '</td>'
             + '<td style="padding:0.45rem 0.6rem;text-align:center;color:#aaa;">' + avg + '</td>'
+            + '<td style="padding:0.45rem 0.6rem;text-align:center;color:#aaa;">' + (s.testTotal > 0 ? Math.round(s.testPass / s.testTotal * 100) + '%' : '—') + '</td>'
+            + '<td style="padding:0.45rem 0.6rem;text-align:center;color:#aaa;">' + (s.acTotal > 0 ? Math.round(s.acApprove / s.acTotal * 100) + '%' : '—') + '</td>'
+            + '<td style="padding:0.45rem 0.6rem;text-align:center;color:#aaa;">' + (s.crTotal > 0 ? Math.round(s.crApprove / s.crTotal * 100) + '%' : '—') + '</td>'
             + '</tr>';
         }).join('');
       }
@@ -183,7 +193,7 @@
         .then(function(data){ renderSprintTable(data.items || []); })
         .catch(function(){
           var tbody = document.getElementById('sprint-perf-tbody');
-          if (tbody) tbody.innerHTML = '<tr><td colspan="4" style="color:#444;padding:0.6rem;text-align:center;">Unable to load sprint data.</td></tr>';
+          if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="color:#444;padding:0.6rem;text-align:center;">Unable to load sprint data.</td></tr>';
         });
     })();
   </script>

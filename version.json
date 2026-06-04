@@ -1,6 +1,6 @@
 {
-  "version": "0.1.235",
-  "deployed": "2026-06-03 20:46:21 CT",
+  "version": "0.1.236",
+  "deployed": "2026-06-03 20:46:54 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1183,6 +1183,11 @@
       "version": "0.1.235",
       "date": "2026-06-03",
       "change": "Add sprint performance summary table showing completed, failed, and avg stage time for last 3\u20135 sprints"
+    },
+    {
+      "version": "0.1.236",
+      "date": "2026-06-03",
+      "change": "Add Test Pass %, AC Approval %, and Code Review % quality indicator columns to sprint performance table"
     }
   ]
 }

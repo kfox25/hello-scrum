@@ -154,8 +154,14 @@
       function showPrompt(id) {
         Object.keys(cards).forEach(k => {
           cards[k].style.display = k === id ? '' : 'none';
-          navLinks[k].classList.toggle('active', k === id);
+          if (navLinks[k]) navLinks[k].classList.toggle('active', k === id);
         });
+        // clear live link actives when switching to a static prompt
+        if (id !== '__live__') {
+          Object.keys(navLinks).forEach(k => {
+            if (k.startsWith('live_')) navLinks[k].classList.remove('active');
+          });
+        }
       }
 
       // Live section at top — one entry per call type, grouped by phase

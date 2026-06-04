@@ -37,6 +37,13 @@ AC_WISDOM_FILE         = "ac_wisdom.json"
 SPRINT_RESULT_FILE     = "sprint_result.json"
 WORKSPACE_CONTEXT_FILE = "workspace_context.json"
 
+def _save_last_prompt(name, data):
+    try:
+        with open(f"last_prompt_{name}.json", "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+    except Exception:
+        pass
+
 _log_lines = []
 _retro_active_stage = None
 _suppress_log_writes = False
@@ -401,21 +408,18 @@ version.json:
 
 Implement. Return JSON only."""
 
-    try:
-        with open("last_prompt.json", "w", encoding="utf-8") as _f:
-            json.dump({
-                "captured_at": datetime.now().isoformat(),
-                "story": story or "",
-                "idea": idea or "",
-                "model": "claude-sonnet-4-6",
-                "system": SYSTEM_PROMPT,
-                "story_header": story_header,
-                "context_blocks": labeled_blocks,
-                "index_html_chars": len(index_html),
-                "version_json_chars": len(version_json),
-            }, _f, indent=2)
-    except Exception:
-        pass
+    _save_last_prompt("agent", {
+        "captured_at": datetime.now().isoformat(),
+        "label": "Worker Agent",
+        "story": story or "",
+        "idea": idea or "",
+        "model": "claude-sonnet-4-6",
+        "system": SYSTEM_PROMPT,
+        "story_header": story_header,
+        "context_blocks": labeled_blocks,
+        "index_html_chars": len(index_html),
+        "version_json_chars": len(version_json),
+    })
 
     full_text = ""
     line_buffer = ""
@@ -577,6 +581,13 @@ Story: {story}
 Diff:
 {diff[:12000]}"""
 
+    _save_last_prompt("code_review", {
+        "captured_at": datetime.now().isoformat(),
+        "label": "Hermes — Code Review",
+        "model": "claude-haiku-4-5-20251001",
+        "system": CODE_REVIEW_SYSTEM_PROMPT,
+        "user": prompt,
+    })
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
         max_tokens=256,
@@ -608,6 +619,13 @@ Diff:
 Test results:
 {json.dumps(test_results, indent=2)}"""
 
+    _save_last_prompt("ac_check", {
+        "captured_at": datetime.now().isoformat(),
+        "label": "Hermes — AC Check",
+        "model": "claude-haiku-4-5-20251001",
+        "system": AC_CHECK_SYSTEM_PROMPT,
+        "user": prompt,
+    })
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
         max_tokens=256,
@@ -696,6 +714,13 @@ Results:
 
 Analyze this sprint and return findings JSON."""
 
+    _save_last_prompt("retro", {
+        "captured_at": datetime.now().isoformat(),
+        "label": "Retrospective",
+        "model": "claude-haiku-4-5-20251001",
+        "system": RETRO_SYSTEM_PROMPT,
+        "user": prompt,
+    })
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
         max_tokens=512,
@@ -932,6 +957,13 @@ def synthesize_ac_wisdom(sprint_items=None):
         )
 
     log("Synthesizing AC wisdom...")
+    _save_last_prompt("wisdom_ac", {
+        "captured_at": datetime.now().isoformat(),
+        "label": "AC Wisdom Synthesis",
+        "model": "claude-haiku-4-5-20251001",
+        "system": None,
+        "user": prompt,
+    })
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
         max_tokens=400,
@@ -1004,6 +1036,13 @@ def synthesize_coding_wisdom(processed_items=None):
         )
 
     log("Synthesizing wisdom...")
+    _save_last_prompt("wisdom_coding", {
+        "captured_at": datetime.now().isoformat(),
+        "label": "Coding Wisdom Synthesis",
+        "model": "claude-haiku-4-5-20251001",
+        "system": None,
+        "user": prompt,
+    })
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
         max_tokens=400,

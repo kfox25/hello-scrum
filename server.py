@@ -239,13 +239,23 @@ def app_page():
     return send_file(os.path.join(BASE, "index.html"))
 
 
-@app.route("/last-prompt")
-def last_prompt():
+def _save_last_prompt(name, data):
     try:
-        with open(os.path.join(BASE, "last_prompt.json"), encoding="utf-8") as f:
+        with open(os.path.join(BASE, f"last_prompt_{name}.json"), "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+    except Exception:
+        pass
+
+
+@app.route("/last-prompt/<name>")
+def last_prompt(name):
+    if not re.match(r'^[a-z_]+$', name):
+        return jsonify({"error": "Invalid name"}), 400
+    try:
+        with open(os.path.join(BASE, f"last_prompt_{name}.json"), encoding="utf-8") as f:
             return jsonify(json.load(f))
     except FileNotFoundError:
-        return jsonify({"error": "No prompt captured yet — run a sprint first."}), 404
+        return jsonify({"error": f"No call captured yet for '{name}' — trigger that step first."}), 404
 
 
 @app.route("/prompts.html")
@@ -639,6 +649,13 @@ Recently shipped:
             app_state = "APP STATE: unavailable"
 
         client = anthropic.Anthropic()
+        _save_last_prompt("intake_classifier", {
+            "captured_at": datetime.now().isoformat(),
+            "label": "Intake Classifier",
+            "model": "claude-haiku-4-5-20251001",
+            "system": INTAKE_CLASSIFIER_PROMPT.format(app_state=app_state),
+            "user": message,
+        })
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=300,
@@ -708,11 +725,19 @@ def messenger_meeting():
         ) or "(none)"
 
         client = anthropic.Anthropic()
+        transcript_user = f"TRANSCRIPT:\n{transcript}\n\nFULL BACKLOG:\n{stories_context}\n\nOPPORTUNITY BACKLOG (already captured, not yet started):\n{opps_context}"
+        _save_last_prompt("intake_transcript", {
+            "captured_at": datetime.now().isoformat(),
+            "label": "Transcript Analyzer",
+            "model": "claude-haiku-4-5-20251001",
+            "system": INTAKE_TRANSCRIPT_PROMPT,
+            "user": transcript_user,
+        })
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=1000,
             system=INTAKE_TRANSCRIPT_PROMPT,
-            messages=[{"role": "user", "content": f"TRANSCRIPT:\n{transcript}\n\nFULL BACKLOG:\n{stories_context}\n\nOPPORTUNITY BACKLOG (already captured, not yet started):\n{opps_context}"}],
+            messages=[{"role": "user", "content": transcript_user}],
         )
 
         text = response.content[0].text.strip()
@@ -1543,6 +1568,13 @@ def construction_design():
         )
 
         client = anthropic.Anthropic()
+        _save_last_prompt("fd", {
+            "captured_at": datetime.now().isoformat(),
+            "label": "Functional Design",
+            "model": "claude-haiku-4-5-20251001",
+            "system": FUNCTIONAL_DESIGN_PROMPT,
+            "user": user_msg,
+        })
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=600,
@@ -1606,6 +1638,13 @@ def construction_nfr_questions():
         stories = (data or {}).get("stories", [])
         stories_str = "\n".join(f"- {s}" for s in stories) if stories else "(no stories provided)"
         client = anthropic.Anthropic()
+        _save_last_prompt("nfr", {
+            "captured_at": datetime.now().isoformat(),
+            "label": "NFR Requirements",
+            "model": "claude-haiku-4-5-20251001",
+            "system": NFR_REQUIREMENTS_PROMPT,
+            "user": f"Sprint stories:\n{stories_str}",
+        })
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=600,
@@ -1917,6 +1956,13 @@ All API routes:
 {route_lines}"""
 
         client = anthropic.Anthropic()
+        _save_last_prompt("re", {
+            "captured_at": datetime.now().isoformat(),
+            "label": "Reverse Engineering",
+            "model": "claude-haiku-4-5-20251001",
+            "system": INCEPTION_REVERSE_ENGINEER_PROMPT,
+            "user": summary,
+        })
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=1800,
@@ -2063,6 +2109,13 @@ def inception_clarify():
         user_msg = intent + "\n".join(ws_lines)
 
         client = anthropic.Anthropic()
+        _save_last_prompt("clarify", {
+            "captured_at": datetime.now().isoformat(),
+            "label": "Requirements Analysis",
+            "model": "claude-haiku-4-5-20251001",
+            "system": INCEPTION_CLARIFY_PROMPT,
+            "user": user_msg,
+        })
         response = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=1200,
@@ -2143,6 +2196,13 @@ def inception_elaborate():
         wisdom_section = ("\n\nAC WISDOM:\n" + "\n".join(f"- {b}" for b in ac_wisdom_bullets)) if ac_wisdom_bullets else ""
 
         client = anthropic.Anthropic()
+        _save_last_prompt("elaborate", {
+            "captured_at": datetime.now().isoformat(),
+            "label": "Inception Elaborate",
+            "model": "claude-sonnet-4-6",
+            "system": INCEPTION_ELABORATE_PROMPT,
+            "user": intent + qna_section + ws_section + wisdom_section,
+        })
         response = client.messages.create(
             model="claude-sonnet-4-6",
             max_tokens=4000,
@@ -2207,6 +2267,13 @@ def elaborate_story():
         ]
 
         client = anthropic.Anthropic()
+        _save_last_prompt("story_elaboration", {
+            "captured_at": datetime.now().isoformat(),
+            "label": "Story Elaboration",
+            "model": "claude-haiku-4-5-20251001",
+            "system": STORY_ELABORATION_PROMPT,
+            "user": idea + wisdom_section,
+        })
         messages = [{"role": "user", "content": idea + wisdom_section}]
 
         for _ in range(3):  # max 3 turns

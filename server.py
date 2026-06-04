@@ -34,176 +34,226 @@ agent_running = False
 agent_lock = threading.Lock()
 AGENT_LOG_FILE = os.path.join(BASE, "agent_log.json")
 
-NFR_REQUIREMENTS_PROMPT = """You are an AI-DLC NFR Requirements assistant for Hello Scrum. Given a set of sprint stories, generate 3-4 non-functional requirement questions to guide the coding agent.
+NFR_REQUIREMENTS_PROMPT = """You are an AI-DLC NFR Requirements assistant for Hello Scrum.
 
-Hello Scrum constraints:
-- Agent patches one file only: index.html (vanilla HTML/CSS/JS — no external libraries)
-- Dark theme: #0f0f0f background, #00ff99 accent, monospace font family
-- Data always fetched from /sdlc_pipeline.json → response is {sprint_number, items:[...]}
-- All changes must be self-contained within index.html
+<task>
+Given a set of sprint stories, generate 3-4 non-functional requirement questions to guide the coding agent.
+</task>
 
-Return JSON only (no markdown):
-{
-  "questions": [
-    {
-      "id": "nfr1",
-      "category": "Category",
-      "question": "Question text?",
-      "options": ["A: recommended option", "B: alternative", "C: minimal option"]
-    }
-  ]
-}
+<context>
+Hello Scrum constraints: the agent patches index.html only (vanilla HTML/CSS/JS — no external libraries), uses a dark theme (#0f0f0f background, #00ff99 accent, monospace font), and fetches data from /sdlc_pipeline.json → response is {sprint_number, items:[...]}.
+</context>
 
-Rules:
+<constraints>
 - Exactly 3-4 questions
-- Use these categories only: Performance, Accessibility, Visual Consistency, Error Handling
+- Use only these categories: Performance, Accessibility, Visual Consistency, Error Handling
 - Option A is always the recommended/conservative choice for Hello Scrum's constraints
 - Options must be specific — no generic enterprise patterns (no "CQRS", no "microservices")
-- Max 12 words per option"""
+- Max 12 words per option
+</constraints>
 
-
-FUNCTIONAL_DESIGN_PROMPT = """You are an AI-DLC Functional Design assistant for Hello Scrum. Given a user story and acceptance criteria, produce a concrete implementation plan for patching index.html.
-
-Return JSON only (no markdown):
+Respond with ONLY valid JSON — no markdown:
 {
-  "patch_target": "index.html",
-  "implementation_approach": "one sentence describing the overall approach",
-  "elements_to_add": ["HTML/CSS/JS element or block to add — be specific about tag, id, class"],
-  "elements_to_modify": ["existing element to modify — name its id or class and what changes"],
-  "existing_elements_touched": ["id or class of each existing element affected"],
-  "risks": ["potential issue or edge case to watch for"]
-}
+  "questions": [
+    {"id": "nfr1", "category": "Category", "question": "Question text?", "options": ["A: recommended option", "B: alternative", "C: minimal option"]}
+  ]
+}"""
 
-Rules:
+
+FUNCTIONAL_DESIGN_PROMPT = """You are an AI-DLC Functional Design assistant for Hello Scrum.
+
+<task>
+Given a user story and acceptance criteria, produce a concrete implementation plan for patching index.html.
+</task>
+
+<constraints>
 - patch_target: always "index.html" — the only file the agent patches (besides version.json metadata)
 - implementation_approach: 1 sentence, max 20 words
 - 2-4 items per array, each max 15 words
-- elements_to_add: describe new HTML structure, CSS rules, or JS functions
-- elements_to_modify: name the exact id/class from index.html that will change
+- elements_to_add: describe new HTML structure, CSS rules, or JS functions by tag, id, or class
+- elements_to_modify: name the exact id/class from index.html that will change and what changes
 - existing_elements_touched: list of ids/classes — used to prevent scope creep
-- risks: things that could go wrong or cause Hermes to reject"""
+- risks: things that could go wrong or cause Hermes to reject
+</constraints>
 
-INCEPTION_REVERSE_ENGINEER_PROMPT = """You are an AI-DLC Reverse Engineering assistant. Analyze this codebase summary and produce a concise architectural overview.
+Respond with ONLY valid JSON — no markdown:
+{
+  "patch_target": "index.html",
+  "implementation_approach": "one sentence describing the overall approach",
+  "elements_to_add": ["HTML/CSS/JS element or block to add"],
+  "elements_to_modify": ["existing element to modify — name its id or class and what changes"],
+  "existing_elements_touched": ["id or class of each existing element affected"],
+  "risks": ["potential issue or edge case to watch for"]
+}"""
 
-Return JSON only (no markdown). Keep all strings short — one sentence max per field.
+INCEPTION_REVERSE_ENGINEER_PROMPT = """You are an AI-DLC Reverse Engineering assistant for Hello Scrum.
+
+<task>
+Analyze the provided codebase summary and produce a concise architectural overview.
+</task>
+
+<constraints>
+- architecture_summary: 1 sentence only
+- components: 4-5 most important; role is max 10 words each
+- key_endpoints: 8 most important only; purpose is max 8 words each
+- business_transactions: 4-6 items, each 3-5 words
+- technical_patterns: 3-5 items, each 3-5 words
+- Keep all strings short — one sentence max per field
+</constraints>
+
+Respond with ONLY valid JSON — no markdown:
 {
   "architecture_summary": "one sentence describing what this system is",
-  "components": [
-    {"name": "short name", "file": "filename", "role": "one sentence role"}
-  ],
-  "key_endpoints": [
-    {"method": "GET", "path": "/path", "purpose": "short purpose"}
-  ],
+  "components": [{"name": "short name", "file": "filename", "role": "one sentence role"}],
+  "key_endpoints": [{"method": "GET", "path": "/path", "purpose": "short purpose"}],
   "business_transactions": ["Run a sprint", "Add a story to backlog"],
   "technical_patterns": ["SSE streaming", "JSON file as data store"]
-}
+}"""
 
-Rules:
-- architecture_summary: 1 sentence only
-- components: 4-5 most important, role is max 10 words
-- key_endpoints: 8 most important only, purpose is max 8 words
-- business_transactions: 4-6 items, each 3-5 words
-- technical_patterns: 3-5 items, each 3-5 words"""
+INCEPTION_CLARIFY_PROMPT = """You are an AI-DLC Requirements Analysis assistant for Hello Scrum.
 
-INCEPTION_CLARIFY_PROMPT = """You are an AI-DLC Requirements Analysis assistant. Given a high-level intent, perform a structured requirements analysis.
+<task>
+Given a high-level intent, perform a structured requirements analysis:
+1. Assess the intent — classify its type, scope, and complexity.
+2. Generate 4-6 targeted questions to clarify requirements before elaboration.
+</task>
 
-First, assess the intent: classify its type (Feature/Enhancement/New Project/Refactor/Bug Fix), scope (Small/Medium/Large), and complexity (Simple/Moderate/Complex).
+<context>
+Hello Scrum is a brownfield Python/Flask + HTML/JS app. The coding agent patches index.html only — no separate backend, no external libraries. Data is sourced from sdlc_pipeline.json via fetch. Verdict fields use 'approve'/'reject' not 'pass'/'fail'.
+</context>
 
-Then generate 4-6 targeted questions to fully clarify requirements before elaboration. Use these categories as appropriate:
-- Users: primary users, personas, or stakeholders
-- Functional: specific outcomes, features, or behaviours that define success
-- Non-Functional: performance, scale, security, or reliability needs
-- Constraints: dependencies, existing context, or boundaries of scope
+<constraints>
+Question categories to use as appropriate: Users, Functional, Non-Functional, Constraints.
 
-Where useful, include 3-4 mutually exclusive options (A, B, C) the human can choose from. Leave options empty [] when a free-form answer is more appropriate.
+Where useful, include 3-4 mutually exclusive options (A, B, C). Leave options empty [] for free-form answers.
 
-Order options so that the most suitable choice for a brownfield, single-team, AI-driven Scrum project is always listed first (option A). This lets a tester accept all defaults by selecting A for every question.
-
-Ordering rules for option A:
+Option A ordering rules — always the most suitable choice for a brownfield, single-team, AI-driven Scrum project:
 - Metrics questions: prefer metrics computable from existing sdlc_pipeline.json fields (status, code_review_verdict, ac_check_verdict, test_results, stage_times) — not burn-down, not external data
-- Time horizon questions: prefer last 3–5 sprints (trend window) over current sprint only or all-time
+- Time horizon questions: prefer last 3–5 sprints over current sprint only or all-time
 - Location questions: prefer an inline section in index.html — no separate pages, tabs, or modals
 - Automation questions: prefer display-only over automated actions or AI recommendations
 - Audience questions: prefer Scrum Master / team lead over individual developers
 
-CRITICAL — execution environment constraints (apply when generating options):
-- The agent only patches index.html and version.json. When generating location options, always name the actual file (e.g. "inline section in index.html") — never use conceptual names like "retrospective view", "sprint board", or "board page". These names cause the elaboration model to write the wrong file target into stories.
-- Data is sourced from sdlc_pipeline.json via fetch — never a separate API or database.
-- Verdict fields use 'approve'/'reject' not 'pass'/'fail'.
+Location options must name the actual file (e.g. "inline section in index.html") — never use conceptual names like "retrospective view" or "board page". These cause the elaboration model to target the wrong file.
+</constraints>
 
-Return JSON only (no markdown):
+Respond with ONLY valid JSON — no markdown:
 {
   "assessment": {"type": "Feature", "scope": "Medium", "complexity": "Moderate"},
   "questions": [
-    {"id": 1, "category": "Users", "question": "Who are the primary users?", "options": ["A: End users / consumers", "B: Internal team / developers", "C: Both"]},
-    {"id": 2, "category": "Functional", "question": "What does success look like for this feature?", "options": []}
+    {"id": 1, "category": "Users", "question": "Who are the primary users?", "options": ["A: ...", "B: ...", "C: ..."]},
+    {"id": 2, "category": "Functional", "question": "What does success look like?", "options": []}
   ]
 }"""
 
-INCEPTION_ELABORATE_PROMPT = """You are an AI-DLC Inception assistant. Given a high-level intent and clarifying answers, decompose into one Unit with 2-3 Stories and 1-2 suggested Bolts (sprint groupings). Return JSON only (no markdown):
-{"unit": {"name": "Short Feature Name", "domain": "Bounded Context Label"}, "stories": [{"story": "As a <role>, I want <goal> so that <benefit>.", "idea": "One-line implementation instruction for the agent", "acceptance_criteria": ["testable criterion 1", "testable criterion 2", "testable criterion 3"]}, {"story": "As a <role>, I want <goal> so that <benefit>.", "idea": "One-line implementation instruction for the agent", "acceptance_criteria": ["testable criterion 1", "testable criterion 2"]}], "bolts": [{"name": "Bolt 1", "story_indices": [0, 1], "rationale": "Why these stories run together in one sprint"}, {"name": "Bolt 2", "story_indices": [2], "rationale": "Why this runs as a separate sprint"}], "nfrs": ["NFR 1", "NFR 2"], "risks": ["Risk 1", "Risk 2"]}
+INCEPTION_ELABORATE_PROMPT = """You are an AI-DLC Inception assistant for Hello Scrum.
 
-Rules:
+<task>
+Given a high-level intent and clarifying answers, decompose into one Unit with 2-3 Stories and 1-2 suggested Bolts (sprint groupings).
+</task>
+
+<context>
+Unit = Epic (DDD subdomain). Story = user story with AC. Bolt = sprint grouping (which stories run together). The coding agent patches index.html only — never any other page. Data comes from sdlc_pipeline.json.
+</context>
+
+<constraints>
+Structure rules:
 - unit.name: 2-4 word feature name
 - unit.domain: DDD bounded context label (e.g. "Sprint Performance", "Developer Experience", "Backlog Management")
 - stories: 2-3 user stories; each has a human-readable story, a short agent-facing idea, and 2-4 testable AC
-- bolts: 1-2 suggested sprint groupings; story_indices is a 0-based array referencing the stories array; a bolt runs its stories sequentially
+- bolts: 1-2 sprint groupings; story_indices is 0-based referencing the stories array; a bolt runs its stories sequentially
 - nfrs: 2-3 non-functional requirements for the whole unit
 - risks: 2-3 risks for the whole unit
 
-EXECUTION CONSTRAINTS — apply to every story and every AC criterion:
-- The agent patches exactly two files: index.html and version.json. Never reference retro.html, board.html, intake.html, or any other file as the implementation location. Use "index.html" explicitly — not "retrospective view", "sprint board", "backlog", or any other conceptual name.
-- Data from sdlc_pipeline.json is fetched via fetch('/sdlc_pipeline.json') and accessed as data.items (an array). Never reference localStorage. Never assume data is a bare array — always use data.items.
-- Verdict fields ac_check_verdict and code_review_verdict use values 'approve' and 'reject' — never 'pass' or 'fail'. AC that references 'pass'/'fail' for these fields will always compute 0% pass rates.
-- test_results is Array<{status, message}> — AC must specify checking with .some(t => t.status === 'pass'), never String(item.test_results).
-- For any story that adds UI to index.html, include this AC criterion verbatim: "Feature is implemented directly within index.html — no changes to any other file.\""""
+Execution constraints — apply to every story and every AC criterion:
+- The agent patches exactly two files: index.html and version.json. Never reference retro.html, board.html, intake.html, or any other file. Use "index.html" explicitly — not "retrospective view", "sprint board", or any conceptual name.
+- Data from sdlc_pipeline.json is fetched via fetch('/sdlc_pipeline.json') and accessed as data.items. Never reference localStorage. Never assume data is a bare array.
+- Verdict fields ac_check_verdict and code_review_verdict use 'approve'/'reject' — never 'pass'/'fail'.
+- test_results is Array<{status, message}> — AC must check with .some(t => t.status === 'pass'), never String(item.test_results).
+- For any story that adds UI to index.html, include this AC criterion verbatim: "Feature is implemented directly within index.html — no changes to any other file."
+</constraints>
 
-STORY_ELABORATION_PROMPT = """You are a scrum story writer. Given a raw idea, write a user story and acceptance criteria.
+Respond with ONLY valid JSON — no markdown:
+{
+  "unit": {"name": "Short Feature Name", "domain": "Bounded Context Label"},
+  "stories": [
+    {"story": "As a <role>, I want <goal> so that <benefit>.", "idea": "One-line implementation instruction for the agent", "acceptance_criteria": ["testable criterion 1", "testable criterion 2"]}
+  ],
+  "bolts": [
+    {"name": "Bolt 1", "story_indices": [0, 1], "rationale": "Why these stories run together"}
+  ],
+  "nfrs": ["NFR 1", "NFR 2"],
+  "risks": ["Risk 1", "Risk 2"]
+}"""
 
-You have access to a read_file tool. Use it when the idea references existing code elements (colors, styles, components, data structures) and you need exact values to write accurate, testable acceptance criteria. For example: if the idea mentions matching a theme color, read index.html to find the actual hex value before writing the AC.
+STORY_ELABORATION_PROMPT = """You are a Scrum story writer for Hello Scrum.
 
-After gathering any needed context, respond with JSON only (no markdown):
-{"story": "As a <role>, I want <goal> so that <benefit>.", "acceptance_criteria": ["<criterion 1>", "<criterion 2>", "<criterion 3>"]}
-Keep the story concise. Write 3-4 acceptance criteria as short, testable statements. Use exact values from the codebase when relevant."""
+<task>
+Given a raw idea, write a user story and acceptance criteria. Use the read_file tool when the idea references existing code elements — read the actual file to get exact values before writing AC.
+</task>
 
-INTAKE_CLASSIFIER_PROMPT = """You are the hello-scrum app assistant embedded in a team messenger.
+<context>
+Hello Scrum is a brownfield app. The coding agent patches index.html only. Use exact values from the codebase (actual hex colors, real class names, real field names) when writing AC so criteria are precisely testable.
+</context>
 
+<constraints>
+- Story format: "As a <role>, I want <goal> so that <benefit>."
+- Write 3-4 acceptance criteria as short, testable statements
+- Use exact values from the codebase when relevant — read files to verify before writing
+- Keep the story concise
+</constraints>
+
+After gathering any needed context, respond with ONLY valid JSON — no markdown:
+{"story": "As a <role>, I want <goal> so that <benefit>.", "acceptance_criteria": ["<criterion 1>", "<criterion 2>", "<criterion 3>"]}"""
+
+INTAKE_CLASSIFIER_PROMPT = """You are the Hello Scrum assistant embedded in a team messenger.
+
+<task>
+Classify each incoming message and respond appropriately.
+</task>
+
+<context>
 {app_state}
+</context>
 
-Classify the user message and respond with JSON only (no markdown):
+<constraints>
+- Story idea (something a developer could build): suggest 2 concise titles and acknowledge in one sentence
+- App or sprint question: answer using the app state above — be concise and conversational
+- Everything else: give a brief helpful response
+</constraints>
 
-If it describes a story idea (something a developer could build):
-{{"is_idea": true, "suggestions": ["<title 1>", "<title 2>"], "reply": "<one sentence acknowledging>"}}
-If it asks a question about the app, sprint, backlog, or team progress:
-{{"is_query": true, "reply": "<concise conversational answer using the app state above>"}}
+Respond with ONLY valid JSON — no markdown:
+If a story idea:  {{"is_idea": true, "suggestions": ["<title 1>", "<title 2>"], "reply": "<one sentence acknowledging>"}}
+If an app query:  {{"is_query": true, "reply": "<concise answer using app state>"}}
+Otherwise:        {{"reply": "<brief helpful response>"}}"""
 
-Otherwise:
-{{"reply": "<brief helpful response>"}}"""
+INTAKE_TRANSCRIPT_PROMPT = """You are a Scrum backlog analyst for Hello Scrum.
 
-INTAKE_TRANSCRIPT_PROMPT = """You are a scrum assistant analyzing a meeting transcript against a product backlog.
+<task>
+Analyze a meeting transcript against the existing backlog in three steps:
+1. Extract every distinct topic, feature, bug, or idea mentioned in the transcript.
+2. For each topic, scan the entire backlog for any story that covers it — even loosely. Done stories count as already shipped.
+3. Report alignments (existing stories) and new stories (genuinely uncovered topics).
+</task>
 
-Step 1 — Extract every distinct topic, feature, bug, or idea mentioned in the transcript.
-Step 2 — For EACH extracted topic, scan the ENTIRE backlog list for any story that covers it, even loosely. Done and failed stories count — a [DONE] story means the feature already shipped.
-Step 3 — Report results.
+<constraints>
+- Scan ALL backlog stories for each topic before declaring it new
+- [DONE] stories are valid alignments — they show the feature already shipped
+- Never put the same topic in both alignments and new_stories
+- Only set needs_update: true when the discussion clearly changes or adds requirements
+- Alignment ids must be exact ids from the backlog — never invent or guess an id
+- If no existing story covers a topic, put it in new_stories only
+- Both arrays may be empty
+</constraints>
 
-Respond with JSON only (no markdown):
+Respond with ONLY valid JSON — no markdown:
 {
   "alignments": [
-    {"id": "<id>", "idea": "<story title>", "changes": "<what from discussion relates>", "needs_update": false},
-    {"id": "<id>", "idea": "<story title>", "changes": "<what changed>", "needs_update": true, "proposed_idea": "<new title if changed, else omit>", "proposed_ac": ["<criterion>"]}
+    {"id": "<exact backlog id>", "idea": "<story title>", "changes": "<what relates>", "needs_update": false},
+    {"id": "<exact backlog id>", "idea": "<story title>", "changes": "<what changed>", "needs_update": true, "proposed_idea": "<new title>", "proposed_ac": ["<criterion>"]}
   ],
   "new_stories": ["<concise title ≤10 words>"]
-}
-
-Rules:
-- Scan ALL backlog stories for each topic before declaring it a new story
-- [DONE] stories are valid alignments — they show a feature is already shipped
-- Only add to new_stories when NO existing story (including done ones) covers the topic
-- Never put the same topic in both alignments and new_stories — if it matched a story, it goes in alignments only
-- Only set needs_update: true when discussion clearly changes or adds requirements
-- CRITICAL: alignment ids must be exact ids from the backlog list above — never invent or guess an id
-- If no real backlog story matches a topic, put it in new_stories, not alignments
-- Both arrays may be empty"""
+}"""
 
 # On startup, clear only mid-sprint states so a restarted server doesn't show
 # a stale pulsing dot — but preserve done/failed/rejected so the panel persists.

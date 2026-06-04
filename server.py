@@ -327,7 +327,7 @@ def get_prompts():
         ("INCEPTION_REVERSE_ENGINEER_PROMPT", "Reverse Engineering",      server_src, "Inception"),
         ("FUNCTIONAL_DESIGN_PROMPT",          "Functional Design",        server_src, "Construction"),
         ("NFR_REQUIREMENTS_PROMPT",           "NFR Requirements",         server_src, "Construction"),
-        ("SYSTEM_PROMPT",                     "Worker Agent",             agent_src,  "Sprint"),
+        ("SYSTEM_PROMPT",                     "Coding Agent",             agent_src,  "Sprint"),
         ("STORY_ELABORATION_PROMPT",          "Story Elaboration",        server_src, "Sprint"),
         ("CODE_REVIEW_SYSTEM_PROMPT",         "Hermes — Code Review",     agent_src,  "Review"),
         ("AC_CHECK_SYSTEM_PROMPT",            "Hermes — AC Check",        agent_src,  "Review"),

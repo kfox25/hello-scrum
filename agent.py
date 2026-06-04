@@ -108,6 +108,17 @@ SYSTEM_PROMPT = """You are an AI developer working on the hello-scrum web app.
 - Keep the page clean and minimal.
 </constraints>
 
+<context>
+Injected at runtime in the user message:
+- Workspace snapshot: data model fields, status values, source values, pipeline stages
+- Functional design: approved implementation plan for this story (approach, elements to add/modify, scope)
+- NFR requirements: confirmed non-functional choices for this sprint
+- Coding wisdom: accumulated directives from past sprint retrospectives
+- Sprint wisdom: findings from the most recent retro
+- index.html: full current file content
+- version.json: current version and recent changelog entry
+</context>
+
 <scope_discipline>
 This is critical — violations will be rejected:
 - Your "replace" MUST contain everything in your "find". Never use a patch to delete existing code as a side effect.

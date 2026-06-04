@@ -127,160 +127,144 @@
   <div id="prompts-root"></div>
 
   <script>
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    const LIVE_ENTRIES = [
+      { key: 'clarify',           label: 'Requirements Analysis', group: 'Inception',    promptId: 'INCEPTION_CLARIFY_PROMPT'          },
+      { key: 'elaborate',         label: 'Inception Elaborate',   group: 'Inception',    promptId: 'INCEPTION_ELABORATE_PROMPT'         },
+      { key: 're',                label: 'Reverse Engineering',   group: 'Inception',    promptId: 'INCEPTION_REVERSE_ENGINEER_PROMPT'  },
+      { key: 'fd',                label: 'Functional Design',     group: 'Construction', promptId: 'FUNCTIONAL_DESIGN_PROMPT'           },
+      { key: 'nfr',               label: 'NFR Requirements',      group: 'Construction', promptId: 'NFR_REQUIREMENTS_PROMPT'            },
+      { key: 'agent',             label: 'Worker Agent',          group: 'Sprint',       promptId: 'SYSTEM_PROMPT'                      },
+      { key: 'story_elaboration', label: 'Story Elaboration',     group: 'Sprint',       promptId: 'STORY_ELABORATION_PROMPT'           },
+      { key: 'code_review',       label: 'Hermes — Code Review',  group: 'Review',       promptId: 'CODE_REVIEW_SYSTEM_PROMPT'          },
+      { key: 'ac_check',          label: 'Hermes — AC Check',     group: 'Review',       promptId: 'AC_CHECK_SYSTEM_PROMPT'             },
+      { key: 'retro',             label: 'Retrospective',         group: 'Learning',     promptId: 'RETRO_SYSTEM_PROMPT'                },
+      { key: 'wisdom_coding',     label: 'Coding Wisdom',         group: 'Learning',     promptId: 'CODING_WISDOM_PROMPT'               },
+      { key: 'wisdom_ac',         label: 'AC Wisdom',             group: 'Learning',     promptId: 'AC_WISDOM_PROMPT'                   },
+      { key: 'intake_classifier', label: 'Intake Classifier',     group: 'Intake',       promptId: 'INTAKE_CLASSIFIER_PROMPT'           },
+      { key: 'intake_transcript', label: 'Transcript Analyzer',   group: 'Intake',       promptId: 'INTAKE_TRANSCRIPT_PROMPT'           },
+    ];
+
+    let _currentKey = null;
+    const _navLinks = {};
+
     async function load() {
       const res  = await fetch('/prompts');
       const data = await res.json();
-      document.getElementById('prompts-root').innerHTML = data.prompts.map(p => `
-        <div class="prompt-card" id="prompt-${p.id}">
-          <div class="prompt-header">
-            <span class="prompt-label">${p.label}</span>
-            <span class="prompt-id">${p.id}</span>
-          </div>
-          <div class="prompt-body">${escHtml(p.text)}</div>
-        </div>`).join('') + `
-        <div class="prompt-card" id="prompt-__live__" style="display:none;">
+      const staticMap = {};
+      data.prompts.forEach(p => { staticMap[p.id] = p; });
+
+      document.getElementById('prompts-root').innerHTML = `
+        <div class="prompt-card">
           <div class="prompt-header" style="background:#060c1a;border-color:#1a2a44;">
-            <span class="prompt-label" style="color:#4488ff;">Last Agent Call</span>
-            <button onclick="refreshLive()" style="background:none;border:none;color:#4488ff80;font-size:0.7rem;cursor:pointer;font-family:monospace;">refresh</button>
+            <span class="prompt-label" id="liveTitle" style="color:#4488ff;">Select a prompt</span>
+            <button onclick="refreshLive()" style="background:none;border:none;color:#4488ff40;font-size:0.7rem;cursor:pointer;font-family:monospace;">refresh</button>
           </div>
-          <div id="liveBody" class="prompt-body"></div>
+          <div id="staticToggleRow" style="display:none;padding:0.35rem 1rem;background:#050a14;border-bottom:1px solid #111;">
+            <button id="staticToggleBtn" onclick="toggleStatic()" style="background:none;border:none;color:#555;font-size:0.7rem;cursor:pointer;font-family:monospace;padding:0;">Static ▾</button>
+          </div>
+          <div id="staticSection" style="display:none;">
+            <div id="staticBody" class="prompt-body" style="background:#050a14;border-bottom:1px solid #111;color:#555;"></div>
+          </div>
+          <div id="liveBody" class="prompt-body" style="color:#333;font-style:italic;">Select a prompt from the left.</div>
         </div>`;
 
       const nav = document.createElement('div');
       nav.className = 'wf-nav';
-      const cards = {};
-      const navLinks = {};
 
-      function showPrompt(id) {
-        Object.keys(cards).forEach(k => {
-          cards[k].style.display = k === id ? '' : 'none';
-          if (navLinks[k]) navLinks[k].classList.toggle('active', k === id);
-        });
-        // clear live link actives when switching to a static prompt
-        if (id !== '__live__') {
-          Object.keys(navLinks).forEach(k => {
-            if (k.startsWith('live_')) navLinks[k].classList.remove('active');
-          });
-        }
-      }
-
-      // Live section at top — one entry per call type, grouped by phase
-      const LIVE_ENTRIES = [
-        { key: 'clarify',            label: 'Requirements Analysis', group: 'Inception'     },
-        { key: 'elaborate',          label: 'Inception Elaborate',   group: 'Inception'     },
-        { key: 're',                 label: 'Reverse Engineering',   group: 'Inception'     },
-        { key: 'fd',                 label: 'Functional Design',     group: 'Construction'  },
-        { key: 'nfr',                label: 'NFR Requirements',      group: 'Construction'  },
-        { key: 'agent',              label: 'Worker Agent',          group: 'Sprint'        },
-        { key: 'story_elaboration',  label: 'Story Elaboration',     group: 'Sprint'        },
-        { key: 'code_review',        label: 'Hermes — Code Review',  group: 'Review'        },
-        { key: 'ac_check',           label: 'Hermes — AC Check',     group: 'Review'        },
-        { key: 'retro',              label: 'Retrospective',         group: 'Learning'      },
-        { key: 'wisdom_coding',      label: 'Coding Wisdom',         group: 'Learning'      },
-        { key: 'wisdom_ac',          label: 'AC Wisdom',             group: 'Learning'      },
-        { key: 'intake_classifier',  label: 'Intake Classifier',     group: 'Intake'        },
-        { key: 'intake_transcript',  label: 'Transcript Analyzer',   group: 'Intake'        },
-      ];
-
-      cards['__live__'] = document.getElementById('prompt-__live__');
-
-      let liveGroup = null;
+      let currentGroup = null;
       LIVE_ENTRIES.forEach(e => {
-        if (e.group !== liveGroup) {
-          liveGroup = e.group;
+        if (e.group !== currentGroup) {
+          currentGroup = e.group;
           const hdr = document.createElement('div');
-          hdr.className = 'wf-nav-live';
+          hdr.className = 'wf-nav-group';
           hdr.textContent = e.group;
           nav.appendChild(hdr);
         }
         const a = document.createElement('a');
         a.href = '#';
-        a.className = 'live-link';
         a.textContent = e.label;
-        a.dataset.liveKey = e.key;
         a.addEventListener('click', ev => {
           ev.preventDefault();
-          showPrompt('__live__');
-          fetchLive(e.key, e.label);
-          Object.values(navLinks).forEach(l => l.classList && l.classList.remove('active'));
+          Object.values(_navLinks).forEach(l => l.classList.remove('active'));
           a.classList.add('active');
+          fetchLive(e.key, e.label, staticMap[e.promptId]);
         });
-        navLinks['live_' + e.key] = a;
+        _navLinks[e.key] = a;
         nav.appendChild(a);
       });
 
-      // Phase groups
-      let currentGroup = null;
-      data.prompts.forEach((p, i) => {
-        cards[p.id] = document.getElementById('prompt-' + p.id);
-        if (p.group !== currentGroup) {
-          currentGroup = p.group;
-          const hdr = document.createElement('div');
-          hdr.className = 'wf-nav-group';
-          hdr.textContent = p.group;
-          nav.appendChild(hdr);
-        }
-        const a = document.createElement('a');
-        a.href = '#';
-        a.textContent = p.label;
-        a.addEventListener('click', e => { e.preventDefault(); showPrompt(p.id); });
-        navLinks[p.id] = a;
-        nav.appendChild(a);
-      });
       document.body.appendChild(nav);
-      showPrompt(data.prompts[0].id);
     }
 
-    let _currentLiveKey = null;
-    let _currentLiveLabel = null;
+    async function fetchLive(key, label, staticPrompt) {
+      _currentKey = key;
+      document.getElementById('liveTitle').textContent = label || key;
 
-    async function fetchLive(key, label) {
-      if (key) { _currentLiveKey = key; _currentLiveLabel = label; }
-      const body = document.getElementById('liveBody');
-      body.innerHTML = '<div style="padding:1rem;color:#444;">Loading…</div>';
+      const staticRow = document.getElementById('staticToggleRow');
+      const staticSec = document.getElementById('staticSection');
+      const staticBody = document.getElementById('staticBody');
+      const staticBtn = document.getElementById('staticToggleBtn');
+      if (staticPrompt) {
+        staticBody.textContent = staticPrompt.text || '';
+        staticRow.style.display = '';
+        staticSec.style.display = 'none';
+        staticBtn.textContent = 'Static ▾';
+      } else {
+        staticRow.style.display = 'none';
+        staticSec.style.display = 'none';
+      }
+
+      const liveBody = document.getElementById('liveBody');
+      liveBody.innerHTML = '<div style="color:#444;">Loading…</div>';
       try {
-        const res = await fetch('/last-prompt/' + _currentLiveKey);
+        const res = await fetch('/last-prompt/' + key);
         if (!res.ok) {
           const d = await res.json();
-          body.innerHTML = `<div style="padding:1rem;color:#555;font-style:italic;">${escHtml(d.error || 'Not found.')}</div>`;
+          liveBody.innerHTML = `<div style="color:#555;font-style:italic;">${escHtml(d.error || 'Not found.')}</div>`;
           return;
         }
-        const d = await res.json();
-        renderLive(d);
+        renderLive(await res.json());
       } catch(e) {
-        body.innerHTML = `<div style="padding:1rem;color:#ff4444;">Error: ${escHtml(e.message)}</div>`;
+        liveBody.innerHTML = `<div style="color:#ff4444;">Error: ${escHtml(e.message)}</div>`;
       }
     }
 
-    function refreshLive() { if (_currentLiveKey) fetchLive(); }
+    function refreshLive() {
+      if (!_currentKey) return;
+      const active = Object.entries(_navLinks).find(([k]) => k === _currentKey);
+      if (active) {
+        const e = LIVE_ENTRIES.find(x => x.key === _currentKey);
+        fetchLive(_currentKey, e && e.label, null);
+      }
+    }
+
+    function toggleStatic() {
+      const sec = document.getElementById('staticSection');
+      const btn = document.getElementById('staticToggleBtn');
+      const opening = sec.style.display === 'none';
+      sec.style.display = opening ? '' : 'none';
+      btn.textContent = opening ? 'Static ▴' : 'Static ▾';
+    }
 
     function renderLive(d) {
       const body = document.getElementById('liveBody');
       const ts  = d.captured_at ? d.captured_at.replace('T', ' ').slice(0, 19) : '—';
       const kb  = n => Math.round(n / 1024) + ' KB';
-      const box = content => `<div class="prompt-body" style="padding:0.75rem;background:#0a0a0a;border-radius:4px;border:1px solid #1a1a1a;">${escHtml(content)}</div>`;
+      const box = c => `<div class="prompt-body" style="padding:0.75rem;background:#0a0a0a;border-radius:4px;border:1px solid #1a1a1a;margin-top:0.3rem;">${escHtml(c)}</div>`;
 
-      const metaItems = [
-        { label: 'Label',    value: d.label || _currentLiveLabel || '—' },
-        { label: 'Model',    value: d.model || '—' },
-        { label: 'Captured', value: ts },
-      ];
-      if (d.story) metaItems.splice(1, 0, { label: 'Story', value: (d.story || '').slice(0, 80) });
+      const metaItems = [{ label: 'Model', value: d.model || '—' }, { label: 'Captured', value: ts }];
+      if (d.story) metaItems.push({ label: 'Story', value: d.story.slice(0, 80) });
 
       let sections = '';
-
-      if (d.system) {
-        sections += `<div class="live-section"><div class="live-section-label">System Prompt</div>${box(d.system)}</div>`;
-      } else {
-        sections += `<div class="live-section"><div class="live-section-label" style="color:#666;">No system prompt — user-turn only</div></div>`;
-      }
-
       if (d.story_header) {
         sections += `<div class="live-section"><div class="live-section-label">Story Payload</div>${box(d.story_header)}</div>`;
         if (d.index_html_chars || d.version_json_chars) {
-          sections += `<div class="live-section">
-            <div class="live-section-label">File Contents Injected</div>
-            ${d.index_html_chars ? `<span class="size-pill">index.html — ${kb(d.index_html_chars)}</span>` : ''}
+          sections += `<div class="live-section"><div class="live-section-label">Files Injected</div>
+            ${d.index_html_chars  ? `<span class="size-pill">index.html — ${kb(d.index_html_chars)}</span>` : ''}
             ${d.version_json_chars ? `<span class="size-pill" style="margin-left:0.4rem;">version.json — ${kb(d.version_json_chars)}</span>` : ''}
           </div>`;
         }
@@ -292,17 +276,10 @@
       }
 
       body.innerHTML = `
-        <div class="live-meta">${metaItems.map(m => `
-          <div class="live-meta-item">
-            <div class="live-meta-label">${m.label}</div>
-            <div class="live-meta-value">${escHtml(String(m.value))}</div>
-          </div>`).join('')}
-        </div>
-        <div style="padding:1rem;">${sections}</div>`;
-    }
-
-    function escHtml(s) {
-      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        <div class="live-meta">${metaItems.map(m =>
+          `<div class="live-meta-item"><div class="live-meta-label">${m.label}</div><div class="live-meta-value">${escHtml(String(m.value))}</div></div>`
+        ).join('')}</div>
+        <div style="padding:1rem 1rem 0.5rem;">${sections || '<div style="color:#444;font-style:italic;">No content captured yet.</div>'}</div>`;
     }
 
     load();

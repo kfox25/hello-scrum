@@ -1,6 +1,6 @@
 {
-  "version": "0.1.234",
-  "deployed": "2026-06-02 10:32:01 CT",
+  "version": "0.1.235",
+  "deployed": "2026-06-03 20:46:21 CT",
   "status": "baseline",
   "total_tokens": 0,
   "changelog": [
@@ -1178,6 +1178,11 @@
       "version": "0.1.234",
       "date": "2026-06-02",
       "change": "Change homepage h1 title color from #00ff99 to #ff0000 for prominent red display"
+    },
+    {
+      "version": "0.1.235",
+      "date": "2026-06-03",
+      "change": "Add sprint performance summary table showing completed, failed, and avg stage time for last 3\u20135 sprints"
     }
   ]
 }

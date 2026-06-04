@@ -88,8 +88,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.66</div>
-  <div class="meta">Last deployed: 2026-05-25 22:39:40 CT</div>
+  <div class="version" id="version-badge">v0.1.235</div>
+  <div class="meta">Last deployed: 2026-06-03 20:46:21 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -117,5 +117,75 @@
     loadChangelog();
   </script>
 <script src="shared.js"></script>
+
+  <div id="sprint-performance-card" style="margin-top:2rem;max-width:600px;width:100%;border:1px solid #1c2a1c;border-radius:10px;padding:1.25rem 1.5rem;background:#0b1117;">
+    <h2 style="font-size:0.85rem;color:#555;text-transform:uppercase;letter-spacing:0.15em;margin:0 0 0.9rem 0;">Sprint Performance Summary</h2>
+    <table id="sprint-perf-table" style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+      <thead>
+        <tr style="border-bottom:1px solid #1c2a1c;">
+          <th style="text-align:left;padding:0.4rem 0.6rem;color:#7a8099;font-weight:500;">Sprint</th>
+          <th style="text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:500;">Completed</th>
+          <th style="text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:500;">Failed</th>
+          <th style="text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:500;">Avg Stage Time (s)</th>
+        </tr>
+      </thead>
+      <tbody id="sprint-perf-tbody">
+        <tr><td colspan="4" style="color:#444;padding:0.6rem;text-align:center;">Loading…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    (function () {
+      function sumStageTimes(st) {
+        if (!st || typeof st !== 'object') return 0;
+        var keys = ['ac_check','code','code_review','deploy','done','pull','story','test'];
+        var total = 0;
+        for (var i = 0; i < keys.length; i++) {
+          var v = parseFloat(st[keys[i]]);
+          if (!isNaN(v)) total += v;
+        }
+        return total;
+      }
+      function renderSprintTable(items) {
+        var sprintMap = {};
+        for (var i = 0; i < items.length; i++) {
+          var item = items[i];
+          var sn = item.sprint_number;
+          if (sn == null) continue;
+          if (!sprintMap[sn]) sprintMap[sn] = { completed: 0, failed: 0, stageTotals: [], count: 0 };
+          var s = sprintMap[sn];
+          if (item.status === 'done') s.completed++;
+          if (item.status === 'failed') s.failed++;
+          s.stageTotals.push(sumStageTimes(item.stage_times));
+          s.count++;
+        }
+        var sprints = Object.keys(sprintMap).map(Number).sort(function(a,b){return a-b;});
+        var last = sprints.slice(-5);
+        var tbody = document.getElementById('sprint-perf-tbody');
+        if (last.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="color:#444;padding:0.6rem;text-align:center;">No sprint data available.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = last.map(function(sn) {
+          var s = sprintMap[sn];
+          var avg = s.stageTotals.length > 0 ? (s.stageTotals.reduce(function(a,b){return a+b;},0) / s.stageTotals.length).toFixed(1) : '—';
+          return '<tr style="border-top:1px solid #1c1c1c;">'
+            + '<td style="padding:0.45rem 0.6rem;color:#e8eaf0;">' + escHtml(String(sn)) + '</td>'
+            + '<td style="padding:0.45rem 0.6rem;text-align:center;color:#00ff99;">' + s.completed + '</td>'
+            + '<td style="padding:0.45rem 0.6rem;text-align:center;color:#ff6b6b;">' + s.failed + '</td>'
+            + '<td style="padding:0.45rem 0.6rem;text-align:center;color:#aaa;">' + avg + '</td>'
+            + '</tr>';
+        }).join('');
+      }
+      fetch('/sdlc_pipeline.json')
+        .then(function(r){ return r.json(); })
+        .then(function(data){ renderSprintTable(data.items || []); })
+        .catch(function(){
+          var tbody = document.getElementById('sprint-perf-tbody');
+          if (tbody) tbody.innerHTML = '<tr><td colspan="4" style="color:#444;padding:0.6rem;text-align:center;">Unable to load sprint data.</td></tr>';
+        });
+    })();
+  </script>
 </body>
 </html>

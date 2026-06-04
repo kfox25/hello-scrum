@@ -58,6 +58,47 @@
     .changelog-entry .cv { color: #00ff99; font-size: 0.78rem; font-weight: 600; }
     .changelog-entry .cd { color: #444; font-size: 0.73rem; }
     .changelog-entry .ct { color: #aaa; font-size: 0.83rem; flex: 1; }
+    .card {
+      width: 100%;
+      max-width: 860px;
+      background: #13161f;
+      border: 1px solid #1e2130;
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin-top: 1.75rem;
+      text-align: left;
+    }
+    .card h2 {
+      font-size: 0.75rem;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin: 0 0 0.85rem 0;
+    }
+    .cycle-time-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    .cycle-time-table th {
+      color: #7a8099;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      padding: 0.4rem 0.6rem;
+      border-bottom: 1px solid #1e2130;
+      text-align: center;
+    }
+    .cycle-time-table th:first-child { text-align: left; }
+    .cycle-time-table td {
+      padding: 0.4rem 0.6rem;
+      border-bottom: 1px solid #1a1d28;
+      color: #c8cad8;
+      text-align: center;
+    }
+    .cycle-time-table td:first-child { text-align: left; color: #00ff99; font-weight: 600; }
+    .cycle-time-table tr:last-child td { border-bottom: none; }
   </style>
 </head>
 <body>
@@ -88,8 +129,26 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.66</div>
-  <div class="meta">Last deployed: 2026-05-25 22:39:40 CT</div>
+  <div class="version" id="version-badge">v0.1.242</div>
+  <div class="meta">Last deployed: 2026-06-04 10:13:20 CT</div>
+  <div id="cycle-time-card" class="card">
+    <h2>Cycle Time by Stage</h2>
+    <table class="cycle-time-table" id="cycle-time-table">
+      <thead>
+        <tr>
+          <th>Sprint</th>
+          <th>Pull</th>
+          <th>Story</th>
+          <th>Code</th>
+          <th>Test</th>
+          <th>Code Review</th>
+          <th>AC Check</th>
+          <th>Deploy</th>
+        </tr>
+      </thead>
+      <tbody id="cycle-time-tbody"></tbody>
+    </table>
+  </div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -114,6 +173,38 @@
         })
         .catch(() => {});
     }
+    function computeCycleTimeByStage() {
+      const stageKeys = ['pull', 'story', 'code', 'test', 'code_review', 'ac_check', 'deploy'];
+      fetch('/sdlc_pipeline.json')
+        .then(r => r.json())
+        .then(data => {
+          const items = Array.isArray(data) ? data : (data.items || []);
+          const sprintMap = {};
+          items.forEach(item => {
+            const sn = item.sprint_number;
+            if (sn == null) return;
+            if (!sprintMap[sn]) sprintMap[sn] = [];
+            sprintMap[sn].push(item);
+          });
+          const sprints = Object.keys(sprintMap).map(Number).sort((a, b) => b - a).slice(0, 5);
+          const tbody = document.getElementById('cycle-time-tbody');
+          if (!tbody) return;
+          tbody.innerHTML = sprints.map(sn => {
+            const sprintItems = sprintMap[sn];
+            const cells = stageKeys.map(key => {
+              const vals = sprintItems
+                .map(it => it.stage_times && it.stage_times[key])
+                .filter(v => typeof v === 'number' && !isNaN(v));
+              if (vals.length === 0) return '\u2014';
+              const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
+              return mean.toFixed(1) + 's';
+            });
+            return `<tr><td>Sprint ${escHtml(String(sn))}</td>${cells.map(c => `<td>${escHtml(c)}</td>`).join('')}</tr>`;
+          }).join('');
+        })
+        .catch(() => {});
+    }
+    computeCycleTimeByStage();
     loadChangelog();
   </script>
 <script src="shared.js"></script>

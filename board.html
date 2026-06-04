@@ -79,6 +79,12 @@
       padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer;
     }
     #restore-btn:hover, #pending-btn:hover { background: #0d2a1a; }
+    #delete-items-btn {
+      font-family: monospace; font-size: 0.75rem;
+      background: #1a0a0a; color: #ff4444; border: 1px solid #ff444430;
+      padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer;
+    }
+    #delete-items-btn:hover { background: #2a0a0a; border-color: #ff444460; }
     #start-slow-btn:hover:not(:disabled) { background: #221800; border-color: #ffaa00; }
     #complete-btn {
       background: #1a1a1a;
@@ -389,6 +395,7 @@
 
 
   <div class="bottom-actions">
+    <button id="delete-items-btn">Delete Sprint Items</button>
     <button id="restore-btn">Restore to Baseline</button>
     <button id="pending-btn">Mark Pending</button>
   </div>
@@ -843,6 +850,18 @@
         btn.style.cursor = d.at_baseline ? 'default' : '';
       } catch(e) {}
     }
+    document.getElementById('delete-items-btn').addEventListener('click', async () => {
+      if (!confirm('Delete all sprint items (pending, done, and failed)? This cannot be undone.')) return;
+      const btn = document.getElementById('delete-items-btn');
+      btn.textContent = 'deleting…'; btn.disabled = true;
+      try {
+        const r = await fetch('/sprint/delete-items', { method: 'POST' });
+        const d = await r.json();
+        btn.textContent = d.ok ? 'deleted ✓' : 'failed';
+        setTimeout(() => { btn.textContent = 'Delete Sprint Items'; btn.disabled = false; loadBoard(); }, 1500);
+      } catch(e) { btn.textContent = 'error'; btn.disabled = false; }
+    });
+
     document.getElementById('restore-btn').addEventListener('click', async () => {
       const btn = document.getElementById('restore-btn');
       btn.textContent = 'restoring…'; btn.disabled = true;

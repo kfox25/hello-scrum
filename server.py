@@ -1728,6 +1728,21 @@ def mark_pending():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/sprint/delete-items", methods=["POST"])
+def sprint_delete_items():
+    try:
+        with open(SDLC_PIPELINE_FILE, encoding="utf-8-sig") as f:
+            backlog = json.load(f)
+        before = len(backlog.get("items", []))
+        backlog["items"] = [i for i in backlog.get("items", []) if not i.get("in_sprint")]
+        after = len(backlog["items"])
+        with open(SDLC_PIPELINE_FILE, "w", encoding="utf-8") as f:
+            json.dump(backlog, f, indent=2)
+        return jsonify({"ok": True, "deleted": before - after})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/inception/add-to-sprint", methods=["POST"])
 def inception_add_to_sprint():
     try:

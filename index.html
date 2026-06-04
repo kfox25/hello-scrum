@@ -88,8 +88,8 @@
     <h1>Hello Scrum</h1>
     <div class="tagline">ship fast · break things · own it</div>
   </div>
-  <div class="version" id="version-badge">v0.1.66</div>
-  <div class="meta">Last deployed: 2026-05-25 22:39:40 CT</div>
+  <div class="version" id="version-badge">v0.1.241</div>
+  <div class="meta">Last deployed: 2026-06-04 00:29:11 CT</div>
   <div class="changelog">
     <h2>Recent Changes</h2>
     <div id="changelog-entries"></div>
@@ -117,5 +117,93 @@
     loadChangelog();
   </script>
 <script src="shared.js"></script>
+
+  <div id="sprint-performance-card" style="margin-top:2rem;margin-bottom:2rem;width:100%;max-width:620px;background:#13151f;border:1px solid #1e2030;border-radius:10px;padding:1.25rem 1.5rem;">
+    <h2 style="font-size:0.8rem;color:#555;text-transform:uppercase;letter-spacing:0.15em;margin:0 0 1rem 0;">Sprint Performance Summary</h2>
+    <div style="overflow-x:auto;">
+      <table id="sprint-perf-table" style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+        <thead>
+          <tr style="border-bottom:1px solid #2a2d3e;">
+            <th style="text-align:left;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;">Sprint</th>
+            <th style="text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;">Completed</th>
+            <th style="text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;">Failed</th>
+            <th style="text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;">Avg Stage Time (s)</th>
+          </tr>
+        </thead>
+        <tbody id="sprint-perf-tbody">
+          <tr><td colspan="4" style="color:#444;padding:0.6rem;text-align:center;">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      function sumStageTimes(st) {
+        if (!st || typeof st !== 'object') return 0;
+        var keys = ['ac_check','code','code_review','deploy','done','pull','story','test'];
+        var total = 0;
+        keys.forEach(function(k) {
+          var v = parseFloat(st[k]);
+          if (!isNaN(v)) total += v;
+        });
+        return total;
+      }
+
+      function renderSprintTable(items) {
+        var sprintMap = {};
+        items.forEach(function(item) {
+          var sn = item.sprint_number;
+          if (sn == null || sn === undefined || sn === '') return;
+          var key = String(sn);
+          if (!sprintMap[key]) sprintMap[key] = { sprint: sn, completed: 0, failed: 0, stageSums: [], numericKey: Number(sn) };
+          if (item.status === 'done') sprintMap[key].completed++;
+          if (item.status === 'failed') sprintMap[key].failed++;
+          var s = sumStageTimes(item.stage_times);
+          sprintMap[key].stageSums.push(s);
+        });
+
+        var sprints = Object.values(sprintMap);
+        sprints.sort(function(a, b) { return a.numericKey - b.numericKey; });
+
+        // Take last 3–5 (up to 5, at least available)
+        var maxSprints = 5;
+        if (sprints.length > maxSprints) sprints = sprints.slice(sprints.length - maxSprints);
+
+        var tbody = document.getElementById('sprint-perf-tbody');
+        if (!tbody) return;
+
+        if (sprints.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="color:#444;padding:0.6rem;text-align:center;">No sprint data available.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = sprints.map(function(sp, idx) {
+          var avg = 0;
+          if (sp.stageSums.length > 0) {
+            avg = sp.stageSums.reduce(function(a, b) { return a + b; }, 0) / sp.stageSums.length;
+          }
+          var rowBg = idx % 2 === 0 ? '#0f1117' : '#13151f';
+          return '<tr style="background:' + rowBg + ';border-bottom:1px solid #1c1f2e;">'
+            + '<td style="padding:0.45rem 0.6rem;color:#e8eaf0;font-weight:600;">Sprint ' + escHtml(String(sp.sprint)) + '</td>'
+            + '<td style="padding:0.45rem 0.6rem;text-align:center;color:#00ff99;">' + sp.completed + '</td>'
+            + '<td style="padding:0.45rem 0.6rem;text-align:center;color:#ff6b6b;">' + sp.failed + '</td>'
+            + '<td style="padding:0.45rem 0.6rem;text-align:center;color:#7a8099;">' + avg.toFixed(1) + '</td>'
+            + '</tr>';
+        }).join('');
+      }
+
+      fetch('/sdlc_pipeline.json')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var items = Array.isArray(data.items) ? data.items : [];
+          renderSprintTable(items);
+        })
+        .catch(function() {
+          var tbody = document.getElementById('sprint-perf-tbody');
+          if (tbody) tbody.innerHTML = '<tr><td colspan="4" style="color:#444;padding:0.6rem;text-align:center;">Unable to load sprint data.</td></tr>';
+        });
+    })();
+  </script>
 </body>
 </html>

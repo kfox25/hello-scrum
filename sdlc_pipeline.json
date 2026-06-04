@@ -1,9 +1,8 @@
 {
   "items": [
     {
-      "id": "as-a-scrum-master-i-want-to-see-a-sprint-perform",
-      "idea": "As a Scrum Master, I want to see a sprint performance summary table showing stories completed, stories failed, and average stage time per sprint so that I can identify trends across the last 3\u20135 sprints at a glance.",
-      "story": "As a Scrum Master, I want to see a sprint performance summary table showing stories completed, stories failed, and average stage time per sprint so that I can identify trends across the last 3\u20135 sprints at a glance.",
+      "ac_check_reason": "All acceptance criteria are met: sprint-performance-card section is present with correct table structure; implementation fetches data and computes metrics for the last 3\u20135 sprints sorted ascending; completed/failed counts are calculated correctly based on status; average stage time sums all numeric stage_times fields and averages per sprint rounded to one decimal place; handles fewer than 3 sprints gracefully; and all code is contained within index.html.",
+      "ac_check_verdict": "approve",
       "acceptance_criteria": [
         "A section with id='sprint-performance-card' is present in index.html below the existing main content and contains a table with columns: Sprint, Completed, Failed, Avg Stage Time (s).",
         "The table renders one row per sprint for the last 3\u20135 distinct sprint_number values found in data.items, sorted ascending by sprint_number.",
@@ -12,9 +11,10 @@
         "If sdlc_pipeline.json contains fewer than 3 sprints, the table renders only the available sprints without error or empty rows.",
         "Feature is implemented directly within index.html \u2014 no changes to any other file."
       ],
-      "status": "done",
-      "in_sprint": true,
-      "source": "inception",
+      "code_review_reason": "The code is syntactically correct, the HTML/CSS/JavaScript will execute without runtime errors, the fetch logic properly handles the JSON structure, and the changes are scoped only to the sprint performance feature with expected version/timestamp updates.",
+      "code_review_verdict": "approve",
+      "deployed": "2026-06-04 00:11:27 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex 5ab5d00..1d485a2 100644\n--- a/index.html\n+++ b/index.html\n@@ -88,8 +88,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.239</div>\n+  <div class=\"meta\">Last deployed: 2026-06-04 00:11:27 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -117,5 +117,86 @@\n     loadChangelog();\n   </script>\n <script src=\"shared.js\"></script>\n+\n+<div id=\"sprint-performance-card\" style=\"margin-top:2rem;margin-bottom:2rem;width:100%;max-width:640px;background:#13161f;border:1px solid #1e2230;border-radius:10px;padding:1.25rem 1.5rem;\">\n+  <h2 style=\"font-size:0.8rem;color:#555;text-transform:uppercase;letter-spacing:0.15em;margin:0 0 1rem 0;\">Sprint Performance Summary</h2>\n+  <table id=\"sprint-perf-table\" style=\"width:100%;border-collapse:collapse;font-size:0.88rem;\">\n+    <thead>\n+      <tr style=\"border-bottom:1px solid #1e2230;\">\n+        <th style=\"text-align:left;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Sprint</th>\n+        <th style=\"text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Completed</th>\n+        <th style=\"text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Failed</th>\n+        <th style=\"text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Avg Stage Time (s)</th>\n+      </tr>\n+    </thead>\n+    <tbody id=\"sprint-perf-tbody\">\n+      <tr><td colspan=\"4\" style=\"color:#444;padding:0.5rem 0.6rem;\">Loading\u00e2\u20ac\u00a6</td></tr>\n+    </tbody>\n+  </table>\n+</div>\n+\n+<script>\n+(function() {\n+  function sumStageTimes(st) {\n+    if (!st || typeof st !== 'object') return 0;\n+    var keys = ['ac_check','code','code_review','deploy','done','pull','story','test'];\n+    var total = 0;\n+    keys.forEach(function(k) { var v = parseFloat(st[k]); if (!isNaN(v)) total += v; });\n+    return total;\n+  }\n+\n+  function computeSprintMetrics(items) {\n+    var sprintMap = {};\n+    items.forEach(function(item) {\n+      var sn = item.sprint_number;\n+      if (sn === undefined || sn === null) return;\n+      if (!sprintMap[sn]) sprintMap[sn] = { sprint: sn, completed: 0, failed: 0, stageTimes: [], totalTime: 0, count: 0 };\n+      var bucket = sprintMap[sn];\n+      if (item.status === 'done') bucket.completed++;\n+      if (item.status === 'failed') bucket.failed++;\n+      var t = sumStageTimes(item.stage_times);\n+      bucket.totalTime += t;\n+      bucket.count++;\n+    });\n+    var sprints = Object.keys(sprintMap).map(Number).sort(function(a,b){return a-b;});\n+    var last = sprints.slice(-5);\n+    return last.map(function(sn) {\n+      var b = sprintMap[sn];\n+      var avg = b.count > 0 ? (b.totalTime / b.count) : 0;\n+      return { sprint: sn, completed: b.completed, failed: b.failed, avgTime: avg.toFixed(1) };\n+    });\n+  }\n+\n+  function renderSprintTable(rows) {\n+    var tbody = document.getElementById('sprint-perf-tbody');\n+    if (!tbody) return;\n+    if (!rows || rows.length === 0) {\n+      tbody.innerHTML = '<tr><td colspan=\"4\" style=\"color:#444;padding:0.5rem 0.6rem;\">No sprint data available.</td></tr>';\n+      return;\n+    }\n+    tbody.innerHTML = rows.map(function(r, i) {\n+      var bg = i % 2 === 0 ? '#13161f' : '#0f1117';\n+      return '<tr style=\"background:' + bg + ';border-bottom:1px solid #1a1d27;\">'\n+        + '<td style=\"padding:0.4rem 0.6rem;color:#e8eaf0;\">Sprint ' + r.sprint + '</td>'\n+        + '<td style=\"text-align:right;padding:0.4rem 0.6rem;color:#00ff99;\">' + r.completed + '</td>'\n+        + '<td style=\"text-align:right;padding:0.4rem 0.6rem;color:#ff4d6a;\">' + r.failed + '</td>'\n+        + '<td style=\"text-align:right;padding:0.4rem 0.6rem;color:#aab0c4;\">' + r.avgTime + '</td>'\n+        + '</tr>';\n+    }).join('');\n+  }\n+\n+  fetch('/sdlc_pipeline.json')\n+    .then(function(r){ return r.json(); })\n+    .then(function(data) {\n+      var items = data.items || [];\n+      var rows = computeSprintMetrics(items);\n+      renderSprintTable(rows);\n+    })\n+    .catch(function() {\n+      var tbody = document.getElementById('sprint-perf-tbody');\n+      if (tbody) tbody.innerHTML = '<tr><td colspan=\"4\" style=\"color:#444;padding:0.5rem 0.6rem;\">Unable to load sprint data.</td></tr>';\n+    });\n+})();\n+</script>\n </body>\n </html>\ndiff --git a/version.json b/version.json\nindex e3c9005..e5089ec 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.238\",\n-  \"deployed\": \"2026-06-03 21:08:43 CT\",\n+  \"version\": \"0.1.239\",\n+  \"deployed\": \"2026-06-04 00:11:27 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -1198,6 +1198,11 @@\n       \"version\": \"0.1.238\",\n       \"date\": \"2026-06-03\",\n       \"change\": \"Add Test Pass %, AC Approval %, and Code Review % quality indicator columns to sprint performance summary table\"\n+    },\n+    {\n+      \"version\": \"0.1.239\",\n+      \"date\": \"2026-06-04\",\n+      \"change\": \"Add sprint-performance-card section with table showing completed/failed counts and avg stage time for last 3\\u20135 sprints\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "functional_design": {
         "elements_to_add": [
           "div id='sprint-performance-card' with CSS styling (border, padding, margin-top: 2rem, max-width: 600px)",
@@ -38,72 +38,71 @@
           "Rounding stage_times average to 1 decimal place using toFixed(1) may display trailing zeros (e.g., '5.0'); verify readability with stakeholder"
         ]
       },
-      "sprint_number": 80,
+      "hermes_verdict": "approve",
+      "id": "as-a-scrum-master-i-want-to-see-a-sprint-perform",
+      "idea": "As a Scrum Master, I want to see a sprint performance summary table showing stories completed, stories failed, and average stage time per sprint so that I can identify trends across the last 3\u20135 sprints at a glance.",
+      "in_sprint": true,
+      "source": "inception",
+      "sprint_number": 81,
+      "sprint_wisdom": "[ok] Perfect sprint execution: 1/1 items completed with zero failures, passing all syntax, code review, acceptance criteria, and test validations. Strong attention to detail across HTML structure, CSS rules, version management, and changelog documentation.\n[note] Single-item sprint focused on a well-scoped feature (sprint performance summary table). The comprehensive test suite (9 tests) and multiple validation gates (Hermes approval, code review, AC check) all passed cleanly, indicating mature quality controls.",
+      "stage_times": {
+        "ac_check": 1780549911.284035,
+        "code": 1780549909.333714,
+        "code_review": 1780549909.613606,
+        "deploy": 1780549913.364955,
+        "done": 1780549917.492717,
+        "pull": 1780549887.922654,
+        "story": 1780549887.995939,
+        "test": 1780549909.409554
+      },
+      "started": 1780549887.922654,
+      "status": "pending",
+      "story": "As a Scrum Master, I want to see a sprint performance summary table showing stories completed, stories failed, and average stage time per sprint so that I can identify trends across the last 3\u20135 sprints at a glance.",
       "summary": "Add sprint performance summary table (id=sprint-performance-card) showing completed, failed, and avg stage time per sprint for last 3\u20135 sprints",
-      "diff": "diff --git a/index.html b/index.html\nindex 5ab5d00..1d485a2 100644\n--- a/index.html\n+++ b/index.html\n@@ -88,8 +88,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.66</div>\n-  <div class=\"meta\">Last deployed: 2026-05-25 22:39:40 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.239</div>\n+  <div class=\"meta\">Last deployed: 2026-06-04 00:11:27 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -117,5 +117,86 @@\n     loadChangelog();\n   </script>\n <script src=\"shared.js\"></script>\n+\n+<div id=\"sprint-performance-card\" style=\"margin-top:2rem;margin-bottom:2rem;width:100%;max-width:640px;background:#13161f;border:1px solid #1e2230;border-radius:10px;padding:1.25rem 1.5rem;\">\n+  <h2 style=\"font-size:0.8rem;color:#555;text-transform:uppercase;letter-spacing:0.15em;margin:0 0 1rem 0;\">Sprint Performance Summary</h2>\n+  <table id=\"sprint-perf-table\" style=\"width:100%;border-collapse:collapse;font-size:0.88rem;\">\n+    <thead>\n+      <tr style=\"border-bottom:1px solid #1e2230;\">\n+        <th style=\"text-align:left;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Sprint</th>\n+        <th style=\"text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Completed</th>\n+        <th style=\"text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Failed</th>\n+        <th style=\"text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Avg Stage Time (s)</th>\n+      </tr>\n+    </thead>\n+    <tbody id=\"sprint-perf-tbody\">\n+      <tr><td colspan=\"4\" style=\"color:#444;padding:0.5rem 0.6rem;\">Loading\u00e2\u20ac\u00a6</td></tr>\n+    </tbody>\n+  </table>\n+</div>\n+\n+<script>\n+(function() {\n+  function sumStageTimes(st) {\n+    if (!st || typeof st !== 'object') return 0;\n+    var keys = ['ac_check','code','code_review','deploy','done','pull','story','test'];\n+    var total = 0;\n+    keys.forEach(function(k) { var v = parseFloat(st[k]); if (!isNaN(v)) total += v; });\n+    return total;\n+  }\n+\n+  function computeSprintMetrics(items) {\n+    var sprintMap = {};\n+    items.forEach(function(item) {\n+      var sn = item.sprint_number;\n+      if (sn === undefined || sn === null) return;\n+      if (!sprintMap[sn]) sprintMap[sn] = { sprint: sn, completed: 0, failed: 0, stageTimes: [], totalTime: 0, count: 0 };\n+      var bucket = sprintMap[sn];\n+      if (item.status === 'done') bucket.completed++;\n+      if (item.status === 'failed') bucket.failed++;\n+      var t = sumStageTimes(item.stage_times);\n+      bucket.totalTime += t;\n+      bucket.count++;\n+    });\n+    var sprints = Object.keys(sprintMap).map(Number).sort(function(a,b){return a-b;});\n+    var last = sprints.slice(-5);\n+    return last.map(function(sn) {\n+      var b = sprintMap[sn];\n+      var avg = b.count > 0 ? (b.totalTime / b.count) : 0;\n+      return { sprint: sn, completed: b.completed, failed: b.failed, avgTime: avg.toFixed(1) };\n+    });\n+  }\n+\n+  function renderSprintTable(rows) {\n+    var tbody = document.getElementById('sprint-perf-tbody');\n+    if (!tbody) return;\n+    if (!rows || rows.length === 0) {\n+      tbody.innerHTML = '<tr><td colspan=\"4\" style=\"color:#444;padding:0.5rem 0.6rem;\">No sprint data available.</td></tr>';\n+      return;\n+    }\n+    tbody.innerHTML = rows.map(function(r, i) {\n+      var bg = i % 2 === 0 ? '#13161f' : '#0f1117';\n+      return '<tr style=\"background:' + bg + ';border-bottom:1px solid #1a1d27;\">'\n+        + '<td style=\"padding:0.4rem 0.6rem;color:#e8eaf0;\">Sprint ' + r.sprint + '</td>'\n+        + '<td style=\"text-align:right;padding:0.4rem 0.6rem;color:#00ff99;\">' + r.completed + '</td>'\n+        + '<td style=\"text-align:right;padding:0.4rem 0.6rem;color:#ff4d6a;\">' + r.failed + '</td>'\n+        + '<td style=\"text-align:right;padding:0.4rem 0.6rem;color:#aab0c4;\">' + r.avgTime + '</td>'\n+        + '</tr>';\n+    }).join('');\n+  }\n+\n+  fetch('/sdlc_pipeline.json')\n+    .then(function(r){ return r.json(); })\n+    .then(function(data) {\n+      var items = data.items || [];\n+      var rows = computeSprintMetrics(items);\n+      renderSprintTable(rows);\n+    })\n+    .catch(function() {\n+      var tbody = document.getElementById('sprint-perf-tbody');\n+      if (tbody) tbody.innerHTML = '<tr><td colspan=\"4\" style=\"color:#444;padding:0.5rem 0.6rem;\">Unable to load sprint data.</td></tr>';\n+    });\n+})();\n+</script>\n </body>\n </html>\ndiff --git a/version.json b/version.json\nindex e3c9005..e5089ec 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.238\",\n-  \"deployed\": \"2026-06-03 21:08:43 CT\",\n+  \"version\": \"0.1.239\",\n+  \"deployed\": \"2026-06-04 00:11:27 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -1198,6 +1198,11 @@\n       \"version\": \"0.1.238\",\n       \"date\": \"2026-06-03\",\n       \"change\": \"Add Test Pass %, AC Approval %, and Code Review % quality indicator columns to sprint performance summary table\"\n+    },\n+    {\n+      \"version\": \"0.1.239\",\n+      \"date\": \"2026-06-04\",\n+      \"change\": \"Add sprint-performance-card section with table showing completed/failed counts and avg stage time for last 3\\u20135 sprints\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.239 matches between version.json and index.html"
+          "message": "version 0.1.239 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-06-04 00:11:27 CT' present in index.html"
+          "message": "deployed timestamp '2026-06-04 00:11:27 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.239: Add sprint-performance-card section with table showing completed/failed counts and avg stage time for last 3\u20135 sprints"
+          "message": "changelog has entry for v0.1.239: Add sprint-performance-card section with table showing completed/failed counts and avg stage time for last 3\u20135 sprints",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "no CSS outside style block"
+          "message": "no CSS outside style block",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "no duplicate h1 rules (1 found)"
+          "message": "no duplicate h1 rules (1 found)",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "no -webkit-text-fill-color in style block"
+          "message": "no -webkit-text-fill-color in style block",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "no duplicate body rules (1 found)"
+          "message": "no duplicate body rules (1 found)",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "no mixed color formats"
+          "message": "no mixed color formats",
+          "status": "pass"
         }
       ],
-      "deployed": "2026-06-04 00:11:27 CT",
-      "code_review_verdict": "approve",
-      "code_review_reason": "The code is syntactically correct, the HTML/CSS/JavaScript will execute without runtime errors, the fetch logic properly handles the JSON structure, and the changes are scoped only to the sprint performance feature with expected version/timestamp updates.",
-      "ac_check_verdict": "approve",
-      "ac_check_reason": "All acceptance criteria are met: sprint-performance-card section is present with correct table structure; implementation fetches data and computes metrics for the last 3\u20135 sprints sorted ascending; completed/failed counts are calculated correctly based on status; average stage time sums all numeric stage_times fields and averages per sprint rounded to one decimal place; handles fewer than 3 sprints gracefully; and all code is contained within index.html.",
-      "hermes_verdict": "approve",
-      "started": 1780549887.922654,
-      "stage_times": {
-        "pull": 1780549887.922654,
-        "code": 1780549909.333714,
-        "story": 1780549887.995939,
-        "test": 1780549909.409554,
-        "code_review": 1780549909.613606,
-        "ac_check": 1780549911.284035,
-        "deploy": 1780549913.364955,
-        "done": 1780549917.492717
-      },
       "tokens_in": 8755,
-      "tokens_out": 1920,
-      "sprint_wisdom": "[ok] Perfect sprint execution: 1/1 items completed with zero failures, passing all syntax, code review, acceptance criteria, and test validations. Strong attention to detail across HTML structure, CSS rules, version management, and changelog documentation.\n[note] Single-item sprint focused on a well-scoped feature (sprint performance summary table). The comprehensive test suite (9 tests) and multiple validation gates (Hermes approval, code review, AC check) all passed cleanly, indicating mature quality controls."
+      "tokens_out": 1920
     },
     {
-      "id": "as-a-scrum-master-i-want-pass-rate-and-approval",
-      "idea": "As a Scrum Master, I want pass-rate and approval-rate indicators displayed per sprint in the performance card so that I can track quality signals (test pass rate, AC approval rate, code review approval rate) alongside throughput.",
-      "story": "As a Scrum Master, I want pass-rate and approval-rate indicators displayed per sprint in the performance card so that I can track quality signals (test pass rate, AC approval rate, code review approval rate) alongside throughput.",
+      "ac_check_reason": "All acceptance criteria are satisfied: three new columns (Test Pass %, AC Approval %, Code Review %) are appended to the right of Avg Stage Time; test pass rate is calculated as (items with passing test_results / total items) \u00d7 100; AC approval rate excludes non-approve/reject verdicts from both numerator and denominator; code review rate excludes non-approve/reject verdicts similarly; existing columns retain their values; implementation is entirely within index.html.",
+      "ac_check_verdict": "approve",
       "acceptance_criteria": [
         "The summary table inside #sprint-performance-card gains three new columns with headers: Test Pass %, AC Approval %, Code Review % \u2014 appended to the right of the existing Avg Stage Time (s) column.",
         "Test Pass % per sprint equals (count of items where item.test_results.some(t => t.status === 'pass') is true divided by total items in that sprint) \u00d7 100, displayed as a whole number percentage (e.g. '75%').",
@@ -112,9 +111,10 @@
         "Existing columns (Sprint, Completed, Failed, Avg Stage Time) retain their previously computed values unchanged after this story is applied.",
         "Feature is implemented directly within index.html \u2014 no changes to any other file."
       ],
-      "status": "pending",
-      "in_sprint": true,
-      "source": "inception",
+      "code_review_reason": "All HTML table structure updates are syntactically correct, colspan values match column counts (4\u21927), JavaScript logic correctly aggregates test/approval metrics and renders them without runtime errors, and version/deployment timestamps are appropriately updated.",
+      "code_review_verdict": "approve",
+      "deployed": "2026-06-04 00:12:01 CT",
+      "diff": "diff --git a/index.html b/index.html\nindex 1d485a2..28ea7dd 100644\n--- a/index.html\n+++ b/index.html\n@@ -88,8 +88,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.239</div>\n-  <div class=\"meta\">Last deployed: 2026-06-04 00:11:27 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.240</div>\n+  <div class=\"meta\">Last deployed: 2026-06-04 00:12:01 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -127,10 +127,13 @@\n         <th style=\"text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Completed</th>\n         <th style=\"text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Failed</th>\n         <th style=\"text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Avg Stage Time (s)</th>\n+        <th style=\"text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Test Pass %</th>\n+        <th style=\"text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">AC Approval %</th>\n+        <th style=\"text-align:right;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Code Review %</th>\n       </tr>\n     </thead>\n     <tbody id=\"sprint-perf-tbody\">\n-      <tr><td colspan=\"4\" style=\"color:#444;padding:0.5rem 0.6rem;\">Loading\u00e2\u20ac\u00a6</td></tr>\n+      <tr><td colspan=\"7\" style=\"color:#444;padding:0.5rem 0.6rem;\">Loading\u00e2\u20ac\u00a6</td></tr>\n     </tbody>\n   </table>\n </div>\n@@ -150,10 +153,14 @@\n     items.forEach(function(item) {\n       var sn = item.sprint_number;\n       if (sn === undefined || sn === null) return;\n-      if (!sprintMap[sn]) sprintMap[sn] = { sprint: sn, completed: 0, failed: 0, stageTimes: [], totalTime: 0, count: 0 };\n+      if (!sprintMap[sn]) sprintMap[sn] = { sprint: sn, completed: 0, failed: 0, stageTimes: [], totalTime: 0, count: 0, testPass: 0, acApprove: 0, acTotal: 0, crApprove: 0, crTotal: 0 };\n       var bucket = sprintMap[sn];\n       if (item.status === 'done') bucket.completed++;\n       if (item.status === 'failed') bucket.failed++;\n+      var testPassed = Array.isArray(item.test_results) && item.test_results.some(function(t){ return t.status === 'pass'; });\n+      if (testPassed) bucket.testPass++;\n+      if (item.ac_check_verdict === 'approve' || item.ac_check_verdict === 'reject') { bucket.acTotal++; if (item.ac_check_verdict === 'approve') bucket.acApprove++; }\n+      if (item.code_review_verdict === 'approve' || item.code_review_verdict === 'reject') { bucket.crTotal++; if (item.code_review_verdict === 'approve') bucket.crApprove++; }\n       var t = sumStageTimes(item.stage_times);\n       bucket.totalTime += t;\n       bucket.count++;\n@@ -163,7 +170,10 @@\n     return last.map(function(sn) {\n       var b = sprintMap[sn];\n       var avg = b.count > 0 ? (b.totalTime / b.count) : 0;\n-      return { sprint: sn, completed: b.completed, failed: b.failed, avgTime: avg.toFixed(1) };\n+      var testPct = b.count > 0 ? Math.round(b.testPass / b.count * 100) : 0;\n+      var acPct = b.acTotal > 0 ? Math.round(b.acApprove / b.acTotal * 100) : null;\n+      var crPct = b.crTotal > 0 ? Math.round(b.crApprove / b.crTotal * 100) : null;\n+      return { sprint: sn, completed: b.completed, failed: b.failed, avgTime: avg.toFixed(1), testPct: testPct, acPct: acPct, crPct: crPct };\n     });\n   }\n \n@@ -171,7 +181,7 @@\n     var tbody = document.getElementById('sprint-perf-tbody');\n     if (!tbody) return;\n     if (!rows || rows.length === 0) {\n-      tbody.innerHTML = '<tr><td colspan=\"4\" style=\"color:#444;padding:0.5rem 0.6rem;\">No sprint data available.</td></tr>';\n+      tbody.innerHTML = '<tr><td colspan=\"7\" style=\"color:#444;padding:0.5rem 0.6rem;\">No sprint data available.</td></tr>';\n       return;\n     }\n     tbody.innerHTML = rows.map(function(r, i) {\n@@ -181,6 +191,9 @@\n         + '<td style=\"text-align:right;padding:0.4rem 0.6rem;color:#00ff99;\">' + r.completed + '</td>'\n         + '<td style=\"text-align:right;padding:0.4rem 0.6rem;color:#ff4d6a;\">' + r.failed + '</td>'\n         + '<td style=\"text-align:right;padding:0.4rem 0.6rem;color:#aab0c4;\">' + r.avgTime + '</td>'\n+        + '<td style=\"text-align:right;padding:0.4rem 0.6rem;color:#7dd3fc;\">' + r.testPct + '%</td>'\n+        + '<td style=\"text-align:right;padding:0.4rem 0.6rem;color:#7dd3fc;\">' + (r.acPct !== null ? r.acPct + '%' : '\u00e2\u20ac\u201d') + '</td>'\n+        + '<td style=\"text-align:right;padding:0.4rem 0.6rem;color:#7dd3fc;\">' + (r.crPct !== null ? r.crPct + '%' : '\u00e2\u20ac\u201d') + '</td>'\n         + '</tr>';\n     }).join('');\n   }\n@@ -194,7 +207,7 @@\n     })\n     .catch(function() {\n       var tbody = document.getElementById('sprint-perf-tbody');\n-      if (tbody) tbody.innerHTML = '<tr><td colspan=\"4\" style=\"color:#444;padding:0.5rem 0.6rem;\">Unable to load sprint data.</td></tr>';\n+      if (tbody) tbody.innerHTML = '<tr><td colspan=\"7\" style=\"color:#444;padding:0.5rem 0.6rem;\">Unable to load sprint data.</td></tr>';\n     });\n })();\n </script>\ndiff --git a/version.json b/version.json\nindex e5089ec..c2948ec 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.239\",\n-  \"deployed\": \"2026-06-04 00:11:27 CT\",\n+  \"version\": \"0.1.240\",\n+  \"deployed\": \"2026-06-04 00:12:01 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -1203,6 +1203,11 @@\n       \"version\": \"0.1.239\",\n       \"date\": \"2026-06-04\",\n       \"change\": \"Add sprint-performance-card section with table showing completed/failed counts and avg stage time for last 3\\u20135 sprints\"\n+    },\n+    {\n+      \"version\": \"0.1.240\",\n+      \"date\": \"2026-06-04\",\n+      \"change\": \"Add Test Pass %, AC Approval %, and Code Review % quality indicator columns to sprint performance summary table\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "functional_design": {
         "elements_to_add": [
           "Three <th> headers: 'Test Pass %', 'AC Approval %', 'Code Review %' appended after Avg Stage Time (s)",
@@ -139,67 +139,67 @@
           "Scope creep: ensure no changes to other pages or shared.js; all logic must live in index.html <script> block"
         ]
       },
+      "hermes_verdict": "approve",
+      "id": "as-a-scrum-master-i-want-pass-rate-and-approval",
+      "idea": "As a Scrum Master, I want pass-rate and approval-rate indicators displayed per sprint in the performance card so that I can track quality signals (test pass rate, AC approval rate, code review approval rate) alongside throughput.",
+      "in_sprint": false,
+      "retro_context": "[ok] Perfect sprint execution: 1/1 items completed with zero failures, passing all syntax, code review, acceptance criteria, and test validations. Strong attention to detail across HTML structure, CSS rules, version management, and changelog documentation.\n[note] Single-item sprint focused on a well-scoped feature (sprint performance summary table). The comprehensive test suite (9 tests) and multiple validation gates (Hermes approval, code review, AC check) all passed cleanly, indicating mature quality controls.",
+      "source": "inception",
       "sprint_number": 80,
-      "retro_context": "[ok] Perfect execution: 1 item completed with 0 failures, passing all 9 test checks including code syntax validation, acceptance criteria verification, version consistency, and CSS standards compliance.\n[ok] Strong code review and acceptance criteria alignment: reviewer confirmed syntactically correct code with valid selectors/properties, and all AC metrics (table structure, data fetching, calculations, empty handling) were verified before deployment.\n[note] Single-item sprint with comprehensive test coverage: 9 distinct test assertions were run covering file existence, versioning, timestamps, changelog entries, and CSS validation\u2014suggesting mature testing practices for this feature.",
+      "stage_times": {
+        "ac_check": 1780549965.03124,
+        "code": 1780549963.056523,
+        "code_review": 1780549963.41319,
+        "deploy": 1780549967.186365,
+        "done": 1780549969.948773,
+        "pull": 1780549921.921953,
+        "story": 1780549945.279796,
+        "test": 1780549963.219798
+      },
+      "started": 1780549921.921953,
+      "status": "pending",
+      "story": "As a Scrum Master, I want pass-rate and approval-rate indicators displayed per sprint in the performance card so that I can track quality signals (test pass rate, AC approval rate, code review approval rate) alongside throughput.",
       "summary": "Add quality signal columns (Test Pass %, AC Approval %, Code Review %) to sprint performance card table",
-      "diff": "diff --git a/index.html b/index.html\nindex 6e4ea02..e2c5519 100644\n--- a/index.html\n+++ b/index.html\n@@ -88,8 +88,8 @@\n     <h1>Hello Scrum</h1>\n     <div class=\"tagline\">ship fast \u00c2\u00b7 break things \u00c2\u00b7 own it</div>\n   </div>\n-  <div class=\"version\" id=\"version-badge\">v0.1.237</div>\n-  <div class=\"meta\">Last deployed: 2026-06-03 21:08:08 CT</div>\n+  <div class=\"version\" id=\"version-badge\">v0.1.238</div>\n+  <div class=\"meta\">Last deployed: 2026-06-03 21:08:43 CT</div>\n   <div class=\"changelog\">\n     <h2>Recent Changes</h2>\n     <div id=\"changelog-entries\"></div>\n@@ -127,6 +127,9 @@\n           <th style=\"text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Completed</th>\n           <th style=\"text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Failed</th>\n           <th style=\"text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Avg Stage Time (s)</th>\n+          <th style=\"text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Test Pass %</th>\n+          <th style=\"text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">AC Approval %</th>\n+          <th style=\"text-align:center;padding:0.4rem 0.6rem;color:#7a8099;font-weight:600;\">Code Review %</th>\n         </tr>\n       </thead>\n       <tbody id=\"sprint-perf-tbody\">\n@@ -162,7 +165,7 @@\n \n         var tbody = document.getElementById('sprint-perf-tbody');\n         if (last.length === 0) {\n-          tbody.innerHTML = '<tr><td colspan=\"4\" style=\"color:#444;padding:0.6rem;text-align:center;\">No sprint data available.</td></tr>';\n+          tbody.innerHTML = '<tr><td colspan=\"7\" style=\"color:#444;padding:0.6rem;text-align:center;\">No sprint data available.</td></tr>';\n           return;\n         }\n \n@@ -175,12 +178,31 @@\n             if (i.stage_times) { total += sumStageTimes(i.stage_times); count++; }\n           });\n           var avg = count > 0 ? (total / count).toFixed(1) : '\u00e2\u20ac\u201d';\n+          var testPass = (function() {\n+            var passing = its.filter(function(i){ return Array.isArray(i.test_results) && i.test_results.some(function(t){ return t.status === 'pass'; }); }).length;\n+            return its.length > 0 ? Math.round(passing / its.length * 100) + '%' : '\u00e2\u20ac\u201d';\n+          })();\n+          var acApproval = (function() {\n+            var eligible = its.filter(function(i){ return i.ac_check_verdict === 'approve' || i.ac_check_verdict === 'reject'; });\n+            if (eligible.length === 0) return '\u00e2\u20ac\u201d';\n+            var approved = eligible.filter(function(i){ return i.ac_check_verdict === 'approve'; }).length;\n+            return Math.round(approved / eligible.length * 100) + '%';\n+          })();\n+          var codeReview = (function() {\n+            var eligible = its.filter(function(i){ return i.code_review_verdict === 'approve' || i.code_review_verdict === 'reject'; });\n+            if (eligible.length === 0) return '\u00e2\u20ac\u201d';\n+            var approved = eligible.filter(function(i){ return i.code_review_verdict === 'approve'; }).length;\n+            return Math.round(approved / eligible.length * 100) + '%';\n+          })();\n           var rowBg = idx % 2 === 1 ? 'background:#0f1117;' : '';\n           return '<tr style=\"border-top:1px solid #1c1c1c;' + rowBg + '\">'\n             + '<td style=\"padding:0.4rem 0.6rem;color:#e8eaf0;\">Sprint ' + sn + '</td>'\n             + '<td style=\"padding:0.4rem 0.6rem;text-align:center;color:#00ff99;\">' + completed + '</td>'\n             + '<td style=\"padding:0.4rem 0.6rem;text-align:center;color:#ff6b6b;\">' + failed + '</td>'\n             + '<td style=\"padding:0.4rem 0.6rem;text-align:center;color:#aab;\">' + avg + '</td>'\n+            + '<td style=\"padding:0.4rem 0.6rem;text-align:center;color:#7ecfff;\">' + testPass + '</td>'\n+            + '<td style=\"padding:0.4rem 0.6rem;text-align:center;color:#7ecfff;\">' + acApproval + '</td>'\n+            + '<td style=\"padding:0.4rem 0.6rem;text-align:center;color:#7ecfff;\">' + codeReview + '</td>'\n             + '</tr>';\n         }).join('');\n       }\n@@ -193,7 +215,7 @@\n         })\n         .catch(function() {\n           var tbody = document.getElementById('sprint-perf-tbody');\n-          if (tbody) tbody.innerHTML = '<tr><td colspan=\"4\" style=\"color:#444;padding:0.6rem;text-align:center;\">Unable to load sprint data.</td></tr>';\n+          if (tbody) tbody.innerHTML = '<tr><td colspan=\"7\" style=\"color:#444;padding:0.6rem;text-align:center;\">Unable to load sprint data.</td></tr>';\n         });\n     })();\n   </script>\ndiff --git a/version.json b/version.json\nindex 2fca8ce..e3c9005 100644\n--- a/version.json\n+++ b/version.json\n@@ -1,6 +1,6 @@\n {\n-  \"version\": \"0.1.237\",\n-  \"deployed\": \"2026-06-03 21:08:08 CT\",\n+  \"version\": \"0.1.238\",\n+  \"deployed\": \"2026-06-03 21:08:43 CT\",\n   \"status\": \"baseline\",\n   \"total_tokens\": 0,\n   \"changelog\": [\n@@ -1193,6 +1193,11 @@\n       \"version\": \"0.1.237\",\n       \"date\": \"2026-06-03\",\n       \"change\": \"Add sprint-performance-card section with table showing completed, failed, and avg stage time per sprint for last 3\\u20135 sprints\"\n+    },\n+    {\n+      \"version\": \"0.1.238\",\n+      \"date\": \"2026-06-03\",\n+      \"change\": \"Add Test Pass %, AC Approval %, and Code Review % quality indicator columns to sprint performance summary table\"\n     }\n   ]\n }\n\\ No newline at end of file\n",
       "test_results": [
         {
-          "status": "pass",
-          "message": "index.html exists and contains title"
+          "message": "index.html exists and contains title",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "version 0.1.238 matches between version.json and index.html"
+          "message": "version 0.1.240 matches between version.json and index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "deployed timestamp '2026-06-03 21:08:43 CT' present in index.html"
+          "message": "deployed timestamp '2026-06-04 00:12:01 CT' present in index.html",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "changelog has entry for v0.1.238: Add Test Pass %, AC Approval %, and Code Review % quality indicator columns to sprint performance summary table"
+          "message": "changelog has entry for v0.1.240: Add Test Pass %, AC Approval %, and Code Review % quality indicator columns to sprint performance summary table",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "no CSS outside style block"
+          "message": "no CSS outside style block",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "no duplicate h1 rules (1 found)"
+          "message": "no duplicate h1 rules (1 found)",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "no -webkit-text-fill-color in style block"
+          "message": "no -webkit-text-fill-color in style block",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "no duplicate body rules (1 found)"
+          "message": "no duplicate body rules (1 found)",
+          "status": "pass"
         },
         {
-          "status": "pass",
-          "message": "no mixed color formats"
+          "message": "no mixed color formats",
+          "status": "pass"
         }
       ],
-      "deployed": "2026-06-03 21:08:43 CT",
-      "code_review_verdict": "approve",
-      "code_review_reason": "All code changes are syntactically correct: HTML table headers and cells are properly structured, JavaScript filter/map logic is valid, colspan values correctly updated from 4 to 7, and version/deployment timestamp changes are expected accompaniments.",
-      "ac_check_verdict": "approve",
-      "ac_check_reason": "All acceptance criteria are met: three new columns (Test Pass %, AC Approval %, Code Review %) are appended to the right of Avg Stage Time with correct headers; Test Pass % calculates passing items divided by total items; AC Approval % and Code Review % correctly filter by 'approve'/'reject' verdicts and calculate percentages; existing columns retain unchanged values; implementation is entirely within index.html with no other files modified.",
-      "hermes_verdict": "approve",
-      "started": 1780538923.284694,
-      "stage_times": {
-        "pull": 1780538923.284694,
-        "code": 1780538957.963128,
-        "story": 1780538942.862788,
-        "test": 1780538958.213814,
-        "code_review": 1780538958.769126,
-        "ac_check": 1780538960.323565,
-        "deploy": 1780538962.554118,
-        "done": 1780538968.160199
-      },
-      "tokens_in": 14946,
-      "tokens_out": 3431
+      "tokens_in": 15831,
+      "tokens_out": 4212
     },
     {
       "ac_check_reason": "All four acceptance criteria are satisfied: h1 font-size increased from 3rem to 3.5rem, title color remains #00ff99 with text-shadow glow effect intact, all existing properties (monospace, font-weight 800, letter-spacing -0.03em) are preserved, and the enlarged title maintains visual balance with the tagline and version badge below it.",
@@ -12507,5 +12507,5 @@
       "tokens_out": 2816
     }
   ],
-  "sprint_number": 80
+  "sprint_number": 81
 }

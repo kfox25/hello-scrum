@@ -554,8 +554,6 @@
       showSection(a.getAttribute('href').slice(1));
     }));
 
-    showSection('s-foundation');
-
     // Flashcard — pool from current visible section only
     let quizPool = [];
     let lastIdx = -1;
@@ -587,7 +585,8 @@
       document.getElementById('quizAnswer').textContent = quizPool[lastIdx].term;
       document.getElementById('quizReveal').style.display = 'none';
     }
-    setTimeout(nextQuestion, 50);
+
+    showSection('s-foundation');
   </script>
 </body>
 </html>

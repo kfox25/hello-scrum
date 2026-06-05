@@ -224,19 +224,18 @@
     const sections = document.querySelectorAll('.section');
     const navLinks = sideNav.querySelectorAll('a');
 
-    function updateActive() {
-      let current = sections[0].id;
-      sections.forEach(s => {
-        if (s.getBoundingClientRect().top <= 120) current = s.id;
-      });
-      navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + current));
+    function showSection(id) {
+      sections.forEach(s => s.style.display = s.id === id ? '' : 'none');
+      navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+      window.scrollTo(0, 0);
     }
-    window.addEventListener('scroll', updateActive);
-    navLinks.forEach(a => a.addEventListener('click', () => {
-      navLinks.forEach(l => l.classList.remove('active'));
-      a.classList.add('active');
+
+    navLinks.forEach(a => a.addEventListener('click', e => {
+      e.preventDefault();
+      showSection(a.getAttribute('href').slice(1));
     }));
-    updateActive();
+
+    showSection('s-foundation');
   </script>
 </body>
 </html>

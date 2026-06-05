@@ -544,6 +544,8 @@
       sections.forEach(s => s.style.display = s.id === id ? '' : 'none');
       navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
       window.scrollTo(0, 0);
+      lastIdx = -1;
+      nextQuestion();
     }
 
     navLinks.forEach(a => a.addEventListener('click', e => {
@@ -553,18 +555,24 @@
 
     showSection('s-foundation');
 
-    // Flashcard — build pool from DOM, all sections
+    // Flashcard — pool from current visible section only
     let quizPool = [];
     let lastIdx = -1;
+
     function buildQuizPool() {
-      document.querySelectorAll('.term').forEach(t => {
+      const active = document.querySelector('.section:not([style*="display: none"]):not([style*="display:none"])');
+      quizPool = [];
+      if (!active) return;
+      active.querySelectorAll('.term').forEach(t => {
         const name = t.querySelector('.term-name');
         const def  = t.querySelector('.term-def');
         if (name && def) quizPool.push({ term: name.textContent.trim(), def: def.textContent.trim() });
       });
     }
+
     function nextQuestion() {
-      if (!quizPool.length) buildQuizPool();
+      buildQuizPool();
+      if (!quizPool.length) return;
       let idx;
       do { idx = Math.floor(Math.random() * quizPool.length); } while (idx === lastIdx && quizPool.length > 1);
       lastIdx = idx;
@@ -572,11 +580,11 @@
       document.getElementById('quizAnswer').textContent = '';
       document.getElementById('quizReveal').style.display = 'inline-block';
     }
+
     function revealAnswer() {
       document.getElementById('quizAnswer').textContent = quizPool[lastIdx].term;
       document.getElementById('quizReveal').style.display = 'none';
     }
-    // Wait for DOM then start
     setTimeout(nextQuestion, 50);
   </script>
 </body>

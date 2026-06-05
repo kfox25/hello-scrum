@@ -81,11 +81,23 @@
     <div class="section-title">Foundation</div>
 
     <div class="term-group">
+      <div class="term-group-label">The Field</div>
+      <div class="term-grid">
+        <div class="term"><div class="term-name">Machine Learning (ML)</div><div class="term-def">The broader field of algorithms that learn patterns from data instead of being explicitly programmed. AI is the goal; ML is the method.</div></div>
+        <div class="term"><div class="term-name">Deep Learning</div><div class="term-def">A subset of ML using neural networks with many layers. The "deep" refers to layer depth. Powers all modern LLMs, image recognition, and speech models.</div></div>
+        <div class="term"><div class="term-name">Neural Network</div><div class="term-def">Layers of interconnected nodes (neurons) that transform input into output. Each connection has a weight. Deep networks have many layers.</div></div>
+      </div>
+    </div>
+
+    <div class="term-group">
       <div class="term-group-label">Types of AI</div>
       <div class="term-grid">
+        <div class="term"><div class="term-name">Narrow AI</div><div class="term-def">AI that excels at one specific task — chess, image recognition, language — but cannot generalise. All current AI systems are narrow AI.</div></div>
+        <div class="term"><div class="term-name">AGI (Artificial General Intelligence)</div><div class="term-def">Hypothetical AI that matches or exceeds human-level reasoning across all domains. Does not yet exist. Active research area at Anthropic, OpenAI, DeepMind.</div></div>
         <div class="term"><div class="term-name">Predictive AI</div><div class="term-def">Classifies or forecasts based on patterns in training data. Outputs a category or number. <em>e.g. spam filter, fraud detection, demand forecast.</em></div></div>
         <div class="term"><div class="term-name">Generative AI</div><div class="term-def">Produces new content — text, images, code, audio — rather than classifying input. LLMs are generative.</div></div>
         <div class="term"><div class="term-name">Discriminative Model</div><div class="term-def">Learns the boundary between classes. Asks "given this input, which class?" Contrast with generative models that learn the data distribution itself.</div></div>
+        <div class="term"><div class="term-name">Multimodal</div><div class="term-def">A model that accepts multiple input types: text, images, audio, video. Claude 3+ is multimodal — it can read images as well as text.</div></div>
       </div>
     </div>
 
@@ -94,7 +106,6 @@
       <div class="term-grid">
         <div class="term"><div class="term-name">Large Language Model (LLM)</div><div class="term-def">A neural network trained on massive text corpora to predict the next token. Claude, GPT-4, Gemini are LLMs.</div></div>
         <div class="term"><div class="term-name">Foundation Model</div><div class="term-def">A large model trained on broad data that can be adapted to many tasks. LLMs are a type of foundation model.</div></div>
-        <div class="term"><div class="term-name">Neural Network</div><div class="term-def">Layers of interconnected nodes (neurons) that transform input into output. Each connection has a weight. Deep networks have many layers.</div></div>
       </div>
     </div>
 
@@ -102,7 +113,7 @@
       <div class="term-group-label">Core Process</div>
       <div class="term-grid">
         <div class="term"><div class="term-name">Parameters / Weights</div><div class="term-def">The numerical values inside a model learned during training. More parameters = more capacity. GPT-4 has ~1 trillion.</div></div>
-        <div class="term"><div class="term-name">Training</div><div class="term-def">Adjusting a model's weights by showing it examples and minimising prediction error. Happens once — not at inference time.</div></div>
+        <div class="term"><div class="term-name">Training</div><div class="term-def">Adjusting a model's weights by showing it examples and minimising prediction error. Happens once (or rarely) — not at inference time.</div></div>
         <div class="term"><div class="term-name">Inference</div><div class="term-def">Running a trained model to get a prediction or response. What happens every time you send a message to Claude.</div></div>
         <div class="term"><div class="term-name">Model</div><div class="term-def">The trained artifact — a set of weights that maps inputs to outputs. "Calling the model" means running inference against these weights.</div></div>
       </div>
@@ -116,20 +127,26 @@
     <div class="term-group">
       <div class="term-group-label">Input & Output</div>
       <div class="term-grid">
+        <div class="term"><div class="term-name">Prompt</div><div class="term-def">The full input sent to the model — system message + user message combined. Everything the model sees before generating a response.</div></div>
+        <div class="term"><div class="term-name">Completion</div><div class="term-def">The model's generated response. Also called the "output" or "response." The model produces completions one token at a time.</div></div>
         <div class="term"><div class="term-name">Token</div><div class="term-def">The unit of text an LLM processes. Roughly 0.75 words. "Hello Scrum" = 3 tokens. Models have a maximum token limit per call.</div></div>
         <div class="term"><div class="term-name">Tokenisation</div><div class="term-def">Splitting text into tokens before the model processes it. Different models use different tokenisers. Affects cost and context limits.</div></div>
         <div class="term"><div class="term-name">Context Window</div><div class="term-def">The maximum tokens a model can process in a single call — both input and output combined. Claude's window is 200k tokens.</div></div>
-        <div class="term"><div class="term-name">System Prompt</div><div class="term-def">Instructions given to the model before the conversation starts. Sets role, behaviour, and constraints. Not shown to the end user.</div></div>
+        <div class="term"><div class="term-name">Streaming</div><div class="term-def">Receiving tokens as they're generated rather than waiting for the full response. Hello Scrum uses SSE streaming so the log updates in real time.</div></div>
+        <div class="term"><div class="term-name">System Prompt</div><div class="term-def">Instructions given before the conversation starts. Sets role, behaviour, and constraints. Not shown to the end user.</div></div>
         <div class="term"><div class="term-name">User Prompt</div><div class="term-def">The input from the human turn. In agent pipelines this often includes injected context — file contents, data, dynamic instructions.</div></div>
+        <div class="term"><div class="term-name">Multi-turn</div><div class="term-def">A conversation with multiple back-and-forth exchanges. Each turn adds to the context window. Used in story elaboration's tool-use loop.</div></div>
       </div>
     </div>
 
     <div class="term-group">
       <div class="term-group-label">Architecture</div>
       <div class="term-grid">
-        <div class="term"><div class="term-name">Embedding</div><div class="term-def">A vector (list of numbers) representing the meaning of text. Similar meanings = similar vectors. Foundation of semantic search and RAG.</div></div>
-        <div class="term"><div class="term-name">Attention</div><div class="term-def">The mechanism that lets a model weigh which parts of the input are relevant to each token it generates. Core of the Transformer.</div></div>
         <div class="term"><div class="term-name">Transformer</div><div class="term-def">The neural network architecture behind all modern LLMs. Introduced in "Attention is All You Need" (2017). Uses self-attention to process sequences in parallel.</div></div>
+        <div class="term"><div class="term-name">Attention</div><div class="term-def">The mechanism that lets a model weigh which parts of the input are relevant to each token it generates. Core of the Transformer architecture.</div></div>
+        <div class="term"><div class="term-name">Embedding</div><div class="term-def">A vector (list of numbers) representing the meaning of text. Similar meanings = similar vectors. Foundation of semantic search and RAG.</div></div>
+        <div class="term"><div class="term-name">Latent Space</div><div class="term-def">The high-dimensional space where embeddings live. Similar concepts cluster together. The model "understands" language by navigating this space.</div></div>
+        <div class="term"><div class="term-name">Pre-training</div><div class="term-def">The initial large-scale training on broad data (books, web, code) before fine-tuning. Gives the model general language understanding.</div></div>
       </div>
     </div>
 
@@ -139,13 +156,15 @@
         <div class="term"><div class="term-name">Temperature</div><div class="term-def">Controls randomness. Low (0) = deterministic. High (1+) = creative, picks less likely tokens more often.</div></div>
         <div class="term"><div class="term-name">Top-p (Nucleus Sampling)</div><div class="term-def">Limits token selection to the smallest set whose cumulative probability exceeds p. Cuts off unlikely tokens.</div></div>
         <div class="term"><div class="term-name">Top-k</div><div class="term-def">Limits token selection to the k most likely candidates at each step. Often used together with top-p.</div></div>
+        <div class="term"><div class="term-name">Structured Output</div><div class="term-def">Asking the model to respond in a specific format — JSON, XML, a schema. All 14 Hello Scrum prompts use structured output. Reduces parsing errors.</div></div>
       </div>
     </div>
 
     <div class="term-group">
-      <div class="term-group-label">Failure Mode</div>
+      <div class="term-group-label">Failure Modes</div>
       <div class="term-grid">
         <div class="term"><div class="term-name">Hallucination</div><div class="term-def">When a model generates plausible-sounding but factually incorrect content. Caused by predicting probable text rather than retrieving ground truth.</div></div>
+        <div class="term"><div class="term-name">Instruction Following</div><div class="term-def">The model's ability to follow explicit directions accurately. Poor instruction following = model ignores constraints or output format rules.</div></div>
       </div>
     </div>
   </div>
@@ -159,8 +178,9 @@
       <div class="term-grid">
         <div class="term"><div class="term-name">Zero-shot</div><div class="term-def">Asking the model to do a task with no examples — just instructions. Works for simple tasks; fails on tasks requiring specific output formats.</div></div>
         <div class="term"><div class="term-name">One-shot</div><div class="term-def">Providing one example of the desired input → output before asking the model to perform the task.</div></div>
-        <div class="term"><div class="term-name">Few-shot</div><div class="term-def">Providing 2–5 examples before asking the model to perform the task. More examples = more reliable output format. Used in both Hermes prompts here.</div></div>
+        <div class="term"><div class="term-name">Few-shot</div><div class="term-def">Providing 2–5 examples before asking the model. More examples = more reliable output format. Used in both Hermes prompts here.</div></div>
         <div class="term"><div class="term-name">Chain of Thought (CoT)</div><div class="term-def">Asking the model to reason step by step before giving a final answer. Improves accuracy on complex tasks.</div></div>
+        <div class="term"><div class="term-name">ReAct</div><div class="term-def">Reason + Act pattern for agents. The model thinks, then acts, then observes the result, then repeats. Combines planning with tool use.</div></div>
       </div>
     </div>
 
@@ -177,8 +197,9 @@
     <div class="term-group">
       <div class="term-group-label">Concepts</div>
       <div class="term-grid">
-        <div class="term"><div class="term-name">Grounding</div><div class="term-def">Connecting the model's output to real, verifiable data. RAG is a grounding technique. Reduces hallucination by giving the model facts to reference.</div></div>
-        <div class="term"><div class="term-name">Prompt Injection</div><div class="term-def">An attack where malicious text in the input overrides the system prompt's instructions. <em>e.g. "Ignore previous instructions and..."</em></div></div>
+        <div class="term"><div class="term-name">Grounding</div><div class="term-def">Connecting model output to real, verifiable data. RAG is a grounding technique. Reduces hallucination by giving the model facts to reference.</div></div>
+        <div class="term"><div class="term-name">Prompt Injection</div><div class="term-def">An attack where malicious text overrides the system prompt's instructions. <em>e.g. "Ignore previous instructions and..."</em></div></div>
+        <div class="term"><div class="term-name">Prompt Versioning</div><div class="term-def">Tracking prompt changes over time like code — with history, diffs, and rollback. Critical when prompt changes cause regressions in agent behaviour.</div></div>
       </div>
     </div>
   </div>
@@ -191,8 +212,9 @@
       <div class="term-group-label">The Pattern</div>
       <div class="term-grid">
         <div class="term"><div class="term-name">RAG (Retrieval Augmented Generation)</div><div class="term-def">Relevant documents are retrieved from a knowledge base and injected into the prompt before generation. Grounds answers in real data without fine-tuning.</div></div>
-        <div class="term"><div class="term-name">Knowledge Base</div><div class="term-def">The collection of documents, facts, or data that a RAG system retrieves from. Internal docs, manuals, FAQs, code are all candidate knowledge bases.</div></div>
-        <div class="term"><div class="term-name">Chunking</div><div class="term-def">Splitting documents into smaller pieces before embedding them. Chunk size affects retrieval quality — too large misses specifics, too small loses context.</div></div>
+        <div class="term"><div class="term-name">Knowledge Base</div><div class="term-def">The collection of documents, facts, or data that a RAG system retrieves from. Internal docs, manuals, FAQs, and code are candidate knowledge bases.</div></div>
+        <div class="term"><div class="term-name">Chunking</div><div class="term-def">Splitting documents into smaller pieces before embedding. Too large misses specifics, too small loses context.</div></div>
+        <div class="term"><div class="term-name">Context Stuffing</div><div class="term-def">Loading everything into the context window rather than selectively retrieving. Simple but expensive. Works when the knowledge base is small enough to fit.</div></div>
       </div>
     </div>
 
@@ -209,8 +231,10 @@
       <div class="term-group-label">Retrieval</div>
       <div class="term-grid">
         <div class="term"><div class="term-name">Semantic Search</div><div class="term-def">Finding content by meaning rather than exact keywords. "sprint velocity" returns results about throughput even if those words don't appear.</div></div>
+        <div class="term"><div class="term-name">Hybrid Search</div><div class="term-def">Combining keyword search (BM25) and semantic search (vector) for better retrieval. Keyword catches exact terms; semantic catches meaning. Often better than either alone.</div></div>
         <div class="term"><div class="term-name">Cosine Similarity</div><div class="term-def">The most common way to measure how similar two vectors are. Returns -1 to 1. 1 = identical meaning, 0 = unrelated.</div></div>
         <div class="term"><div class="term-name">Re-ranking</div><div class="term-def">A second pass that reorders retrieved chunks by relevance before injecting into the prompt. Improves RAG quality beyond raw vector similarity.</div></div>
+        <div class="term"><div class="term-name">Retrieval Precision / Recall</div><div class="term-def">Precision: how many retrieved chunks are actually relevant. Recall: how many relevant chunks were retrieved. Tradeoff — improving one often hurts the other.</div></div>
       </div>
     </div>
   </div>
@@ -224,23 +248,28 @@
       <div class="term-grid">
         <div class="term"><div class="term-name">Agent</div><div class="term-def">An LLM that can take actions — call tools, read files, write code, loop — not just respond to a single prompt.</div></div>
         <div class="term"><div class="term-name">Agentic Loop</div><div class="term-def">A pattern where the agent runs repeatedly until a goal is met. Hello Scrum: pull → implement → test → review → deploy → repeat.</div></div>
-        <div class="term"><div class="term-name">Planning</div><div class="term-def">An agent breaking a goal into steps before executing. ReAct (Reason + Act) is a common pattern: think, act, observe, repeat.</div></div>
+        <div class="term"><div class="term-name">Scaffolding</div><div class="term-def">The code and framework wrapping LLM calls — routing, retries, tool dispatch, logging. agent.py and server.py are the scaffolding in Hello Scrum.</div></div>
+        <div class="term"><div class="term-name">Planning</div><div class="term-def">An agent breaking a goal into steps before executing. ReAct is a common planning pattern: think, act, observe, repeat.</div></div>
       </div>
     </div>
 
     <div class="term-group">
       <div class="term-group-label">Capabilities</div>
       <div class="term-grid">
+        <div class="term"><div class="term-name">Tool / Action</div><div class="term-def">A specific capability the agent can invoke: read_file, web_search, send_email. Tools have typed schemas — name, description, input parameters.</div></div>
         <div class="term"><div class="term-name">Tool Use / Function Calling</div><div class="term-def">Giving an LLM the ability to call external functions with structured inputs. The model decides when and how. Used in story elaboration here.</div></div>
         <div class="term"><div class="term-name">Memory (Short-term)</div><div class="term-def">The current context window — everything the model can "see" in this call. Lost when the call ends.</div></div>
         <div class="term"><div class="term-name">Memory (Long-term)</div><div class="term-def">Persistent storage the agent reads/writes across calls. <em>e.g. wisdom files, sdlc_pipeline.json.</em> Must be explicitly loaded into context.</div></div>
+        <div class="term"><div class="term-name">Feedback Loop</div><div class="term-def">How outputs from one step feed into the next. Hello Scrum's wisdom loop is a feedback loop: retro findings → wisdom bullets → better next sprint.</div></div>
       </div>
     </div>
 
     <div class="term-group">
-      <div class="term-group-label">Design Patterns</div>
+      <div class="term-group-label">Multi-Agent Patterns</div>
       <div class="term-grid">
         <div class="term"><div class="term-name">Orchestration</div><div class="term-def">Coordinating multiple agents or LLM calls to complete a complex task. The sprint pipeline (RE → clarify → elaborate → code → review → deploy) is orchestration.</div></div>
+        <div class="term"><div class="term-name">Supervisor Agent</div><div class="term-def">An orchestrator that routes tasks to specialist sub-agents. <em>e.g. a router that sends coding tasks to a coder and review tasks to Hermes.</em></div></div>
+        <div class="term"><div class="term-name">Handoff</div><div class="term-def">Passing control and context from one agent to another. Each handoff includes the relevant state so the receiving agent has what it needs.</div></div>
         <div class="term"><div class="term-name">Multi-agent</div><div class="term-def">Multiple specialised agents working in parallel or series. Hello Scrum is single-agent + one reviewer (Hermes). Full multi-agent routes work to many coders.</div></div>
         <div class="term"><div class="term-name">Human-in-the-Loop</div><div class="term-def">A human reviews and approves agent decisions at key points. FD approval and Hermes review are human-in-the-loop gates in Hello Scrum.</div></div>
         <div class="term"><div class="term-name">WIP (Work in Progress)</div><div class="term-def">How many items an agent works on simultaneously. AI-DLC enforces WIP=1 — one story at a time. Limits cascading failures.</div></div>
@@ -258,6 +287,8 @@
         <div class="term"><div class="term-name">Eval</div><div class="term-def">A test that measures whether an AI system produces correct or acceptable outputs. The foundation of knowing if your agent is improving or degrading.</div></div>
         <div class="term"><div class="term-name">Ground Truth</div><div class="term-def">The known correct answer used to evaluate model output. Building ground truth datasets is expensive but necessary for rigorous evals.</div></div>
         <div class="term"><div class="term-name">LLM-as-Judge</div><div class="term-def">Using an LLM to evaluate another LLM's output. Hermes is an LLM-as-judge — evaluates the coding agent's patches and AC compliance.</div></div>
+        <div class="term"><div class="term-name">Human Eval</div><div class="term-def">Having humans rate or rank model outputs. Gold standard for quality but expensive and slow. Often used to calibrate automated evals.</div></div>
+        <div class="term"><div class="term-name">A/B Testing</div><div class="term-def">Comparing two prompt variants on the same inputs to see which performs better. Essential when changing prompts — change one thing at a time and measure.</div></div>
         <div class="term"><div class="term-name">Benchmark</div><div class="term-def">A standardised evaluation dataset used to compare models. <em>e.g. MMLU, HumanEval.</em> Useful for model selection; less useful for task-specific evals.</div></div>
       </div>
     </div>
@@ -276,6 +307,7 @@
       <div class="term-grid">
         <div class="term"><div class="term-name">Tracing</div><div class="term-def">Recording every step of an agent's execution — prompts called, responses, timing. The audit log is tracing in Hello Scrum.</div></div>
         <div class="term"><div class="term-name">Regression</div><div class="term-def">A previously passing test that now fails. In agent systems, regressions often appear after prompt changes — improving one task can break another.</div></div>
+        <div class="term"><div class="term-name">Prompt Versioning</div><div class="term-def">Tracking prompt changes over time like code — with history, diffs, and rollback. Critical when prompt changes cause regressions.</div></div>
       </div>
     </div>
   </div>
@@ -288,7 +320,7 @@
       <div class="term-group-label">Adapting Models</div>
       <div class="term-grid">
         <div class="term"><div class="term-name">Fine-tuning</div><div class="term-def">Further training a pre-trained model on a specific dataset to specialise its behaviour. Changes the model's weights. More durable than prompt engineering but more expensive.</div></div>
-        <div class="term"><div class="term-name">Transfer Learning</div><div class="term-def">Starting from a pre-trained model and adapting it for a new task. Almost all LLM work is transfer learning — you start from a foundation model, not scratch.</div></div>
+        <div class="term"><div class="term-name">Transfer Learning</div><div class="term-def">Starting from a pre-trained model and adapting for a new task. Almost all LLM work is transfer learning — you start from a foundation model, not scratch.</div></div>
         <div class="term"><div class="term-name">LoRA (Low-Rank Adaptation)</div><div class="term-def">Efficient fine-tuning that only updates a small set of added parameters rather than the whole model. Cheaper and faster than full fine-tuning.</div></div>
         <div class="term"><div class="term-name">Prompt Tuning</div><div class="term-def">Trains a small set of "soft prompt" tokens prepended to every input, while keeping the base model frozen. Lighter than fine-tuning.</div></div>
       </div>
@@ -300,7 +332,86 @@
         <div class="term"><div class="term-name">RLHF (Reinforcement Learning from Human Feedback)</div><div class="term-def">Humans rank model outputs and the model is trained to produce more preferred responses. How Claude and ChatGPT learned to be helpful and harmless.</div></div>
         <div class="term"><div class="term-name">Loss Function</div><div class="term-def">The mathematical measure of how wrong the model's predictions are. Training minimises this. For LLMs: cross-entropy loss on next-token prediction.</div></div>
         <div class="term"><div class="term-name">Gradient Descent</div><div class="term-def">The algorithm that adjusts model weights to reduce loss. Calculates which direction to nudge each weight to improve predictions.</div></div>
+        <div class="term"><div class="term-name">Epoch</div><div class="term-def">One complete pass through the training dataset. Multiple epochs = the model sees the same data multiple times. Risk: overfitting if too many.</div></div>
+        <div class="term"><div class="term-name">Batch Size</div><div class="term-def">How many training examples are processed together before weights are updated. Larger batches = more stable but slower training.</div></div>
+        <div class="term"><div class="term-name">Learning Rate</div><div class="term-def">How aggressively weights are adjusted each training step. Too high = unstable training. Too low = very slow convergence.</div></div>
         <div class="term"><div class="term-name">Overfitting</div><div class="term-def">When a model memorises training examples instead of learning general patterns. Performs well on training data, poorly on new data.</div></div>
+        <div class="term"><div class="term-name">Synthetic Data</div><div class="term-def">AI-generated training data used when real labelled data is scarce. A model generates examples that are then used to train another (or itself).</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data -->
+  <div class="section" id="s-data">
+    <div class="section-title">Data</div>
+
+    <div class="term-group">
+      <div class="term-group-label">Datasets</div>
+      <div class="term-grid">
+        <div class="term"><div class="term-name">Training Data</div><div class="term-def">The examples a model learns from during training. Quality and diversity of training data directly determines model capability.</div></div>
+        <div class="term"><div class="term-name">Dataset</div><div class="term-def">A structured collection of examples — inputs, outputs, and often labels. Used for training, fine-tuning, or evaluation.</div></div>
+        <div class="term"><div class="term-name">Labelling / Annotation</div><div class="term-def">Adding ground truth labels to training examples. <em>e.g. marking an email as spam/not-spam.</em> Expensive but necessary for supervised learning.</div></div>
+        <div class="term"><div class="term-name">Synthetic Data</div><div class="term-def">AI-generated training data used when real labelled data is scarce. Growing in importance as models improve at generating realistic examples.</div></div>
+      </div>
+    </div>
+
+    <div class="term-group">
+      <div class="term-group-label">Quality</div>
+      <div class="term-grid">
+        <div class="term"><div class="term-name">Data Curation</div><div class="term-def">Selecting, cleaning, and organising data for training. Removing duplicates, filtering low-quality examples, balancing classes.</div></div>
+        <div class="term"><div class="term-name">Data Quality</div><div class="term-def">The accuracy, completeness, and consistency of training data. "Garbage in, garbage out" — poor data quality produces poor models regardless of architecture.</div></div>
+        <div class="term"><div class="term-name">Class Imbalance</div><div class="term-def">When training data has far more examples of some classes than others. A fraud detector trained on 99% non-fraud learns to always say "not fraud."</div></div>
+        <div class="term"><div class="term-name">Data Drift</div><div class="term-def">When real-world data distribution shifts away from training data over time. Model performance degrades. Requires monitoring and periodic retraining.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Infrastructure & APIs -->
+  <div class="section" id="s-infra">
+    <div class="section-title">Infrastructure &amp; APIs</div>
+
+    <div class="term-group">
+      <div class="term-group-label">API Basics</div>
+      <div class="term-grid">
+        <div class="term"><div class="term-name">API (Application Programming Interface)</div><div class="term-def">How you call the model programmatically. You send a request (prompt) and receive a response (completion). Anthropic's API is what Hello Scrum uses.</div></div>
+        <div class="term"><div class="term-name">SDK (Software Development Kit)</div><div class="term-def">A library that wraps API calls in your language. <em>e.g. Anthropic Python SDK.</em> Handles auth, retries, and response parsing.</div></div>
+        <div class="term"><div class="term-name">Endpoint</div><div class="term-def">The URL you send API requests to. <em>e.g. api.anthropic.com/v1/messages.</em> Different endpoints for different capabilities (messages, embeddings, etc.).</div></div>
+        <div class="term"><div class="term-name">Model Version</div><div class="term-def">A specific versioned release of a model. <em>e.g. claude-sonnet-4-6.</em> Pin your version in production — new versions can change behaviour.</div></div>
+      </div>
+    </div>
+
+    <div class="term-group">
+      <div class="term-group-label">Limits & Reliability</div>
+      <div class="term-grid">
+        <div class="term"><div class="term-name">Rate Limit</div><div class="term-def">Max requests or tokens per minute/day. Hitting a rate limit returns a 429 error. Plan capacity by estimating tokens per sprint × stories per sprint.</div></div>
+        <div class="term"><div class="term-name">Tokens per Minute (TPM)</div><div class="term-def">Throughput limit on how fast you can process tokens. More relevant than requests-per-minute for large context workloads.</div></div>
+        <div class="term"><div class="term-name">Timeout</div><div class="term-def">Max time to wait for a model response before failing. Long responses (large context + many output tokens) can take 60–120 seconds. Hello Scrum sets a 180s timeout.</div></div>
+        <div class="term"><div class="term-name">Retry Logic</div><div class="term-def">Automatically retrying failed API calls with exponential backoff. Handles transient errors (rate limits, network issues) without crashing the pipeline.</div></div>
+        <div class="term"><div class="term-name">Prompt Caching</div><div class="term-def">Caching repeated prompt prefixes (like a long system prompt) so they aren't re-processed each call. Reduces cost and latency for long static context.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multimodal -->
+  <div class="section" id="s-multimodal">
+    <div class="section-title">Multimodal</div>
+
+    <div class="term-group">
+      <div class="term-group-label">Input Types</div>
+      <div class="term-grid">
+        <div class="term"><div class="term-name">Multimodal Model</div><div class="term-def">A model that accepts multiple input types: text, images, audio, video. Claude 3+ is multimodal — it can reason about images as well as text.</div></div>
+        <div class="term"><div class="term-name">Vision</div><div class="term-def">The ability to process and reason about images. Send an image + text prompt and the model describes, analyses, or answers questions about the image.</div></div>
+        <div class="term"><div class="term-name">Image-to-text</div><div class="term-def">Generating text descriptions or analysis from images. <em>e.g. "What does this chart show?" or "Extract the table from this screenshot."</em></div></div>
+        <div class="term"><div class="term-name">Cross-modal Reasoning</div><div class="term-def">Reasoning that spans multiple modalities. <em>e.g. "Compare this wireframe image to the description in the document."</em> Requires a multimodal model.</div></div>
+      </div>
+    </div>
+
+    <div class="term-group">
+      <div class="term-group-label">Output Types</div>
+      <div class="term-grid">
+        <div class="term"><div class="term-name">Text-to-image</div><div class="term-def">Generating images from text descriptions. <em>e.g. DALL-E, Midjourney, Stable Diffusion.</em> Different models from LLMs — Claude generates text only.</div></div>
+        <div class="term"><div class="term-name">Text-to-speech (TTS)</div><div class="term-def">Generating spoken audio from text. Used in voice assistants and accessibility tools. Not the same model as an LLM.</div></div>
+        <div class="term"><div class="term-name">Speech-to-text (STT)</div><div class="term-def">Transcribing spoken audio to text. <em>e.g. Whisper.</em> Often used as a preprocessing step before sending to an LLM.</div></div>
       </div>
     </div>
   </div>
@@ -332,6 +443,8 @@
       <div class="term-group-label">Controls</div>
       <div class="term-grid">
         <div class="term"><div class="term-name">Guardrails</div><div class="term-def">Rules or filters that prevent a model from producing harmful outputs. Can be in the prompt (instructions) or external (output classifiers).</div></div>
+        <div class="term"><div class="term-name">Content Filtering</div><div class="term-def">Automated checks that block or flag harmful inputs or outputs. Can be a separate classifier model running alongside the main model.</div></div>
+        <div class="term"><div class="term-name">Hallucination Mitigation</div><div class="term-def">Techniques to reduce hallucination: grounding with RAG, lowering temperature, asking the model to cite sources, human review gates.</div></div>
         <div class="term"><div class="term-name">Explainability</div><div class="term-def">The ability to understand why a model produced a specific output. LLMs are largely black boxes — chain of thought is one way to surface reasoning.</div></div>
       </div>
     </div>
@@ -342,14 +455,17 @@
     const sideNav = document.createElement('div');
     sideNav.className = 'wf-nav';
     [
-      ['#s-foundation', 'Foundation'],
-      ['#s-llm',        'How LLMs Work'],
-      ['#s-prompts',    'Prompt Engineering'],
-      ['#s-rag',        'RAG & Knowledge'],
-      ['#s-agents',     'Agents'],
-      ['#s-eval',       'Evaluation'],
-      ['#s-finetune',   'Fine-tuning'],
-      ['#s-safety',     'Safety & Ethics'],
+      ['#s-foundation',  'Foundation'],
+      ['#s-llm',         'How LLMs Work'],
+      ['#s-prompts',     'Prompt Engineering'],
+      ['#s-rag',         'RAG & Knowledge'],
+      ['#s-agents',      'Agents'],
+      ['#s-eval',        'Evaluation'],
+      ['#s-finetune',    'Fine-tuning'],
+      ['#s-data',        'Data'],
+      ['#s-infra',       'Infrastructure'],
+      ['#s-multimodal',  'Multimodal'],
+      ['#s-safety',      'Safety & Ethics'],
     ].forEach(([href, label]) => {
       const a = document.createElement('a');
       a.href = href; a.textContent = label;

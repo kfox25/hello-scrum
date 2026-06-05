@@ -1,3 +1,26 @@
-.env
+# Runtime state
+active.json
+agent_log.json
+slow_mode.json
+
+# Prompt inspector captures
+last_prompt*.json
+
+# Debug output
+patch_debug.json
+patch_debug.jsonl
+apply_debug.jsonl
+
+# Server logs
+server.log
+server_err.log
+
+# Python
 __pycache__/
 *.pyc
+*.pyo
+.env
+
+# OS
+.DS_Store
+Thumbs.db

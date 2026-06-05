@@ -23,7 +23,34 @@
 
     .scan-btn-fixed {
       position: fixed; top: 9.75rem; right: 1.5rem; z-index: 90;
+      display: flex; flex-direction: column; gap: 0.75rem; width: 220px;
     }
+    .quiz-card {
+      background: #111; border: 1px solid #2a2a2a; border-radius: 6px;
+      padding: 0.85rem 1rem; font-size: 0.75rem;
+    }
+    .quiz-label {
+      font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: #444; margin-bottom: 0.5rem;
+    }
+    .quiz-question { color: #888; line-height: 1.6; margin-bottom: 0.75rem; }
+    .quiz-answer {
+      font-family: monospace; font-size: 0.82rem; color: #00ff99;
+      margin-bottom: 0.75rem; min-height: 1.2rem;
+    }
+    .quiz-actions { display: flex; gap: 0.5rem; }
+    .quiz-btn {
+      background: #0a1f12; color: #00ff99; border: 1px solid #00ff9940;
+      padding: 0.25rem 0.65rem; border-radius: 4px; cursor: pointer;
+      font-family: monospace; font-size: 0.72rem;
+    }
+    .quiz-btn:hover { border-color: #00ff99; }
+    .quiz-btn-grey {
+      background: #1a1a1a; color: #555; border: 1px solid #2a2a2a;
+      padding: 0.25rem 0.65rem; border-radius: 4px; cursor: pointer;
+      font-family: monospace; font-size: 0.72rem;
+    }
+    .quiz-btn-grey:hover { color: #888; border-color: #444; }
 
     .term-group {
       border: 1px solid #222; border-radius: 8px;
@@ -81,6 +108,15 @@
     <button style="background:#0a1f12;color:#00ff99;border:1px solid #00ff9940;padding:0.45rem 1.25rem;border-radius:4px;cursor:default;font-family:monospace;font-size:0.82rem;opacity:1;" disabled>
       Scan for New Terms →
     </button>
+    <div class="quiz-card">
+      <div class="quiz-label">Flashcard</div>
+      <div class="quiz-question" id="quizQuestion"></div>
+      <div class="quiz-answer" id="quizAnswer"></div>
+      <div class="quiz-actions">
+        <button class="quiz-btn" id="quizReveal" onclick="revealAnswer()">Reveal →</button>
+        <button class="quiz-btn-grey" onclick="nextQuestion()">Next</button>
+      </div>
+    </div>
   </div>
 
   <h1>AI Primer</h1>
@@ -516,6 +552,32 @@
     }));
 
     showSection('s-foundation');
+
+    // Flashcard — build pool from DOM, all sections
+    let quizPool = [];
+    let lastIdx = -1;
+    function buildQuizPool() {
+      document.querySelectorAll('.term').forEach(t => {
+        const name = t.querySelector('.term-name');
+        const def  = t.querySelector('.term-def');
+        if (name && def) quizPool.push({ term: name.textContent.trim(), def: def.textContent.trim() });
+      });
+    }
+    function nextQuestion() {
+      if (!quizPool.length) buildQuizPool();
+      let idx;
+      do { idx = Math.floor(Math.random() * quizPool.length); } while (idx === lastIdx && quizPool.length > 1);
+      lastIdx = idx;
+      document.getElementById('quizQuestion').textContent = quizPool[idx].def;
+      document.getElementById('quizAnswer').textContent = '';
+      document.getElementById('quizReveal').style.display = 'inline-block';
+    }
+    function revealAnswer() {
+      document.getElementById('quizAnswer').textContent = quizPool[lastIdx].term;
+      document.getElementById('quizReveal').style.display = 'none';
+    }
+    // Wait for DOM then start
+    setTimeout(nextQuestion, 50);
   </script>
 </body>
 </html>

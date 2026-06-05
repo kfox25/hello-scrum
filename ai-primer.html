@@ -570,13 +570,30 @@
       });
     }
 
+    function sanitizeDef(term, def) {
+      const parts = [term];
+      const parenMatch = term.match(/\(([^)]+)\)/);
+      if (parenMatch) {
+        parts.push(parenMatch[1]);
+        parts.push(term.replace(/\s*\([^)]+\)/, '').trim());
+      }
+      let result = def;
+      parts.forEach(p => {
+        if (p.length > 2) {
+          const re = new RegExp(p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+          result = result.replace(re, 'this');
+        }
+      });
+      return result;
+    }
+
     function nextQuestion() {
       buildQuizPool();
       if (!quizPool.length) return;
       let idx;
       do { idx = Math.floor(Math.random() * quizPool.length); } while (idx === lastIdx && quizPool.length > 1);
       lastIdx = idx;
-      document.getElementById('quizQuestion').textContent = quizPool[idx].def;
+      document.getElementById('quizQuestion').textContent = sanitizeDef(quizPool[idx].term, quizPool[idx].def);
       document.getElementById('quizAnswer').textContent = '';
       document.getElementById('quizReveal').style.display = 'inline-block';
     }

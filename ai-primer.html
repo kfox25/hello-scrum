@@ -223,15 +223,20 @@
 
     const sections = document.querySelectorAll('.section');
     const navLinks = sideNav.querySelectorAll('a');
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          const id = e.target.id;
-          navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
-        }
+
+    function updateActive() {
+      let current = sections[0].id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top <= 120) current = s.id;
       });
-    }, { threshold: 0.2 });
-    sections.forEach(s => observer.observe(s));
+      navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + current));
+    }
+    window.addEventListener('scroll', updateActive);
+    navLinks.forEach(a => a.addEventListener('click', () => {
+      navLinks.forEach(l => l.classList.remove('active'));
+      a.classList.add('active');
+    }));
+    updateActive();
   </script>
 </body>
 </html>

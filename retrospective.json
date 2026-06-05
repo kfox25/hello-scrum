@@ -4,6 +4,558 @@
       "findings": [
         {
           "type": "success_pattern",
+          "text": "Perfect execution on a moderately complex feature: the Cycle Time by Stage card passed all 9 test checks, received Hermes approval, and met all acceptance criteria on first submission. Strong attention to detail in sanitization (escHtml), DOM element validation, and sorting logic."
+        },
+        {
+          "type": "observation",
+          "text": "Single-item sprint with 100% completion rate (1/1 done, 0 failed). This small batch size combined with comprehensive test coverage and code review feedback suggests either a well-scoped story or an unusually light sprint load."
+        },
+        {
+          "type": "improvement",
+          "text": "Use this sprint's clean implementation as a reference template: the pattern of validating DOM elements before population, using consistent data sanitization (escHtml), and building changelog entries alongside features should be standardized for future stories to replicate this zero-defect outcome."
+        }
+      ],
+      "summary": "Excellent sprint health: 100% completion with a well-implemented, fully-tested feature that passed all validation gates on first attempt.",
+      "sprint_date": "2026-06-04 10:14:14",
+      "items_analyzed": 1,
+      "items_done": 1,
+      "items_failed": 0,
+      "sprint_coding_wisdom": [
+        "\u2022 Standardize DOM element validation before populating with data across all features",
+        "\u2022 Apply escHtml sanitization consistently to all user-facing string outputs",
+        "\u2022 Generate changelog entries simultaneously with feature implementation",
+        "\u2022 Document sorting logic patterns from Cycle Time card as reference template",
+        "\u2022 Validate test coverage completeness before submitting for code review"
+      ],
+      "sprint_ac_wisdom": [
+        "\u2022 Define exact column headers; don't assume field names are obvious",
+        "\u2022 Specify calculation method: mean, rounding, units, null handling",
+        "\u2022 Prescribe display format for edge cases (empty cells, missing data)",
+        "\u2022 State sort order and row limits explicitly",
+        "\u2022 Name the UI component; verify it exists in specified location",
+        "\u2022 Require numeric precision; avoid ambiguous phrases like \"appropriate rounding\""
+      ]
+    },
+    {
+      "findings": [
+        {
+          "type": "success_pattern",
+          "text": "Perfect execution: all acceptance criteria met, code review approved, and all 9 tests passing indicates thorough requirements clarity and implementation discipline"
+        },
+        {
+          "type": "success_pattern",
+          "text": "Comprehensive validation chain working effectively\u2014HTML structure, versioning, deployment metadata, and styling rules all verified automatically"
+        },
+        {
+          "type": "observation",
+          "text": "Single-item sprint with feature scope focused on sprint analytics dashboard component, suggesting either strategic small batch or incomplete sprint planning"
+        },
+        {
+          "type": "improvement",
+          "text": "Establish minimum sprint capacity target to improve throughput; one completed item per sprint limits velocity insights and trend analysis"
+        }
+      ],
+      "summary": "Sprint achieved 100% success rate with flawless delivery of sprint performance dashboard feature, but single-item throughput suggests capacity planning opportunity.",
+      "sprint_date": "2026-06-04 00:29:49",
+      "items_analyzed": 1,
+      "items_done": 1,
+      "items_failed": 0,
+      "sprint_coding_wisdom": [
+        "\u2022 Implement automated HTML structure validation in pre-commit hooks for consistency.",
+        "\u2022 Add CSS linting rules to validate styling compliance before deployment.",
+        "\u2022 Expand test coverage beyond current nine tests for edge cases.",
+        "\u2022 Create versioning metadata validation in build pipeline for deployment tracking.",
+        "\u2022 Establish dashboard component unit tests for analytics calculations accuracy."
+      ],
+      "sprint_ac_wisdom": [
+        "\u2022 Name IDs and selectors explicitly to enable direct verification",
+        "\u2022 Specify exact data sources and field names for traceability",
+        "\u2022 Define calculations with precision: formulas, rounding, aggregation logic",
+        "\u2022 State boundary conditions: minimums, edge cases, empty states",
+        "\u2022 Require measurable counts and metrics over qualitative descriptions",
+        "\u2022 Enumerate all columns, rows, or output elements completely"
+      ]
+    },
+    {
+      "findings": [
+        {
+          "type": "success_pattern",
+          "text": "Perfect execution: both items passed all acceptance criteria checks, code review, Hermes approval, and test suites without errors or rework."
+        },
+        {
+          "type": "success_pattern",
+          "text": "Strong quality discipline: comprehensive test coverage including HTML validity, version/timestamp sync, CSS hygiene, and changelog consistency checks prevented defects before deployment."
+        },
+        {
+          "type": "observation",
+          "text": "Both items are closely related feature increments on the same component (sprint performance card), suggesting focused, incremental delivery within a single domain."
+        },
+        {
+          "type": "improvement",
+          "text": "With a 2-item, 100% success sprint, establish baseline metrics for test pass rate, AC approval rate, and code review approval rate to quantify what 'perfect' looks like and sustain this quality level."
+        }
+      ],
+      "summary": "Sprint delivered flawlessly with 2/2 items completed, all tests passing, and zero defects\u2014demonstrating strong engineering discipline and focused feature delivery.",
+      "sprint_date": "2026-06-04 00:12:53",
+      "items_analyzed": 2,
+      "items_done": 2,
+      "items_failed": 0,
+      "sprint_coding_wisdom": [
+        "\u2022 Maintain comprehensive HTML validity checks in test suite before deployment.",
+        "\u2022 Enforce version and timestamp synchronization validation across all component updates.",
+        "\u2022 Implement CSS hygiene linting standards for sprint card component modifications.",
+        "\u2022 Expand changelog consistency verification as mandatory pre-deployment gate.",
+        "\u2022 Document test coverage baseline metrics for future sprint quality benchmarking."
+      ],
+      "sprint_ac_wisdom": [
+        "\u2022 Name columns with precise, unambiguous labels matching data field names.",
+        "\u2022 Define calculations by explicit field paths and logic operators.",
+        "\u2022 Specify output format (decimals, percentages, sorting) with exact examples.",
+        "\u2022 State filtering rules for null, missing, or ambiguous data values.",
+        "\u2022 Exclude non-qualifying rows without error states or silent failures.",
+        "\u2022 Declare scope boundaries\u2014file locations, component IDs, retention of prior behavior."
+      ]
+    },
+    {
+      "findings": [
+        {
+          "type": "success_pattern",
+          "text": "Perfect delivery rate with both items completed and approved; both items passed all test suites (9/9 tests per item) with no errors, indicating strong code quality and acceptance criteria clarity."
+        },
+        {
+          "type": "success_pattern",
+          "text": "Both Hermes verdicts approved without rejection, suggesting well-understood requirements and alignment between implementation and acceptance criteria before development."
+        },
+        {
+          "type": "observation",
+          "text": "Sprint focused on adding quality-tracking instrumentation to the performance dashboard; items were sequentially dependent (second item extended first item's table), yet both completed without integration issues."
+        },
+        {
+          "type": "improvement",
+          "text": "With 100% success rate on a 2-item sprint, consider increasing sprint capacity or item complexity next sprint to identify process bottlenecks and maximize throughput; current velocity may indicate underutilization of the agent's capabilities."
+        }
+      ],
+      "summary": "Sprint executed flawlessly with 100% completion and zero failures, demonstrating mature process execution, but suggests opportunity to increase scope or complexity to fully leverage agent capacity.",
+      "sprint_date": "2026-06-03 21:09:32",
+      "items_analyzed": 2,
+      "items_done": 2,
+      "items_failed": 0,
+      "sprint_coding_wisdom": [
+        "\u2022 Maintain current code quality standards; all test suites passing consistently.",
+        "\u2022 Document acceptance criteria patterns that enabled zero-rejection approval rate.",
+        "\u2022 Preserve sequential dependency handling approach for dashboard instrumentation features.",
+        "\u2022 Expand performance dashboard table extensions with additional tracking metrics."
+      ],
+      "sprint_ac_wisdom": [
+        "\u2022 Name columns with exact field names and computed metric labels",
+        "\u2022 Specify calculation logic: numerator, denominator, aggregation method",
+        "\u2022 Define filter conditions precisely (e.g., status === 'done')",
+        "\u2022 State output format explicitly (whole number, one decimal, percentage)",
+        "\u2022 Exclude edge cases: null/missing values, insufficient data, undefined states",
+        "\u2022 Reference data source field paths to enable automated verification"
+      ]
+    },
+    {
+      "findings": [
+        {
+          "type": "success_pattern",
+          "text": "Perfect delivery rate: both items completed successfully with zero failures, indicating strong requirement clarity and implementation execution quality."
+        },
+        {
+          "type": "success_pattern",
+          "text": "Comprehensive test coverage and validation: all items passed extensive test suites (9 tests each) covering syntax, versioning, deployment metadata, CSS standards, and changelog accuracy."
+        },
+        {
+          "type": "success_pattern",
+          "text": "Quality-focused feature delivery: both items added observability and quality tracking capabilities (performance metrics, pass rates, approval rates) rather than just throughput, showing good product prioritization."
+        },
+        {
+          "type": "observation",
+          "text": "Rapid iteration velocity: two versions deployed within 33 seconds (20:46:21 to 20:46:54 CT), suggesting either concurrent work or highly efficient sequential delivery."
+        }
+      ],
+      "summary": "Excellent sprint health with 100% delivery rate, zero defects, and consistent quality validation across all items.",
+      "sprint_date": "2026-06-03 20:48:03",
+      "items_analyzed": 2,
+      "items_done": 2,
+      "items_failed": 0,
+      "sprint_coding_wisdom": [
+        "\u2022 Maintain current test coverage standards; continue validating syntax, versioning, and deployment metadata.",
+        "\u2022 Implement performance metrics tracking in feature code; follow established observability patterns.",
+        "\u2022 Preserve CSS standards validation in test suites; replicate existing test rigor."
+      ],
+      "sprint_ac_wisdom": [
+        "\u2022 Name acceptance criteria by what they measure, not implementation steps.",
+        "\u2022 Specify exact data source paths and field names for every calculation.",
+        "\u2022 Define boundary conditions: missing data, edge cases, minimum/maximum thresholds explicitly.",
+        "\u2022 State rounding rules, number formats, and display units precisely (decimals, %, whole numbers).",
+        "\u2022 Use Boolean logic and set operations to make pass/fail criteria unambiguous.",
+        "\u2022 Exclude items with undefined or non-matching enum values from counts."
+      ]
+    },
+    {
+      "findings": [
+        {
+          "type": "success_pattern",
+          "text": "Perfect test coverage and validation discipline: all items passed comprehensive test suites including version synchronization, changelog consistency, CSS validation, and acceptance criteria checks with zero failures."
+        },
+        {
+          "type": "success_pattern",
+          "text": "Strong code review quality: both items received thorough syntactic validation and scope creep prevention, with reviewers explicitly confirming no breaking changes or unintended side effects."
+        },
+        {
+          "type": "observation",
+          "text": "Sequential UI refinements on homepage title: two consecutive changes to the same element (font size then color) suggest iterative design validation or visual A/B testing workflow."
+        },
+        {
+          "type": "improvement",
+          "text": "Consider consolidating related UI changes into a single story where possible to reduce version bumps and deployment overhead, since both items modified only the h1 styling."
+        }
+      ],
+      "summary": "Excellent sprint with 100% completion rate, zero defects, and consistently rigorous validation across all stages\u2014demonstrating a well-functioning development pipeline.",
+      "sprint_date": "2026-06-02 10:32:17",
+      "items_analyzed": 2,
+      "items_done": 2,
+      "items_failed": 0,
+      "sprint_coding_wisdom": [
+        "\u2022 Consolidate sequential h1 styling changes into single patches to reduce deployments.",
+        "\u2022 Maintain current CSS validation rigor in future style modification reviews.",
+        "\u2022 Document visual A/B testing decisions alongside h1 refinement commits."
+      ],
+      "sprint_ac_wisdom": [
+        "\u2022 Specify exact CSS property names and values, not just visual outcomes",
+        "\u2022 State affected elements by selector and location (file/block)",
+        "\u2022 Include before/after values for quantifiable changes",
+        "\u2022 Verify changes persist across refreshes and deployments",
+        "\u2022 Isolate changed properties from unchanged ones explicitly",
+        "\u2022 Test that unrelated elements remain unaffected by changes"
+      ]
+    },
+    {
+      "findings": [
+        {
+          "type": "failure_pattern",
+          "text": "Scope creep in story implementation: the font size item failed because it included an unrelated color change (reverting red back to green), violating the story's explicit requirement to only increase font size for visibility."
+        },
+        {
+          "type": "success_pattern",
+          "text": "Strong test coverage and artifact validation: the passing item demonstrates consistent execution across CSS validation, version management, changelog documentation, and deployment timestamp tracking with zero false positives."
+        },
+        {
+          "type": "improvement",
+          "text": "Enforce strict story scope adherence before implementation: require the agent to validate that all code changes directly map to acceptance criteria before submitting to Hermes review to catch scope creep early."
+        },
+        {
+          "type": "observation",
+          "text": "All technical tests passed for both items (9/9 each), indicating the testing framework is effective; rejections are driven by requirement violations rather than implementation quality."
+        }
+      ],
+      "summary": "Sprint achieved 50% completion rate with strong technical execution but was hampered by scope creep in one item that introduced unrelated color changes beyond the stated story requirement.",
+      "sprint_date": "2026-06-02 10:30:24",
+      "items_analyzed": 2,
+      "items_done": 1,
+      "items_failed": 1,
+      "sprint_coding_wisdom": [
+        "\u2022 Validate code changes against acceptance criteria before submission.",
+        "\u2022 Revert unrelated modifications outside explicit story requirements.",
+        "\u2022 Document CSS property changes with corresponding story mappings.",
+        "\u2022 Maintain changelog entries for each deployed modification.",
+        "\u2022 Include version timestamps on all production deployments.",
+        "\u2022 Isolate single-concern fixes; defer secondary issues to backlog."
+      ],
+      "sprint_ac_wisdom": [
+        "\u2022 Specify exact property values with current and target states",
+        "\u2022 Name affected HTML elements explicitly by tag or class",
+        "\u2022 List unaffected elements to prevent unintended side effects",
+        "\u2022 Verify changes persist across refreshes and deployments",
+        "\u2022 Maintain related properties unless explicitly in scope",
+        "\u2022 Avoid bundling unrelated visual changes into single AC"
+      ]
+    },
+    {
+      "findings": [
+        {
+          "type": "success_pattern",
+          "text": "Perfect execution on a single item: all tests passed (9/9), code review approved, acceptance criteria met, and Hermes verdict was approve. Demonstrates solid quality gates when requirements are clear and focused."
+        },
+        {
+          "type": "observation",
+          "text": "Sprint contained only one item with a 100% completion rate (1 done, 0 failed). This is an unusually small sprint scope\u2014consider whether this reflects a light week or if work items are being batched differently than typical sprints."
+        },
+        {
+          "type": "improvement",
+          "text": "Establish a minimum sprint capacity baseline. Single-item sprints limit ability to identify patterns, smooth out velocity, and build team momentum. Recommend targeting 3-5 items per sprint to enable more robust retrospective analysis."
+        },
+        {
+          "type": "observation",
+          "text": "The item involved comprehensive testing across deployment artifacts (version.json, changelog, CSS validation, HTML structure). This multi-layer testing approach prevented silent failures and caught potential integration issues."
+        }
+      ],
+      "summary": "Sprint achieved perfect quality with 100% success rate on a single well-tested item, but the minimal scope limits sprint health assessment\u2014recommend increasing workload to typical team capacity.",
+      "sprint_date": "2026-06-02 10:27:26",
+      "items_analyzed": 1,
+      "items_done": 1,
+      "items_failed": 0,
+      "sprint_coding_wisdom": [
+        "\u2022 Validate HTML structure and CSS during automated test suite execution.",
+        "\u2022 Cross-check version.json and changelog consistency in deployment pipeline.",
+        "\u2022 Implement CSS validation checks before merge to main branch.",
+        "\u2022 Automate HTML/CSS linting in continuous integration workflow."
+      ],
+      "sprint_ac_wisdom": [
+        "\u2022 Specify exact color values, not semantic names alone",
+        "\u2022 Name the HTML element or component being tested",
+        "\u2022 State the expected outcome, not implementation method",
+        "\u2022 Include the trigger condition or user action context",
+        "\u2022 Verify visual changes with before/after states"
+      ]
+    },
+    {
+      "findings": [
+        {
+          "type": "failure_pattern",
+          "text": "Scope creep guard rejection: The implementation exceeded the 3-line maximum for find block anchor selectors. The agent attempted a 4-line conditional block instead of using a minimal single-line anchor pattern, violating Hermes constraints."
+        },
+        {
+          "type": "improvement",
+          "text": "Establish a pre-implementation checklist for DOM manipulation tasks that explicitly validates anchor selector complexity against the 3-line limit before coding. This prevents scope violations on common patterns like conditional rendering."
+        },
+        {
+          "type": "observation",
+          "text": "Sprint processed only 1 item with 0% completion rate (0/1 done). The single failure was a scope constraint violation rather than functional or test-related issues, suggesting the item was architecturally misaligned with Hermes guardrails."
+        },
+        {
+          "type": "improvement",
+          "text": "Break compound feature requests (sorting + refresh) into separately scoped items. The dual-feature request may have increased anchor selector complexity; validating each feature independently could help fit within Hermes constraints."
+        }
+      ],
+      "summary": "Sprint health is critically low: 100% failure rate due to a scope constraint violation in a single-item sprint, indicating a need for tighter pre-implementation validation against Hermes anchor limits.",
+      "sprint_date": "2026-06-01 18:31:35",
+      "items_analyzed": 1,
+      "items_done": 0,
+      "items_failed": 1,
+      "sprint_coding_wisdom": [
+        "\u2022 Refactor find block anchor selectors to single-line patterns maximum.",
+        "\u2022 Replace multi-line conditionals with ternary operators in DOM queries.",
+        "\u2022 Validate anchor selector complexity before implementation against 3-line limit.",
+        "\u2022 Decompose compound DOM selectors into independent, minimal query statements.",
+        "\u2022 Use inline conditional expressions instead of block statements for anchors."
+      ],
+      "sprint_ac_wisdom": [
+        "\u2022 Specify exact API endpoints and data structure keys being accessed",
+        "\u2022 Define sort order behavior explicitly (ascending/descending/tie-breaking rules)",
+        "\u2022 State null/empty state messaging and UI rendering precisely",
+        "\u2022 Make clickable elements and their triggers unambiguous and testable",
+        "\u2022 Verify numeric vs. non-numeric value handling in sorting logic",
+        "\u2022 Declare file scope and deployment boundaries clearly"
+      ]
+    },
+    {
+      "findings": [
+        {
+          "type": "failure_pattern",
+          "text": "Scope creep guard rejection: the find block exceeded the 3-line maximum at 65 lines. The agent attempted to implement both sorting and refresh functionality in a single code block, violating the constraint that requires minimal, single-line anchors for DOM modifications."
+        },
+        {
+          "type": "improvement",
+          "text": "Break complex features into separate, smaller find blocks. Implement column sorting and the refresh button as two distinct modifications, each with a focused single-line anchor in the script tag to stay within scope constraints."
+        },
+        {
+          "type": "observation",
+          "text": "The story combined two distinct UI enhancements (sorting + refresh) into one item. Consider splitting multi-feature stories into separate acceptance criteria or items to align with the constraint that individual code modifications must remain minimal."
+        },
+        {
+          "type": "improvement",
+          "text": "Establish a pre-implementation checklist: before coding, verify that each DOM target can be modified with a single-line anchor and that the total implementation fits within scope limits. This would catch violations before Hermes rejection."
+        }
+      ],
+      "summary": "Sprint failed due to scope creep\u2014a single item combining multiple features exceeded code block size constraints; future items should split features and validate anchor simplicity before implementation.",
+      "sprint_date": "2026-06-01 18:25:29",
+      "items_analyzed": 1,
+      "items_done": 0,
+      "items_failed": 1,
+      "sprint_coding_wisdom": [
+        "\u2022 Split sorting and refresh into separate find blocks with single-line DOM anchors.",
+        "\u2022 Implement column sort as distinct code modification, independent of refresh logic.",
+        "\u2022 Add refresh button handler in isolated script tag modification block.",
+        "\u2022 Verify each DOM target modifiable via single-line anchor before coding.",
+        "\u2022 Decompose multi-feature stories into granular items matching scope constraints."
+      ],
+      "sprint_ac_wisdom": [
+        "\u2022 Specify exact API endpoints and response field names required",
+        "\u2022 Define sort behavior for edge cases (empty data, null values, ties)",
+        "\u2022 State clickable UI elements and their precise interactions",
+        "\u2022 Require numeric values for sortable columns; document dash handling",
+        "\u2022 Name expected error messages verbatim in acceptance criteria",
+        "\u2022 Verify refresh functionality without full page reload"
+      ]
+    },
+    {
+      "findings": [
+        {
+          "type": "success_pattern",
+          "text": "Perfect execution on dashboard feature: all acceptance criteria met, code review approved, comprehensive test suite passed (10/10), and Hermes approval granted on first attempt."
+        },
+        {
+          "type": "success_pattern",
+          "text": "Strong quality metrics implementation with proper edge case handling (division-by-zero protection, correct percentage formatting) demonstrates attention to robustness and user experience."
+        },
+        {
+          "type": "observation",
+          "text": "Single-item sprint completed with zero failures; insufficient volume to identify patterns, risk factors, or areas for systematic improvement."
+        },
+        {
+          "type": "improvement",
+          "text": "Expand sprint capacity or batch related features together (e.g., additional dashboard sections, drill-down functionality) to create larger workloads that surface real bottlenecks and enable meaningful retrospective analysis."
+        }
+      ],
+      "summary": "Sprint achieved 100% success rate with high-quality delivery, but the single-item scope limits visibility into process patterns and improvement opportunities.",
+      "sprint_date": "2026-06-01 18:20:04",
+      "items_analyzed": 1,
+      "items_done": 1,
+      "items_failed": 0,
+      "sprint_coding_wisdom": [
+        "\u2022 No coding directives warranted by these findings."
+      ],
+      "sprint_ac_wisdom": [
+        "\u2022 Define formulas with numerator, denominator, and edge cases explicitly",
+        "\u2022 Specify rounding rules and null-state display values distinctly",
+        "\u2022 Include data filtering criteria (e.g., highest 5 distinct values)",
+        "\u2022 State exact field names and comparison operators for verification",
+        "\u2022 Prescribe output format with units and fallback symbols clearly",
+        "\u2022 Separate happy-path computation from zero/missing-data scenarios"
+      ]
+    },
+    {
+      "findings": [
+        {
+          "type": "success_pattern",
+          "text": "Perfect delivery rate: both items completed successfully with zero failures despite second item having a parse error in patch generation. Code review and acceptance criteria validation caught all issues before deployment."
+        },
+        {
+          "type": "observation",
+          "text": "Second item (v0.1.228) generated a JSON parse error in patch output but still received Hermes approval and passed all tests, suggesting the error occurred in the patch formatting layer rather than the actual code logic."
+        },
+        {
+          "type": "improvement",
+          "text": "Investigate and sanitize patch generation in the build pipeline to prevent invalid control characters in JSON output. This will eliminate confusing error messages when patches are syntactically sound but poorly formatted."
+        },
+        {
+          "type": "success_pattern",
+          "text": "Incremental feature building working well: Sprint Leaderboard (v0.1.227) shipped as foundation, then Quality Metrics (v0.1.228) added directly on top with no rework needed."
+        }
+      ],
+      "summary": "Sprint completed with 100% delivery rate; both velocity tracking and quality metrics features shipped successfully with robust testing coverage and proper changelog maintenance.",
+      "sprint_date": "2026-05-31 19:54:14",
+      "items_analyzed": 2,
+      "items_done": 2,
+      "items_failed": 0,
+      "sprint_coding_wisdom": [
+        "\u2022 Sanitize JSON patch output in build pipeline to remove invalid control characters",
+        "\u2022 Validate patch formatting layer separately from code logic during generation",
+        "\u2022 Implement JSON schema validation before patch deployment to catch formatting errors",
+        "\u2022 Add patch output formatting tests to prevent syntactically sound but malformed JSON",
+        "\u2022 Review build pipeline error handling to surface formatting issues earlier in process"
+      ],
+      "sprint_ac_wisdom": [
+        "\u2022 Specify exact UI element names, locations, and content text.",
+        "\u2022 Define data source, field names, and access paths explicitly.",
+        "\u2022 State calculation logic and rounding rules for all metrics.",
+        "\u2022 Prescribe sort order and tie-breaking behavior precisely.",
+        "\u2022 Define fallback messages and placeholder values for missing data.",
+        "\u2022 Use concrete examples (formats, ranges, status values) over abstractions."
+      ]
+    },
+    {
+      "findings": [
+        {
+          "type": "failure_pattern",
+          "text": "Incomplete code diffs are being submitted: the failed item's diff contained only version/timestamp updates and changelog entries without the actual implementation code, preventing AC verification and causing undefined function references (escHtml) to slip through."
+        },
+        {
+          "type": "success_pattern",
+          "text": "Strong test coverage and validation rigor: all items pass structural tests (version matching, timestamp presence, CSS/HTML validation), catching issues early and maintaining code quality standards."
+        },
+        {
+          "type": "improvement",
+          "text": "Require full code implementation in diffs before submission: establish a pre-flight checklist that all referenced functions must be defined in the diff and all acceptance criteria implementation code must be present, not just metadata changes."
+        },
+        {
+          "type": "observation",
+          "text": "The second item succeeded despite a JSON parse error in the Hermes response, suggesting the approval decision was made but the delivery had serialization issues\u2014monitor Hermes response formatting to prevent silent failures in future sprints."
+        }
+      ],
+      "summary": "Sprint completed at 50% velocity (1 of 2 items done) due to incomplete code submission in the first item; strong validation caught the defect, but earlier code review before submission could prevent Hermes rejections.",
+      "sprint_date": "2026-05-31 19:51:43",
+      "items_analyzed": 2,
+      "items_done": 1,
+      "items_failed": 1,
+      "sprint_coding_wisdom": [
+        "\u2022 Define all referenced functions before submission; validate escHtml and similar utilities exist",
+        "\u2022 Include complete implementation code in diffs, not just version/timestamp updates",
+        "\u2022 Verify acceptance criteria code is present in diff payload before approval",
+        "\u2022 Add pre-flight checklist validating function definitions against diff references",
+        "\u2022 Monitor JSON serialization in Hermes responses to catch silent delivery failures",
+        "\u2022 Test all changelog entries against actual code changes in submitted diffs"
+      ],
+      "sprint_ac_wisdom": [
+        "\u2022 Specify exact UI element names, locations, and content verbatim.",
+        "\u2022 State data sources explicitly; forbid implementation alternatives like localStorage.",
+        "\u2022 Define sorting/ranking logic with tiebreaker rules.",
+        "\u2022 Prescribe exact output format: percentages, symbols, decimal places, null states.",
+        "\u2022 Require data structure paths; specify array vs. object access.",
+        "\u2022 Define edge cases: empty data, missing fields, zero denominators."
+      ]
+    },
+    {
+      "findings": [
+        {
+          "type": "failure_pattern",
+          "text": "Both items failed due to incomplete implementation: diffs contained only metadata (version/timestamp) and minor logic adjustments, but lacked the actual HTML/JavaScript feature code needed to satisfy acceptance criteria. The agent is updating changelogs to describe unimplemented features."
+        },
+        {
+          "type": "failure_pattern",
+          "text": "Hermes rejections on both items indicate the agent is submitting patches that don't align with the declared feature scope. The second item also had a JSON parse error in the patch syntax, suggesting incomplete or malformed code generation."
+        },
+        {
+          "type": "observation",
+          "text": "All test checks pass (version matching, file existence, CSS validation), but these tests do not verify feature implementation\u2014acceptance criteria validation explicitly notes missing HTML structure and JavaScript rendering logic."
+        },
+        {
+          "type": "improvement",
+          "text": "Add a pre-submission validation step: before generating patches, require the agent to outline the exact HTML/JavaScript changes needed for each acceptance criterion. This will catch incomplete implementations before submission and reduce Hermes rejections."
+        },
+        {
+          "type": "improvement",
+          "text": "Expand test suite to include acceptance criteria verification (e.g., checking for required column names, data-binding logic, and DOM selectors) rather than only metadata and syntax checks."
+        }
+      ],
+      "summary": "Sprint failed completely (0/2 items done) due to incomplete feature implementations and disconnect between changelog claims and actual code changes submitted.",
+      "sprint_date": "2026-05-31 19:40:47",
+      "items_analyzed": 2,
+      "items_done": 0,
+      "items_failed": 2,
+      "sprint_coding_wisdom": [
+        "\u2022 Generate complete HTML structure changes before submitting patches to Hermes",
+        "\u2022 Include full JavaScript rendering logic for all declared feature acceptance criteria",
+        "\u2022 Fix JSON syntax errors in patch generation\u2014validate patch structure pre-submission",
+        "\u2022 Add DOM selector verification tests for required HTML elements and attributes",
+        "\u2022 Verify data-binding logic implementation in JavaScript before marking features complete",
+        "\u2022 Expand test suite to validate acceptance criteria, not just metadata and syntax"
+      ],
+      "sprint_ac_wisdom": [
+        "\u2022 Specify exact UI element names, locations, and visibility conditions",
+        "\u2022 Name exact data fields and JSON paths for verification",
+        "\u2022 Define sorting rules and tie-breaking logic explicitly",
+        "\u2022 Prescribe exact output formats: percentages, symbols, fallback messages",
+        "\u2022 Require data source and fetch method, never infer storage",
+        "\u2022 State calculation logic: numerators, denominators, rounding rules"
+      ]
+    },
+    {
+      "findings": [
+        {
+          "type": "success_pattern",
           "text": "Both items passed all acceptance criteria and test suites despite a parse error in item 2, indicating robust test coverage and clear AC definitions that prevent incomplete implementations."
         },
         {

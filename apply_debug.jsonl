@@ -1,0 +1,3 @@
+{"original_chars": 4869, "after_patch_chars": 4893, "after_autoupdate_chars": 4893, "patches": [{"find_len": 64, "replace_len": 88, "find": "    .meta { font-size: 0.8rem; color: #555; margin: 0.15rem "}]}
+{"original_chars": 4893, "after_patch_chars": 4997, "after_autoupdate_chars": 4997, "patches": [{"find_len": 178, "replace_len": 282, "find": "    .tagline {\n      font-size: 1.2rem;\n      font-weight: 3"}]}
+{"original_chars": 4893, "after_patch_chars": 4893, "after_autoupdate_chars": 4893, "patches": [{"find_len": 127, "replace_len": 127, "find": "    .changelog h2 { font-size: 0.75rem; color: #555; text-tr"}]}

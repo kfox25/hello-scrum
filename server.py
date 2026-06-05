@@ -427,6 +427,11 @@ def notes_page():
     return send_file(os.path.join(BASE, "notes.html"))
 
 
+@app.route("/ai-primer.html")
+def ai_primer_page():
+    return send_file(os.path.join(BASE, "ai-primer.html"))
+
+
 @app.route("/scrumai.html")
 def scrumai_page():
     return send_file(os.path.join(BASE, "scrumai.html"))

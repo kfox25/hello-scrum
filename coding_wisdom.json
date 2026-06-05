@@ -1,12 +1,14 @@
 {
   "bullets": [
-    "\u2022 Validate all code changes map directly to acceptance criteria before implementation.",
-    "\u2022 Reject patches introducing unrelated modifications outside explicit story scope.",
-    "\u2022 Consolidate related UI changes into single patches to minimize version bumps.",
-    "\u2022 Split multi-step DOM operations into isolated patches with independent selectors.",
-    "\u2022 Limit conditional blocks to 3 lines; refactor complex logic into minimal selectors.",
-    "\u2022 Document selector complexity rationale when exceeding standard 3-line execution patterns."
+    "\u2022 Validate DOM elements exist before population; reference Cycle Time card pattern.",
+    "\u2022 Sanitize all dynamic content with escHtml before inserting into DOM.",
+    "\u2022 Build changelog entries simultaneously with feature implementation, not after.",
+    "\u2022 Scope CSS rules to feature boundaries; verify no selector leakage.",
+    "\u2022 Map acceptance criteria to test cases before writing patch code.",
+    "\u2022 Extend previous patch selectors for dependent features; avoid duplication.",
+    "\u2022 Document sorting logic and data transforms inline for sanitization clarity.",
+    "\u2022 Run structure, versioning, metadata, styling validation together before submission."
   ],
-  "synthesized_at": "2026-06-02 10:32:21",
-  "finding_count": 714
+  "synthesized_at": "2026-06-04 10:14:20",
+  "finding_count": 733
 }

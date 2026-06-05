@@ -1,14 +1,14 @@
 {
   "bullets": [
-    "\u2022 Define exact property values; reject vague descriptions or assumptions about current state.",
-    "\u2022 Specify affected element and its before/after values; list unchanged related properties.",
-    "\u2022 Enumerate unrelated elements that must remain unchanged to prevent scope creep.",
-    "\u2022 Verify changes render correctly across page reloads without regression or artifact inconsistency.",
-    "\u2022 State testable observable outcomes; avoid implementation-specific or tool-dependent verification steps.",
-    "\u2022 Restrict changes to stated scope; reject modifications to unrelated properties or elements.",
-    "\u2022 Include dependent visual relationships; confirm balanced appearance with adjacent components.",
-    "\u2022 Name the file and code location where changes apply; ensure deployment consistency."
+    "\u2022 Specify exact column headers and display values with units.",
+    "\u2022 Define arithmetic operations and rounding rules for every metric.",
+    "\u2022 State null/missing data display behavior explicitly.",
+    "\u2022 Confirm sorting order, row limits, and grouping logic precisely.",
+    "\u2022 Describe observable output; exclude HTML structure and file paths.",
+    "\u2022 Ensure AC survives refactoring without requiring updates.",
+    "\u2022 Name data fields and calculation sources unambiguously.",
+    "\u2022 Make each AC independently verifiable against live data."
   ],
-  "synthesized_at": "2026-06-02 10:32:24",
-  "item_count": 188
+  "synthesized_at": "2026-06-04 10:14:22",
+  "item_count": 189
 }

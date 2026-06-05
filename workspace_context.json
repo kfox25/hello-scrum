@@ -32,7 +32,7 @@
       "purpose": "Baseline reset state for index.html"
     }
   ],
-  "item_count": 212,
+  "item_count": 188,
   "data_model": {
     "item_fields": [
       "ac_check_reason",
@@ -42,10 +42,12 @@
       "code_review_verdict",
       "deployed",
       "diff",
+      "hermes_reason",
       "hermes_verdict",
       "id",
       "idea",
       "in_sprint",
+      "retro_context",
       "source",
       "sprint_number",
       "sprint_wisdom",
@@ -60,12 +62,38 @@
     ],
     "status_values": [
       "done",
-      "failed",
-      "pending"
+      "failed"
     ],
     "source_values": [
-      "inception"
-    ]
+      "inception",
+      "team_chat"
+    ],
+    "field_types": {
+      "ac_check_reason": "string",
+      "ac_check_verdict": "\"approve\"",
+      "acceptance_criteria": "Array<string>",
+      "code_review_reason": "string",
+      "code_review_verdict": "\"approve\"",
+      "deployed": "string",
+      "diff": "string",
+      "hermes_reason": "string",
+      "hermes_verdict": "\"approve\"",
+      "id": "string",
+      "idea": "string",
+      "in_sprint": "boolean",
+      "retro_context": "string",
+      "source": "\"inception\"|\"team_chat\"",
+      "sprint_number": "number",
+      "sprint_wisdom": "string",
+      "stage_times": "object<{ac_check, code, code_review, deploy, done, pull, story, test}>",
+      "started": "number",
+      "status": "\"done\"",
+      "story": "string",
+      "summary": "string",
+      "test_results": "Array<{message: string, status: \"pass\"}>",
+      "tokens_in": "number",
+      "tokens_out": "number"
+    }
   },
   "pipeline_stages": [
     "pull",

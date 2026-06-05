@@ -19,7 +19,10 @@
       font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em;
       color: #00ff99; margin-bottom: 1rem; padding-bottom: 0.5rem;
       border-bottom: 1px solid #1a1a1a;
-      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .scan-btn-fixed {
+      position: fixed; top: 9.75rem; right: 1.5rem; z-index: 90;
     }
 
     .term-group {
@@ -73,6 +76,12 @@
     </div>
     <a href="health.html">Health</a>
   </nav>
+
+  <div class="scan-btn-fixed">
+    <button style="background:#0a1f12;color:#00ff99;border:1px solid #00ff9940;padding:0.2rem 0.75rem;border-radius:4px;cursor:default;font-family:monospace;font-size:0.68rem;opacity:0.45;" disabled>
+      Scan for New Terms →
+    </button>
+  </div>
 
   <h1>AI Primer</h1>
   <div class="subtitle">Personal study reference — terminology grouped by topic</div>
@@ -495,16 +504,9 @@
     const sections = document.querySelectorAll('.section');
     const navLinks = sideNav.querySelectorAll('a');
 
-    const scanBtn = document.createElement('button');
-    scanBtn.textContent = 'Scan for New Terms →';
-    scanBtn.disabled = true;
-    scanBtn.style.cssText = 'background:#0a1f12;color:#00ff99;border:1px solid #00ff9940;padding:0.2rem 0.75rem;border-radius:4px;cursor:default;font-family:monospace;font-size:0.68rem;opacity:0.45;letter-spacing:0.02em;';
-
     function showSection(id) {
       sections.forEach(s => s.style.display = s.id === id ? '' : 'none');
       navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
-      const title = document.querySelector('#' + id + ' .section-title');
-      if (title) title.appendChild(scanBtn);
       window.scrollTo(0, 0);
     }
 

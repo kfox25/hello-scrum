@@ -450,6 +450,30 @@
     </div>
   </div>
 
+  <!-- Stay Current -->
+  <div class="section" id="s-current">
+    <div class="section-title">Stay Current</div>
+
+    <div style="margin-bottom:1rem;">
+      <button style="background:#0a1f12;color:#00ff99;border:1px solid #00ff9940;padding:0.4rem 1rem;border-radius:4px;cursor:pointer;font-family:monospace;font-size:0.8rem;opacity:0.5;" disabled>
+        Scan for New Terms →
+      </button>
+      <span style="font-size:0.72rem;color:#333;margin-left:0.75rem;font-style:italic;">not yet connected — find a live source</span>
+    </div>
+
+    <div class="term-group">
+      <div class="term-group-label">Best Sources</div>
+      <div class="term-grid">
+        <div class="term"><div class="term-name"><a href="https://huggingface.co/blog" target="_blank" style="color:#ccc;text-decoration:none;">Hugging Face Blog</a></div><div class="term-def">Most practical source for new ML terminology. Tracks what's actually being used in production, not just what's in papers.</div></div>
+        <div class="term"><div class="term-name"><a href="https://simonwillison.net" target="_blank" style="color:#ccc;text-decoration:none;">Simon Willison's Blog</a></div><div class="term-def">Best single-person commentary on LLM developments. Catches new terminology early and explains it clearly.</div></div>
+        <div class="term"><div class="term-name"><a href="https://paperswithcode.com" target="_blank" style="color:#ccc;text-decoration:none;">Papers With Code</a></div><div class="term-def">New techniques with real implementations. Good signal — if it's here, it has working code behind it, not just a paper.</div></div>
+        <div class="term"><div class="term-name"><a href="https://www.deeplearning.ai/the-batch/" target="_blank" style="color:#ccc;text-decoration:none;">The Batch (DeepLearning.AI)</a></div><div class="term-def">Weekly newsletter by Andrew Ng. Good signal-to-noise. Highlights what actually matters each week.</div></div>
+        <div class="term"><div class="term-name"><a href="https://anthropic.com/research" target="_blank" style="color:#ccc;text-decoration:none;">Anthropic Research</a></div><div class="term-def">First-party source for Claude-specific terminology and new techniques. Constitutional AI, interpretability, and safety vocabulary originates here.</div></div>
+        <div class="term"><div class="term-name"><a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" target="_blank" style="color:#ccc;text-decoration:none;">Anthropic Prompt Engineering Docs</a></div><div class="term-def">Official prompt engineering guidance. Updated when new techniques are validated. Start here for anything prompt-related.</div></div>
+      </div>
+    </div>
+  </div>
+
   <script src="shared.js"></script>
   <script>
     const sideNav = document.createElement('div');
@@ -466,6 +490,7 @@
       ['#s-infra',       'Infrastructure'],
       ['#s-multimodal',  'Multimodal'],
       ['#s-safety',      'Safety & Ethics'],
+      ['#s-current',     'Stay Current'],
     ].forEach(([href, label]) => {
       const a = document.createElement('a');
       a.href = href; a.textContent = label;

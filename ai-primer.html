@@ -571,14 +571,20 @@
     }
 
     function sanitizeDef(term, def) {
-      const parts = [term];
+      const parts = new Set([term]);
+      // Add parenthetical content and the part before it
       const parenMatch = term.match(/\(([^)]+)\)/);
       if (parenMatch) {
-        parts.push(parenMatch[1]);
-        parts.push(term.replace(/\s*\([^)]+\)/, '').trim());
+        parts.add(parenMatch[1]);
+        parts.add(term.replace(/\s*\([^)]+\)/, '').trim());
       }
+      // Add individual words >= 6 chars from the full term
+      term.replace(/[()\/]/g, ' ').split(/[\s-]+/).forEach(w => {
+        if (w.length >= 6) parts.add(w);
+      });
       let result = def;
-      parts.forEach(p => {
+      // Replace longest matches first to avoid partial overlaps
+      [...parts].sort((a, b) => b.length - a.length).forEach(p => {
         if (p.length > 2) {
           const re = new RegExp(p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
           result = result.replace(re, 'this');

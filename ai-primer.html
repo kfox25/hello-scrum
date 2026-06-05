@@ -544,6 +544,7 @@
       sections.forEach(s => s.style.display = s.id === id ? '' : 'none');
       navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
       window.scrollTo(0, 0);
+      _activeSection = id;
       lastIdx = -1;
       nextQuestion();
     }
@@ -558,10 +559,11 @@
     // Flashcard — pool from current visible section only
     let quizPool = [];
     let lastIdx = -1;
+    let _activeSection = 's-foundation';
 
     function buildQuizPool() {
-      const active = document.querySelector('.section:not([style*="display: none"]):not([style*="display:none"])');
       quizPool = [];
+      const active = document.getElementById(_activeSection);
       if (!active) return;
       active.querySelectorAll('.term').forEach(t => {
         const name = t.querySelector('.term-name');

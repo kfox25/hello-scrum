@@ -2635,18 +2635,27 @@ def _run_job_check(seed=False):
 
         new_jobs = [j for j in jobs if j["url"] and j["url"] not in seen]
 
-        if new_jobs and not seed:
-            n    = len(new_jobs)
-            body = f"Found {n} new role{'s' if n > 1 else ''}:\n"
-            body += "\n".join(f"• {j['title']} — {j['city']}, {j['state']} [{j.get('source','')}]" for j in new_jobs)
+        if not seed:
+            if new_jobs:
+                n    = len(new_jobs)
+                title = "New Scrum Master Role"
+                body  = f"Found {n} new role{'s' if n > 1 else ''}:\n"
+                body += "\n".join(f"• {j['title']} — {j['city']}, {j['state']} [{j.get('source','')}]" for j in new_jobs)
+                tags  = "briefcase"
+                priority = "default"
+            else:
+                title = "Job Check — No New Roles"
+                body  = f"Checked {len(jobs)} listing{'s' if len(jobs) != 1 else ''} · nothing new"
+                tags  = "white_check_mark"
+                priority = "min"
             ntfy_req = _url.Request(
                 f"https://ntfy.sh/{_NTFY_TOPIC}",
                 data=body.encode("utf-8"),
-                headers={"Title": "New Apex Scrum Master Role", "Tags": "briefcase", "Priority": "default"},
+                headers={"Title": title, "Tags": tags, "Priority": priority},
             )
             with _url.urlopen(ntfy_req, timeout=10):
                 pass
-            print(f"[job-check] notified: {n} new job(s)")
+            print(f"[job-check] notified: {len(new_jobs)} new job(s)")
 
         seen.update(urls)
         with open(_APEX_SEEN_FILE, "w", encoding="utf-8") as f:

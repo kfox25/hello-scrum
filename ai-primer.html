@@ -546,7 +546,7 @@
       </div>
       <div class="outline-row">
         <div class="ol-term">Test-time Compute</div>
-        <div class="ol-def">Spending more compute at inference time — more reasoning tokens, more candidate answers — to improve quality without retraining. Chain of thought and reasoning models exploit this.</div>
+        <div class="ol-def">Spending more compute at inference time rather than training time to improve quality. The second major scaling axis alongside model size. See section 7 for the full breakdown.</div>
       </div>
       <div class="outline-row">
         <div class="ol-term">Vibe Coding</div>
@@ -561,6 +561,52 @@
       <div class="outline-row">
         <div class="ol-term">Instruction Following Failures</div>
         <div class="ol-def">The model ignores or partially follows explicit instructions — wrong format, skipped constraints, drifting to a different task. Gets worse with long prompts and conflicting instructions.</div>
+      </div>
+
+      <div class="outline-heading">7 — Test-time compute</div>
+      <div class="outline-row">
+        <div class="ol-term">The two scaling axes</div>
+        <div class="ol-def">For years the only lever was train-time compute — bigger models, more data, more GPU time. Those weights then froze. Test-time compute is the second axis: spend more compute at inference time, on the problem that needs it, per query.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Train-time compute</div>
+        <div class="ol-def">CAPEX — paid once. Months of training, millions of dollars. Weights are frozen after. Every query, easy or hard, gets the same one forward pass. If the first token goes down the wrong path, the model just keeps going.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Test-time compute</div>
+        <div class="ol-def">OPEX — paid per query, adjustable per query. The model gets a budget and decides how to spend it. A 2024 Google DeepMind paper showed a 3B parameter model using test-time search beat a 70B model on hard math problems.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Thinking tokens</div>
+        <div class="ol-def">Tokens generated before the actual response — a scratchpad. In a standard forward pass the model commits to final-answer tokens from word one. Thinking tokens let it explore, backtrack, and try a different angle before committing to anything the user sees.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Reasoning models</div>
+        <div class="ol-def">Models trained via reinforcement learning to generate thinking tokens automatically. The RL process rewards intermediate reasoning steps, so the model learns to do chain-of-thought without being prompted. Claude's extended thinking and OpenAI's o-series are examples.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Three mechanisms</div>
+        <div class="ol-def">Can be combined. All three trade compute for accuracy — more flops per query, higher probability of a correct response.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Chain of thought</div>
+        <div class="ol-def">Model reasons step-by-step before answering. The scratchpad approach. Query → reasoning tokens → answer. Baked into reasoning models via RL; can also be prompted manually with "think step by step."</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Tree search</div>
+        <div class="ol-def">Instead of one greedy forward pass, the model branches into multiple reasoning chains. A verifier scores each branch and picks the most promising one to continue. More expensive but better on complex problems.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Self-consistency</div>
+        <div class="ol-def">Run the same problem N times at high temperature, take a majority vote. No verifier needed — the statistical distribution of the model's own outputs is the signal. If 7 of 10 independent chains land on the same answer, confidence is high.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Trade-offs</div>
+        <div class="ol-def">More latency (45-second responses frustrate users). Thinking tokens billed as regular output tokens — expensive at scale. Overthinking degrades performance on simple questions — the model talks itself out of the right answer.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Adaptive routing</div>
+        <div class="ol-def">Best practice: route easy queries to fast single-pass inference, hard queries through the full reasoning pipeline. ChatGPT uses a picker to route between reasoning and non-reasoning models per query.</div>
       </div>
 
     </div>

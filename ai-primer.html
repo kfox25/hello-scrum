@@ -76,6 +76,26 @@
     }
     .term-def { font-size: 0.78rem; color: #888; line-height: 1.6; }
     .term-def em { color: #666; font-style: normal; }
+
+    .outline-block { border: 1px solid #222; border-radius: 8px; background: #0d0d0d; padding: 0.5rem 0.85rem 0.75rem; }
+    .outline-heading {
+      font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: #00ff99; margin: 1.1rem 0 0.4rem; padding-bottom: 0.3rem;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .outline-heading:first-child { margin-top: 0.25rem; }
+    .outline-row {
+      display: flex; gap: 1rem; padding: 0.4rem 0;
+      border-bottom: 1px solid #151515;
+    }
+    .outline-row:last-child { border-bottom: none; }
+    .outline-row.indent  { padding-left: 1.25rem; }
+    .outline-row.indent2 { padding-left: 2.5rem; }
+    .ol-term {
+      font-family: monospace; font-size: 0.8rem; color: #ccc;
+      min-width: 200px; flex-shrink: 0; padding-top: 0.05rem;
+    }
+    .ol-def { font-size: 0.78rem; color: #888; line-height: 1.6; }
   </style>
 </head>
 <body>
@@ -170,57 +190,112 @@
   <div class="section" id="s-llm">
     <div class="section-title">How LLMs Work</div>
 
-    <div class="term-group">
-      <div class="term-group-label">Input & Output</div>
-      <div class="term-grid">
-        <div class="term"><div class="term-name">Prompt</div><div class="term-def">The full input sent to the model — system message + user message combined. Everything the model sees before generating a response.</div></div>
-        <div class="term"><div class="term-name">Completion</div><div class="term-def">The model's generated response. Also called the "output" or "response." The model produces completions one token at a time.</div></div>
-        <div class="term"><div class="term-name">Token</div><div class="term-def">The unit of text an LLM processes. Roughly 0.75 words. "Hello Scrum" = 3 tokens. Models have a maximum token limit per call.</div></div>
-        <div class="term"><div class="term-name">Tokenisation</div><div class="term-def">Splitting text into tokens before the model processes it. Different models use different tokenisers. Affects cost and context limits.</div></div>
-        <div class="term"><div class="term-name">Context Window</div><div class="term-def">The maximum tokens a model can process in a single call — both input and output combined. Claude's window is 200k tokens.</div></div>
-        <div class="term"><div class="term-name">Streaming</div><div class="term-def">Receiving tokens as they're generated rather than waiting for the full response. Hello Scrum uses SSE streaming so the log updates in real time.</div></div>
-        <div class="term"><div class="term-name">System Prompt</div><div class="term-def">Instructions given before the conversation starts. Sets role, behaviour, and constraints. Not shown to the end user.</div></div>
-        <div class="term"><div class="term-name">User Prompt</div><div class="term-def">The input from the human turn. In agent pipelines this often includes injected context — file contents, data, dynamic instructions.</div></div>
-        <div class="term"><div class="term-name">Multi-turn</div><div class="term-def">A conversation with multiple back-and-forth exchanges. Each turn adds to the context window. Used in story elaboration's tool-use loop.</div></div>
-      </div>
-    </div>
+    <div class="outline-block">
 
-    <div class="term-group">
-      <div class="term-group-label">Architecture</div>
-      <div class="term-grid">
-        <div class="term"><div class="term-name">Transformer</div><div class="term-def">The neural network architecture behind all modern LLMs. Introduced in "Attention is All You Need" (2017). Uses self-attention to process sequences in parallel.</div></div>
-        <div class="term"><div class="term-name">Attention</div><div class="term-def">The mechanism that lets a model weigh which parts of the input are relevant to each token it generates. Core of the Transformer architecture.</div></div>
-        <div class="term"><div class="term-name">Embedding</div><div class="term-def">A vector (list of numbers) representing the meaning of text. Similar meanings = similar vectors. Foundation of semantic search and RAG.</div></div>
-        <div class="term"><div class="term-name">Latent Space</div><div class="term-def">The high-dimensional space where embeddings live. Similar concepts cluster together. The model "understands" language by navigating this space.</div></div>
-        <div class="term"><div class="term-name">Pre-training</div><div class="term-def">The initial large-scale training on broad data (books, web, code) that gives the model general language understanding. Produces a base model that can then be adapted — via fine-tuning, RLHF, or instruction tuning — for specific uses.</div></div>
+      <div class="outline-heading">1 — Text to numbers</div>
+      <div class="outline-row">
+        <div class="ol-term">Token</div>
+        <div class="ol-def">The atomic unit of text an LLM processes — roughly 0.75 words. "Hello Scrum" = 3 tokens. Everything is measured in tokens: cost, speed, limits.</div>
       </div>
-    </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Tokenisation</div>
+        <div class="ol-def">Splitting raw text into tokens before the model sees it. Different models use different tokenisers, so the same sentence has a different token count in GPT vs Claude.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Embedding</div>
+        <div class="ol-def">Each token is converted to a vector — a list of numbers representing its meaning. Similar words get similar vectors. This is how the model "understands" language mathematically.</div>
+      </div>
+      <div class="outline-row indent2">
+        <div class="ol-term">Latent Space</div>
+        <div class="ol-def">The high-dimensional space where all embeddings live. Similar concepts cluster together. The model reasons by navigating this space.</div>
+      </div>
 
-    <div class="term-group">
-      <div class="term-group-label">Output Control</div>
-      <div class="term-grid">
-        <div class="term"><div class="term-name">Temperature</div><div class="term-def">Controls randomness. Low (0) = deterministic. High (1+) = creative, picks less likely tokens more often.</div></div>
-        <div class="term"><div class="term-name">Top-p (Nucleus Sampling)</div><div class="term-def">At each generation step, only considers tokens whose cumulative probability adds up to p — ignoring the long tail of unlikely options. p=0.9 means "pick from the top 90% probability mass." Cuts off low-probability noise without hardcoding a token count.</div></div>
-        <div class="term"><div class="term-name">Top-k</div><div class="term-def">Limits token selection to the k most likely candidates at each step. Often used together with top-p.</div></div>
-        <div class="term"><div class="term-name">Structured Output</div><div class="term-def">Asking the model to respond in a specific format — JSON, XML, a schema. All 14 Hello Scrum prompts use structured output. Reduces parsing errors.</div></div>
+      <div class="outline-heading">2 — The architecture</div>
+      <div class="outline-row">
+        <div class="ol-term">Transformer</div>
+        <div class="ol-def">The neural network architecture behind all modern LLMs. Introduced 2017. Processes all tokens in parallel using self-attention — unlike older models that processed one token at a time.</div>
       </div>
-    </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Attention</div>
+        <div class="ol-def">The core mechanism inside a Transformer. At each generation step it asks: "which other tokens in the input are most relevant to predicting this next token?" and weights them accordingly.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Pre-training</div>
+        <div class="ol-def">The initial training run on massive text data (books, web, code). The model learns to predict the next token billions of times. Produces a base model with broad language understanding but no specific behaviour.</div>
+      </div>
 
-    <div class="term-group">
-      <div class="term-group-label">Learning Modes</div>
-      <div class="term-grid">
-        <div class="term"><div class="term-name">In-context Learning</div><div class="term-def">Conditioning model output on examples placed directly in the prompt — no weight updates. The model "learns" from examples without being retrained.</div></div>
-        <div class="term"><div class="term-name">Test-time Compute</div><div class="term-def">Increasing inference computation to improve output quality without retraining. Giving the model more "thinking time" — chain of thought and reasoning models do this.</div></div>
-        <div class="term"><div class="term-name">Vibe Coding</div><div class="term-def">Accepting AI-generated code without detailed line-by-line review. Fast but risky — bugs and scope creep go undetected. Hermes and test suites are the antidote.</div></div>
+      <div class="outline-heading">3 — A call to the model</div>
+      <div class="outline-row">
+        <div class="ol-term">Prompt</div>
+        <div class="ol-def">Everything sent to the model in one call — system message + conversation history + user message combined. The model only sees the prompt; it has no memory of previous calls.</div>
       </div>
-    </div>
+      <div class="outline-row indent">
+        <div class="ol-term">System Prompt</div>
+        <div class="ol-def">The first part of the prompt. Sets the model's role, behaviour, and constraints before any user input. Not visible to the end user. Hello Scrum's 14 prompts all start here.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">User Prompt</div>
+        <div class="ol-def">The human turn of the prompt. In agent pipelines this often includes injected context — file contents, data, dynamic instructions — not just what a human typed.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Multi-turn</div>
+        <div class="ol-def">A conversation with multiple exchanges. Each turn appends to the prompt, growing the context window. Hello Scrum's story elaboration uses a multi-turn tool-use loop.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Context Window</div>
+        <div class="ol-def">The maximum tokens the model can process in one call — input + output combined. Claude's window is 200k tokens. Exceeding it requires truncation or summarisation.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Completion</div>
+        <div class="ol-def">The model's generated response. Produced one token at a time, left to right, each token chosen based on all previous tokens in the prompt plus what has been generated so far.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Streaming</div>
+        <div class="ol-def">Tokens sent to the client as they're generated rather than waiting for the full response. Hello Scrum uses SSE streaming so the live log updates in real time.</div>
+      </div>
 
-    <div class="term-group">
-      <div class="term-group-label">Failure Modes</div>
-      <div class="term-grid">
-        <div class="term"><div class="term-name">Hallucination</div><div class="term-def">When a model generates plausible-sounding but factually incorrect content. Caused by predicting probable text rather than retrieving ground truth.</div></div>
-        <div class="term"><div class="term-name">Instruction Following Failures</div><div class="term-def">When a model ignores or only partially follows explicit instructions — skipping constraints, producing the wrong format, or drifting to a different task. Gets worse with long prompts where later instructions conflict with earlier ones.</div></div>
+      <div class="outline-heading">4 — Controlling output</div>
+      <div class="outline-row">
+        <div class="ol-term">Temperature</div>
+        <div class="ol-def">Controls how randomly the model picks each next token. 0 = always picks the most likely token (deterministic). Higher = picks less likely tokens more often (creative / unpredictable).</div>
       </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Top-p (Nucleus Sampling)</div>
+        <div class="ol-def">At each step, restricts token selection to the smallest set whose cumulative probability reaches p. Cuts off the long tail of unlikely tokens. Works alongside temperature.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Top-k</div>
+        <div class="ol-def">Restricts token selection to the k most likely candidates at each step. A simpler alternative to top-p. Often used together with it.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Structured Output</div>
+        <div class="ol-def">Constraining the model to respond in a specific format — JSON, XML, a schema. All 14 Hello Scrum prompts use structured output. Without it, responses require brittle regex parsing.</div>
+      </div>
+
+      <div class="outline-heading">5 — Advanced concepts</div>
+      <div class="outline-row">
+        <div class="ol-term">In-context Learning</div>
+        <div class="ol-def">Adapting model behaviour by placing examples in the prompt — no weight updates, no retraining. Few-shot prompting is in-context learning. The model generalises from examples it sees at call time.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Test-time Compute</div>
+        <div class="ol-def">Spending more compute at inference time — more reasoning tokens, more candidate answers — to improve quality without retraining. Chain of thought and reasoning models exploit this.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Vibe Coding</div>
+        <div class="ol-def">Accepting AI-generated code without detailed review. Fast but risky — bugs and scope creep go undetected. Hermes and test suites are the antidote in Hello Scrum.</div>
+      </div>
+
+      <div class="outline-heading">6 — Failure modes</div>
+      <div class="outline-row">
+        <div class="ol-term">Hallucination</div>
+        <div class="ol-def">The model generates plausible-sounding but factually wrong content. Root cause: the model is predicting probable text, not retrieving verified facts. RAG and grounding reduce it.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Instruction Following Failures</div>
+        <div class="ol-def">The model ignores or partially follows explicit instructions — wrong format, skipped constraints, drifting to a different task. Gets worse with long prompts and conflicting instructions.</div>
+      </div>
+
     </div>
   </div>
 

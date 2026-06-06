@@ -2539,6 +2539,77 @@ def start_sprint():
     )
 
 
+@app.route("/primer/scan", methods=["POST"])
+def primer_scan():
+    import urllib.request as _url
+    import xml.etree.ElementTree as ET
+
+    feeds = [
+        ("arXiv cs.AI",  "https://arxiv.org/rss/cs.AI"),
+        ("arXiv cs.LG",  "https://arxiv.org/rss/cs.LG"),
+        ("Hugging Face", "https://huggingface.co/blog/feed.xml"),
+    ]
+
+    papers = []
+    for source_name, url in feeds:
+        try:
+            req = _url.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with _url.urlopen(req, timeout=10) as r:
+                root = ET.fromstring(r.read())
+            items = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
+            for item in items[:15]:
+                title_el = item.find("title") or item.find("{http://www.w3.org/2005/Atom}title")
+                desc_el  = item.find("description") or item.find("{http://www.w3.org/2005/Atom}summary")
+                if title_el is not None:
+                    title = (title_el.text or "").strip()
+                    desc  = re.sub(r"<[^>]+>", "", (desc_el.text or "") if desc_el is not None else "")[:300]
+                    papers.append(f"[{source_name}] {title}: {desc}")
+        except Exception:
+            pass
+
+    if not papers:
+        return jsonify({"error": "Could not fetch any sources"}), 500
+
+    try:
+        with open("ai-primer.html", "r", encoding="utf-8") as f:
+            primer_html = f.read()
+        existing_terms = re.findall(r'class="term-name">(.*?)</div>', primer_html)
+        existing_terms = [re.sub(r"<[^>]+>", "", t).strip() for t in existing_terms]
+    except Exception:
+        existing_terms = []
+
+    prompt = f"""You are reviewing recent AI research to find new terminology for a developer study glossary.
+
+Terms already in the glossary — do NOT suggest these:
+{", ".join(existing_terms[:120])}
+
+Recent papers and posts:
+{chr(10).join(papers[:35])}
+
+Identify 5-8 new AI terms from the above that are not in the existing list, are likely to become durable vocabulary (not paper-specific branding), and would be useful to a practical AI developer.
+
+Return JSON only:
+{{
+  "terms": [
+    {{"term": "Term Name", "definition": "One or two sentence plain-language definition.", "source": "arXiv cs.AI"}}
+  ]
+}}"""
+
+    client = anthropic.Anthropic()
+    response = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=1200,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    text = response.content[0].text.strip()
+    match = re.search(r'\{[\s\S]*\}', text)
+    if not match:
+        return jsonify({"error": "Could not parse response"}), 500
+    result = json.loads(match.group())
+    result["date"] = datetime.now().strftime("%Y-%m-%d")
+    return jsonify(result)
+
+
 if __name__ == "__main__":
     print("Sprint Board running at http://localhost:5000")
     app.run(debug=False, port=5000, threaded=True)

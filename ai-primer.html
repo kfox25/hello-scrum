@@ -105,7 +105,7 @@
   </nav>
 
   <div class="scan-btn-fixed">
-    <button style="background:#0a1f12;color:#00ff99;border:1px solid #00ff9940;padding:0.45rem 1.25rem;border-radius:4px;cursor:default;font-family:monospace;font-size:0.82rem;opacity:1;" disabled>
+    <button id="scanBtn" onclick="runScan()" style="background:#0a1f12;color:#00ff99;border:1px solid #00ff9940;padding:0.45rem 1.25rem;border-radius:4px;cursor:pointer;font-family:monospace;font-size:0.82rem;">
       Scan for New Terms →
     </button>
     <div class="quiz-card">
@@ -576,6 +576,17 @@
         <div class="term"><div class="term-name"><a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" target="_blank" style="color:#ccc;text-decoration:none;">Anthropic Prompt Engineering Docs</a></div><div class="term-def">Official prompt engineering guidance. Updated when new techniques are validated. Start here for anything prompt-related.</div></div>
       </div>
     </div>
+
+    <div class="term-group">
+      <div class="term-group-label">Emerging Terms — 2026-06-06</div>
+      <div class="term-grid">
+        <div class="term"><div class="term-name">KV Cache (Key-Value Cache)</div><div class="term-def">Stores the attention key-value pairs computed for each token so they don't need to be recomputed on every generation step. Fundamental to why long-context calls cost more and take longer. Prompt caching works by reusing KV cache across calls.</div></div>
+        <div class="term"><div class="term-name">PagedAttention</div><div class="term-def">Virtual-memory-style paging of the KV cache — splits it into fixed-size blocks allocated on demand rather than one contiguous chunk. Lets a server run many concurrent requests without wasting GPU memory. Foundational to vLLM and efficient LLM serving.</div></div>
+        <div class="term"><div class="term-name">World Model</div><div class="term-def">A model trained to simulate how a physical environment behaves — predicting what happens next given an action, not just generating text. Emerging for robotics and physical AI. <em>e.g. Nvidia Cosmos.</em></div></div>
+        <div class="term"><div class="term-name">Long-horizon Reasoning</div><div class="term-def">An agent maintaining coherent goals and context across dozens or hundreds of sequential steps — far beyond a single prompt-response cycle. A known failure mode: agents lose track of the original goal or contradict earlier decisions.</div></div>
+        <div class="term"><div class="term-name">Temporal Knowledge Graph</div><div class="term-def">A knowledge graph that tracks when facts were true, not just what is true. Lets agents reason about whether information is current or stale. <em>e.g. "this endpoint existed in sprint 3 but was renamed in sprint 7."</em></div></div>
+      </div>
+    </div>
   </div>
 
   <script src="shared.js"></script>
@@ -676,6 +687,49 @@
     }
 
     showSection('s-foundation');
+
+    async function runScan() {
+      const btn = document.getElementById('scanBtn');
+      btn.textContent = 'Scanning...';
+      btn.style.opacity = '0.6';
+      btn.disabled = true;
+
+      // Remove previous scan results if any
+      const prev = document.getElementById('scan-results-group');
+      if (prev) prev.remove();
+
+      try {
+        const res = await fetch('/primer/scan', { method: 'POST' });
+        const data = await res.json();
+
+        if (data.error) throw new Error(data.error);
+
+        // Inject results into Stay Current section
+        const section = document.getElementById('s-current');
+        const group = document.createElement('div');
+        group.id = 'scan-results-group';
+        group.className = 'term-group';
+        group.innerHTML = `
+          <div class="term-group-label">Scan Results — ${data.date}</div>
+          <div class="term-grid">
+            ${(data.terms || []).map(t => `
+              <div class="term">
+                <div class="term-name">${t.term} <span style="font-size:0.6rem;color:#444;font-family:sans-serif;">${t.source || ''}</span></div>
+                <div class="term-def">${t.definition}</div>
+              </div>`).join('')}
+          </div>`;
+        section.appendChild(group);
+
+        // Switch to Stay Current so results are visible
+        showSection('s-current');
+      } catch (e) {
+        alert('Scan failed: ' + e.message);
+      } finally {
+        btn.textContent = 'Scan for New Terms →';
+        btn.style.opacity = '1';
+        btn.disabled = false;
+      }
+    }
   </script>
 </body>
 </html>

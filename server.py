@@ -2645,8 +2645,8 @@ def _run_job_check(seed=False):
                 tags  = "briefcase"
                 priority = "default"
             else:
-                title = "Job Check — No New Roles"
-                body  = f"Checked {len(jobs)} listing{'s' if len(jobs) != 1 else ''} · nothing new"
+                title = "Job Check - No New Roles"
+                body  = f"Checked {len(jobs)} listing{'s' if len(jobs) != 1 else ''} - nothing new"
                 tags  = "white_check_mark"
                 priority = "min"
             ntfy_req = _url.Request(

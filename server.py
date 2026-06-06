@@ -2566,6 +2566,7 @@ def _fetch_apex_jobs():
         cells   = re.findall(r'<td[^>]*><a[^>]*>([^<]+)</a></td>', row)
         if title_m and len(cells) >= 4:
             jobs.append({
+                "source": "Apex Systems",
                 "title": re.sub(r'&amp;', '&', title_m.group(1).strip()),
                 "city":  cells[1].strip() if len(cells) > 1 else "",
                 "state": cells[2].strip() if len(cells) > 2 else "",
@@ -2575,11 +2576,55 @@ def _fetch_apex_jobs():
     return jobs
 
 
+_RH_URL = "https://www.roberthalf.com/us/en/jobs/all/scrum-master?remote=Yes"
+
+def _fetch_rh_jobs():
+    import urllib.request as _url
+    req = _url.Request(_RH_URL, headers={
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+    })
+    with _url.urlopen(req, timeout=15) as r:
+        text = r.read().decode(errors="ignore")
+    m = re.search(r"initialResults\s*=\s*JSON\.parse\('(.*?)'\);", text, re.S)
+    if not m:
+        return []
+    raw = m.group(1)
+    raw = raw.replace(r'\/', '/')
+    raw = re.sub(r'\\x([0-9a-fA-F]{2})', lambda x: chr(int(x.group(1), 16)), raw)
+    raw = raw.replace('\\\\"', '&quot;')
+    data = json.loads(raw)
+    jobs = []
+    for j in data.get('data', {}).get('jobs', []):
+        date_raw = j.get('date_posted', '')
+        date_str = date_raw[:10] if date_raw else ''
+        jobs.append({
+            "source": "Robert Half",
+            "title": j.get('jobtitle', ''),
+            "city":  j.get('city', ''),
+            "state": j.get('stateprovince', ''),
+            "date":  date_str,
+            "url":   j.get('job_detail_url', ''),
+        })
+    return jobs
+
+
+def _fetch_all_jobs():
+    jobs = []
+    for fn in (_fetch_apex_jobs, _fetch_rh_jobs):
+        try:
+            jobs.extend(fn())
+        except Exception as e:
+            print(f"[job-check] {fn.__name__} failed: {e}")
+    return jobs
+
+
 def _run_job_check(seed=False):
     import urllib.request as _url
     global _job_check_status
     try:
-        jobs = _fetch_apex_jobs()
+        jobs = _fetch_all_jobs()
         urls = {j["url"] for j in jobs if j["url"]}
 
         try:
@@ -2593,7 +2638,7 @@ def _run_job_check(seed=False):
         if new_jobs and not seed:
             n    = len(new_jobs)
             body = f"Found {n} new role{'s' if n > 1 else ''}:\n"
-            body += "\n".join(f"• {j['title']} ({j['city']}, {j['state']})" for j in new_jobs)
+            body += "\n".join(f"• {j['title']} — {j['city']}, {j['state']} [{j.get('source','')}]" for j in new_jobs)
             ntfy_req = _url.Request(
                 f"https://ntfy.sh/{_NTFY_TOPIC}",
                 data=body.encode("utf-8"),
@@ -2631,11 +2676,8 @@ threading.Thread(target=_job_checker_loop, daemon=True).start()
 
 @app.route("/check/jobs", methods=["GET"])
 def check_jobs():
-    try:
-        jobs = _fetch_apex_jobs()
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    return jsonify({"jobs": jobs, "count": len(jobs), "source": "Apex Systems"})
+    jobs = _fetch_all_jobs()
+    return jsonify({"jobs": jobs, "count": len(jobs)})
 
 
 @app.route("/check/status", methods=["GET"])

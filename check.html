@@ -76,7 +76,7 @@
   </nav>
 
   <h1>Check</h1>
-  <div class="subtitle">Remote Scrum Master openings — Apex Systems</div>
+  <div class="subtitle">Remote Scrum Master openings — Apex Systems · Robert Half</div>
 
   <div class="check-bar">
     <button class="btn-run" id="runBtn" onclick="runCheck()">Run Check →</button>
@@ -130,12 +130,13 @@
         }
 
         out.innerHTML = `
-          <div class="source-label">${data.source} — ${data.count} openings</div>
+          <div class="source-label">${data.count} openings</div>
           <div class="job-list">
             ${data.jobs.map(j => `
               <div class="job-card">
                 <a class="job-title" href="${j.url}" target="_blank">${j.title}</a>
                 <span class="job-meta">${j.city}${j.city && j.state ? ', ' : ''}${j.state}</span>
+                <span class="job-source" style="font-size:0.65rem;color:#444;font-family:monospace;white-space:nowrap;">${j.source}</span>
                 <span class="job-date">${j.date}</span>
               </div>`).join('')}
           </div>`;

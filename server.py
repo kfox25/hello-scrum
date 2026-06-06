@@ -2539,26 +2539,25 @@ def start_sprint():
     )
 
 
-@app.route("/check/jobs", methods=["GET"])
-def check_jobs():
+_APEX_URL = (
+    "https://www.apexsystems.com/search-results-usa"
+    "?catalogcode=USA&address=&radius=50&page=1&rows=25"
+    "&query=scrum%20master&remote=true&sort=lastposteddesc"
+)
+_APEX_SEEN_FILE = "apex_seen_jobs.json"
+_NTFY_TOPIC     = "kevin-apex"
+_job_check_status = {"last_checked": None, "last_new_count": 0, "total": 0, "error": None}
+
+
+def _fetch_apex_jobs():
     import urllib.request as _url
-
-    url = (
-        "https://www.apexsystems.com/search-results-usa"
-        "?catalogcode=USA&address=&radius=50&page=1&rows=25"
-        "&query=scrum%20master&remote=true&sort=lastposteddesc"
-    )
-    try:
-        req = _url.Request(url, headers={
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "en-US,en;q=0.9",
-        })
-        with _url.urlopen(req, timeout=15) as r:
-            text = r.read().decode(errors="ignore")
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
+    req = _url.Request(_APEX_URL, headers={
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+    })
+    with _url.urlopen(req, timeout=15) as r:
+        text = r.read().decode(errors="ignore")
     rows = re.findall(r'<tr class="(?:odd|even)">(.*?)</tr>', text, re.S)
     jobs = []
     for row in rows:
@@ -2567,14 +2566,81 @@ def check_jobs():
         cells   = re.findall(r'<td[^>]*><a[^>]*>([^<]+)</a></td>', row)
         if title_m and len(cells) >= 4:
             jobs.append({
-                "title":    re.sub(r'&amp;', '&', title_m.group(1).strip()),
-                "city":     cells[1].strip() if len(cells) > 1 else "",
-                "state":    cells[2].strip() if len(cells) > 2 else "",
-                "date":     cells[3].strip() if len(cells) > 3 else "",
-                "url":      "https://www.apexsystems.com" + link_m.group(1) if link_m else "",
+                "title": re.sub(r'&amp;', '&', title_m.group(1).strip()),
+                "city":  cells[1].strip() if len(cells) > 1 else "",
+                "state": cells[2].strip() if len(cells) > 2 else "",
+                "date":  cells[3].strip() if len(cells) > 3 else "",
+                "url":   "https://www.apexsystems.com" + link_m.group(1) if link_m else "",
             })
+    return jobs
 
+
+def _run_job_check(seed=False):
+    import urllib.request as _url
+    global _job_check_status
+    try:
+        jobs = _fetch_apex_jobs()
+        urls = {j["url"] for j in jobs if j["url"]}
+
+        try:
+            with open(_APEX_SEEN_FILE, "r", encoding="utf-8") as f:
+                seen = set(json.load(f))
+        except FileNotFoundError:
+            seen = set()
+
+        new_jobs = [j for j in jobs if j["url"] and j["url"] not in seen]
+
+        if new_jobs and not seed:
+            n    = len(new_jobs)
+            body = f"Found {n} new role{'s' if n > 1 else ''}:\n"
+            body += "\n".join(f"• {j['title']} ({j['city']}, {j['state']})" for j in new_jobs)
+            ntfy_req = _url.Request(
+                f"https://ntfy.sh/{_NTFY_TOPIC}",
+                data=body.encode("utf-8"),
+                headers={"Title": "New Apex Scrum Master Role", "Tags": "briefcase", "Priority": "default"},
+            )
+            with _url.urlopen(ntfy_req, timeout=10):
+                pass
+            print(f"[job-check] notified: {n} new job(s)")
+
+        seen.update(urls)
+        with open(_APEX_SEEN_FILE, "w", encoding="utf-8") as f:
+            json.dump(list(seen), f)
+
+        _job_check_status = {
+            "last_checked":   datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "last_new_count": 0 if seed else len(new_jobs),
+            "total":          len(jobs),
+            "error":          None,
+        }
+        if not seed:
+            print(f"[job-check] {len(jobs)} total, {len(new_jobs)} new")
+    except Exception as e:
+        _job_check_status["error"] = str(e)
+        print(f"[job-check] error: {e}")
+
+
+def _job_checker_loop():
+    _run_job_check(seed=True)   # populate seen list on startup, no notification
+    while True:
+        time.sleep(3600)
+        _run_job_check()
+
+threading.Thread(target=_job_checker_loop, daemon=True).start()
+
+
+@app.route("/check/jobs", methods=["GET"])
+def check_jobs():
+    try:
+        jobs = _fetch_apex_jobs()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     return jsonify({"jobs": jobs, "count": len(jobs), "source": "Apex Systems"})
+
+
+@app.route("/check/status", methods=["GET"])
+def check_status():
+    return jsonify(_job_check_status)
 
 
 @app.route("/primer/scan", methods=["POST"])

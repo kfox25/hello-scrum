@@ -82,11 +82,25 @@
     <button class="btn-run" id="runBtn" onclick="runCheck()">Run Check →</button>
     <span class="check-meta" id="checkMeta"></span>
   </div>
+  <div id="autoStatus" style="font-size:0.72rem;color:#444;font-family:monospace;margin-bottom:1.5rem;"></div>
 
   <div id="results"></div>
 
   <script src="shared.js"></script>
   <script>
+    async function loadStatus() {
+      try {
+        const data = await fetch('/check/status').then(r => r.json());
+        const el = document.getElementById('autoStatus');
+        if (!data.last_checked) { el.textContent = 'Auto-check: seeding on startup...'; return; }
+        const parts = [`auto-check: last ran ${data.last_checked}`, `${data.total} total`];
+        if (data.last_new_count > 0) parts.push(`${data.last_new_count} new → notified via ntfy`);
+        if (data.error) parts.push(`error: ${data.error}`);
+        parts.push('checks every hour');
+        el.textContent = parts.join(' · ');
+      } catch (e) {}
+    }
+
     async function runCheck() {
       const btn  = document.getElementById('runBtn');
       const meta = document.getElementById('checkMeta');
@@ -107,7 +121,7 @@
         }
 
         const now = new Date().toLocaleString();
-        meta.textContent = `${data.count} result${data.count !== 1 ? 's' : ''} · checked ${now}`;
+        meta.textContent = `${data.count} result${data.count !== 1 ? 's' : ''} · ${now}`;
 
         if (!data.jobs || data.jobs.length === 0) {
           out.innerHTML = '<div class="empty">No results found.</div>';
@@ -129,8 +143,11 @@
       } finally {
         btn.disabled = false;
         btn.textContent = 'Run Check →';
+        loadStatus();
       }
     }
+
+    loadStatus();
   </script>
 </body>
 </html>

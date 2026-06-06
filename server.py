@@ -2539,6 +2539,44 @@ def start_sprint():
     )
 
 
+@app.route("/check/jobs", methods=["GET"])
+def check_jobs():
+    import urllib.request as _url
+
+    url = (
+        "https://www.apexsystems.com/search-results-usa"
+        "?catalogcode=USA&address=&radius=50&page=1&rows=25"
+        "&query=scrum%20master&remote=true&sort=lastposteddesc"
+    )
+    try:
+        req = _url.Request(url, headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+        })
+        with _url.urlopen(req, timeout=15) as r:
+            text = r.read().decode(errors="ignore")
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    rows = re.findall(r'<tr class="(?:odd|even)">(.*?)</tr>', text, re.S)
+    jobs = []
+    for row in rows:
+        title_m = re.search(r'class="job-td-link job-title-link"[^>]*>([^<]+)<', row)
+        link_m  = re.search(r'href="(/job/[^"]+)"', row)
+        cells   = re.findall(r'<td[^>]*><a[^>]*>([^<]+)</a></td>', row)
+        if title_m and len(cells) >= 4:
+            jobs.append({
+                "title":    re.sub(r'&amp;', '&', title_m.group(1).strip()),
+                "city":     cells[1].strip() if len(cells) > 1 else "",
+                "state":    cells[2].strip() if len(cells) > 2 else "",
+                "date":     cells[3].strip() if len(cells) > 3 else "",
+                "url":      "https://www.apexsystems.com" + link_m.group(1) if link_m else "",
+            })
+
+    return jsonify({"jobs": jobs, "count": len(jobs), "source": "Apex Systems"})
+
+
 @app.route("/primer/scan", methods=["POST"])
 def primer_scan():
     import urllib.request as _url

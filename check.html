@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google" content="notranslate" />
+  <title>Check — Hello Scrum</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { padding: 4rem 2rem 3rem 2rem; max-width: 900px; margin: 0 auto; }
+
+    h1 { color: #00ff99; font-size: 1.8rem; margin-bottom: 0.25rem; }
+    .subtitle { color: #555; font-size: 0.85rem; margin-bottom: 2rem; }
+
+    .check-bar {
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;
+    }
+    .btn-run {
+      background: #0a1f12; color: #00ff99; border: 1px solid #00ff9940;
+      padding: 0.5rem 1.4rem; border-radius: 4px; cursor: pointer;
+      font-family: monospace; font-size: 0.85rem;
+    }
+    .btn-run:hover { border-color: #00ff99; }
+    .btn-run:disabled { opacity: 0.5; cursor: default; }
+    .check-meta { font-size: 0.75rem; color: #444; font-family: monospace; }
+
+    .source-label {
+      font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em;
+      color: #00ff99; margin-bottom: 1rem; padding-bottom: 0.4rem;
+      border-bottom: 1px solid #1a1a1a;
+    }
+
+    .job-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .job-card {
+      background: #0d0d0d; border: 1px solid #1e1e1e; border-radius: 6px;
+      padding: 0.75rem 1rem; display: flex; align-items: baseline;
+      justify-content: space-between; gap: 1rem;
+    }
+    .job-card:hover { border-color: #2a2a2a; }
+    .job-title {
+      font-size: 0.85rem; color: #ccc; text-decoration: none; flex: 1;
+    }
+    .job-title:hover { color: #00ff99; }
+    .job-meta { font-size: 0.72rem; color: #555; white-space: nowrap; }
+    .job-date { font-size: 0.7rem; color: #444; font-family: monospace; white-space: nowrap; }
+
+    .empty { color: #444; font-size: 0.82rem; padding: 1rem 0; }
+    .error-msg { color: #ff4444; font-size: 0.82rem; padding: 1rem 0; }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="index.html">App</a>
+    <a href="intake.html">Intake</a>
+    <a href="/">Backlog</a>
+    <a href="active.html">Live Work</a>
+    <div class="nav-ref">
+      <span class="nav-ref-btn">Artifacts ▾</span>
+      <div class="nav-ref-menu">
+        <a href="retro.html">Retro</a>
+        <a href="audit.html">Audit</a>
+      </div>
+    </div>
+    <div class="nav-ref">
+      <span class="nav-ref-btn">Reference ▾</span>
+      <div class="nav-ref-menu">
+        <a href="hello-scrum.html">Workflow</a>
+        <a href="docs.html">Docs</a>
+        <a href="prompts.html">Prompts</a>
+        <a href="notes.html">Notes</a>
+        <a href="ai-primer.html">AI Primer</a>
+      </div>
+    </div>
+    <a href="health.html">Health</a>
+    <a href="check.html">Check</a>
+  </nav>
+
+  <h1>Check</h1>
+  <div class="subtitle">Remote Scrum Master openings — Apex Systems</div>
+
+  <div class="check-bar">
+    <button class="btn-run" id="runBtn" onclick="runCheck()">Run Check →</button>
+    <span class="check-meta" id="checkMeta"></span>
+  </div>
+
+  <div id="results"></div>
+
+  <script src="shared.js"></script>
+  <script>
+    async function runCheck() {
+      const btn  = document.getElementById('runBtn');
+      const meta = document.getElementById('checkMeta');
+      const out  = document.getElementById('results');
+
+      btn.disabled = true;
+      btn.textContent = 'Checking...';
+      meta.textContent = '';
+      out.innerHTML = '';
+
+      try {
+        const res  = await fetch('/check/jobs');
+        const data = await res.json();
+
+        if (data.error) {
+          out.innerHTML = `<div class="error-msg">Error: ${data.error}</div>`;
+          return;
+        }
+
+        const now = new Date().toLocaleString();
+        meta.textContent = `${data.count} result${data.count !== 1 ? 's' : ''} · checked ${now}`;
+
+        if (!data.jobs || data.jobs.length === 0) {
+          out.innerHTML = '<div class="empty">No results found.</div>';
+          return;
+        }
+
+        out.innerHTML = `
+          <div class="source-label">${data.source} — ${data.count} openings</div>
+          <div class="job-list">
+            ${data.jobs.map(j => `
+              <div class="job-card">
+                <a class="job-title" href="${j.url}" target="_blank">${j.title}</a>
+                <span class="job-meta">${j.city}${j.city && j.state ? ', ' : ''}${j.state}</span>
+                <span class="job-date">${j.date}</span>
+              </div>`).join('')}
+          </div>`;
+      } catch (e) {
+        out.innerHTML = `<div class="error-msg">Failed: ${e.message}</div>`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Run Check →';
+      }
+    }
+  </script>
+</body>
+</html>

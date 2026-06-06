@@ -16,6 +16,7 @@ import subprocess
 import threading
 import time
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import anthropic
 from dotenv import load_dotenv
@@ -2674,14 +2675,22 @@ def _run_job_check(seed=False):
         print(f"[job-check] error: {e}")
 
 
+_CENTRAL = ZoneInfo("America/Chicago")
+_CHECK_START_HOUR = 8   # 8 AM Central
+_CHECK_END_HOUR   = 19  # 7 PM Central (last check fires at 19:00)
+
 def _job_checker_loop():
     _run_job_check(seed=True)   # populate seen list on startup, no notification
     while True:
         now     = datetime.now()
         seconds = 3600 - (now.minute * 60 + now.second)
-        print(f"[job-check] next check at top of hour in {seconds}s ({now.strftime('%H:%M:%S')})")
+        print(f"[job-check] sleeping {seconds}s until top of hour ({now.strftime('%H:%M:%S')})")
         time.sleep(seconds)
-        _run_job_check()
+        central_hour = datetime.now(_CENTRAL).hour
+        if _CHECK_START_HOUR <= central_hour <= _CHECK_END_HOUR:
+            _run_job_check()
+        else:
+            print(f"[job-check] skipped — outside window (central hour={central_hour})")
 
 threading.Thread(target=_job_checker_loop, daemon=True).start()
 

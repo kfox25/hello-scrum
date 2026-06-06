@@ -148,6 +148,84 @@
     <div class="section-title">AI Workflow</div>
     <div class="outline-block">
 
+      <div class="outline-heading">Phase 0 — Build the model (done once by the AI lab)</div>
+      <div class="outline-row">
+        <div class="ol-term">Data Collection</div>
+        <div class="ol-def">Gather a massive text corpus — books, web pages, code, scientific papers, Wikipedia. Trillions of tokens. The breadth and quality of this data sets the ceiling on everything the model can ever know or do.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Data Curation</div>
+        <div class="ol-def">Deduplicate, filter low-quality text, remove PII, balance domains. A model trained on uncurated web data inherits its biases and noise. Curation is where most of the quality work happens before a single weight is updated.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Pre-training</div>
+        <div class="ol-def">The main training run. The model is shown text and learns to predict the next token — billions of times, across the full corpus. Runs on thousands of GPUs for weeks or months. Produces a base model that can predict text but has no helpful behaviour.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Forward Pass</div>
+        <div class="ol-def">The model processes a batch of tokens and outputs a prediction for what comes next. Each token attends to all previous tokens through the transformer layers, producing logits over the vocabulary.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Loss Calculation</div>
+        <div class="ol-def">Cross-entropy loss measures how wrong the prediction was. If the correct next token was "cat" and the model assigned it 10% probability, loss is high. If it assigned 90%, loss is low. Training minimises this number across every token in the corpus.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Backpropagation</div>
+        <div class="ol-def">After the forward pass computes loss, backprop calculates how much each weight contributed to that error — working backwards through every layer. Produces a gradient for each weight: "if I nudge this weight up, does loss go up or down?"</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Gradient Descent</div>
+        <div class="ol-def">Each weight is nudged in the direction that reduces loss, scaled by the learning rate. Repeat forward pass → loss → backprop → weight update millions of times. The model slowly learns language structure from the statistical patterns in the data.</div>
+      </div>
+      <div class="outline-row indent2">
+        <div class="ol-term">Learning Rate</div>
+        <div class="ol-def">How large each weight update is. Too high: training overshoots and becomes unstable. Too low: training converges too slowly. Typically starts higher and decays over time (learning rate schedule).</div>
+      </div>
+      <div class="outline-row indent2">
+        <div class="ol-term">Batch Size</div>
+        <div class="ol-def">How many training examples are processed together before weights are updated. Larger batches give more stable gradients. Modern LLM training uses very large batches — millions of tokens per step — to utilise thousands of GPUs efficiently.</div>
+      </div>
+      <div class="outline-row indent2">
+        <div class="ol-term">Epoch</div>
+        <div class="ol-def">One full pass through the training data. LLMs are often trained for less than one epoch — the dataset is so vast that seeing each document once is enough. Fine-tuning uses multiple epochs on smaller datasets.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Base Model</div>
+        <div class="ol-def">The output of pre-training. Excellent at predicting and completing text. Knows a vast amount about the world. But ask it a question and it may complete the question rather than answer it — it has no concept of being an assistant yet.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Instruction Tuning</div>
+        <div class="ol-def">Fine-tune the base model on instruction-response pairs: "Summarise this text" → [good summary]. The model learns to follow directions rather than just continue text. The step that turns a text predictor into a useful assistant.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">RLHF</div>
+        <div class="ol-def">Reinforcement Learning from Human Feedback. Humans rank pairs of model responses. A reward model learns to predict human preference scores. The LLM is then trained with reinforcement learning to produce responses the reward model rates highly. Shapes the model toward helpful, harmless, and honest behaviour.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Reward Model</div>
+        <div class="ol-def">A separate model trained to score how good a response is. Takes a prompt + response as input, outputs a scalar score. Used during RLHF to give the policy model a training signal — the policy tries to maximise reward model scores.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">RLAIF / Constitutional AI</div>
+        <div class="ol-def">Instead of human rankers, an AI model evaluates responses against a written set of principles (constitution). Anthropic's approach for Claude. Cheaper to scale than RLHF and produces more consistent, auditable alignment criteria.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">RL Post-training</div>
+        <div class="ol-def">Reinforcement learning applied after instruction tuning to develop capabilities that supervised training alone doesn't produce reliably: multi-step reasoning, tool use, long-horizon planning. The training step behind modern "reasoning models."</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Evaluation &amp; Red-teaming</div>
+        <div class="ol-def">Benchmark the model on standard tests (MMLU, HumanEval, etc.) and deliberately probe for harmful outputs, jailbreaks, and failure modes before release. Red-teaming is a systematic adversarial process — not just QA.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Quantisation</div>
+        <div class="ol-def">Reducing weight precision from 32-bit or 16-bit floats to 8-bit or 4-bit integers. Makes the model smaller and faster with minimal quality loss. Required to run large models on consumer hardware or serve them cost-effectively at scale.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Deployment</div>
+        <div class="ol-def">The trained, quantised model is loaded onto inference servers and exposed via API. From here, every call you make runs against these frozen weights — the model itself doesn't change. Updates require a new training run.</div>
+      </div>
+
       <div class="outline-heading">Phase 1 — Prepare knowledge (done once, offline)</div>
       <div class="outline-row">
         <div class="ol-term">Raw Data</div>

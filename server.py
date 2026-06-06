@@ -2620,7 +2620,7 @@ Return JSON only:
     if not match:
         return jsonify({"error": "Could not parse response"}), 500
     result = json.loads(match.group())
-    result["date"] = datetime.now().strftime("%Y-%m-%d")
+    result["date"] = datetime.now().strftime("%Y-%m-%d %H:%M")
     return jsonify(result)
 
 

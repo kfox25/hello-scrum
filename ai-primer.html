@@ -578,7 +578,7 @@
     </div>
 
     <div class="term-group">
-      <div class="term-group-label">Emerging Terms — 2026-06-06</div>
+      <div class="term-group-label">Emerging Terms — 2026-06-06 09:00</div>
       <div class="term-grid">
         <div class="term"><div class="term-name">KV Cache (Key-Value Cache)</div><div class="term-def">Stores the attention key-value pairs computed for each token so they don't need to be recomputed on every generation step. Fundamental to why long-context calls cost more and take longer. Prompt caching works by reusing KV cache across calls.</div></div>
         <div class="term"><div class="term-name">PagedAttention</div><div class="term-def">Virtual-memory-style paging of the KV cache — splits it into fixed-size blocks allocated on demand rather than one contiguous chunk. Lets a server run many concurrent requests without wasting GPU memory. Foundational to vLLM and efficient LLM serving.</div></div>

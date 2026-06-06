@@ -148,88 +148,144 @@
     <div class="section-title">AI Workflow</div>
     <div class="outline-block">
 
-      <div class="outline-heading">1 — The lifecycle</div>
+      <div class="outline-heading">Phase 1 — Prepare knowledge (done once, offline)</div>
       <div class="outline-row">
-        <div class="ol-term">Intent</div>
-        <div class="ol-def">A high-level statement of what you want to build. <em>"Add a leaderboard showing sprint performance."</em> The starting point for every AI-assisted feature. Broad enough to allow elaboration, specific enough to be actionable.</div>
+        <div class="ol-term">Raw Data</div>
+        <div class="ol-def">Documents, PDFs, web pages, code, databases — anything the model should be able to reference. Raw data is unstructured and too large to fit in a prompt. It must be processed before the model can use it.</div>
       </div>
       <div class="outline-row indent">
-        <div class="ol-term">Inception</div>
-        <div class="ol-def">The AI-assisted ritual that turns an Intent into a set of stories ready to execute. Includes workspace detection, reverse engineering, requirements analysis, and elaboration. Output: Unit + Stories + Bolts + NFRs + Risks.</div>
+        <div class="ol-term">Chunking</div>
+        <div class="ol-def">Splitting raw documents into smaller pieces — typically 200–500 tokens with some overlap between chunks. Too large: the chunk contains unrelated content. Too small: it loses surrounding context. This is the step most RAG quality problems trace back to.</div>
       </div>
       <div class="outline-row indent">
-        <div class="ol-term">Construction</div>
-        <div class="ol-def">The AI executes each story — generating code, running tests, reviewing output. The human reviews and approves at key gates. Output: working, tested, reviewed code merged to the codebase.</div>
-      </div>
-      <div class="outline-row indent">
-        <div class="ol-term">Operations</div>
-        <div class="ol-def">Deploy, observe, maintain. AI monitors telemetry, detects anomalies, proposes mitigations. Human approves changes. Output: stable running system with incident response.</div>
-      </div>
-      <div class="outline-row indent">
-        <div class="ol-term">Learning Loop</div>
-        <div class="ol-def">Retrospective findings fed back into future sprints as wisdom. What worked, what failed, what patterns emerged. Closes the cycle: each sprint improves the next.</div>
-      </div>
-
-      <div class="outline-heading">2 — Key artifacts</div>
-      <div class="outline-row">
-        <div class="ol-term">Unit</div>
-        <div class="ol-def">A cohesive, independently deployable block of work derived from an Intent. Analogous to an Epic in Scrum or a subdomain in DDD. Contains a set of Stories.</div>
-      </div>
-      <div class="outline-row indent">
-        <div class="ol-term">Story</div>
-        <div class="ol-def">A user story within a Unit. "As a [role] I want [feature] so that [value]." Has explicit acceptance criteria. The contract the agent implements and Hermes verifies.</div>
+        <div class="ol-term">Embedding Model</div>
+        <div class="ol-def">A separate, smaller model that converts each chunk into a vector — a list of numbers representing its meaning. <em>e.g. "sprint velocity" → [0.2, -0.8, 0.4, ...]</em> Similar chunks produce similar vectors. This model runs once per chunk during preparation.</div>
       </div>
       <div class="outline-row indent2">
-        <div class="ol-term">Acceptance Criteria (AC)</div>
-        <div class="ol-def">Specific, observable conditions a story must satisfy to be done. Each criterion must be independently verifiable — not "works correctly" but "when X happens, Y is visible." The agent codes to AC; the reviewer checks against AC.</div>
+        <div class="ol-term">Vector</div>
+        <div class="ol-def">The numerical output of the embedding model — typically 768 to 1536 floating-point numbers per chunk. The actual numbers have no human-readable meaning; only the relationships between vectors matter.</div>
+      </div>
+      <div class="outline-row indent2">
+        <div class="ol-term">Vectorizing</div>
+        <div class="ol-def">The act of running all chunks through the embedding model to produce their vectors. A one-time batch operation when new documents are added to the knowledge base.</div>
       </div>
       <div class="outline-row indent">
-        <div class="ol-term">Bolt</div>
-        <div class="ol-def">The smallest iteration — a sprint containing a collection of Stories from a Unit. Analogous to a Sprint in Scrum. A Unit may take multiple Bolts to complete. NOT a sub-task inside a story.</div>
-      </div>
-      <div class="outline-row">
-        <div class="ol-term">Functional Design (FD)</div>
-        <div class="ol-def">A pre-approved implementation plan for a story — approach, elements to add/modify, risks. Generated and reviewed before coding begins. Reduces scope creep: the agent follows the approved plan, not its own interpretation.</div>
-      </div>
-      <div class="outline-row">
-        <div class="ol-term">NFR (Non-Functional Requirement)</div>
-        <div class="ol-def">Requirements about how the system behaves rather than what it does — performance, security, accessibility, reliability. Often missed in AI-generated stories. Must be specified explicitly or the agent ignores them.</div>
+        <div class="ol-term">Vector Store</div>
+        <div class="ol-def">A database that stores each chunk alongside its vector. Optimised for fast nearest-neighbour search. <em>e.g. Pinecone, Weaviate, pgvector.</em> This is what gets searched at query time.</div>
       </div>
 
-      <div class="outline-heading">3 — Quality gates</div>
+      <div class="outline-heading">Phase 2 — Handle a query (done per request, online)</div>
       <div class="outline-row">
-        <div class="ol-term">Definition of Done (DoD)</div>
-        <div class="ol-def">The agreed checklist a story must pass before it counts as complete: tests pass, code reviewed, AC checked, deployed. Without a DoD, "done" is whatever the agent says it is.</div>
+        <div class="ol-term">User Query</div>
+        <div class="ol-def">The question or instruction from the user. Raw text. Before anything else happens, it must be converted into the same vector space as the knowledge base so relevant chunks can be found.</div>
       </div>
       <div class="outline-row indent">
-        <div class="ol-term">LLM-as-Judge (Hermes)</div>
-        <div class="ol-def">A separate AI reviewer that evaluates the coding agent's output for correctness and AC compliance. Catches errors the agent doesn't self-report. The human-in-the-loop gate before deployment.</div>
+        <div class="ol-term">Query Embedding</div>
+        <div class="ol-def">The user's query is run through the same embedding model used on the documents. Produces a single query vector. This must be the same model — different embedding models produce incompatible vector spaces.</div>
       </div>
       <div class="outline-row indent">
-        <div class="ol-term">Test Results</div>
-        <div class="ol-def">Structured evidence of whether the implementation works. Not a pass/fail flag — a list of {status, message} objects. The agent must check actual test outcomes, not assume success.</div>
+        <div class="ol-term">Vector Search</div>
+        <div class="ol-def">The query vector is compared against all stored chunk vectors using cosine similarity. Returns the top-k most similar chunks — the parts of the knowledge base most relevant to the query.</div>
       </div>
-      <div class="outline-row">
-        <div class="ol-term">WIP Limit</div>
-        <div class="ol-def">Maximum stories in progress simultaneously. WIP=1 means the agent finishes one story completely before starting the next. Prevents cascading failures where an early mistake corrupts multiple parallel work items.</div>
+      <div class="outline-row indent2">
+        <div class="ol-term">Cosine Similarity</div>
+        <div class="ol-def">Measures the angle between two vectors. Score of 1 = identical meaning. Score of 0 = unrelated. Score of -1 = opposite. Used to rank retrieved chunks by relevance.</div>
+      </div>
+      <div class="outline-row indent2">
+        <div class="ol-term">Re-ranking</div>
+        <div class="ol-def">An optional second pass — a separate model re-scores the top-k chunks for true relevance before injection. More accurate than raw cosine similarity but adds latency.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Context Assembly</div>
+        <div class="ol-def">The retrieved chunks are combined with the system prompt and the user's query to form the full prompt. Order matters — most models attend better to content near the beginning and end.</div>
       </div>
 
-      <div class="outline-heading">4 — Context data flow</div>
+      <div class="outline-heading">Phase 3 — Build the prompt</div>
       <div class="outline-row">
-        <div class="ol-term">Workspace Detection</div>
-        <div class="ol-def">Scanning the codebase to understand what already exists — languages, frameworks, data models, pipeline stages. Run before requirements analysis so AI questions reference actual field names and endpoints, not generic assumptions.</div>
+        <div class="ol-term">System Prompt</div>
+        <div class="ol-def">Instructions placed before the conversation. Defines the model's role, behaviour, constraints, and any injected context (retrieved chunks, user data, wisdom). Not visible to the end user.</div>
       </div>
       <div class="outline-row indent">
-        <div class="ol-term">Reverse Engineering</div>
-        <div class="ol-def">Extracting an architecture summary from the live codebase — components, key endpoints, business transactions, code structure. Injected into requirements and elaboration prompts to ground generated stories in reality.</div>
-      </div>
-      <div class="outline-row">
-        <div class="ol-term">Wisdom Files</div>
-        <div class="ol-def">Persistent lesson files updated each retro. Coding wisdom = implementation directives injected into the agent. AC wisdom = story-writing directives injected into elaboration. Build up over sprints; survive server restarts.</div>
+        <div class="ol-term">Retrieved Context</div>
+        <div class="ol-def">The relevant chunks from the vector search, inserted into the prompt. This is what makes RAG work — the model answers from what it was given, not from what it learned during training.</div>
       </div>
       <div class="outline-row indent">
-        <div class="ol-term">Prompt Chaining</div>
-        <div class="ol-def">Each stage's output feeds the next: workspace → reverse engineering → requirements → elaboration → functional design → coding agent. Each step narrows context so the final agent prompt is precise, not generic.</div>
+        <div class="ol-term">User Message</div>
+        <div class="ol-def">The human turn of the conversation. In agent pipelines this often includes injected data — not just what the user typed, but dynamic context added at call time.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Full Prompt</div>
+        <div class="ol-def">Everything the model sees: system prompt + retrieved context + conversation history + user message. Measured in tokens. The model has no memory beyond this — if it's not in the prompt, the model doesn't know it.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Tokenisation</div>
+        <div class="ol-def">The full prompt text is split into tokens — roughly 0.75 words each. The model never sees raw text, only token IDs. The context window limit (e.g. 200k tokens) caps the total prompt size.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Prompt Caching</div>
+        <div class="ol-def">If the system prompt is identical to a recent call, the provider reuses the cached KV pairs instead of reprocessing those tokens. Reduces cost and latency when the same system prompt is reused across many calls.</div>
+      </div>
+
+      <div class="outline-heading">Phase 4 — Inference (inside the model)</div>
+      <div class="outline-row">
+        <div class="ol-term">Embedding Layer</div>
+        <div class="ol-def">Each input token ID is converted to a dense vector representation. This is the model's internal embedding — different from the RAG embedding model, and not directly accessible. First step inside the transformer.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Attention</div>
+        <div class="ol-def">At each layer, every token attends to every other token — assigning weights to decide which context is relevant to predicting what comes next. "The cat sat on the mat, <strong>it</strong>" — attention puts high weight on "cat" when processing "it".</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">KV Cache</div>
+        <div class="ol-def">The key-value pairs computed during attention are cached so they don't need recomputing for each new output token. Without KV cache, generating 500 tokens would require 500 full forward passes. With it, only new tokens need processing.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Forward Pass</div>
+        <div class="ol-def">One complete run through all transformer layers for a token. At each layer: attention → feed-forward network → normalisation. Repeated for every layer in the model (e.g. 96 layers in a large model).</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Logits</div>
+        <div class="ol-def">The raw unnormalised scores the model outputs for every possible next token after the forward pass. A vector the size of the vocabulary (~100k entries). These scores are then converted to probabilities.</div>
+      </div>
+
+      <div class="outline-heading">Phase 5 — Generate output (token by token)</div>
+      <div class="outline-row">
+        <div class="ol-term">Softmax</div>
+        <div class="ol-def">Converts the raw logits into a probability distribution — every possible next token gets a probability, and they all sum to 1. <em>e.g. "the": 45%, "a": 30%, "one": 15%, "some": 8%, "every": 2%.</em></div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Temperature</div>
+        <div class="ol-def">Applied to logits before softmax. Low (0): always picks the highest-probability token — deterministic. High (1+): flattens the distribution, making unlikely tokens more probable — creative but unpredictable.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Top-p Sampling</div>
+        <div class="ol-def">Keep adding tokens in probability order until their cumulative probability reaches p. With p=0.9: "the" (45%) + "a" (30%) + "one" (15%) = 90% — stop there. "some" and "every" are cut. The number of candidates varies based on how concentrated the distribution is.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Top-k Sampling</div>
+        <div class="ol-def">Keep only the k highest-probability tokens. With k=3: only "the", "a", "one" survive. Simpler than top-p — fixed count regardless of probability distribution shape. Often used together with top-p.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Token Selected</div>
+        <div class="ol-def">One token is sampled from the filtered distribution. This token is appended to the output and also appended to the input for the next step — the model generates one token at a time, left to right.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Stop Token</div>
+        <div class="ol-def">A special token that signals the model is done. Generation halts when the model produces a stop token or hits the max_tokens limit. The response is everything generated before the stop token.</div>
+      </div>
+
+      <div class="outline-heading">Phase 6 — Deliver the response</div>
+      <div class="outline-row">
+        <div class="ol-term">Detokenisation</div>
+        <div class="ol-def">The output token IDs are converted back to text. The reverse of tokenisation. Happens automatically — you never see the token IDs in the API response.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Streaming</div>
+        <div class="ol-def">Each token is sent to the client as it's generated rather than waiting for the full response. The user sees text appear word-by-word. Reduces perceived latency significantly for long responses.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Completion</div>
+        <div class="ol-def">The final assembled text returned by the API. What you see in the response object. Input tokens + output tokens = total tokens billed for the call.</div>
       </div>
 
     </div>

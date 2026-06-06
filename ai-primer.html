@@ -192,7 +192,7 @@
         <div class="term"><div class="term-name">Attention</div><div class="term-def">The mechanism that lets a model weigh which parts of the input are relevant to each token it generates. Core of the Transformer architecture.</div></div>
         <div class="term"><div class="term-name">Embedding</div><div class="term-def">A vector (list of numbers) representing the meaning of text. Similar meanings = similar vectors. Foundation of semantic search and RAG.</div></div>
         <div class="term"><div class="term-name">Latent Space</div><div class="term-def">The high-dimensional space where embeddings live. Similar concepts cluster together. The model "understands" language by navigating this space.</div></div>
-        <div class="term"><div class="term-name">Pre-training</div><div class="term-def">The initial large-scale training on broad data (books, web, code) before fine-tuning. Gives the model general language understanding.</div></div>
+        <div class="term"><div class="term-name">Pre-training</div><div class="term-def">The initial large-scale training on broad data (books, web, code) that gives the model general language understanding. Produces a base model that can then be adapted — via fine-tuning, RLHF, or instruction tuning — for specific uses.</div></div>
       </div>
     </div>
 
@@ -200,9 +200,18 @@
       <div class="term-group-label">Output Control</div>
       <div class="term-grid">
         <div class="term"><div class="term-name">Temperature</div><div class="term-def">Controls randomness. Low (0) = deterministic. High (1+) = creative, picks less likely tokens more often.</div></div>
-        <div class="term"><div class="term-name">Top-p (Nucleus Sampling)</div><div class="term-def">Limits token selection to the smallest set whose cumulative probability exceeds p. Cuts off unlikely tokens.</div></div>
+        <div class="term"><div class="term-name">Top-p (Nucleus Sampling)</div><div class="term-def">At each generation step, only considers tokens whose cumulative probability adds up to p — ignoring the long tail of unlikely options. p=0.9 means "pick from the top 90% probability mass." Cuts off low-probability noise without hardcoding a token count.</div></div>
         <div class="term"><div class="term-name">Top-k</div><div class="term-def">Limits token selection to the k most likely candidates at each step. Often used together with top-p.</div></div>
         <div class="term"><div class="term-name">Structured Output</div><div class="term-def">Asking the model to respond in a specific format — JSON, XML, a schema. All 14 Hello Scrum prompts use structured output. Reduces parsing errors.</div></div>
+      </div>
+    </div>
+
+    <div class="term-group">
+      <div class="term-group-label">Learning Modes</div>
+      <div class="term-grid">
+        <div class="term"><div class="term-name">In-context Learning</div><div class="term-def">Conditioning model output on examples placed directly in the prompt — no weight updates. The model "learns" from examples without being retrained.</div></div>
+        <div class="term"><div class="term-name">Test-time Compute</div><div class="term-def">Increasing inference computation to improve output quality without retraining. Giving the model more "thinking time" — chain of thought and reasoning models do this.</div></div>
+        <div class="term"><div class="term-name">Vibe Coding</div><div class="term-def">Accepting AI-generated code without detailed line-by-line review. Fast but risky — bugs and scope creep go undetected. Hermes and test suites are the antidote.</div></div>
       </div>
     </div>
 
@@ -210,7 +219,7 @@
       <div class="term-group-label">Failure Modes</div>
       <div class="term-grid">
         <div class="term"><div class="term-name">Hallucination</div><div class="term-def">When a model generates plausible-sounding but factually incorrect content. Caused by predicting probable text rather than retrieving ground truth.</div></div>
-        <div class="term"><div class="term-name">Instruction Following</div><div class="term-def">The model's ability to follow explicit directions accurately. Poor instruction following = model ignores constraints or output format rules.</div></div>
+        <div class="term"><div class="term-name">Instruction Following Failures</div><div class="term-def">When a model ignores or only partially follows explicit instructions — skipping constraints, producing the wrong format, or drifting to a different task. Gets worse with long prompts where later instructions conflict with earlier ones.</div></div>
       </div>
     </div>
   </div>
@@ -227,6 +236,8 @@
         <div class="term"><div class="term-name">Few-shot</div><div class="term-def">Providing 2–5 examples before asking the model. More examples = more reliable output format. Used in both Hermes prompts here.</div></div>
         <div class="term"><div class="term-name">Chain of Thought (CoT)</div><div class="term-def">Asking the model to reason step by step before giving a final answer. Improves accuracy on complex tasks.</div></div>
         <div class="term"><div class="term-name">ReAct</div><div class="term-def">Reason + Act pattern for agents. The model thinks, then acts, then observes the result, then repeats. Combines planning with tool use.</div></div>
+        <div class="term"><div class="term-name">Tree of Thoughts (ToT)</div><div class="term-def">Framework that explores multiple branching reasoning paths before committing to an answer. More thorough than chain of thought — explores alternatives rather than one path.</div></div>
+        <div class="term"><div class="term-name">Reflexion</div><div class="term-def">Agent loop where the agent critiques its own prior trajectory before re-attempting. Self-correction without retraining — the agent learns from its mistakes within the session.</div></div>
       </div>
     </div>
 
@@ -259,8 +270,11 @@
       <div class="term-grid">
         <div class="term"><div class="term-name">RAG (Retrieval Augmented Generation)</div><div class="term-def">Relevant documents are retrieved from a knowledge base and injected into the prompt before generation. Grounds answers in real data without fine-tuning.</div></div>
         <div class="term"><div class="term-name">Knowledge Base</div><div class="term-def">The collection of documents, facts, or data that a RAG system retrieves from. Internal docs, manuals, FAQs, and code are candidate knowledge bases.</div></div>
+        <div class="term"><div class="term-name">Knowledge Graph</div><div class="term-def">Structured store of entities and their relationships. Goes beyond flat document retrieval — "who reports to whom" or "which component depends on which." Grounds agent reasoning in structured facts.</div></div>
         <div class="term"><div class="term-name">Chunking</div><div class="term-def">Splitting documents into smaller pieces before embedding. Too large misses specifics, too small loses context.</div></div>
         <div class="term"><div class="term-name">Context Stuffing</div><div class="term-def">Loading everything into the context window rather than selectively retrieving. Simple but expensive. Works when the knowledge base is small enough to fit.</div></div>
+        <div class="term"><div class="term-name">Context Engineering</div><div class="term-def">Systematic design of exactly what gets loaded into the model's context window — what to include, exclude, and in what order. The discipline behind effective RAG and agent prompts.</div></div>
+        <div class="term"><div class="term-name">Episodic Memory</div><div class="term-def">Memory of specific past events (what happened, when, in what context) — distinct from general knowledge. Agents with episodic memory can reference "last sprint we saw X."</div></div>
       </div>
     </div>
 
@@ -281,6 +295,7 @@
         <div class="term"><div class="term-name">Cosine Similarity</div><div class="term-def">The most common way to measure how similar two vectors are. Returns -1 to 1. 1 = identical meaning, 0 = unrelated.</div></div>
         <div class="term"><div class="term-name">Re-ranking</div><div class="term-def">A second pass that reorders retrieved chunks by relevance before injecting into the prompt. Improves RAG quality beyond raw vector similarity.</div></div>
         <div class="term"><div class="term-name">Retrieval Precision / Recall</div><div class="term-def">Precision: how many retrieved chunks are actually relevant. Recall: how many relevant chunks were retrieved. Tradeoff — improving one often hurts the other.</div></div>
+        <div class="term"><div class="term-name">Needle-in-a-Haystack</div><div class="term-def">Benchmark that inserts a known fact into a very long context and tests whether the model can find it. Measures effective context window utilisation vs. theoretical maximum.</div></div>
       </div>
     </div>
   </div>
@@ -296,6 +311,7 @@
         <div class="term"><div class="term-name">Agentic Loop</div><div class="term-def">A pattern where the agent runs repeatedly until a goal is met. Hello Scrum: pull → implement → test → review → deploy → repeat.</div></div>
         <div class="term"><div class="term-name">Scaffolding</div><div class="term-def">The code and framework wrapping LLM calls — routing, retries, tool dispatch, logging. agent.py and server.py are the scaffolding in Hello Scrum.</div></div>
         <div class="term"><div class="term-name">Planning</div><div class="term-def">An agent breaking a goal into steps before executing. ReAct is a common planning pattern: think, act, observe, repeat.</div></div>
+        <div class="term"><div class="term-name">Agent vs. Assistant</div><div class="term-def">An agent maintains a goal across multiple steps and acts autonomously until done. An assistant responds to a single query and waits. The distinction matters when building pipelines that need to loop, retry, or make decisions without human input each turn.</div></div>
       </div>
     </div>
 
@@ -303,10 +319,14 @@
       <div class="term-group-label">Capabilities</div>
       <div class="term-grid">
         <div class="term"><div class="term-name">Tool / Action</div><div class="term-def">A specific capability the agent can invoke: read_file, web_search, send_email. Tools have typed schemas — name, description, input parameters.</div></div>
-        <div class="term"><div class="term-name">Tool Use / Function Calling</div><div class="term-def">Giving an LLM the ability to call external functions with structured inputs. The model decides when and how. Used in story elaboration here.</div></div>
+        <div class="term"><div class="term-name">Tool Use</div><div class="term-def">Giving an LLM the ability to call external functions with structured inputs. The model decides when and how to invoke them based on the task. Used in story elaboration here.</div></div>
+        <div class="term"><div class="term-name">Function Calling</div><div class="term-def">OpenAI's structured approach to tool invocation — the model emits a JSON object with a function name and typed arguments. Anthropic calls the same capability "tool use." The two terms are often used interchangeably.</div></div>
+        <div class="term"><div class="term-name">Skill</div><div class="term-def">A self-contained capability bundle loaded on demand by an agent. In Claude Code, skills are markdown files that extend the agent's behaviour for specific tasks.</div></div>
         <div class="term"><div class="term-name">Memory (Short-term)</div><div class="term-def">The current context window — everything the model can "see" in this call. Lost when the call ends.</div></div>
         <div class="term"><div class="term-name">Memory (Long-term)</div><div class="term-def">Persistent storage the agent reads/writes across calls. <em>e.g. wisdom files, sdlc_pipeline.json.</em> Must be explicitly loaded into context.</div></div>
         <div class="term"><div class="term-name">Feedback Loop</div><div class="term-def">How outputs from one step feed into the next. Hello Scrum's wisdom loop is a feedback loop: retro findings → wisdom bullets → better next sprint.</div></div>
+        <div class="term"><div class="term-name">Sandboxed Execution</div><div class="term-def">Running agent-generated code in an isolated environment (microVM or container) so it can't affect the host system. Critical safety measure for any agent that writes and runs code.</div></div>
+        <div class="term"><div class="term-name">Durable Execution</div><div class="term-def">Runtime pattern where long-running workflows survive crashes by checkpointing each step. If the process dies mid-sprint, it resumes from the last completed step rather than starting over.</div></div>
       </div>
     </div>
 
@@ -315,10 +335,46 @@
       <div class="term-grid">
         <div class="term"><div class="term-name">Orchestration</div><div class="term-def">Coordinating multiple agents or LLM calls to complete a complex task. The sprint pipeline (RE → clarify → elaborate → code → review → deploy) is orchestration.</div></div>
         <div class="term"><div class="term-name">Supervisor Agent</div><div class="term-def">An orchestrator that routes tasks to specialist sub-agents. <em>e.g. a router that sends coding tasks to a coder and review tasks to Hermes.</em></div></div>
+        <div class="term"><div class="term-name">Subagent</div><div class="term-def">A child agent spawned by a parent agent, with its own context window and tool budget. The parent delegates a scoped task; the subagent returns a result.</div></div>
+        <div class="term"><div class="term-name">Swarm Pattern</div><div class="term-def">Peer agents that dynamically hand off tasks based on the specialty needed — no fixed supervisor. More flexible than the supervisor pattern, harder to debug.</div></div>
+        <div class="term"><div class="term-name">Fan-out / Fan-in</div><div class="term-def">Dispatching the same task to multiple agents in parallel (fan-out), then merging their outputs into one result (fan-in). Used for speed or independent verification.</div></div>
         <div class="term"><div class="term-name">Handoff</div><div class="term-def">Passing control and context from one agent to another. Each handoff includes the relevant state so the receiving agent has what it needs.</div></div>
         <div class="term"><div class="term-name">Multi-agent</div><div class="term-def">Multiple specialised agents working in parallel or series. Hello Scrum is single-agent + one reviewer (Hermes). Full multi-agent routes work to many coders.</div></div>
         <div class="term"><div class="term-name">Human-in-the-Loop</div><div class="term-def">A human reviews and approves agent decisions at key points. FD approval and Hermes review are human-in-the-loop gates in Hello Scrum.</div></div>
         <div class="term"><div class="term-name">WIP (Work in Progress)</div><div class="term-def">How many items an agent works on simultaneously. AI-DLC enforces WIP=1 — one story at a time. Limits cascading failures.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Protocols & Interoperability -->
+  <div class="section" id="s-protocols">
+    <div class="section-title">Protocols &amp; Interoperability</div>
+
+    <div class="term-group">
+      <div class="term-group-label">Standards</div>
+      <div class="term-grid">
+        <div class="term"><div class="term-name">MCP (Model Context Protocol)</div><div class="term-def">Open JSON-RPC 2.0 standard connecting LLM hosts to external data sources and tools. Defines how a model host discovers and calls tools exposed by an MCP server — without hard-coding integrations per tool.</div></div>
+        <div class="term"><div class="term-name">A2A (Agent-to-Agent Protocol)</div><div class="term-def">Google-led open protocol enabling agents to communicate with each other — passing tasks, context, and results — without sharing internal implementation details. Complements MCP (model-to-tool) with agent-to-agent messaging.</div></div>
+        <div class="term"><div class="term-name">AGNTCY</div><div class="term-def">Cisco-led open framework for agent discovery, identity, messaging, and observability across vendors. Aims to be the interoperability layer for multi-agent systems the way TCP/IP is for networks.</div></div>
+        <div class="term"><div class="term-name">AGENTS.md</div><div class="term-def">Open file convention placing project-specific agent instructions in a repo root file — analogous to README.md but targeted at AI agents working in the codebase. Tells the agent what tools exist, conventions to follow, and what not to touch.</div></div>
+      </div>
+    </div>
+
+    <div class="term-group">
+      <div class="term-group-label">MCP Internals</div>
+      <div class="term-grid">
+        <div class="term"><div class="term-name">MCP Server</div><div class="term-def">The service-side component that exposes tools, resources, and prompts over MCP. Each server is a self-contained capability provider — e.g. a file system server, a database server, a web search server.</div></div>
+        <div class="term"><div class="term-name">MCP Client</div><div class="term-def">The LLM host-side connector that talks to MCP servers. Discovers available tools, routes the model's tool-call requests to the right server, and returns results back into context.</div></div>
+        <div class="term"><div class="term-name">Streamable HTTP</div><div class="term-def">Current MCP transport layer (March 2025), replacing the earlier HTTP+SSE approach. Enables bidirectional streaming between client and server over a single HTTP connection.</div></div>
+      </div>
+    </div>
+
+    <div class="term-group">
+      <div class="term-group-label">SDKs</div>
+      <div class="term-grid">
+        <div class="term"><div class="term-name">Claude Agent SDK</div><div class="term-def">Anthropic's official framework for building autonomous agents. Handles tool dispatch, multi-turn loops, and MCP integration. Designed for production agent pipelines, not just single-turn calls.</div></div>
+        <div class="term"><div class="term-name">OpenAI Agents SDK</div><div class="term-def">Lightweight Python/TypeScript framework for building agentic applications on OpenAI models. Provides tool use, handoffs between agents, and guardrails out of the box.</div></div>
+        <div class="term"><div class="term-name">Vercel AI SDK</div><div class="term-def">TypeScript framework supporting streaming, tool use, and multi-provider agents in web applications. Abstracts over multiple LLM providers with a unified API.</div></div>
       </div>
     </div>
   </div>
@@ -336,6 +392,9 @@
         <div class="term"><div class="term-name">Human Eval</div><div class="term-def">Having humans rate or rank model outputs. Gold standard for quality but expensive and slow. Often used to calibrate automated evals.</div></div>
         <div class="term"><div class="term-name">A/B Testing</div><div class="term-def">Comparing two prompt variants on the same inputs to see which performs better. Essential when changing prompts — change one thing at a time and measure.</div></div>
         <div class="term"><div class="term-name">Benchmark</div><div class="term-def">A standardised evaluation dataset used to compare models. <em>e.g. MMLU, HumanEval.</em> Useful for model selection; less useful for task-specific evals.</div></div>
+        <div class="term"><div class="term-name">SWE-Bench</div><div class="term-def">Benchmark of 2,294 real GitHub issues evaluating coding-agent capability. The standard leaderboard for coding agents. Claude and GPT-4 scores here are widely cited.</div></div>
+        <div class="term"><div class="term-name">OSWorld</div><div class="term-def">Multimodal benchmark of 369 real computer tasks (web, desktop, OS-level). Tests whether an agent can actually use a computer — not just answer questions about one.</div></div>
+        <div class="term"><div class="term-name">TBench (Terminal-Bench)</div><div class="term-def">Stanford benchmark of terminal-mastery tasks for AI agents. Tests real command-line and system-level operations, not just code generation.</div></div>
       </div>
     </div>
 
@@ -376,10 +435,16 @@
       <div class="term-group-label">Training Concepts</div>
       <div class="term-grid">
         <div class="term"><div class="term-name">RLHF (Reinforcement Learning from Human Feedback)</div><div class="term-def">Humans rank model outputs and the model is trained to produce more preferred responses. How Claude and ChatGPT learned to be helpful and harmless.</div></div>
+        <div class="term"><div class="term-name">RLAIF (Reinforcement Learning from AI Feedback)</div><div class="term-def">Replaces human preference labels with LLM-generated critic scores. Cheaper and faster than RLHF. Constitutional AI uses a form of this.</div></div>
+        <div class="term"><div class="term-name">Instruction Tuning</div><div class="term-def">Fine-tuning a base model on instruction-response pairs to make it follow directions. The step that turns a raw language model into a helpful assistant.</div></div>
+        <div class="term"><div class="term-name">RL Post-training</div><div class="term-def">Reinforcement learning applied after supervised pre-training to elicit capabilities — reasoning, tool use, planning — that supervised training alone doesn't reliably produce.</div></div>
+        <div class="term"><div class="term-name">MoE (Mixture of Experts)</div><div class="term-def">Architecture where only a sparse subset of expert subnetworks activates per token. Enables very large models without proportionally large compute costs per inference.</div></div>
+        <div class="term"><div class="term-name">Distillation</div><div class="term-def">Training a smaller "student" model to imitate the outputs of a larger "teacher" model. Gets much of the capability at a fraction of the size and cost.</div></div>
+        <div class="term"><div class="term-name">DSPy</div><div class="term-def">Stanford framework that treats prompts as compiled artifacts with optimizers — instead of hand-writing prompts you define the task and DSPy optimizes the prompt for you.</div></div>
         <div class="term"><div class="term-name">Loss Function</div><div class="term-def">The mathematical measure of how wrong the model's predictions are. Training minimises this. For LLMs: cross-entropy loss on next-token prediction.</div></div>
         <div class="term"><div class="term-name">Gradient Descent</div><div class="term-def">The algorithm that adjusts model weights to reduce loss. Calculates which direction to nudge each weight to improve predictions.</div></div>
         <div class="term"><div class="term-name">Epoch</div><div class="term-def">One complete pass through the training dataset. Multiple epochs = the model sees the same data multiple times. Risk: overfitting if too many.</div></div>
-        <div class="term"><div class="term-name">Batch Size</div><div class="term-def">How many training examples are processed together before weights are updated. Larger batches = more stable but slower training.</div></div>
+        <div class="term"><div class="term-name">Batch Size</div><div class="term-def">How many training examples are processed together before weights are updated. Larger batches give more stable gradients and better GPU utilisation, but require more memory and can produce models that generalise less well.</div></div>
         <div class="term"><div class="term-name">Learning Rate</div><div class="term-def">How aggressively weights are adjusted each training step. Too high = unstable training. Too low = very slow convergence.</div></div>
         <div class="term"><div class="term-name">Overfitting</div><div class="term-def">When a model memorises training examples instead of learning general patterns. Performs well on training data, poorly on new data.</div></div>
         <div class="term"><div class="term-name">Synthetic Data</div><div class="term-def">AI-generated training data used when real labelled data is scarce. A model generates examples that are then used to train another (or itself).</div></div>
@@ -523,6 +588,7 @@
       ['#s-prompts',     'Prompt Engineering'],
       ['#s-rag',         'RAG & Knowledge'],
       ['#s-agents',      'Agents'],
+      ['#s-protocols',   'Protocols'],
       ['#s-eval',        'Evaluation'],
       ['#s-finetune',    'Fine-tuning'],
       ['#s-data',        'Data'],

@@ -2546,7 +2546,6 @@ def primer_scan():
 
     feeds = [
         ("arXiv cs.AI",  "https://arxiv.org/rss/cs.AI"),
-        ("arXiv cs.LG",  "https://arxiv.org/rss/cs.LG"),
         ("Hugging Face", "https://huggingface.co/blog/feed.xml"),
     ]
 
@@ -2554,8 +2553,16 @@ def primer_scan():
     for source_name, url in feeds:
         try:
             req = _url.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-            with _url.urlopen(req, timeout=10) as r:
-                root = ET.fromstring(r.read())
+            with _url.urlopen(req, timeout=20) as r:
+                # Read only first 120KB — enough for ~15 items without downloading 880KB
+                raw = r.read(120_000)
+            # Truncate to last complete item to avoid XML parse errors on partial read
+            for close_tag, tail in [(b"</item>", b"</channel></rss>"), (b"</entry>", b"</feed>")]:
+                cutoff = raw.rfind(close_tag)
+                if cutoff != -1:
+                    raw = raw[:cutoff + len(close_tag)] + tail
+                    break
+            root = ET.fromstring(raw)
             items = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
             for item in items[:15]:
                 title_el = item.find("title") or item.find("{http://www.w3.org/2005/Atom}title")
@@ -2564,8 +2571,8 @@ def primer_scan():
                     title = (title_el.text or "").strip()
                     desc  = re.sub(r"<[^>]+>", "", (desc_el.text or "") if desc_el is not None else "")[:300]
                     papers.append(f"[{source_name}] {title}: {desc}")
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"[primer/scan] {source_name} failed: {e}")
 
     if not papers:
         return jsonify({"error": "Could not fetch any sources"}), 500

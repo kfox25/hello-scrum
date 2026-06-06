@@ -1161,7 +1161,13 @@
         const res = await fetch('/primer/scan', { method: 'POST' });
         const data = await res.json();
 
-        if (data.error) throw new Error(data.error + '\n\n' + (data.diag || []).join('\n'));
+        if (data.error) throw new Error(data.error);
+
+        const meta = data.terms_scanned
+          ? `${data.papers_seen} papers · ${data.terms_scanned} terms extracted`
+          : '';
+
+        const noResults = !data.terms || data.terms.length === 0;
 
         // Inject results into Stay Current section
         const section = document.getElementById('s-current');
@@ -1169,14 +1175,21 @@
         group.id = 'scan-results-group';
         group.className = 'term-group';
         group.innerHTML = `
-          <div class="term-group-label">Scan Results — ${data.date}</div>
-          <div class="term-grid">
-            ${(data.terms || []).map(t => `
-              <div class="term">
-                <div class="term-name">${t.term} <span style="font-size:0.6rem;color:#444;font-family:sans-serif;">${t.source || ''}</span></div>
-                <div class="term-def">${t.definition}</div>
-              </div>`).join('')}
-          </div>`;
+          <div class="term-group-label">Scan Results — ${data.date}${meta ? ' · ' + meta : ''}</div>
+          ${noResults
+            ? `<div style="font-size:0.78rem;color:#555;padding:0.5rem 0;">${data.diag || 'No new bursting terms found.'}</div>`
+            : `<div class="term-grid">
+              ${data.terms.map(t => `
+                <div class="term">
+                  <div class="term-name" style="display:flex;justify-content:space-between;align-items:baseline;">
+                    <span>${t.term}</span>
+                    <span style="font-size:0.6rem;color:#444;font-family:monospace;margin-left:0.5rem;">
+                      ${t.burst ? t.burst + '× burst' : ''}${t.count ? ' · ' + t.count + ' papers' : ''}
+                    </span>
+                  </div>
+                  <div class="term-def">${t.definition}</div>
+                </div>`).join('')}
+            </div>`}`;
         section.appendChild(group);
 
         // Switch to Stay Current so results are visible

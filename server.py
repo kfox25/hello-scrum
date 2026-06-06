@@ -2705,80 +2705,159 @@ def check_test_notify():
         return jsonify({"ok": False, "error": str(e)}), 500
 
 
-@app.route("/primer/scan", methods=["POST"])
-def primer_scan():
+_TERM_HISTORY_FILE = "term_history.json"
+
+
+def _load_term_history():
+    try:
+        with open(_TERM_HISTORY_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
+
+def _save_term_history(history):
+    # Keep only last 30 days
+    keys = sorted(history.keys())[-30:]
+    with open(_TERM_HISTORY_FILE, "w", encoding="utf-8") as f:
+        json.dump({k: history[k] for k in keys}, f)
+
+
+def _burst_score(term_lower, today_count, history, window=7):
+    recent = list(history.values())[-window:]
+    baseline = sum(d.get(term_lower, 0) for d in recent) / max(len(recent), 1)
+    return round(today_count / (baseline + 0.5), 2)
+
+
+def _collect_terms_today():
     import urllib.request as _url
     import xml.etree.ElementTree as ET
+    counts = {}   # term_lower -> count
+    originals = {}  # term_lower -> display form (preserve case of first seen)
+    paper_titles = []
 
-    feeds = [
-        ("arXiv cs.AI",  "https://arxiv.org/rss/cs.AI"),
-        ("Hugging Face", "https://huggingface.co/blog/feed.xml"),
-    ]
+    # --- HuggingFace daily_papers (ai_keywords pre-extracted) ---
+    try:
+        req = _url.Request("https://huggingface.co/api/daily_papers",
+                           headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
+        with _url.urlopen(req, timeout=15) as r:
+            papers = json.loads(r.read())
+        for entry in papers:
+            p = entry.get("paper", {})
+            paper_titles.append(f"[HF] {p.get('title', '')}")
+            for kw in p.get("ai_keywords", []):
+                kw = kw.strip()
+                if 2 < len(kw) < 60:
+                    kl = kw.lower()
+                    counts[kl] = counts.get(kl, 0) + 1
+                    originals.setdefault(kl, kw)
+    except Exception as e:
+        print(f"[primer-scan] HF daily_papers failed: {e}")
 
-    papers = []
-    diag = []
-    for source_name, url in feeds:
+    # --- arXiv RSS: cs.AI, cs.LG, cs.CL ---
+    for feed_url, label in [
+        ("https://arxiv.org/rss/cs.AI", "arXiv cs.AI"),
+        ("https://arxiv.org/rss/cs.LG", "arXiv cs.LG"),
+        ("https://arxiv.org/rss/cs.CL", "arXiv cs.CL"),
+    ]:
         try:
-            req = _url.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            req = _url.Request(feed_url, headers={"User-Agent": "Mozilla/5.0"})
             with _url.urlopen(req, timeout=20) as r:
                 raw = r.read(120_000)
-            diag.append(f"{source_name}: read {len(raw)} bytes")
-            for close_tag, tail in [(b"</item>", b"</channel></rss>"), (b"</entry>", b"</feed>")]:
-                cutoff = raw.rfind(close_tag)
-                if cutoff != -1:
-                    raw = raw[:cutoff + len(close_tag)] + tail
-                    diag.append(f"{source_name}: truncated at {close_tag}")
-                    break
+            cutoff = raw.rfind(b"</item>")
+            if cutoff != -1:
+                raw = raw[:cutoff + 7] + b"</channel></rss>"
             root = ET.fromstring(raw)
-            items = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
-            diag.append(f"{source_name}: {len(items)} items parsed")
-            for item in items[:15]:
-                title_el = item.find("title")
-                if title_el is None:
-                    title_el = item.find("{http://www.w3.org/2005/Atom}title")
-                desc_el = item.find("description")
-                if desc_el is None:
-                    desc_el = item.find("{http://www.w3.org/2005/Atom}summary")
-                if title_el is not None:
-                    title = (title_el.text or "").strip()
-                    desc  = re.sub(r"<[^>]+>", "", (desc_el.text or "") if desc_el is not None else "")[:300]
-                    papers.append(f"[{source_name}] {title}: {desc}")
-            diag.append(f"{source_name}: {len([p for p in papers if source_name in p])} papers added")
+            for item in root.findall(".//item")[:25]:
+                t = item.find("title")
+                if t is None:
+                    continue
+                title = (t.text or "").strip()
+                paper_titles.append(f"[{label}] {title}")
+                # Extract: acronyms (2+ caps), Title Case bigrams, hyphenated compounds
+                acronyms = re.findall(r'\b[A-Z]{2,}\b', title)
+                bigrams  = re.findall(r'\b([A-Z][a-z]+(?:\s[A-Z][a-z]+)+)\b', title)
+                hyphen   = re.findall(r'\b[A-Za-z]+-[A-Za-z]+(?:-[A-Za-z]+)?\b', title)
+                for term in acronyms + bigrams + hyphen:
+                    term = term.strip()
+                    if 2 < len(term) < 50:
+                        tl = term.lower()
+                        counts[tl] = counts.get(tl, 0) + 1
+                        originals.setdefault(tl, term)
         except Exception as e:
-            diag.append(f"{source_name} EXCEPTION: {type(e).__name__}: {e}")
+            print(f"[primer-scan] {label} failed: {e}")
 
-    if not papers:
-        return jsonify({"error": "Could not fetch any sources", "diag": diag}), 500
+    return counts, originals, paper_titles
 
+
+@app.route("/primer/scan", methods=["POST"])
+def primer_scan():
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    # Collect today's term counts
+    counts, originals, paper_titles = _collect_terms_today()
+    if not counts:
+        return jsonify({"error": "Could not fetch any sources"}), 500
+
+    # Load history, update with today, save
+    history = _load_term_history()
+    history[today] = {k: counts[k] for k in counts}
+    _save_term_history(history)
+
+    # Calculate burst scores (exclude today from the baseline window)
+    past_history = {k: v for k, v in history.items() if k != today}
+    scored = []
+    for term_lower, today_count in counts.items():
+        score = _burst_score(term_lower, today_count, past_history)
+        scored.append((originals[term_lower], today_count, score))
+
+    # Filter: burst score > 1.5, appeared in 2+ papers, sort by score desc
+    bursting = sorted(
+        [(t, c, s) for t, c, s in scored if s >= 1.5 and c >= 2],
+        key=lambda x: x[2], reverse=True
+    )[:20]
+
+    # Load existing primer terms
     try:
         with open("ai-primer.html", "r", encoding="utf-8") as f:
             primer_html = f.read()
-        existing_terms = re.findall(r'class="term-name">(.*?)</div>', primer_html)
-        existing_terms = [re.sub(r"<[^>]+>", "", t).strip() for t in existing_terms]
+        existing_raw = re.findall(r'class="(?:term-name|ol-term)">(.*?)</div>', primer_html)
+        existing_terms = {re.sub(r"<[^>]+>", "", t).strip().lower() for t in existing_raw}
     except Exception:
-        existing_terms = []
+        existing_terms = set()
 
-    prompt = f"""You are reviewing recent AI research to find new terminology for a developer study glossary.
+    # Filter out terms already in primer
+    candidates = [(t, c, s) for t, c, s in bursting if t.lower() not in existing_terms][:15]
 
-Terms already in the glossary — do NOT suggest these:
-{", ".join(existing_terms[:120])}
+    if not candidates:
+        return jsonify({"terms": [], "date": today,
+                        "diag": f"{len(counts)} terms seen today, none bursting and new"}), 200
 
-Recent papers and posts:
-{chr(10).join(papers[:35])}
+    # Ask Haiku to validate and define the top candidates
+    candidate_list = "\n".join(f"- {t} (in {c} papers, burst {s}x)" for t, c, s in candidates)
+    sample_titles  = "\n".join(paper_titles[:20])
 
-Identify 5-8 new AI terms from the above that are not in the existing list, are likely to become durable vocabulary (not paper-specific branding), and would be useful to a practical AI developer.
+    prompt = f"""You are curating an AI developer glossary. Below are terms extracted from today's AI papers that are appearing more than usual (burst score = today's count vs 7-day average).
+
+Candidate terms (term, paper count, burst score):
+{candidate_list}
+
+Sample paper titles for context:
+{sample_titles}
+
+Select 5-8 of these that are likely to become durable AI vocabulary — not paper-specific brand names, not overly narrow. For each write a plain-language definition of 1-2 sentences.
 
 Return JSON only:
 {{
   "terms": [
-    {{"term": "Term Name", "definition": "One or two sentence plain-language definition.", "source": "arXiv cs.AI"}}
+    {{"term": "Term Name", "definition": "Definition.", "count": 3, "burst": 2.4}}
   ]
 }}"""
 
     client = anthropic.Anthropic()
     response = client.messages.create(
         model="claude-haiku-4-5-20251001",
-        max_tokens=1200,
+        max_tokens=1400,
         messages=[{"role": "user", "content": prompt}]
     )
     text = response.content[0].text.strip()
@@ -2786,7 +2865,9 @@ Return JSON only:
     if not match:
         return jsonify({"error": "Could not parse response"}), 500
     result = json.loads(match.group())
-    result["date"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+    result["date"]         = datetime.now().strftime("%Y-%m-%d %H:%M")
+    result["terms_scanned"] = len(counts)
+    result["papers_seen"]   = len(paper_titles)
     return jsonify(result)
 
 

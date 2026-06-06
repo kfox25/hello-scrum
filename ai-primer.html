@@ -622,6 +622,7 @@
       navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
       window.scrollTo(0, 0);
       _activeSection = id;
+      localStorage.setItem('primer-section', id);
       lastIdx = -1;
       nextQuestion();
     }
@@ -686,7 +687,7 @@
       document.getElementById('quizReveal').style.display = 'none';
     }
 
-    showSection('s-foundation');
+    showSection(localStorage.getItem('primer-section') || 's-foundation');
 
     async function runScan() {
       const btn = document.getElementById('scanBtn');

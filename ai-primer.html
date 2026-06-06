@@ -223,10 +223,14 @@
       </div>
       <div class="outline-row indent">
         <div class="ol-term">Deployment</div>
-        <div class="ol-def">The trained, quantised model is loaded onto inference servers and exposed via API. From here, every call you make runs against these frozen weights — the model itself doesn't change. Updates require a new training run.</div>
+        <div class="ol-def">The trained, quantised model is loaded onto inference servers and exposed via API. From here, every call you make runs against these frozen weights — the model itself doesn't change. Updates require a new training run. <strong>This is where Anthropic's job ends and yours begins.</strong></div>
       </div>
 
-      <div class="outline-heading">Phase 1 — Prepare knowledge (done once, offline)</div>
+      <div class="outline-heading">Phase 1 — Prepare your knowledge (optional — only if using RAG)</div>
+      <div class="outline-row">
+        <div class="ol-term">⚠ RAG is optional</div>
+        <div class="ol-def">Phases 1 and 2 only apply if you are grounding the model in your own data — documents, databases, internal knowledge. If you are writing prompts directly and calling the model without external retrieval, skip to Phase 3.</div>
+      </div>
       <div class="outline-row">
         <div class="ol-term">Raw Data</div>
         <div class="ol-def">Documents, PDFs, web pages, code, databases — anything the model should be able to reference. Raw data is unstructured and too large to fit in a prompt. It must be processed before the model can use it.</div>
@@ -318,8 +322,8 @@
         <div class="ol-def">The key-value pairs computed during attention are cached so they don't need recomputing for each new output token. Without KV cache, generating 500 tokens would require 500 full forward passes. With it, only new tokens need processing.</div>
       </div>
       <div class="outline-row indent">
-        <div class="ol-term">Forward Pass</div>
-        <div class="ol-def">One complete run through all transformer layers for a token. At each layer: attention → feed-forward network → normalisation. Repeated for every layer in the model (e.g. 96 layers in a large model).</div>
+        <div class="ol-term">Forward Pass (inference)</div>
+        <div class="ol-def">Same operation as training — one complete run through all transformer layers — but no backpropagation follows. At inference time the weights are frozen; the forward pass only produces a prediction, it does not update anything.</div>
       </div>
       <div class="outline-row indent">
         <div class="ol-term">Logits</div>

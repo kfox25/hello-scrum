@@ -2567,8 +2567,12 @@ def primer_scan():
             items = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
             diag.append(f"{source_name}: {len(items)} items parsed")
             for item in items[:15]:
-                title_el = item.find("title") or item.find("{http://www.w3.org/2005/Atom}title")
-                desc_el  = item.find("description") or item.find("{http://www.w3.org/2005/Atom}summary")
+                title_el = item.find("title")
+                if title_el is None:
+                    title_el = item.find("{http://www.w3.org/2005/Atom}title")
+                desc_el = item.find("description")
+                if desc_el is None:
+                    desc_el = item.find("{http://www.w3.org/2005/Atom}summary")
                 if title_el is not None:
                     title = (title_el.text or "").strip()
                     desc  = re.sub(r"<[^>]+>", "", (desc_el.text or "") if desc_el is not None else "")[:300]

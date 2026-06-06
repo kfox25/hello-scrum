@@ -2668,7 +2668,10 @@ def _run_job_check(seed=False):
 def _job_checker_loop():
     _run_job_check(seed=True)   # populate seen list on startup, no notification
     while True:
-        time.sleep(3600)
+        now     = datetime.now()
+        seconds = 3600 - (now.minute * 60 + now.second)
+        print(f"[job-check] next check at top of hour in {seconds}s ({now.strftime('%H:%M:%S')})")
+        time.sleep(seconds)
         _run_job_check()
 
 threading.Thread(target=_job_checker_loop, daemon=True).start()

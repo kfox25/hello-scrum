@@ -93,11 +93,17 @@
       try {
         const data = await fetch('/check/status').then(r => r.json());
         const el = document.getElementById('autoStatus');
-        if (!data.last_checked) { el.textContent = 'Auto-check: seeding on startup...'; return; }
-        const parts = [`auto-check: last ran ${data.last_checked}`, `${data.total} total`];
-        if (data.last_new_count > 0) parts.push(`${data.last_new_count} new → notified via ntfy`);
+        const now  = new Date();
+        const next = new Date(now);
+        next.setHours(next.getHours() + 1, 0, 0, 0);
+        const mins = Math.round((next - now) / 60000);
+        const nextStr = next.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+
+        if (!data.last_checked) { el.textContent = `Auto-check: seeding on startup · next check at ${nextStr} (${mins}m)`; return; }
+        const parts = [`last checked ${data.last_checked}`, `${data.total} total`];
+        if (data.last_new_count > 0) parts.push(`${data.last_new_count} new → notified`);
         if (data.error) parts.push(`error: ${data.error}`);
-        parts.push('checks every hour');
+        parts.push(`next check at ${nextStr} (${mins}m)`);
         el.textContent = parts.join(' · ');
       } catch (e) {}
     }

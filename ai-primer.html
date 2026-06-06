@@ -702,7 +702,7 @@
         const res = await fetch('/primer/scan', { method: 'POST' });
         const data = await res.json();
 
-        if (data.error) throw new Error(data.error);
+        if (data.error) throw new Error(data.error + (data.details ? '\n' + data.details.join('\n') : ''));
 
         // Inject results into Stay Current section
         const section = document.getElementById('s-current');

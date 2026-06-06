@@ -2572,10 +2572,13 @@ def primer_scan():
                     desc  = re.sub(r"<[^>]+>", "", (desc_el.text or "") if desc_el is not None else "")[:300]
                     papers.append(f"[{source_name}] {title}: {desc}")
         except Exception as e:
-            print(f"[primer/scan] {source_name} failed: {e}")
+            papers.append(f"[ERROR:{source_name}] {type(e).__name__}: {e}")
+
+    errors = [p for p in papers if p.startswith("[ERROR:")]
+    papers  = [p for p in papers if not p.startswith("[ERROR:")]
 
     if not papers:
-        return jsonify({"error": "Could not fetch any sources"}), 500
+        return jsonify({"error": "Could not fetch any sources", "details": errors}), 500
 
     try:
         with open("ai-primer.html", "r", encoding="utf-8") as f:

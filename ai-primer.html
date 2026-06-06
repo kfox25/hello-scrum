@@ -143,6 +143,98 @@
   <h1>AI Primer</h1>
   <div class="subtitle">Personal study reference — terminology grouped by topic</div>
 
+  <!-- AI Workflow -->
+  <div class="section" id="s-workflow">
+    <div class="section-title">AI Workflow</div>
+    <div class="outline-block">
+
+      <div class="outline-heading">1 — The lifecycle</div>
+      <div class="outline-row">
+        <div class="ol-term">Intent</div>
+        <div class="ol-def">A high-level statement of what you want to build. <em>"Add a leaderboard showing sprint performance."</em> The starting point for every AI-assisted feature. Broad enough to allow elaboration, specific enough to be actionable.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Inception</div>
+        <div class="ol-def">The AI-assisted ritual that turns an Intent into a set of stories ready to execute. Includes workspace detection, reverse engineering, requirements analysis, and elaboration. Output: Unit + Stories + Bolts + NFRs + Risks.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Construction</div>
+        <div class="ol-def">The AI executes each story — generating code, running tests, reviewing output. The human reviews and approves at key gates. Output: working, tested, reviewed code merged to the codebase.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Operations</div>
+        <div class="ol-def">Deploy, observe, maintain. AI monitors telemetry, detects anomalies, proposes mitigations. Human approves changes. Output: stable running system with incident response.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Learning Loop</div>
+        <div class="ol-def">Retrospective findings fed back into future sprints as wisdom. What worked, what failed, what patterns emerged. Closes the cycle: each sprint improves the next.</div>
+      </div>
+
+      <div class="outline-heading">2 — Key artifacts</div>
+      <div class="outline-row">
+        <div class="ol-term">Unit</div>
+        <div class="ol-def">A cohesive, independently deployable block of work derived from an Intent. Analogous to an Epic in Scrum or a subdomain in DDD. Contains a set of Stories.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Story</div>
+        <div class="ol-def">A user story within a Unit. "As a [role] I want [feature] so that [value]." Has explicit acceptance criteria. The contract the agent implements and Hermes verifies.</div>
+      </div>
+      <div class="outline-row indent2">
+        <div class="ol-term">Acceptance Criteria (AC)</div>
+        <div class="ol-def">Specific, observable conditions a story must satisfy to be done. Each criterion must be independently verifiable — not "works correctly" but "when X happens, Y is visible." The agent codes to AC; the reviewer checks against AC.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Bolt</div>
+        <div class="ol-def">The smallest iteration — a sprint containing a collection of Stories from a Unit. Analogous to a Sprint in Scrum. A Unit may take multiple Bolts to complete. NOT a sub-task inside a story.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Functional Design (FD)</div>
+        <div class="ol-def">A pre-approved implementation plan for a story — approach, elements to add/modify, risks. Generated and reviewed before coding begins. Reduces scope creep: the agent follows the approved plan, not its own interpretation.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">NFR (Non-Functional Requirement)</div>
+        <div class="ol-def">Requirements about how the system behaves rather than what it does — performance, security, accessibility, reliability. Often missed in AI-generated stories. Must be specified explicitly or the agent ignores them.</div>
+      </div>
+
+      <div class="outline-heading">3 — Quality gates</div>
+      <div class="outline-row">
+        <div class="ol-term">Definition of Done (DoD)</div>
+        <div class="ol-def">The agreed checklist a story must pass before it counts as complete: tests pass, code reviewed, AC checked, deployed. Without a DoD, "done" is whatever the agent says it is.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">LLM-as-Judge (Hermes)</div>
+        <div class="ol-def">A separate AI reviewer that evaluates the coding agent's output for correctness and AC compliance. Catches errors the agent doesn't self-report. The human-in-the-loop gate before deployment.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Test Results</div>
+        <div class="ol-def">Structured evidence of whether the implementation works. Not a pass/fail flag — a list of {status, message} objects. The agent must check actual test outcomes, not assume success.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">WIP Limit</div>
+        <div class="ol-def">Maximum stories in progress simultaneously. WIP=1 means the agent finishes one story completely before starting the next. Prevents cascading failures where an early mistake corrupts multiple parallel work items.</div>
+      </div>
+
+      <div class="outline-heading">4 — Context data flow</div>
+      <div class="outline-row">
+        <div class="ol-term">Workspace Detection</div>
+        <div class="ol-def">Scanning the codebase to understand what already exists — languages, frameworks, data models, pipeline stages. Run before requirements analysis so AI questions reference actual field names and endpoints, not generic assumptions.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Reverse Engineering</div>
+        <div class="ol-def">Extracting an architecture summary from the live codebase — components, key endpoints, business transactions, code structure. Injected into requirements and elaboration prompts to ground generated stories in reality.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Wisdom Files</div>
+        <div class="ol-def">Persistent lesson files updated each retro. Coding wisdom = implementation directives injected into the agent. AC wisdom = story-writing directives injected into elaboration. Build up over sprints; survive server restarts.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Prompt Chaining</div>
+        <div class="ol-def">Each stage's output feeds the next: workspace → reverse engineering → requirements → elaboration → functional design → coding agent. Each step narrows context so the final agent prompt is precise, not generic.</div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Foundation -->
   <div class="section" id="s-foundation">
     <div class="section-title">Foundation</div>
@@ -1042,11 +1134,104 @@
     </div>
   </div>
 
+  <!-- Product Owner -->
+  <div class="section" id="s-po">
+    <div class="section-title">Product Owner</div>
+    <div class="outline-block">
+
+      <div class="outline-heading">1 — Writing stories</div>
+      <div class="outline-row">
+        <div class="ol-term">User Story</div>
+        <div class="ol-def">"As a [specific persona] I want [feature] so that [concrete business value]." Three parts, all required. The persona must be specific (not "user"). The "so that" must state real value (not "so I can see it").</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">INVEST</div>
+        <div class="ol-def">Six criteria for a well-formed story: Independent (can be built alone), Negotiable (details flexible), Valuable (delivers user value), Estimable (team can size it), Small (fits in a sprint), Testable (AC can be verified). Fail any one and the story needs work.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Acceptance Criteria</div>
+        <div class="ol-def">Specific, observable conditions a story must meet to be done. Good AC: "When the user navigates to /leaderboard, sprints are listed newest-first." Bad AC: "The leaderboard works correctly." Each criterion should be independently verifiable.</div>
+      </div>
+      <div class="outline-row indent2">
+        <div class="ol-term">Given / When / Then</div>
+        <div class="ol-def">A structured AC format. Given [initial state], When [action taken], Then [observable result]. Forces specificity — you can't write vague AC in this format without noticing it.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Story Splitting</div>
+        <div class="ol-def">Breaking a large story into smaller independently deliverable ones. Split by workflow step, data type, role, or happy path vs edge cases — not by technical layer. Avoid "front-end story" / "back-end story" splits that deliver no value alone.</div>
+      </div>
+
+      <div class="outline-heading">2 — Backlog management</div>
+      <div class="outline-row">
+        <div class="ol-term">Product Backlog</div>
+        <div class="ol-def">The ordered list of all work to be done — features, fixes, NFRs, technical debt. The PO owns priority. Items at the top are refined and ready; items at the bottom are rough and unordered.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Backlog Refinement</div>
+        <div class="ol-def">The ongoing process of elaborating, estimating, and ordering backlog items. In AI-DLC, this is where Inception runs — turning intent into stories with AC before sprint planning.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Sprint Goal</div>
+        <div class="ol-def">A single sentence describing the "why" of the sprint — what outcome the team is trying to achieve, not a list of stories. Guides scope decisions when surprises arise mid-sprint.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Opportunity</div>
+        <div class="ol-def">An idea or request that hasn't been elaborated into a story yet. Pre-backlog. The PO decides which opportunities are worth the elaboration investment.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Story Map</div>
+        <div class="ol-def">A visual layout of user activities (horizontal) with stories beneath each activity (vertical). Reveals gaps and shows what a minimal viable release looks like — the horizontal slice, not a vertical stack of one feature.</div>
+      </div>
+
+      <div class="outline-heading">3 — AI-specific PO concerns</div>
+      <div class="outline-row">
+        <div class="ol-term">Non-Functional Requirements (NFRs)</div>
+        <div class="ol-def">Performance, reliability, security, accessibility requirements. AI agents routinely ignore these unless explicitly stated in AC. <em>e.g. "Response time under 2 seconds", "No PII logged", "Screen-reader accessible."</em></div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Prompt as Requirement</div>
+        <div class="ol-def">The system prompt is a product requirement — it defines agent behaviour. Changes to prompts change product behaviour. POs should review and approve prompt changes the same way they review feature changes.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Observable Outcome</div>
+        <div class="ol-def">AI implementations must have outcomes a human can verify without reading code. "The leaderboard appears on the app page grouped by sprint" is observable. "The data is fetched correctly" is not — you can't see it without debugging.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Regression Risk</div>
+        <div class="ol-def">AI agents can break existing functionality while implementing new features — especially when modifying shared files. AC must explicitly protect existing behaviour: "existing sprint cards still display correctly after this change."</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Scope Creep (Agent)</div>
+        <div class="ol-def">AI agents tend to "improve" things beyond the story scope — renaming variables, restructuring files, adding features not requested. AC must constrain this: "no changes to files other than X" and "no new pages or routes."</div>
+      </div>
+
+      <div class="outline-heading">4 — Prioritisation frameworks</div>
+      <div class="outline-row">
+        <div class="ol-term">MoSCoW</div>
+        <div class="ol-def">Must Have / Should Have / Could Have / Won't Have. Classifies stories by necessity for a given release. Forces explicit decisions about what's truly required vs. nice to have.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Value vs. Effort</div>
+        <div class="ol-def">Plot stories on a 2×2: high value + low effort = do first; low value + high effort = cut. Simple but effective for backlog ordering. Value is estimated by the PO; effort by the team.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">WSJF (Weighted Shortest Job First)</div>
+        <div class="ol-def">SAFe prioritisation: (Business Value + Time Criticality + Risk Reduction) ÷ Job Size. Surfaces small, high-value, time-sensitive items. More rigorous than gut-feel ordering for large backlogs.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Technical Debt</div>
+        <div class="ol-def">Deferred work that makes future changes harder. AI agents can accumulate technical debt fast — generating code that works but isn't maintainable. POs must budget debt repayment into the backlog or velocity degrades over time.</div>
+      </div>
+
+    </div>
+  </div>
+
   <script src="shared.js"></script>
   <script>
     const sideNav = document.createElement('div');
     sideNav.className = 'wf-nav';
     [
+      ['#s-workflow',    'AI Workflow'],
       ['#s-foundation',  'Foundation'],
       ['#s-llm',         'How LLMs Work'],
       ['#s-prompts',     'Prompt Engineering'],
@@ -1060,6 +1245,7 @@
       ['#s-multimodal',  'Multimodal'],
       ['#s-safety',      'Safety & Ethics'],
       ['#s-current',     'Stay Current'],
+      ['#s-po',          'Product Owner'],
     ].forEach(([href, label]) => {
       const a = document.createElement('a');
       a.href = href; a.textContent = label;
@@ -1145,7 +1331,7 @@
       document.getElementById('quizReveal').style.display = 'none';
     }
 
-    showSection(localStorage.getItem('primer-section') || 's-foundation');
+    showSection(localStorage.getItem('primer-section') || 's-workflow');
 
     async function runScan() {
       const btn = document.getElementById('scanBtn');

@@ -23,32 +23,32 @@
 
     .scan-btn-fixed {
       position: fixed; top: 9.75rem; right: 1.5rem; z-index: 90;
-      display: flex; flex-direction: column; gap: 0.75rem; width: 220px;
+      display: flex; flex-direction: column; gap: 0.75rem; width: 300px;
     }
     .quiz-card {
       background: #111; border: 1px solid #2a2a2a; border-radius: 6px;
-      padding: 0.85rem 1rem; font-size: 0.75rem;
+      padding: 1.2rem 1.3rem; font-size: 0.85rem;
     }
     .quiz-label {
-      font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.1em;
-      color: #444; margin-bottom: 0.5rem;
+      font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: #444; margin-bottom: 0.6rem;
     }
-    .quiz-question { color: #888; line-height: 1.6; margin-bottom: 0.75rem; }
+    .quiz-question { color: #888; line-height: 1.7; margin-bottom: 1rem; font-size: 0.88rem; }
     .quiz-answer {
-      font-family: monospace; font-size: 0.82rem; color: #00ff99;
-      margin-bottom: 0.75rem; min-height: 1.2rem;
+      font-family: monospace; font-size: 0.95rem; color: #00ff99;
+      margin-bottom: 1rem; min-height: 1.4rem;
     }
     .quiz-actions { display: flex; gap: 0.5rem; }
     .quiz-btn {
       background: #0a1f12; color: #00ff99; border: 1px solid #00ff9940;
-      padding: 0.25rem 0.65rem; border-radius: 4px; cursor: pointer;
-      font-family: monospace; font-size: 0.72rem;
+      padding: 0.35rem 0.85rem; border-radius: 4px; cursor: pointer;
+      font-family: monospace; font-size: 0.8rem;
     }
     .quiz-btn:hover { border-color: #00ff99; }
     .quiz-btn-grey {
       background: #1a1a1a; color: #555; border: 1px solid #2a2a2a;
-      padding: 0.25rem 0.65rem; border-radius: 4px; cursor: pointer;
-      font-family: monospace; font-size: 0.72rem;
+      padding: 0.35rem 0.85rem; border-radius: 4px; cursor: pointer;
+      font-family: monospace; font-size: 0.8rem;
     }
     .quiz-btn-grey:hover { color: #888; border-color: #444; }
 
@@ -817,6 +817,40 @@
       <div class="outline-row">
         <div class="ol-term">WIP Limit</div>
         <div class="ol-def">Capping how many items an agent works on simultaneously. WIP=1 means one task at a time. Prevents cascading failures where a bad early decision corrupts multiple parallel work streams.</div>
+      </div>
+
+      <div class="outline-heading">4 — Agent memory (CoALA framework)</div>
+      <div class="outline-row">
+        <div class="ol-term">CoALA</div>
+        <div class="ol-def">Cognitive Architectures for Language Agents — a Princeton framework that maps four distinct memory types onto AI agents, mirroring how human memory works. Not every agent needs all four.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Working Memory</div>
+        <div class="ol-def">The context window — everything the agent can see right now. Fast and immediately accessible but volatile: gone when the session ends, and limited in size. Every agent has this; it's what makes a chatbot a chatbot too. Analogy: RAM.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Semantic Memory</div>
+        <div class="ol-def">The agent's persistent knowledge base — facts, rules, conventions, documentation. Loaded into context at session start. In Claude Code this is <em>CLAUDE.md</em>. Without it, the agent repeats the same mistakes because it has nothing persistent to draw from. Analogy: a textbook.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Procedural Memory</div>
+        <div class="ol-def">How the agent knows how to do things. Implemented as <em>skill.md</em> files — named step-by-step instructions for a specific task type. Skills use progressive disclosure: the agent loads a lightweight index first, then pulls in the full skill only when a task matches. Analogy: muscle memory.</div>
+      </div>
+      <div class="outline-row indent2">
+        <div class="ol-term">Progressive Disclosure</div>
+        <div class="ol-def">The agent sees only a short name + description for each skill (~100 tokens). Full instructions load only when a task triggers that skill. Prevents blowing the context budget when many skills are defined.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Episodic Memory</div>
+        <div class="ol-def">Distilled notes from past sessions — not raw transcripts, but compressed lessons worth carrying forward. <em>e.g. "Last time we debugged auth, the issue was in the middleware layer."</em> This is what makes an agent genuinely improve over time. Analogy: personal experience.</div>
+      </div>
+      <div class="outline-row indent2">
+        <div class="ol-term">The forgetting problem</div>
+        <div class="ol-def">Episodic memory is the hardest to get right. When does information become obsolete? Humans forget naturally — for agents it's an engineering decision. No good universal answer yet.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Memory by agent type</div>
+        <div class="ol-def">Simple reflex agents (thermostat, routing bot) need only working memory. A narrow support agent (password reset) adds procedural. A full coding agent needs all four: working + semantic + procedural + episodic.</div>
       </div>
 
     </div>

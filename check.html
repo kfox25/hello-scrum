@@ -80,6 +80,7 @@
 
   <div class="check-bar">
     <button class="btn-run" id="runBtn" onclick="runCheck()">Run Check →</button>
+    <button class="btn-run" id="testBtn" onclick="testNotify()" style="border-color:#ffffff20;color:#555;">Test Notify</button>
     <span class="check-meta" id="checkMeta"></span>
   </div>
   <div id="autoStatus" style="font-size:0.72rem;color:#444;font-family:monospace;margin-bottom:1.5rem;"></div>
@@ -144,6 +145,22 @@
         btn.disabled = false;
         btn.textContent = 'Run Check →';
         loadStatus();
+      }
+    }
+
+    async function testNotify() {
+      const btn  = document.getElementById('testBtn');
+      const meta = document.getElementById('checkMeta');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      try {
+        const data = await fetch('/check/test-notify', { method: 'POST' }).then(r => r.json());
+        meta.textContent = data.ok ? '✓ notification sent — check your phone' : `error: ${data.error}`;
+      } catch (e) {
+        meta.textContent = `failed: ${e.message}`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Test Notify';
       }
     }
 

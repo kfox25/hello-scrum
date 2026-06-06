@@ -2643,6 +2643,23 @@ def check_status():
     return jsonify(_job_check_status)
 
 
+@app.route("/check/test-notify", methods=["POST"])
+def check_test_notify():
+    import urllib.request as _url
+    try:
+        body = "Test notification from Hello Scrum — job checker is working."
+        req = _url.Request(
+            f"https://ntfy.sh/{_NTFY_TOPIC}",
+            data=body.encode("utf-8"),
+            headers={"Title": "Hello Scrum Test", "Tags": "white_check_mark", "Priority": "default"},
+        )
+        with _url.urlopen(req, timeout=10):
+            pass
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
 @app.route("/primer/scan", methods=["POST"])
 def primer_scan():
     import urllib.request as _url

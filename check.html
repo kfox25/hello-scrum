@@ -129,17 +129,27 @@
           return;
         }
 
-        out.innerHTML = `
-          <div class="source-label">${data.count} openings</div>
-          <div class="job-list">
-            ${data.jobs.map(j => `
-              <div class="job-card">
-                <a class="job-title" href="${j.url}" target="_blank">${j.title}</a>
-                <span class="job-meta">${j.city}${j.city && j.state ? ', ' : ''}${j.state}</span>
-                <span class="job-source" style="font-size:0.65rem;color:#444;font-family:monospace;white-space:nowrap;">${j.source}</span>
-                <span class="job-date">${j.date}</span>
-              </div>`).join('')}
-          </div>`;
+        // Group by source
+        const grouped = {};
+        data.jobs.forEach(j => {
+          if (!grouped[j.source]) grouped[j.source] = [];
+          grouped[j.source].push(j);
+        });
+
+        const sections = Object.entries(grouped).map(([source, jobs]) => `
+          <div style="margin-bottom:1.5rem;">
+            <div class="source-label">${source} — ${jobs.length} opening${jobs.length !== 1 ? 's' : ''}</div>
+            <div class="job-list">
+              ${jobs.map(j => `
+                <div class="job-card">
+                  <a class="job-title" href="${j.url}" target="_blank">${j.title}</a>
+                  <span class="job-meta">${j.city}${j.city && j.state ? ', ' : ''}${j.state}</span>
+                  <span class="job-date">${j.date}</span>
+                </div>`).join('')}
+            </div>
+          </div>`).join('');
+
+        out.innerHTML = sections;
       } catch (e) {
         out.innerHTML = `<div class="error-msg">Failed: ${e.message}</div>`;
       } finally {

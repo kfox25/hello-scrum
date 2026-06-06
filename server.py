@@ -2550,20 +2550,22 @@ def primer_scan():
     ]
 
     papers = []
+    diag = []
     for source_name, url in feeds:
         try:
             req = _url.Request(url, headers={"User-Agent": "Mozilla/5.0"})
             with _url.urlopen(req, timeout=20) as r:
-                # Read only first 120KB — enough for ~15 items without downloading 880KB
                 raw = r.read(120_000)
-            # Truncate to last complete item to avoid XML parse errors on partial read
+            diag.append(f"{source_name}: read {len(raw)} bytes")
             for close_tag, tail in [(b"</item>", b"</channel></rss>"), (b"</entry>", b"</feed>")]:
                 cutoff = raw.rfind(close_tag)
                 if cutoff != -1:
                     raw = raw[:cutoff + len(close_tag)] + tail
+                    diag.append(f"{source_name}: truncated at {close_tag}")
                     break
             root = ET.fromstring(raw)
             items = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
+            diag.append(f"{source_name}: {len(items)} items parsed")
             for item in items[:15]:
                 title_el = item.find("title") or item.find("{http://www.w3.org/2005/Atom}title")
                 desc_el  = item.find("description") or item.find("{http://www.w3.org/2005/Atom}summary")
@@ -2571,14 +2573,12 @@ def primer_scan():
                     title = (title_el.text or "").strip()
                     desc  = re.sub(r"<[^>]+>", "", (desc_el.text or "") if desc_el is not None else "")[:300]
                     papers.append(f"[{source_name}] {title}: {desc}")
+            diag.append(f"{source_name}: {len([p for p in papers if source_name in p])} papers added")
         except Exception as e:
-            papers.append(f"[ERROR:{source_name}] {type(e).__name__}: {e}")
-
-    errors = [p for p in papers if p.startswith("[ERROR:")]
-    papers  = [p for p in papers if not p.startswith("[ERROR:")]
+            diag.append(f"{source_name} EXCEPTION: {type(e).__name__}: {e}")
 
     if not papers:
-        return jsonify({"error": "Could not fetch any sources", "details": errors}), 500
+        return jsonify({"error": "Could not fetch any sources", "diag": diag}), 500
 
     try:
         with open("ai-primer.html", "r", encoding="utf-8") as f:

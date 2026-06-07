@@ -332,6 +332,10 @@
 
       <div class="outline-heading">Phase 5 — Generate output (token by token)</div>
       <div class="outline-row">
+        <div class="ol-term">Logits</div>
+        <div class="ol-def">The raw, unnormalized scores the model assigns to every token in its vocabulary at the end of the forward pass. One number per token — can be negative, zero, or large positive. Higher = model thinks that token more likely. Not probabilities yet. <em>e.g. "mat": 4.2, "floor": 3.8, "banana": -2.3.</em> Softmax converts these into probabilities.</div>
+      </div>
+      <div class="outline-row">
         <div class="ol-term">Softmax</div>
         <div class="ol-def">Converts the raw logits into a probability distribution — every possible next token gets a probability, and they all sum to 1. <em>e.g. "the": 45%, "a": 30%, "one": 15%, "some": 8%, "every": 2%.</em></div>
       </div>

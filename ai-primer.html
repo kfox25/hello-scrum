@@ -459,6 +459,60 @@
 
     <div class="outline-block">
 
+      <div class="outline-heading">0 — The math layer</div>
+      <div class="outline-row">
+        <div class="ol-term">Why math?</div>
+        <div class="ol-def">Computers can't read images, text, or audio directly. Linear algebra is the translation layer — it converts raw data into numbers a machine can compute on. Everything an LLM does is built on top of this.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Scalar</div>
+        <div class="ol-def">A single number. The simplest unit. <em>5, 2.6, π.</em> A pixel's brightness is a scalar. A temperature reading is a scalar.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Vector</div>
+        <div class="ol-def">A 1D list of numbers. <em>[2, 3, 4].</em> A word or sentence encoded as meaning is a vector — called an embedding. Vectors represent position in high-dimensional space; similar meanings cluster nearby.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Matrix</div>
+        <div class="ol-def">A 2D grid of rows and columns. An image is a matrix where each cell is a pixel intensity. A dataset of users and movie ratings is a matrix. Most neural network operations are matrix operations.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Tensor</div>
+        <div class="ol-def">A generalization of vectors and matrices to 3+ dimensions. A video (frames × height × width × color channels) is a tensor. TensorFlow is named after them.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Matrix dot product</div>
+        <div class="ol-def">The single most important operation in linear algebra for ML. Used in every neural network from simple to transformer. It combines two matrices to produce a third — the core of how layers in a network transform data as it flows through.</div>
+      </div>
+
+      <div class="outline-heading">0b — Measuring similarity</div>
+      <div class="outline-row">
+        <div class="ol-term">Why similarity matters</div>
+        <div class="ol-def">Once sentences are embeddings (vectors), you can measure how related they are mathematically. This powers search, RAG retrieval, and semantic comparison.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Euclidean distance</div>
+        <div class="ol-def">Point-by-point difference across all dimensions, squared, summed, square-rooted. Measures the straight-line distance between two vectors. Output is unbounded — bigger number means more different. Good when magnitude matters.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Cosine similarity</div>
+        <div class="ol-def">Measures the angle between two vectors, not the distance. Output: -1 to 1. Score of 1 = same direction (similar meaning). Score of 0 = perpendicular (completely independent features). Score of -1 = opposite direction. Standardized — preferred for text embeddings because magnitude doesn't skew the result.</div>
+      </div>
+
+      <div class="outline-heading">0c — Dimensionality reduction</div>
+      <div class="outline-row">
+        <div class="ol-term">The problem</div>
+        <div class="ol-def">Training on billions of tokens with every dimension active is impractical. Most dimensions carry noise, not signal. Dimensionality reduction keeps the useful structure and discards the rest.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">SVD (Singular Value Decomposition)</div>
+        <div class="ol-def">Breaks one large matrix A into three smaller matrices: U (row/user features) × Σ (importance rankings, largest first) × Vᵀ (column/item features). You then keep only the top-ranked features and discard the rest — the signal without the noise. Works on any matrix shape.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">SVD example</div>
+        <div class="ol-def">A movie ratings matrix (users × movies) decomposes into a user-behavior matrix, an importance-ranking diagonal, and a movie-feature matrix. Reconstruct with only the top features: you now have a compressed representation that captures taste patterns without storing every rating.</div>
+      </div>
+
       <div class="outline-heading">1 — Text to numbers</div>
       <div class="outline-row">
         <div class="ol-term">Token</div>

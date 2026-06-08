@@ -435,6 +435,14 @@
         <div class="ol-term">Large Language Model (LLM)</div>
         <div class="ol-def">A foundation model trained specifically on text, learning to predict the next word across billions of examples. Claude, GPT-4, Gemini are LLMs. "Large" = billions of parameters.</div>
       </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Large Reasoning Model (LRM)</div>
+        <div class="ol-def">An LLM trained via reinforcement learning to generate thinking tokens before answering — it deliberates before committing to a response. Trades latency and cost for accuracy on hard problems. <em>e.g. OpenAI o3, Claude with extended thinking.</em> See test-time compute in How LLMs Work.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Vision Language Model (VLM)</div>
+        <div class="ol-def">A model that accepts both images and text as input, producing text output. An image encoder converts pixels to embeddings that get merged with token embeddings before the transformer processes them. <em>e.g. GPT-4o, Claude 3, Gemini.</em> Enables tasks like "describe this screenshot" or "what's wrong in this diagram."</div>
+      </div>
 
       <div class="outline-heading">4 — What happens under the hood</div>
       <div class="outline-row">

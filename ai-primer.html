@@ -526,7 +526,31 @@
         <div class="ol-def">Further aligned via human feedback — humans rank outputs, a reward model learns those preferences, the LLM is trained to score higher. Produces the personality, tone, and safety behavior you see in Claude and ChatGPT.</div>
       </div>
 
-      <div class="outline-heading">5 — By specialization</div>
+      <div class="outline-heading">5 — By role in the pipeline</div>
+      <div class="outline-row">
+        <div class="ol-term">Reward Model</div>
+        <div class="ol-def">Trained on human preference data to score how good a response is. The backbone of RLHF — the main LLM is trained to produce outputs the reward model scores highly. Never deployed to users; exists only to guide training.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Critic Model</div>
+        <div class="ol-def">Similar to a reward model but used during RL inference — evaluates the value of a state or action rather than scoring a finished output. Common in actor-critic RL setups where the critic guides the actor (main model) during training.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Draft Model</div>
+        <div class="ol-def">A small, fast model used in speculative decoding. It generates several candidate tokens cheaply; a larger model then verifies them in parallel. If accepted, you get the quality of the big model at the speed of the small one. Used to reduce latency in production.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Reranker Model</div>
+        <div class="ol-def">Scores the relevance of retrieved documents against a query. Used in RAG pipelines after initial vector search to improve result quality before passing context to the LLM.</div>
+      </div>
+
+      <div class="outline-heading">6 — By architecture variant</div>
+      <div class="outline-row">
+        <div class="ol-term">Mixture of Experts (MoE)</div>
+        <div class="ol-def">Instead of activating all parameters for every token, the model routes each token to a subset of specialist sub-networks ("experts"). Same parameter count as a dense model but a fraction of the compute per token — faster and cheaper at scale. <em>e.g. GPT-4, Mixtral, Gemini.</em></div>
+      </div>
+
+      <div class="outline-heading">7 — By specialization</div>
       <div class="outline-row">
         <div class="ol-term">Code Model</div>
         <div class="ol-def">Trained heavily on code — higher accuracy on programming tasks, code completion, debugging. <em>e.g. GitHub Copilot, DeepSeek Coder, Code Llama.</em></div>
@@ -534,10 +558,6 @@
       <div class="outline-row">
         <div class="ol-term">Domain Model</div>
         <div class="ol-def">Fine-tuned on a specific field — medicine, law, finance — to improve accuracy in that domain. Narrower but more reliable within its scope than a generalist model.</div>
-      </div>
-      <div class="outline-row">
-        <div class="ol-term">Reranker Model</div>
-        <div class="ol-def">Scores the relevance of retrieved documents against a query. Used in RAG pipelines after initial vector search to improve result quality before passing context to the LLM.</div>
       </div>
 
     </div>

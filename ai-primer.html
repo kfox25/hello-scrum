@@ -544,13 +544,27 @@
         <div class="ol-def">Scores the relevance of retrieved documents against a query. Used in RAG pipelines after initial vector search to improve result quality before passing context to the LLM.</div>
       </div>
 
-      <div class="outline-heading">6 — By architecture variant</div>
+      <div class="outline-heading">6 — By learning objective</div>
+      <div class="outline-row">
+        <div class="ol-term">Generative Model</div>
+        <div class="ol-def">Learns the underlying distribution of data so it can produce new examples. Asks: "how would I generate this?" Output is new content — text, images, audio. <em>e.g. GPT, Claude, Stable Diffusion, DALL-E.</em> LLMs are generative models.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Discriminative Model</div>
+        <div class="ol-def">Learns to draw a boundary between classes. Asks: "which category does this belong to?" Output is a label or score, not new content. <em>e.g. BERT, image classifiers, spam filters, sentiment analysis models.</em> Rerankers are discriminative.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">BERT vs GPT</div>
+        <div class="ol-def">BERT is discriminative — trained to predict masked tokens (fill in the blank), making it better at classification tasks. GPT is generative — trained to predict the next token, making it better at producing text. Both use the transformer architecture but with different objectives and different halves of it (encoder vs decoder).</div>
+      </div>
+
+      <div class="outline-heading">8 — By architecture variant</div>
       <div class="outline-row">
         <div class="ol-term">Mixture of Experts (MoE)</div>
         <div class="ol-def">Instead of activating all parameters for every token, the model routes each token to a subset of specialist sub-networks ("experts"). Same parameter count as a dense model but a fraction of the compute per token — faster and cheaper at scale. <em>e.g. GPT-4, Mixtral, Gemini.</em></div>
       </div>
 
-      <div class="outline-heading">7 — By specialization</div>
+      <div class="outline-heading">9 — By specialization</div>
       <div class="outline-row">
         <div class="ol-term">Code Model</div>
         <div class="ol-def">Trained heavily on code — higher accuracy on programming tasks, code completion, debugging. <em>e.g. GitHub Copilot, DeepSeek Coder, Code Llama.</em></div>

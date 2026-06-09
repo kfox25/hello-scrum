@@ -428,20 +428,8 @@
 
       <div class="outline-heading">3 — The models</div>
       <div class="outline-row">
-        <div class="ol-term">Foundation Model</div>
-        <div class="ol-def">A large model trained on broad data that serves as a starting point for many tasks. Not specialised for anything in particular — adapted afterward. LLMs are one type of foundation model.</div>
-      </div>
-      <div class="outline-row indent">
-        <div class="ol-term">Large Language Model (LLM)</div>
-        <div class="ol-def">A foundation model trained specifically on text, learning to predict the next word across billions of examples. Claude, GPT-4, Gemini are LLMs. "Large" = billions of parameters.</div>
-      </div>
-      <div class="outline-row indent">
-        <div class="ol-term">Large Reasoning Model (LRM)</div>
-        <div class="ol-def">An LLM trained via reinforcement learning to generate thinking tokens before answering — it deliberates before committing to a response. Trades latency and cost for accuracy on hard problems. <em>e.g. OpenAI o3, Claude with extended thinking.</em> See test-time compute in How LLMs Work.</div>
-      </div>
-      <div class="outline-row indent">
-        <div class="ol-term">Vision Language Model (VLM)</div>
-        <div class="ol-def">A model that accepts both images and text as input, producing text output. An image encoder converts pixels to embeddings that get merged with token embeddings before the transformer processes them. <em>e.g. GPT-4o, Claude 3, Gemini.</em> Enables tasks like "describe this screenshot" or "what's wrong in this diagram."</div>
+        <div class="ol-term">Model types</div>
+        <div class="ol-def">See the <strong>Models</strong> section for a full taxonomy — by input/output, reasoning capability, size, training approach, and specialization.</div>
       </div>
 
       <div class="outline-heading">4 — What happens under the hood</div>
@@ -460,6 +448,96 @@
       <div class="outline-row indent">
         <div class="ol-term">Model</div>
         <div class="ol-def">The trained artifact — a file of weights that maps inputs to outputs. "Calling the model" means running inference. The model itself doesn't change; only your prompt changes.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Models -->
+  <div class="section" id="s-models">
+    <div class="section-title">Models</div>
+    <div class="outline-block">
+
+      <div class="outline-heading">1 — By input / output type</div>
+      <div class="outline-row">
+        <div class="ol-term">Foundation Model</div>
+        <div class="ol-def">A large model trained on broad data that serves as a starting point for many tasks. Not specialised for anything — adapted afterward via fine-tuning or RLHF. LLMs are one type of foundation model.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Large Language Model (LLM)</div>
+        <div class="ol-def">Text in, text out. Trained on massive text corpora to predict the next token. The most common model type. <em>e.g. Claude, GPT-4, Gemini, Llama.</em></div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Vision Language Model (VLM)</div>
+        <div class="ol-def">Image + text in, text out. An image encoder converts pixels to embeddings that merge with token embeddings before the transformer processes them. <em>e.g. GPT-4o, Claude 3+, Gemini.</em> Enables: "describe this screenshot", "what's wrong in this diagram."</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Audio Model</div>
+        <div class="ol-def">Speech or audio in, text or audio out. Covers speech-to-text (transcription), text-to-speech (synthesis), and voice agents. <em>e.g. OpenAI Whisper (STT), ElevenLabs (TTS).</em></div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Multimodal Model</div>
+        <div class="ol-def">Accepts any combination of text, image, audio, and video. Output is typically text or generated media. The direction frontier models are all moving. <em>e.g. GPT-4o, Gemini 2.0.</em></div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Diffusion Model</div>
+        <div class="ol-def">Generates images or video by learning to reverse a noise process. Not a transformer — a different architecture entirely. <em>e.g. Stable Diffusion, DALL-E, Sora.</em> Input: text prompt. Output: image or video.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Embedding Model</div>
+        <div class="ol-def">Text in, vector out — no generated text. Converts sentences into numerical representations for search, similarity comparison, and RAG retrieval. <em>e.g. OpenAI text-embedding-3, Cohere Embed.</em></div>
+      </div>
+
+      <div class="outline-heading">2 — By reasoning capability</div>
+      <div class="outline-row">
+        <div class="ol-term">Standard LLM</div>
+        <div class="ol-def">One forward pass per response. Fast, cheap. Commits to output tokens immediately without deliberation. Best for most tasks.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Large Reasoning Model (LRM)</div>
+        <div class="ol-def">Trained via reinforcement learning to generate thinking tokens before answering. Deliberates before committing to a response. Trades latency and cost for accuracy on hard problems. <em>e.g. OpenAI o3, o4-mini, Claude with extended thinking, Gemini 2.5 Pro, DeepSeek-R1.</em></div>
+      </div>
+
+      <div class="outline-heading">3 — By size / deployment</div>
+      <div class="outline-row">
+        <div class="ol-term">Frontier Model</div>
+        <div class="ol-def">The largest, most capable models — API-only, run in massive data centers. Highest quality, highest cost. <em>e.g. GPT-4o, Claude Opus, Gemini Ultra.</em></div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Small Language Model (SLM)</div>
+        <div class="ol-def">Compact models (1B–7B parameters) designed to run on consumer hardware. Lower quality than frontier but fast, cheap, and private. <em>e.g. Phi-3, Gemini Nano, Llama 3.2 1B/3B.</em></div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Edge Model</div>
+        <div class="ol-def">A model small enough to run on the device itself — phone, laptop, car — without sending data to a server. No internet required, no API fees, instant response, data stays private. Achieved via quantization, pruning, and distillation. <em>e.g. Apple Intelligence on-device, Gemini Nano on Pixel.</em></div>
+      </div>
+
+      <div class="outline-heading">4 — By training approach</div>
+      <div class="outline-row">
+        <div class="ol-term">Base / Pre-trained Model</div>
+        <div class="ol-def">Raw output of pre-training — next-token prediction only, no instruction following. Will complete your sentence, not answer your question. Starting point for all further training.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Instruction-tuned Model</div>
+        <div class="ol-def">Fine-tuned on (prompt → response) pairs so the model follows instructions and holds conversations rather than just completing text. Most deployed models are instruction-tuned.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">RLHF Model</div>
+        <div class="ol-def">Further aligned via human feedback — humans rank outputs, a reward model learns those preferences, the LLM is trained to score higher. Produces the personality, tone, and safety behavior you see in Claude and ChatGPT.</div>
+      </div>
+
+      <div class="outline-heading">5 — By specialization</div>
+      <div class="outline-row">
+        <div class="ol-term">Code Model</div>
+        <div class="ol-def">Trained heavily on code — higher accuracy on programming tasks, code completion, debugging. <em>e.g. GitHub Copilot, DeepSeek Coder, Code Llama.</em></div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Domain Model</div>
+        <div class="ol-def">Fine-tuned on a specific field — medicine, law, finance — to improve accuracy in that domain. Narrower but more reliable within its scope than a generalist model.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Reranker Model</div>
+        <div class="ol-def">Scores the relevance of retrieved documents against a query. Used in RAG pipelines after initial vector search to improve result quality before passing context to the LLM.</div>
       </div>
 
     </div>
@@ -1521,6 +1599,7 @@
     [
       ['#s-workflow',    'AI Workflow'],
       ['#s-foundation',  'Foundation'],
+      ['#s-models',      'Models'],
       ['#s-llm',         'How LLMs Work'],
       ['#s-prompts',     'Prompt Engineering'],
       ['#s-rag',         'RAG & Knowledge'],

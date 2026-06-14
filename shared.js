@@ -1,5 +1,5 @@
 (function () {
-  const WORKFLOW_PAGES = ['workflow.html', 'hello-scrum.html', 'hello-scrum-aidlc.html', 'ai-dlc.html', 'jeff.html', 'chad.html', 'items.html', 'docs.html'];
+  const WORKFLOW_PAGES = ['workflow.html', 'hello-scrum.html', 'hello-scrum-aidlc.html', 'ai-dlc.html', 'jeff.html', 'chad.html', 'fred.html', 'items.html', 'docs.html'];
   const path = window.location.pathname;
   if (WORKFLOW_PAGES.some(p => path.endsWith(p))) {
     const nav = document.createElement('div');
@@ -11,6 +11,7 @@
       '<a href="docs.html">AI-DLC Docs</a>' +
       '<a href="jeff.html">Jeff</a>' +
       '<a href="chad.html">Chad</a>' +
+      '<a href="fred.html">FRED</a>' +
       '<a href="items.html">Items</a>';
     nav.querySelectorAll('a').forEach(a => {
       if (path.endsWith(a.getAttribute('href'))) a.classList.add('active');

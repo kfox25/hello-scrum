@@ -96,6 +96,22 @@
       min-width: 200px; flex-shrink: 0; padding-top: 0.05rem;
     }
     .ol-def { font-size: 0.78rem; color: #888; line-height: 1.6; }
+
+    .sp-toggle {
+      display: block; width: 100%; text-align: left;
+      background: none; border: none; border-bottom: 1px solid #1a1a1a;
+      color: #444; font-family: monospace; font-size: 0.6rem;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      cursor: pointer; padding: 0.3rem 0 0.5rem; margin-bottom: 0.35rem;
+    }
+    .sp-toggle.active { color: #00ff99; }
+    .sp-progress { font-size: 0.6rem; color: #555; font-family: monospace; margin-bottom: 0.5rem; display: none; }
+    .sp-next-btn {
+      width: 100%; background: #0a1f12; color: #00ff99;
+      border: 1px solid #00ff9940; padding: 0.45rem 1.25rem;
+      border-radius: 4px; cursor: pointer; font-family: monospace; font-size: 0.82rem;
+    }
+    .sp-next-btn:hover { border-color: #00ff99; }
   </style>
 </head>
 <body>
@@ -144,8 +160,8 @@
   <div class="subtitle">Personal study reference — terminology grouped by topic</div>
 
   <!-- AI Workflow -->
-  <div class="section" id="s-workflow">
-    <div class="section-title">AI Workflow</div>
+  <div class="section" id="s-workflow-a">
+    <div class="section-title">AI Workflow — Building the Model</div>
     <div class="outline-block">
 
       <div class="outline-heading">Phase 0 — Build the model (done once by the AI lab)</div>
@@ -226,8 +242,15 @@
         <div class="ol-def">The trained, quantised model is loaded onto inference servers and exposed via API. From here, every call you make runs against these frozen weights — the model itself doesn't change. Updates require a new training run. <strong>This is where Anthropic's job ends and yours begins.</strong></div>
       </div>
 
+    </div>
+  </div>
+
+  <div class="section" id="s-workflow-b">
+    <div class="section-title">AI Workflow — RAG &amp; Query</div>
+    <div class="outline-block">
+
       <div class="outline-heading">Phase 1 — Prepare your knowledge (optional — only if using RAG)</div>
-      <div class="outline-row">
+      <div class="outline-row" data-no-quiz>
         <div class="ol-term">⚠ RAG is optional</div>
         <div class="ol-def">Phases 1 and 2 only apply if you are grounding the model in your own data — documents, databases, internal knowledge. If you are writing prompts directly and calling the model without external retrieval, skip to Phase 3.</div>
       </div>
@@ -281,6 +304,13 @@
         <div class="ol-term">Context Assembly</div>
         <div class="ol-def">The retrieved chunks are combined with the system prompt and the user's query to form the full prompt. Order matters — most models attend better to content near the beginning and end.</div>
       </div>
+
+    </div>
+  </div>
+
+  <div class="section" id="s-workflow-c">
+    <div class="section-title">AI Workflow — Prompt, Infer &amp; Deliver</div>
+    <div class="outline-block">
 
       <div class="outline-heading">Phase 3 — Build the prompt</div>
       <div class="outline-row">
@@ -427,7 +457,7 @@
       </div>
 
       <div class="outline-heading">3 — The models</div>
-      <div class="outline-row">
+      <div class="outline-row" data-no-quiz>
         <div class="ol-term">Model types</div>
         <div class="ol-def">See the <strong>Models</strong> section for a full taxonomy — by input/output, reasoning capability, size, training approach, and specialization.</div>
       </div>
@@ -558,6 +588,32 @@
         <div class="ol-def">BERT is discriminative — trained to predict masked tokens (fill in the blank), making it better at classification tasks. GPT is generative — trained to predict the next token, making it better at producing text. Both use the transformer architecture but with different objectives and different halves of it (encoder vs decoder).</div>
       </div>
 
+      <div class="outline-heading">7 — By transformer architecture</div>
+      <div class="outline-row">
+        <div class="ol-term">Encoder-only</div>
+        <div class="ol-def">Reads the full input bidirectionally — every token attends to every other token in both directions. Excellent at understanding and classification tasks: sentiment, named entity recognition, question answering. Cannot generate text. <em>e.g. BERT, RoBERTa, DistilBERT.</em></div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Masked Language Modeling (MLM)</div>
+        <div class="ol-def">How encoder-only models are trained. Random tokens are replaced with [MASK] and the model must predict them from surrounding context. Because it sees both left and right context simultaneously, it builds rich bidirectional representations — unlike next-token prediction which is left-to-right only.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Decoder-only</div>
+        <div class="ol-def">Each token can only attend to tokens that came before it — causal (left-to-right) attention. Trained to predict the next token. The architecture of almost all modern LLMs used for generation. <em>e.g. GPT-4, Claude, Llama, Gemini, Mistral.</em></div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Causal Attention</div>
+        <div class="ol-def">The attention mask that prevents a token from "seeing" future tokens. Enforces the autoregressive property: the model can only use past context when predicting what comes next. This is what makes left-to-right generation possible.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Encoder-decoder</div>
+        <div class="ol-def">Two separate stacks: an encoder reads the full input bidirectionally, a decoder generates output autoregressively while attending to the encoder's output. Natural for sequence-to-sequence tasks where input and output differ in structure. <em>e.g. T5, BART, original "Attention is All You Need" transformer.</em> Use cases: translation, summarization, question answering with long context.</div>
+      </div>
+      <div class="outline-row indent">
+        <div class="ol-term">Cross-attention</div>
+        <div class="ol-def">The mechanism by which the decoder attends to the encoder's output. Distinct from self-attention (attending within the same sequence). The decoder uses cross-attention to pull relevant information from the encoded input at each generation step.</div>
+      </div>
+
       <div class="outline-heading">8 — By architecture variant</div>
       <div class="outline-row">
         <div class="ol-term">Mixture of Experts (MoE)</div>
@@ -578,13 +634,13 @@
   </div>
 
   <!-- How LLMs Work -->
-  <div class="section" id="s-llm">
-    <div class="section-title">How LLMs Work</div>
+  <div class="section" id="s-llm-a">
+    <div class="section-title">How LLMs Work — Math &amp; Embeddings</div>
 
     <div class="outline-block">
 
       <div class="outline-heading">0 — The math layer</div>
-      <div class="outline-row">
+      <div class="outline-row" data-no-quiz>
         <div class="ol-term">Why math?</div>
         <div class="ol-def">Computers can't read images, text, or audio directly. Linear algebra is the translation layer — it converts raw data into numbers a machine can compute on. Everything an LLM does is built on top of this.</div>
       </div>
@@ -610,7 +666,7 @@
       </div>
 
       <div class="outline-heading">0b — Measuring similarity</div>
-      <div class="outline-row">
+      <div class="outline-row" data-no-quiz>
         <div class="ol-term">Why similarity matters</div>
         <div class="ol-def">Once sentences are embeddings (vectors), you can measure how related they are mathematically. This powers search, RAG retrieval, and semantic comparison.</div>
       </div>
@@ -624,7 +680,7 @@
       </div>
 
       <div class="outline-heading">0c — Dimensionality reduction</div>
-      <div class="outline-row">
+      <div class="outline-row" data-no-quiz>
         <div class="ol-term">The problem</div>
         <div class="ol-def">Training on billions of tokens with every dimension active is impractical. Most dimensions carry noise, not signal. Dimensionality reduction keeps the useful structure and discards the rest.</div>
       </div>
@@ -654,6 +710,13 @@
         <div class="ol-term">Latent Space</div>
         <div class="ol-def">The high-dimensional space where all embeddings live. Similar concepts cluster together. The model reasons by navigating this space.</div>
       </div>
+
+    </div>
+  </div>
+
+  <div class="section" id="s-llm-b">
+    <div class="section-title">How LLMs Work — Architecture &amp; Inference</div>
+    <div class="outline-block">
 
       <div class="outline-heading">2 — The architecture</div>
       <div class="outline-row">
@@ -741,8 +804,15 @@
         <div class="ol-def">The model ignores or partially follows explicit instructions — wrong format, skipped constraints, drifting to a different task. Gets worse with long prompts and conflicting instructions.</div>
       </div>
 
+    </div>
+  </div>
+
+  <div class="section" id="s-llm-c">
+    <div class="section-title">How LLMs Work — Test-time Compute</div>
+    <div class="outline-block">
+
       <div class="outline-heading">7 — Test-time compute</div>
-      <div class="outline-row">
+      <div class="outline-row" data-q="What are the two main scaling axes for LLM capability, and how do they differ?">
         <div class="ol-term">The two scaling axes</div>
         <div class="ol-def">For years the only lever was train-time compute — bigger models, more data, more GPU time. Those weights then froze. Test-time compute is the second axis: spend more compute at inference time, on the problem that needs it, per query.</div>
       </div>
@@ -762,7 +832,7 @@
         <div class="ol-term">Reasoning models</div>
         <div class="ol-def">Models trained via reinforcement learning to generate thinking tokens automatically. The RL process rewards intermediate reasoning steps, so the model learns to do chain-of-thought without being prompted. Claude's extended thinking and OpenAI's o-series are examples.</div>
       </div>
-      <div class="outline-row">
+      <div class="outline-row" data-q="Name three techniques that apply test-time compute to improve LLM output quality.">
         <div class="ol-term">Three mechanisms</div>
         <div class="ol-def">Can be combined. All three trade compute for accuracy — more flops per query, higher probability of a correct response.</div>
       </div>
@@ -1072,7 +1142,7 @@
         <div class="ol-term">The forgetting problem</div>
         <div class="ol-def">Episodic memory is the hardest to get right. When does information become obsolete? Humans forget naturally — for agents it's an engineering decision. No good universal answer yet.</div>
       </div>
-      <div class="outline-row">
+      <div class="outline-row" data-q="What memory types does a full coding agent need? What about a simple reflex agent?">
         <div class="ol-term">Memory by agent type</div>
         <div class="ol-def">Simple reflex agents (thermostat, routing bot) need only working memory. A narrow support agent (password reset) adds procedural. A full coding agent needs all four: working + semantic + procedural + episodic.</div>
       </div>
@@ -1086,7 +1156,7 @@
     <div class="outline-block">
 
       <div class="outline-heading">1 — The problem</div>
-      <div class="outline-row">
+      <div class="outline-row" data-no-quiz>
         <div class="ol-term">Why protocols matter</div>
         <div class="ol-def">Without standards, every agent-to-tool and agent-to-agent connection requires custom integration code. Protocols define the handshake once so any compliant agent can talk to any compliant tool or agent.</div>
       </div>
@@ -1502,6 +1572,78 @@
     </div>
   </div>
 
+  <!-- Failure Modes & Debugging -->
+  <div class="section" id="s-debug">
+    <div class="section-title">Failure Modes &amp; Debugging</div>
+    <div class="outline-block">
+
+      <div class="outline-heading">1 — Output quality failures</div>
+      <div class="outline-row">
+        <div class="ol-term">Sycophancy</div>
+        <div class="ol-def">The model agrees with the user's framing even when the user is wrong. If you assert an incorrect answer confidently, the model confirms it rather than correcting. Caused by RLHF training that rewards responses humans rate highly — and humans often rate agreement highly. Test for it by asserting false premises and checking if the model pushes back.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Instruction Drift</div>
+        <div class="ol-def">The model follows constraints at the top of a long prompt but ignores them by the end. Attention weight on early instructions dilutes across a long context. Fix: repeat critical constraints near the content they constrain, or move them to the end of the system prompt where they stay salient.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Prompt Sensitivity</div>
+        <div class="ol-def">Small phrasing changes produce large output differences. A robust prompt produces consistent quality across reasonable paraphrases of the same instruction. A brittle prompt is a maintenance risk — anyone editing the template can silently break output quality. Test by paraphrasing key instructions and comparing results.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Reward Hacking</div>
+        <div class="ol-def">During RLHF training the model finds shortcuts to maximize the reward model score without actually being more helpful. Classic example: verbose, hedge-filled responses that look thorough but aren't. The reward model rates them highly; a careful human reader notices the padding. Hard to catch without diverse human evaluation.</div>
+      </div>
+
+      <div class="outline-heading">2 — Context failures</div>
+      <div class="outline-row">
+        <div class="ol-term">Context Overflow</div>
+        <div class="ol-def">The input exceeds the context window limit. Either the API returns an error or the provider silently truncates the oldest content. The symptom is the model "forgetting" earlier parts of a conversation. Engineers watch for this with long histories, large RAG injections, or multi-document tasks. Log input token counts on every call.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Lost in the Middle</div>
+        <div class="ol-def">Models attend better to content at the start and end of the context than to content buried in the middle. A fact at position 50k in a 100k-token context is missed more often than the same fact at position 1k. Confirmed in research. Affects RAG pipelines that inject many retrieved chunks — the most relevant chunk should go first or last, not in the middle of a list.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Truncation Strategy</div>
+        <div class="ol-def">How you handle content that exceeds the window. Options: sliding window (drop oldest turns), middle truncation (keep system prompt + most recent turns), summarize-and-compress (expensive but preserves information), semantic selection (keep most relevant chunks). Each trades off recency, relevance, and cost.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Context Poisoning</div>
+        <div class="ol-def">Adversarial or low-quality content early in the context that corrupts the model's reasoning for the rest of the session. Distinct from prompt injection (which overrides instructions explicitly) — poisoning subtly skews the model's framing without a visible command. Hard to detect because the output still looks plausible.</div>
+      </div>
+
+      <div class="outline-heading">3 — Agent &amp; tool failures</div>
+      <div class="outline-row">
+        <div class="ol-term">Tool Call Failure</div>
+        <div class="ol-def">The model generates a malformed tool call — wrong parameter names, wrong types, missing required fields, or calling a non-existent tool. Common with complex schemas, long conversations where the model drifts from the schema, or ambiguous tool descriptions. Fix: tight schemas with examples, and a retry loop that feeds the error message back to the model.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Repetition / Looping</div>
+        <div class="ol-def">The model generates the same phrase repeatedly, or an agent loops without making progress. In text generation: often triggered by temperature near 0 or very low top-p. In agents: often caused by a tool that always returns the same result, or a missing termination condition. The fix depends on which layer is looping — model or scaffolding.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Agent Scope Creep</div>
+        <div class="ol-def">The agent modifies things beyond what was asked — renaming variables, restructuring files, adding unrequested features. Happens when the task description is broad and constraints on what must not change are absent. Fix: acceptance criteria that name exactly which files or outputs are in scope, and "no changes to X" guard lines.</div>
+      </div>
+
+      <div class="outline-heading">4 — Production failures</div>
+      <div class="outline-row">
+        <div class="ol-term">Model Drift</div>
+        <div class="ol-def">Production quality degrades over time with no code change on your side. Causes: the provider silently updates underlying model weights, the real-world input distribution shifts away from what the prompt was tuned for, or prompt caching changes alter which prefix is actually cached. Diagnose by running your eval suite against production traffic on a schedule.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Latency Spike</div>
+        <div class="ol-def">Response time suddenly increases. Diagnose by separating the cause: input tokens (more attention computation), output tokens (more generation steps), a reasoning model spending time on thinking tokens, provider-side load, or network. Log input and output token counts on every call — without this you can't tell which dimension caused the spike.</div>
+      </div>
+      <div class="outline-row">
+        <div class="ol-term">Silent Regression</div>
+        <div class="ol-def">A prompt change that improves one task silently breaks another. LLM systems don't have unit tests — regressions aren't caught at commit time. The only defence is running a full eval suite on every prompt change. Engineers who skip this discover regressions in production, not in CI.</div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Stay Current -->
   <div class="section" id="s-current">
     <div class="section-title">Stay Current</div>
@@ -1628,85 +1770,182 @@
 
   <script src="shared.js"></script>
   <script>
+    const NAV_ENTRIES = [
+      ['s-foundation',  'Foundation'],
+      ['s-llm-a',       'LLMs — Math & Embeddings'],
+      ['s-llm-b',       'LLMs — Architecture'],
+      ['s-llm-c',       'LLMs — Test-time Compute'],
+      ['s-models',      'Models'],
+      ['s-prompts',     'Prompt Engineering'],
+      ['s-rag',         'RAG & Knowledge'],
+      ['s-agents',      'Agents'],
+      ['s-workflow-a',  'Workflow — Training'],
+      ['s-workflow-b',  'Workflow — Retrieval'],
+      ['s-workflow-c',  'Workflow — Inference'],
+      ['s-finetune',    'Fine-tuning'],
+      ['s-eval',        'Evaluation'],
+      ['s-debug',       'Failure Modes'],
+      ['s-data',        'Data'],
+      ['s-infra',       'Infrastructure'],
+      ['s-protocols',   'Protocols'],
+      ['s-multimodal',  'Multimodal'],
+      ['s-safety',      'Safety & Ethics'],
+      ['s-po',          'Product Owner'],
+      ['s-current',     'Stay Current'],
+    ];
+
+    const STUDY_PATH = [
+      's-foundation',
+      's-llm-a',
+      's-llm-b',
+      's-llm-c',
+      's-models',
+      's-prompts',
+      's-rag',
+      's-agents',
+      's-workflow-a',
+      's-workflow-b',
+      's-workflow-c',
+      's-finetune',
+      's-eval',
+      's-debug',
+      's-data',
+      's-infra',
+      's-protocols',
+      's-multimodal',
+      's-safety',
+      's-po',
+      's-current',
+    ];
+
+    let studyMode    = localStorage.getItem('primer-sp-mode') === '1';
+    let spDone       = new Set(JSON.parse(localStorage.getItem('primer-sp-done') || '[]'));
+    let _activeSection = 's-foundation';
+
+    function saveDone() {
+      localStorage.setItem('primer-sp-done', JSON.stringify([...spDone]));
+    }
+
+    // ── Side nav ────────────────────────────────────────────
     const sideNav = document.createElement('div');
     sideNav.className = 'wf-nav';
-    [
-      ['#s-workflow',    'AI Workflow'],
-      ['#s-foundation',  'Foundation'],
-      ['#s-models',      'Models'],
-      ['#s-llm',         'How LLMs Work'],
-      ['#s-prompts',     'Prompt Engineering'],
-      ['#s-rag',         'RAG & Knowledge'],
-      ['#s-agents',      'Agents'],
-      ['#s-protocols',   'Protocols'],
-      ['#s-eval',        'Evaluation'],
-      ['#s-finetune',    'Fine-tuning'],
-      ['#s-data',        'Data'],
-      ['#s-infra',       'Infrastructure'],
-      ['#s-multimodal',  'Multimodal'],
-      ['#s-safety',      'Safety & Ethics'],
-      ['#s-current',     'Stay Current'],
-      ['#s-po',          'Product Owner'],
-    ].forEach(([href, label]) => {
-      const a = document.createElement('a');
-      a.href = href; a.textContent = label;
-      sideNav.appendChild(a);
+
+    const spToggle = document.createElement('button');
+    spToggle.className = 'sp-toggle';
+    spToggle.addEventListener('click', () => {
+      studyMode = !studyMode;
+      localStorage.setItem('primer-sp-mode', studyMode ? '1' : '0');
+      renderNav();
     });
+    sideNav.appendChild(spToggle);
+
+    const spProgress = document.createElement('div');
+    spProgress.className = 'sp-progress';
+    sideNav.appendChild(spProgress);
+
+    const navLinkWrap = document.createElement('div');
+    sideNav.appendChild(navLinkWrap);
     document.body.appendChild(sideNav);
 
     const sections = document.querySelectorAll('.section');
-    const navLinks = sideNav.querySelectorAll('a');
 
-    function showSection(id) {
-      sections.forEach(s => s.style.display = s.id === id ? '' : 'none');
-      navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
-      window.scrollTo(0, 0);
-      _activeSection = id;
-      localStorage.setItem('primer-section', id);
-      lastIdx = -1;
-      nextQuestion();
+    function renderNav() {
+      spToggle.textContent = studyMode ? 'Study Path: ON' : 'Study Path: OFF';
+      spToggle.classList.toggle('active', studyMode);
+      spProgress.textContent  = studyMode ? `${spDone.size} / ${STUDY_PATH.length} done` : '';
+      spProgress.style.display = studyMode ? 'block' : 'none';
+
+      navLinkWrap.innerHTML = '';
+      const entries = studyMode
+        ? STUDY_PATH.map((id, i) => {
+            const e = NAV_ENTRIES.find(x => x[0] === id);
+            return { id, label: (i + 1) + '. ' + (e ? e[1] : id), isDone: spDone.has(id) };
+          })
+        : NAV_ENTRIES.map(e => ({ id: e[0], label: e[1], isDone: false }));
+
+      entries.forEach(({ id, label, isDone }) => {
+        const a = document.createElement('a');
+        a.href = '#' + id;
+        a.textContent = isDone ? '✓ ' + label : label;
+        if (isDone) a.style.color = '#2a6a3a';
+        if (id === _activeSection) a.classList.add('active');
+        a.addEventListener('click', ev => { ev.preventDefault(); showSection(id); });
+        navLinkWrap.appendChild(a);
+      });
+
+      nextBar.style.display = studyMode ? '' : 'none';
     }
 
-    navLinks.forEach(a => a.addEventListener('click', e => {
-      e.preventDefault();
-      showSection(a.getAttribute('href').slice(1));
-    }));
+    // ── Next / mark-done bar ────────────────────────────────
+    const nextBar = document.createElement('div');
+    nextBar.innerHTML = '<button class="sp-next-btn" onclick="goNext()">Mark done &amp; continue →</button>';
+    document.querySelector('.scan-btn-fixed').appendChild(nextBar);
 
-    // Flashcard — pool from current visible section only
-    let quizPool = [];
-    let lastIdx = -1;
-    let _activeSection = 's-foundation';
+    function goNext() {
+      spDone.add(_activeSection);
+      saveDone();
+      const idx = STUDY_PATH.indexOf(_activeSection);
+      let next = null;
+      for (let i = idx + 1; i < STUDY_PATH.length; i++) {
+        if (!spDone.has(STUDY_PATH[i])) { next = STUDY_PATH[i]; break; }
+      }
+      if (!next) {
+        for (let i = 0; i < idx; i++) {
+          if (!spDone.has(STUDY_PATH[i])) { next = STUDY_PATH[i]; break; }
+        }
+      }
+      if (next) showSection(next);
+      else renderNav();
+    }
+
+    // ── Show section ─────────────────────────────────────────
+    function showSection(id) {
+      sections.forEach(s => s.style.display = s.id === id ? '' : 'none');
+      _activeSection = id;
+      localStorage.setItem('primer-section', id);
+      quizQueue    = [];
+      quizQueuePos = 0;
+      nextQuestion();
+      renderNav();
+      window.scrollTo(0, 0);
+    }
+
+    // ── Flashcard ─────────────────────────────────────────────
+    let quizPool     = [];
+    let quizQueue    = [];
+    let quizQueuePos = 0;
 
     function buildQuizPool() {
       quizPool = [];
       const active = document.getElementById(_activeSection);
       if (!active) return;
       active.querySelectorAll('.term').forEach(t => {
+        if ('noQuiz' in t.dataset) return;
         const name = t.querySelector('.term-name');
         const def  = t.querySelector('.term-def');
-        if (name && def) quizPool.push({ term: name.textContent.trim(), def: def.textContent.trim() });
+        if (name && def) quizPool.push({ term: name.textContent.trim(), def: def.textContent.trim(), q: t.dataset.q || null });
       });
       active.querySelectorAll('.outline-row').forEach(r => {
+        if ('noQuiz' in r.dataset) return;
         const name = r.querySelector('.ol-term');
         const def  = r.querySelector('.ol-def');
-        if (name && def && name.textContent.trim()) quizPool.push({ term: name.textContent.trim(), def: def.textContent.trim() });
+        if (name && def && name.textContent.trim()) {
+          quizPool.push({ term: name.textContent.trim(), def: def.textContent.trim(), q: r.dataset.q || null });
+        }
       });
     }
 
     function sanitizeDef(term, def) {
       const parts = new Set([term]);
-      // Add parenthetical content and the part before it
       const parenMatch = term.match(/\(([^)]+)\)/);
       if (parenMatch) {
         parts.add(parenMatch[1]);
         parts.add(term.replace(/\s*\([^)]+\)/, '').trim());
       }
-      // Add individual words >= 6 chars from the full term
       term.replace(/[()\/]/g, ' ').split(/[\s-]+/).forEach(w => {
         if (w.length >= 6) parts.add(w);
       });
       let result = def;
-      // Replace longest matches first to avoid partial overlaps
       [...parts].sort((a, b) => b.length - a.length).forEach(p => {
         if (p.length > 2) {
           const re = new RegExp(p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
@@ -1719,20 +1958,27 @@
     function nextQuestion() {
       buildQuizPool();
       if (!quizPool.length) return;
-      let idx;
-      do { idx = Math.floor(Math.random() * quizPool.length); } while (idx === lastIdx && quizPool.length > 1);
-      lastIdx = idx;
-      document.getElementById('quizQuestion').textContent = sanitizeDef(quizPool[idx].term, quizPool[idx].def);
-      document.getElementById('quizAnswer').textContent = '';
+      if (quizQueuePos >= quizQueue.length) {
+        quizQueue = [...quizPool];
+        for (let i = quizQueue.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [quizQueue[i], quizQueue[j]] = [quizQueue[j], quizQueue[i]];
+        }
+        quizQueuePos = 0;
+      }
+      const item = quizQueue[quizQueuePos++];
+      document.getElementById('quizQuestion').textContent = item.q || sanitizeDef(item.term, item.def);
+      document.getElementById('quizAnswer').textContent   = '';
       document.getElementById('quizReveal').style.display = 'inline-block';
     }
 
     function revealAnswer() {
-      document.getElementById('quizAnswer').textContent = quizPool[lastIdx].term;
+      document.getElementById('quizAnswer').textContent   = quizQueue[quizQueuePos - 1].term;
       document.getElementById('quizReveal').style.display = 'none';
     }
 
-    showSection(localStorage.getItem('primer-section') || 's-workflow');
+    const _stored = localStorage.getItem('primer-section');
+    showSection(_stored && document.getElementById(_stored) ? _stored : 's-foundation');
 
     async function runScan() {
       const btn = document.getElementById('scanBtn');

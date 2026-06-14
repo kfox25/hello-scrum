@@ -2621,6 +2621,23 @@ def _fetch_all_jobs():
     return jobs
 
 
+def _load_seen_notified():
+    try:
+        with open(_APEX_SEEN_FILE, "r", encoding="utf-8") as f:
+            raw = json.load(f)
+        if isinstance(raw, list):
+            # migrate old flat list — treat all as already notified so no spam
+            return set(raw), set(raw)
+        return set(raw.get("seen", [])), set(raw.get("notified", []))
+    except FileNotFoundError:
+        return set(), set()
+
+
+def _save_seen_notified(seen, notified):
+    with open(_APEX_SEEN_FILE, "w", encoding="utf-8") as f:
+        json.dump({"seen": list(seen), "notified": list(notified)}, f)
+
+
 def _run_job_check(seed=False):
     import urllib.request as _url
     global _job_check_status
@@ -2628,26 +2645,26 @@ def _run_job_check(seed=False):
         jobs = _fetch_all_jobs()
         urls = {j["url"] for j in jobs if j["url"]}
 
-        try:
-            with open(_APEX_SEEN_FILE, "r", encoding="utf-8") as f:
-                seen = set(json.load(f))
-        except FileNotFoundError:
-            seen = set()
+        seen, notified = _load_seen_notified()
 
-        new_jobs = [j for j in jobs if j["url"] and j["url"] not in seen]
+        new_jobs    = [j for j in jobs if j["url"] and j["url"] not in seen]
+        missed_jobs = [j for j in jobs if j["url"] and j["url"] in seen and j["url"] not in notified]
+        to_notify   = new_jobs + missed_jobs
 
         if not seed:
-            if new_jobs:
-                n    = len(new_jobs)
-                title = "New Scrum Master Role"
-                body  = f"Found {n} new role{'s' if n > 1 else ''}:\n"
-                body += "\n".join(f"• {j['title']} — {j['city']}, {j['state']} [{j.get('source','')}]" for j in new_jobs)
-                tags  = "briefcase"
+            if to_notify:
+                n     = len(to_notify)
+                title = "New Scrum Master Role" if n == 1 else f"{n} New Scrum Master Roles"
+                body  = "\n".join(
+                    f"• {j['title']} - {j['city']}, {j['state']} [{j.get('source','')}]"
+                    for j in to_notify
+                )
+                tags     = "briefcase"
                 priority = "default"
             else:
-                title = "Job Check - No New Roles"
-                body  = f"Checked {len(jobs)} listing{'s' if len(jobs) != 1 else ''} - nothing new"
-                tags  = "white_check_mark"
+                title    = "Job Check - No New Roles"
+                body     = f"Checked {len(jobs)} listing{'s' if len(jobs) != 1 else ''} - nothing new"
+                tags     = "white_check_mark"
                 priority = "min"
             ntfy_req = _url.Request(
                 f"https://ntfy.sh/{_NTFY_TOPIC}",
@@ -2656,20 +2673,21 @@ def _run_job_check(seed=False):
             )
             with _url.urlopen(ntfy_req, timeout=10):
                 pass
-            print(f"[job-check] notified: {len(new_jobs)} new job(s)")
+            print(f"[job-check] notified: {len(to_notify)} ({len(new_jobs)} new, {len(missed_jobs)} missed)")
 
         seen.update(urls)
-        with open(_APEX_SEEN_FILE, "w", encoding="utf-8") as f:
-            json.dump(list(seen), f)
+        if not seed:
+            notified.update(j["url"] for j in to_notify if j["url"])
+        _save_seen_notified(seen, notified)
 
         _job_check_status = {
             "last_checked":   datetime.now().strftime("%Y-%m-%d %H:%M"),
-            "last_new_count": 0 if seed else len(new_jobs),
+            "last_new_count": 0 if seed else len(to_notify),
             "total":          len(jobs),
             "error":          None,
         }
         if not seed:
-            print(f"[job-check] {len(jobs)} total, {len(new_jobs)} new")
+            print(f"[job-check] {len(jobs)} total, {len(new_jobs)} new, {len(missed_jobs)} missed")
     except Exception as e:
         _job_check_status["error"] = str(e)
         print(f"[job-check] error: {e}")

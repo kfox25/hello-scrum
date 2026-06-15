@@ -175,7 +175,7 @@
           </div>
           <div class="step-card">
             <div class="step-name">Email Received <span class="agent-badge badge-system">Trigger</span></div>
-            <div class="step-desc">An inbound email containing an RFP (Request for Proposal) arrives from a potential NRG energy customer. This is the entry point for the pipeline.</div>
+            <div class="step-desc">An inbound email containing an RFP arrives from a potential NRG energy customer (or their broker). This is the entry point for the pipeline.</div>
           </div>
         </div>
 
@@ -186,7 +186,7 @@
           </div>
           <div class="step-card">
             <div class="step-name">Extract Data <span class="agent-badge badge-ai">FRED</span></div>
-            <div class="step-desc">FRED reads the email and extracts structured proposal and customer data from unstructured text — customer name, contact info, energy requirements, pricing details, and other RFP fields.</div>
+            <div class="step-desc">FRED reads the email and extracts structured data from unstructured text — customer name, contact info, energy requirements, pricing details, and other RFP fields.</div>
             <ul class="step-bullets">
               <li>Customer and contact information</li>
               <li>Energy proposal details</li>
@@ -196,35 +196,99 @@
           </div>
         </div>
 
-        <div class="step ai">
+        <div class="step system">
           <div class="step-left">
             <div class="step-num">3</div>
             <div class="connector"></div>
           </div>
           <div class="step-card">
-            <div class="step-name">Generate Review UI <span class="agent-badge badge-ai">FRED</span></div>
-            <div class="step-desc">FRED generates a structured interface displaying the extracted customer and proposal data for human review. Presents the information in a clear, editable format.</div>
+            <div class="step-name">Elasticsearch Lookup <span class="agent-badge badge-system">API</span></div>
+            <div class="step-desc">FRED queries Elasticsearch with the extracted customer data. Elasticsearch returns any matching existing records — pre-populating known fields and surfacing potential duplicates before the rep ever sees the UI.</div>
+            <ul class="step-bullets">
+              <li>Email address match (primary key)</li>
+              <li>Name + company fuzzy match fallback</li>
+              <li>Enriches extracted data with existing CRM record if found</li>
+            </ul>
           </div>
         </div>
 
-        <div class="step human">
+        <div class="step ai">
           <div class="step-left">
             <div class="step-num">4</div>
             <div class="connector"></div>
           </div>
           <div class="step-card">
+            <div class="step-name">Populate UI <span class="agent-badge badge-ai">FRED</span></div>
+            <div class="step-desc">FRED combines the extracted email data and the Elasticsearch results into a structured review interface. Fields are pre-filled; the rep can see what FRED found and what already existed.</div>
+          </div>
+        </div>
+
+        <div class="step human">
+          <div class="step-left">
+            <div class="step-num">5</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
             <div class="step-name">Review &amp; Approve <span class="agent-badge badge-human">Human</span></div>
-            <div class="step-desc">A sales rep reviews the extracted data for accuracy and completeness. This is the human-in-the-loop gate — the rep confirms FRED got it right before anything enters Salesforce.</div>
+            <div class="step-desc">The sales rep reviews the pre-filled data, corrects any errors, and approves. This is the human-in-the-loop gate — nothing moves forward until the rep saves and approves.</div>
           </div>
         </div>
 
         <div class="step system">
           <div class="step-left">
-            <div class="step-num">5</div>
+            <div class="step-num">6</div>
+            <div class="connector"></div>
           </div>
           <div class="step-card">
-            <div class="step-name">Sync to Salesforce <span class="agent-badge badge-system">Automated</span></div>
-            <div class="step-desc">Approved data is automatically pushed to Salesforce as a new record. Manual data entry is eliminated — the rep's approval is the only required action.</div>
+            <div class="step-name">Broker API <span class="agent-badge badge-system">API</span></div>
+            <div class="step-desc">Approved data is sent to the Broker API. Purpose not fully confirmed — likely acknowledges receipt or posts a response back to the energy broker who submitted the RFP on the customer's behalf.</div>
+          </div>
+        </div>
+
+        <div class="step system">
+          <div class="step-left">
+            <div class="step-num">7</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">System API <span class="agent-badge badge-system">API</span></div>
+            <div class="step-desc">The System API creates the customer record and generates deal information. This is where the RFP becomes a formal sales record in the downstream system.</div>
+            <ul class="step-bullets">
+              <li>Creates new customer or updates existing</li>
+              <li>Generates deal / opportunity record</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step system">
+          <div class="step-left">
+            <div class="step-num">8</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Process Status <span class="agent-badge badge-system">Callback</span></div>
+            <div class="step-desc">The System API sends a process status back to FRED — confirming whether the customer and deal records were created successfully or if there was an error.</div>
+          </div>
+        </div>
+
+        <div class="step ai">
+          <div class="step-left">
+            <div class="step-num">9</div>
+            <div class="connector"></div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Notify User <span class="agent-badge badge-ai">FRED</span></div>
+            <div class="step-desc">FRED forwards the process status to the sales rep — confirming the RFP was successfully processed or surfacing any errors that need attention.</div>
+          </div>
+        </div>
+
+        <div class="step system">
+          <div class="step-left">
+            <div class="step-num">10</div>
+          </div>
+          <div class="step-card">
+            <div class="step-name">Source of Truth <span class="agent-badge badge-system">Record</span></div>
+            <div class="step-desc">The downstream system (CRM / deal platform) holds the canonical record. FRED's job is done — the RFP has become a customer and a deal.</div>
           </div>
         </div>
 
@@ -296,8 +360,8 @@
             <span class="prose-title">Duplicate Customer Entries</span>
           </div>
           <div class="prose-body">
-            <p>Salesforce uses email address as the primary deduplication key — when FRED pushes a record, Salesforce checks whether a Contact with that email already exists. If yes, it updates; if no, it creates a new record.</p>
-            <p>This creates a known issue: duplicate customer entries appear whenever the email FRED extracts doesn't match the one already in Salesforce.</p>
+            <p>Elasticsearch is the dedup layer — it looks up the extracted email (and name + company as a fallback) before the rep sees the UI. If a match is found, FRED pre-populates the review interface with the existing record rather than creating a blank new one.</p>
+            <p>This doesn't fully eliminate duplicates. If the email FRED extracts is wrong, Elasticsearch won't find the right match — and a new record gets created downstream via the System API.</p>
           </div>
           <table class="compare-table">
             <thead>
@@ -306,15 +370,15 @@
             <tbody>
               <tr>
                 <td>Same customer, different sender address</td>
-                <td>Work email vs. alias or personal email → Salesforce sees two people</td>
+                <td>Elasticsearch misses the match → new record created → duplicate</td>
               </tr>
               <tr>
                 <td>FRED extracts the wrong email</td>
-                <td>CC'd colleague or reply-to header grabbed instead of customer's address</td>
+                <td>CC'd colleague or reply-to header grabbed → wrong lookup → duplicate</td>
               </tr>
               <tr>
                 <td>No email in the RFP body</td>
-                <td>Record lands in Salesforce without a dedup anchor</td>
+                <td>No dedup anchor → Elasticsearch can only fall back to name + company fuzzy match</td>
               </tr>
               <tr>
                 <td>Forwarded RFP</td>
@@ -322,7 +386,7 @@
               </tr>
             </tbody>
           </table>
-          <div class="quote-block">The human review step (step 4) is supposed to catch this — but if reps are checking proposal data and not the email field, duplicates slip through.</div>
+          <div class="quote-block">The human review step (step 5) is supposed to catch this — but if reps are checking proposal data and not the email field, duplicates slip through.</div>
         </div>
 
         <div class="prose-section">
@@ -331,7 +395,39 @@
             <span class="prose-title">Teams</span>
           </div>
           <div class="prose-body">
-            <p>4 Scrum teams are responsible for building FRED. The Scrum Master role covers all 4 teams — facilitating ceremonies, removing impediments, and maturing Scrum practice inherited from a prior inexperienced SM.</p>
+            <p>4 Scrum teams, 2 standups. FRED is regional — Texas (ERCOT) and East run as separate instances with different regulatory environments, pricing structures, and RFP formats.</p>
+          </div>
+          <table class="compare-table">
+            <thead>
+              <tr><th>Team</th><th>Focus</th><th>Market</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Fred-E</td>
+                <td>FRED pipeline — eastern RFP intake</td>
+                <td>PJM / NYISO / ISO-NE</td>
+              </tr>
+              <tr>
+                <td>Fred-TX</td>
+                <td>FRED pipeline — Texas RFP intake</td>
+                <td>ERCOT</td>
+              </tr>
+              <tr>
+                <td>Salesforce</td>
+                <td>CRM data model, field mapping, deduplication rules</td>
+                <td>Both</td>
+              </tr>
+              <tr>
+                <td>DSP</td>
+                <td>Demand Side Programs — separate product line</td>
+                <td>Texas-heavy</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="quote-block">Standup 1: Fred-E + Salesforce &nbsp;·&nbsp; Standup 2: Fred-TX + DSP</div>
+          <div class="prose-body" style="margin-top:0.75rem">
+            <p>The Salesforce team is a shared dependency — they own the CRM destination that both FRED regions write into, which means the duplicate email issue is a cross-team coordination problem, not just a technical one.</p>
+            <p>DSP (Demand Side Programs) is likely a separate product where large commercial customers agree to reduce consumption during peak demand in exchange for bill credits. It shares the standup with Fred-TX because ERCOT has the most active demand response market in the US — but DSP probably runs its own intake workflow, not through FRED.</p>
           </div>
         </div>
 

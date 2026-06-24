@@ -2617,7 +2617,7 @@ _CINFIN_DETAIL_URL = "https://cinfin.taleo.net/careersection/ex/jobdetail.ftl?jo
 def _fetch_cinfin_jobs():
     import urllib.request as _url
     payload = json.dumps({
-        "fieldData": {"fields": {"KEYWORD": "scrum master", "CATEGORY": ""}, "valid": True},
+        "fieldData": {"fields": {"KEYWORD": "scrum", "CATEGORY": ""}, "valid": True},
         "filterSelectionParam": {"searchFilterSelections": []},
         "sortingSelection": {"sortBySelectionParam": "5", "ascendingSortingOrder": True},
         "pageNo": 1,

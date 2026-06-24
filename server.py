@@ -2611,9 +2611,53 @@ def _fetch_rh_jobs():
     return jobs
 
 
+_CINFIN_SEARCH_URL = "https://cinfin.taleo.net/careersection/rest/jobboard/searchjobs?lang=en&portal=101430233"
+_CINFIN_DETAIL_URL = "https://cinfin.taleo.net/careersection/ex/jobdetail.ftl?job={}&lang=en"
+
+def _fetch_cinfin_jobs():
+    import urllib.request as _url
+    payload = json.dumps({
+        "fieldData": {"fields": {"KEYWORD": "scrum master", "CATEGORY": ""}, "valid": True},
+        "filterSelectionParam": {"searchFilterSelections": []},
+        "sortingSelection": {"sortBySelectionParam": "5", "ascendingSortingOrder": True},
+        "pageNo": 1,
+    }).encode("utf-8")
+    req = _url.Request(_CINFIN_SEARCH_URL, data=payload, headers={
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Content-Type": "application/json",
+        "tz": "-300",
+        "tzname": "America/Chicago",
+    })
+    with _url.urlopen(req, timeout=15) as r:
+        data = json.loads(r.read().decode("utf-8"))
+    jobs = []
+    for j in data.get("requisitionList", []):
+        cols = j.get("column", [])
+        contest_no = j.get("contestNo", "")
+        title = cols[1] if len(cols) > 1 else ""
+        loc_raw = ""
+        locs = cols[2] if len(cols) > 2 else None
+        if isinstance(locs, str):
+            try:
+                loc_list = json.loads(locs)
+                loc_raw = loc_list[0] if loc_list else ""
+            except (ValueError, IndexError):
+                loc_raw = locs
+        state, _, city = loc_raw.partition("-")
+        jobs.append({
+            "source": "Cincinnati Insurance",
+            "title": title,
+            "city": city,
+            "state": state,
+            "date": "",
+            "url": _CINFIN_DETAIL_URL.format(contest_no) if contest_no else "",
+        })
+    return jobs
+
+
 def _fetch_all_jobs():
     jobs = []
-    for fn in (_fetch_apex_jobs, _fetch_rh_jobs):
+    for fn in (_fetch_apex_jobs, _fetch_rh_jobs, _fetch_cinfin_jobs):
         try:
             jobs.extend(fn())
         except Exception as e:
